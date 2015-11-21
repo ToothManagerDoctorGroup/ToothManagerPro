@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C8DE343031EDA3A2640F292E29A69E492FC8B394",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "01E73BA6476696CA02CADB07319B1B23448249B6" : 0,
+    "C8DE343031EDA3A2640F292E29A69E492FC8B394" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "301DFEB9-020B-462E-9F7B-9330DDF80E02",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "01E73BA6476696CA02CADB07319B1B23448249B6" : "CRM-1",
+    "C8DE343031EDA3A2640F292E29A69E492FC8B394" : "CRM\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "CRM",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "CRM.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/tiger_lbj\/micrometa_crm.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "01E73BA6476696CA02CADB07319B1B23448249B6"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ToothManagerDoctorGroup\/CRM.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C8DE343031EDA3A2640F292E29A69E492FC8B394"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "16F3A3EB-6AEF-4A3F-B32C-94D034B92350",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926" : "ToothManager"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ToothManager",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ToothManager.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/code.taobao.org\/svn\/ToothManager",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926"
+    }
+  ]
+}

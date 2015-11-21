@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>16F3A3EB-6AEF-4A3F-B32C-94D034B92350</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ToothManager</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926</key>
+		<string>http://code.taobao.org/svn/ToothManager/trunk/ToothManager</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ToothManager.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926</key>
+		<string>http://code.taobao.org/svn/ToothManager</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://code.taobao.org/svn/ToothManager/trunk/ToothManager/ToothManager.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>14e542f4-6b62-4b8e-b20f-e5954c3b93f6++4926</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ToothManager</string>
+		</dict>
+	</array>
+</dict>
+</plist>
