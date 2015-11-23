@@ -308,6 +308,7 @@
                     Patient *tpatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:localnotifi.patient_id];
                     cell.eventLabel.text = [NSString stringWithFormat:@"已预约:%@ %@",tpatient.patient_name,localnotifi.reserve_type];
                      cell.contentView.backgroundColor = [UIColor redColor];
+                    break;
                 }else{
                     cell.eventLabel.text = @"";
                     cell.contentView.backgroundColor = [UIColor whiteColor];
@@ -320,6 +321,7 @@
                     if([string isEqualToString:string1]){
                         cell.eventLabel.text = @"已占用";
                         cell.contentView.backgroundColor = [UIColor yellowColor];
+                        break;
                     }else{
                         cell.eventLabel.text = @"";
                         cell.contentView.backgroundColor = [UIColor whiteColor];
