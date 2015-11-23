@@ -324,9 +324,9 @@
                         cell.eventLabel.text = @"";
                         cell.contentView.backgroundColor = [UIColor whiteColor];
                     }
-                    
                 }
             }
+            //陈云7
             cell.timeLabel.text = string;
             return cell;
         }

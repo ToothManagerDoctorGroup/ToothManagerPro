@@ -34,6 +34,7 @@ Realize_ShareInstance(DBManager);
 
 //create .db file and create tables
 - (BOOL)createdbFile {
+
     //创建db文件
     NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *dbPath = [docPath stringByAppendingPathComponent:@"iscrm.db"];
@@ -86,7 +87,7 @@ Realize_ShareInstance(DBManager);
 
 - (BOOL)createTables {
 //  integer PRIMARY KEY AUTOINCREMENT,\n\t INTEGER integer
-    [self createDBTableWithTableName:DoctorTableName andParams:@"doctor_name text, doctor_dept text,doctor_phone text, user_id text, doctor_email text, doctor_hospital text, doctor_position text, doctor_degree text, doctor_image text, auth_status integer, auth_text text, auth_pic text,doctor_certificate text,creation_date text, update_date text, isopen integer, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
+    [self createDBTableWithTableName:DoctorTableName andParams:@"doctor_name text, doctor_dept text,doctor_phone text, user_id text, doctor_email text, doctor_hospital text, doctor_position text, doctor_degree text, doctor_image text, auth_status integer, auth_text text, auth_pic text,doctor_certificate text,creation_date text, update_date text, isopen integer, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, doctor_birthday text, doctor_gender text, doctor_cv text, doctor_skill text"];
 
 //TODO: Tiger 我去掉了所有表的 主键。 应该没影响吧
 //    [self createDBTableWithTableName:DoctorTableName andParams:@"doctor_name text, doctor_dept text,doctor_phone text, user_id text PRIMARY KEY, doctor_email text, doctor_hospital text, doctor_position text, doctor_degree text, auth_status integer, auth_text text, auth_pic text,doctor_certificate text,creation_date text, update_date text, isopen integer, ckeyid text, sync_time text"];

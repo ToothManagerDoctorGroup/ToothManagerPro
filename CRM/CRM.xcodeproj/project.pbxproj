@@ -304,6 +304,13 @@
 		3DE778791BF4950600CB4D6B /* mapapi.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3DE778781BF4950600CB4D6B /* mapapi.bundle */; };
 		3DE7787F1BF4A24200CB4D6B /* UnSignClinicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE7787E1BF4A24200CB4D6B /* UnSignClinicModel.m */; };
 		3DE778831BF4A31D00CB4D6B /* UnSignClinicCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE778821BF4A31D00CB4D6B /* UnSignClinicCell.m */; };
+		3DEAF5781C02F15800445C20 /* weixin_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAF5721C02F15800445C20 /* weixin_gray.png */; };
+		3DEAF5791C02F15800445C20 /* weixin_gray@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAF5731C02F15800445C20 /* weixin_gray@2x.png */; };
+		3DEAF57A1C02F15800445C20 /* weixin_gray@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAF5741C02F15800445C20 /* weixin_gray@3x.png */; };
+		3DEAF57B1C02F15800445C20 /* weixin_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAF5751C02F15800445C20 /* weixin_green.png */; };
+		3DEAF57C1C02F15800445C20 /* weixin_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAF5761C02F15800445C20 /* weixin_green@2x.png */; };
+		3DEAF57D1C02F15800445C20 /* weixin_green@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAF5771C02F15800445C20 /* weixin_green@3x.png */; };
+		3DEAF5851C03182800445C20 /* UserInfoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DEAF5841C03182800445C20 /* UserInfoEditViewController.m */; };
 		3DECB6561BFF0F56006B5C09 /* CommentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DECB6551BFF0F56006B5C09 /* CommentModel.m */; };
 		3DECB65A1BFF0FB6006B5C09 /* CommentModelFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DECB6591BFF0FB6006B5C09 /* CommentModelFrame.m */; };
 		3DECB65D1BFF1A90006B5C09 /* CommentTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DECB65C1BFF1A90006B5C09 /* CommentTextField.m */; };
@@ -1146,6 +1153,14 @@
 		3DE7787E1BF4A24200CB4D6B /* UnSignClinicModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnSignClinicModel.m; sourceTree = "<group>"; };
 		3DE778811BF4A31D00CB4D6B /* UnSignClinicCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnSignClinicCell.h; sourceTree = "<group>"; };
 		3DE778821BF4A31D00CB4D6B /* UnSignClinicCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnSignClinicCell.m; sourceTree = "<group>"; };
+		3DEAF5721C02F15800445C20 /* weixin_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = weixin_gray.png; sourceTree = "<group>"; };
+		3DEAF5731C02F15800445C20 /* weixin_gray@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "weixin_gray@2x.png"; sourceTree = "<group>"; };
+		3DEAF5741C02F15800445C20 /* weixin_gray@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "weixin_gray@3x.png"; sourceTree = "<group>"; };
+		3DEAF5751C02F15800445C20 /* weixin_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = weixin_green.png; sourceTree = "<group>"; };
+		3DEAF5761C02F15800445C20 /* weixin_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "weixin_green@2x.png"; sourceTree = "<group>"; };
+		3DEAF5771C02F15800445C20 /* weixin_green@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "weixin_green@3x.png"; sourceTree = "<group>"; };
+		3DEAF5831C03182800445C20 /* UserInfoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoEditViewController.h; sourceTree = "<group>"; };
+		3DEAF5841C03182800445C20 /* UserInfoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoEditViewController.m; sourceTree = "<group>"; };
 		3DECB6541BFF0F56006B5C09 /* CommentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentModel.h; sourceTree = "<group>"; };
 		3DECB6551BFF0F56006B5C09 /* CommentModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentModel.m; sourceTree = "<group>"; };
 		3DECB6581BFF0FB6006B5C09 /* CommentModelFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentModelFrame.h; sourceTree = "<group>"; };
@@ -2616,6 +2631,15 @@
 			name = DoctorTool;
 			sourceTree = "<group>";
 		};
+		3DEAF5821C0317FA00445C20 /* PersonalInfo */ = {
+			isa = PBXGroup;
+			children = (
+				3DEAF5831C03182800445C20 /* UserInfoEditViewController.h */,
+				3DEAF5841C03182800445C20 /* UserInfoEditViewController.m */,
+			);
+			name = PersonalInfo;
+			sourceTree = "<group>";
+		};
 		3DF671531BF70A9900527B49 /* UIViewExt */ = {
 			isa = PBXGroup;
 			children = (
@@ -2981,6 +3005,12 @@
 		6436DCD219B8C48000DC667E /* APP */ = {
 			isa = PBXGroup;
 			children = (
+				3DEAF5721C02F15800445C20 /* weixin_gray.png */,
+				3DEAF5731C02F15800445C20 /* weixin_gray@2x.png */,
+				3DEAF5741C02F15800445C20 /* weixin_gray@3x.png */,
+				3DEAF5751C02F15800445C20 /* weixin_green.png */,
+				3DEAF5761C02F15800445C20 /* weixin_green@2x.png */,
+				3DEAF5771C02F15800445C20 /* weixin_green@3x.png */,
 				2D2ED85A1C009679003B7047 /* menuButton@2x.png */,
 				2D2ED85B1C009679003B7047 /* menuView@2x.png */,
 				2D2ED85C1C009679003B7047 /* menuXian@2x.png */,
@@ -3966,6 +3996,7 @@
 			children = (
 				2D2ED8601C00981A003B7047 /* SelectYuYueDetailViewController.h */,
 				2D2ED8611C00981A003B7047 /* SelectYuYueDetailViewController.m */,
+				3DEAF5821C0317FA00445C20 /* PersonalInfo */,
 				3DAA115F1BF5BF9E00FD8149 /* MyBill */,
 				3D23A62E1BF2D8F50029943D /* MyClinic */,
 				2DEE02D11B33AB880045BD35 /* QrCodeViewController.h */,
@@ -4320,6 +4351,7 @@
 				2DFE7E131B44D78C0088B119 /* forgetpass_bg@2x.png in Resources */,
 				3DDDB87D1BFDEFA4004AD4AC /* medical_info_blue@2x.png in Resources */,
 				64CFD94D19F7F6A6001EB0DA /* privacy.htm in Resources */,
+				3DEAF57D1C02F15800445C20 /* weixin_green@3x.png in Resources */,
 				3D1AB07C1C00453600547809 /* options_pointer.png in Resources */,
 				6436DEC919B8C48100DC667E /* share_light.png in Resources */,
 				6436DE9C19B8C48100DC667E /* Default~iphone.png in Resources */,
@@ -4368,6 +4400,7 @@
 				2DC829161BA40516001CA6A4 /* ic_list_set@2x.png in Resources */,
 				2DFE7EDF1B4A71980088B119 /* LICENSE.txt in Resources */,
 				2D2ED85E1C009679003B7047 /* menuView@2x.png in Resources */,
+				3DEAF57B1C02F15800445C20 /* weixin_green.png in Resources */,
 				2D4085AA1B429683003DDE29 /* phone@2x.png in Resources */,
 				642D7AB11A807E18007F8D58 /* CaseMaterialsTableViewCell.xib in Resources */,
 				6436DE9419B8C48100DC667E /* btn_Personal center@2x.png in Resources */,
@@ -4378,6 +4411,7 @@
 				6436DED019B8C48100DC667E /* select_down.png in Resources */,
 				3DAA11A81BF5F0D500FD8149 /* yfk@2x.png in Resources */,
 				2DD07F431B4D04E00076128D /* addManBtn@2x.png in Resources */,
+				3DEAF57A1C02F15800445C20 /* weixin_gray@3x.png in Resources */,
 				3DF6716E1BF71B8B00527B49 /* zzs_zb@2x.png in Resources */,
 				6436DEAF19B8C48100DC667E /* icon@2x.png in Resources */,
 				3DF671881BF730A900527B49 /* zzs_bj@3x.png in Resources */,
@@ -4468,6 +4502,7 @@
 				64B2B33919D3FD6100DFA1E2 /* sign_out@2x.png in Resources */,
 				3DDDB8291BFD6318004AD4AC /* sq_bj@2x.png in Resources */,
 				6436DE8B19B8C48100DC667E /* btn_introducer@2x.png in Resources */,
+				3DEAF5781C02F15800445C20 /* weixin_gray.png in Resources */,
 				64E7C8851A6416FE00099063 /* file@2x.png in Resources */,
 				6436DE8419B8C48100DC667E /* aboutUs@2x.png in Resources */,
 				3DDDB8751BFDEFA4004AD4AC /* 微信－灰@3x.png in Resources */,
@@ -4569,6 +4604,7 @@
 				6436DE9B19B8C48100DC667E /* default@2x.png in Resources */,
 				3DDDB8791BFDEFA4004AD4AC /* medical_add.png in Resources */,
 				6436DEB019B8C48100DC667E /* icon_114.png in Resources */,
+				3DEAF5791C02F15800445C20 /* weixin_gray@2x.png in Resources */,
 				6436DECA19B8C48100DC667E /* star_highlight@2x.png in Resources */,
 				3D1AB07B1C00453600547809 /* Menu_PopOver_BG@2x.png in Resources */,
 				3DDDB8601BFDEFA4004AD4AC /* medical_edit@3x.png in Resources */,
@@ -4605,6 +4641,7 @@
 				81C5895F1AA6F329003BAD13 /* arrow@2x.png in Resources */,
 				6436DE8319B8C48100DC667E /* register_button@2x.png in Resources */,
 				2DC8290B1BA3F83A001CA6A4 /* ic_tabbar_qi@2x.png in Resources */,
+				3DEAF57C1C02F15800445C20 /* weixin_green@2x.png in Resources */,
 				3DAA11AE1BF5F0D500FD8149 /* yfk.png in Resources */,
 				3DAA11741BF5C0E500FD8149 /* dfk_qfk@2x.png in Resources */,
 				2DC829211BA43863001CA6A4 /* user_icon@2x.png in Resources */,
@@ -4874,6 +4911,7 @@
 				3D23A6561BF300CC0029943D /* NSObject+MJCoding.m in Sources */,
 				6436DEDD19B8C48100DC667E /* MWPhoto.m in Sources */,
 				2D5167C01BD8D68B00C0C3C6 /* HengYaViewController.m in Sources */,
+				3DEAF5851C03182800445C20 /* UserInfoEditViewController.m in Sources */,
 				2DFE7E7B1B4A23010088B119 /* UMRadialView.m in Sources */,
 				6436DEEE19B8C48100DC667E /* PSTGridLayoutInfo.m in Sources */,
 				64CFD90B19F7F6A6001EB0DA /* IntroducePersonViewController.m in Sources */,

@@ -20,6 +20,7 @@
 #import "DBManager+User.h"
 #import "QrCodeViewController.h"
 #import "CRMMacro.h"
+#import "UserInfoEditViewController.h"
 
 @interface UserInfoViewController () <CRMHttpRequestDoctorDelegate,UIActionSheetDelegate>{
     __weak IBOutlet UITableViewCell *_jiangeCell;
@@ -78,7 +79,12 @@
         }];
     }
     
-
+    self.birthDayTextField.mode = TextFieldInputModeDatePicker;
+    
+    
+    NSMutableArray *selectSexArray = [NSMutableArray arrayWithObjects:@"男",@"女" ,nil];
+    self.sexTextField.mode = TextFieldInputModePicker;
+    self.sexTextField.pickerDataSource = selectSexArray;
     
    NSMutableArray  *selectRepeatArray = [NSMutableArray arrayWithObjects:@"大专",@"本科",@"硕士",@"博士", nil];
     self.degreeTextField.mode = TextFieldInputModePicker;
@@ -110,6 +116,8 @@
     [self.titleTextField resignFirstResponder];
     [self.hospitalTextField resignFirstResponder];
     [self.degreeTextField resignFirstResponder];
+    [self.birthDayTextField resignFirstResponder];
+    [self.sexTextField resignFirstResponder];
 }
 
 - (void)initData {
@@ -123,6 +131,12 @@
         self.phoneTextField.text = self.doctor.doctor_phone;
         self.hospitalTextField.text = self.doctor.doctor_hospital;
         self.titleTextField.text = self.doctor.doctor_position;
+//        if ([self.doctor.doctor_gender isEqualToString:@"0"]) {
+//            self.sexTextField.text = @"男";
+//        }else{
+//            self.sexTextField.text = @"女";
+//        }
+//        self.birthDayTextField.text = self.doctor.doctor_birthday;
         self.degreeTextField.text = self.doctor.doctor_degree;
         self.authstatusTextField.text = [UserObject authStringWithStatus:self.doctor.auth_status];
         self.authTextView.text = self.doctor.auth_text;
@@ -137,6 +151,7 @@
         self.degreeTextField.text = userobj.degree;
         self.authstatusTextField.text = [UserObject authStringWithStatus:userobj.authStatus];
         self.authTextView.text = userobj.authText;
+        
         [self.authImageView sd_setImageWithURL:[NSURL URLWithString:userobj.authPic]];
     }
 }
@@ -161,7 +176,14 @@
     [doctor setAuth_status:userobj.authStatus];
     [doctor setAuth_text:userobj.authText];
     [doctor setDoctor_certificate:@""];  //证书，此处我也不知道要传什么，暂时传空，不能为nil
-    [doctor setIsopen:YES];
+//    [doctor setIsopen:YES];
+//    if ([self.sexTextField.text isEqualToString:@"男"]) {
+//        [doctor setDoctor_gender:@"0"];
+//    }else{
+//        [doctor setDoctor_gender:@"1"];
+//    }
+//    [doctor setDoctor_birthday:self.birthDayTextField.text];
+    
     [[AccountManager shareInstance] updateUserInfo:doctor successBlock:^{
         [SVProgressHUD showWithStatus:@"正在更新个人信息..."];
     } failedBlock:^(NSError *error){
@@ -264,6 +286,24 @@
     [actionSheet showInView:self.view];
 }
 
+#pragma mark -个人简介
+- (IBAction)personalIntroduceAction:(id)sender {
+    UserInfoEditViewController *editVc = [[UserInfoEditViewController alloc] init];
+    editVc.title = @"个人简介";
+    editVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:editVc animated:YES];
+    
+}
+
+#pragma mark -个人技能
+- (IBAction)skillsAction:(id)sender {
+    UserInfoEditViewController *editVc = [[UserInfoEditViewController alloc] init];
+    editVc.title = @"擅长项目";
+    editVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:editVc animated:YES];
+}
+
+
 
 #pragma mark -
 #pragma mark UIImagePicker Delegate
@@ -313,6 +353,8 @@
     [self.titleTextField resignFirstResponder];
     [self.degreeTextField resignFirstResponder];
     [self.authTextView resignFirstResponder];
+    [self.birthDayTextField resignFirstResponder];
+    [self.sexTextField resignFirstResponder];
 }
 
 #pragma mark -
@@ -356,6 +398,7 @@
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
     [SVProgressHUD dismiss];
+    NSLog(@"result:%@",[result objectForKey:@"Result"]);
     NSArray *dicArray = [result objectForKey:@"Result"];
     if (dicArray && dicArray.count > 0) {
         for (NSDictionary *dic in dicArray) {

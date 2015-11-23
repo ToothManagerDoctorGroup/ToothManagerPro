@@ -24,6 +24,13 @@
 #import "DBManager+Doctor.h"
 #import "DBManager+sync.h"
 #import "CreateCaseViewController.h"
+#import "LocalNotificationCenter.h"
+#import "SelectDateViewController.h"
+#import "CRMHttpRequest+Sync.h"
+#import "IntroducerManager.h"
+#import "IntroducerViewController.h"
+#import "NSDictionary+Extension.h"
+#import "CRMMacro.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -112,9 +119,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //添加编辑状态监听
+    [self addNotificationObserver];
     
-    
-    //添加监听
+    //添加键盘状态监听
     [self addNotification];
     
     //初始化导航栏
@@ -181,26 +189,9 @@
         _detailIntroducer.intr_name = [AccountManager shareInstance].currentUser.name;
         _detailIntroducer.ckeyid = [AccountManager currentUserid];
     }
-    _medicalCases = [NSMutableArray arrayWithCapacity:0];
-    _cTLibs = [NSMutableArray arrayWithCapacity:0];
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
-    for (MedicalCase *mCase in array) {
-        [_medicalCases addObject:mCase];
-        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:mCase.ckeyid];
-        if (libArray != nil && libArray.count > 0) {
-            [_cTLibs addObject:libArray];
-        } else {
-            CTLib *libtmp = [[CTLib alloc]init];
-            libtmp.ckeyid = @"-100";
-            libtmp.ct_image = @"ctlib_placeholder.png";
-            libtmp.creationdate = mCase.creation_date;
-            libtmp.ct_desc = mCase.creation_date;
-            [_cTLibs addObject:@[libtmp]];
-        }
-    }
-    
     //为控件赋值
-    _headerMedicalView.medicalCases = _medicalCases;
+    _headerMedicalView.medicalCases = array;
 }
 
 - (void)refreshView {
@@ -227,30 +218,12 @@
     
     Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:self.detailPatient.ckeyid withIntrId:[AccountManager shareInstance].currentUser.userid];
     _headerInfoView.transferStr = doc.doctor_name;
-    NSLog(@"转诊到=%@",doc.doctor_name);
 }
 
 - (void)refreshData {
     [super refreshData];
-    _cTLibs = nil;
-    _medicalCases = nil;
-    _cTLibs = [NSMutableArray arrayWithCapacity:0];
-    _medicalCases = [NSMutableArray arrayWithCapacity:0];
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
-    for (MedicalCase *mCase in array) {
-        [_medicalCases addObject:mCase];
-        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:mCase.ckeyid];
-        if (libArray != nil && libArray.count > 0) {
-            [_cTLibs addObject:libArray];
-        } else {
-            CTLib *libtmp = [[CTLib alloc]init];
-            libtmp.ckeyid = @"-100";
-            libtmp.ct_image = @"ctlib_placeholder.png";
-            libtmp.creationdate = mCase.creation_date;
-            libtmp.ct_desc = mCase.creation_date;
-            [_cTLibs addObject:@[libtmp]];
-        }
-    }
+    _headerMedicalView.medicalCases = array;
 }
 
 #pragma mark -加载子视图
@@ -333,7 +306,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     //第一组的头视图
     UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
-    headView.backgroundColor = MyColor(19, 152, 234);
+    headView.backgroundColor = MyColor(26, 155, 236);
     //头视图上的标题
     UIButton *consultationButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [consultationButton setTitle:@"会诊信息" forState:UIControlStateNormal];
@@ -399,18 +372,18 @@
     }else if(selectedIndex == 1){
         [self referralAction:nil];
     }else if (selectedIndex == 2){
-//        [self createNotificationAction:nil];
+        [self createNotificationAction:nil];
     }else if (selectedIndex == 3){
         NSLog(@"%@---%@",_detailPatient.ckeyid,self.patientsCellMode.patientId);
         
-//        [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:_detailPatient, nil]];
-//        [NSThread sleepForTimeInterval: 0.5];
-//        
-//        [[IntroducerManager shareInstance]patientToIntroducer:[AccountManager shareInstance].currentUser.userid withCkeyId:_detailPatient.ckeyid withName:_detailPatient.patient_name withPhone:_detailPatient.patient_phone successBlock:^{
-//            [SVProgressHUD showWithStatus:@"正在转换..."];
-//        }failedBlock:^(NSError *error){
-//            [SVProgressHUD showImage:nil status:error.localizedDescription];
-//        }];
+        [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:_detailPatient, nil]];
+        [NSThread sleepForTimeInterval: 0.5];
+        
+        [[IntroducerManager shareInstance]patientToIntroducer:[AccountManager shareInstance].currentUser.userid withCkeyId:_detailPatient.ckeyid withName:_detailPatient.patient_name withPhone:_detailPatient.patient_phone successBlock:^{
+            [SVProgressHUD showWithStatus:@"正在转换..."];
+        }failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
     }
 }
 //转诊患者
@@ -424,6 +397,42 @@
         [self pushViewController:doctorVC animated:YES];
     }
 }
+//新建提醒
+- (void)createNotificationAction:(id)sender {
+    [LocalNotificationCenter shareInstance].selectPatient = _detailPatient;
+    SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
+    [self.navigationController pushViewController:selectDateView animated:YES];
+}
+
+//患者转介绍人
+- (void)patientToIntroducerSuccess:(NSDictionary *)result{
+    if ([result integerForKey:@"Code"] == 200) {
+        [SVProgressHUD showImage:nil status:@"转换成功"];
+        //存入介绍人库
+        Introducer *introducer = [[Introducer alloc]init];
+        introducer.intr_name = _detailPatient.patient_name;
+        introducer.intr_phone = _detailPatient.patient_phone;
+        introducer.intr_id = @"0";
+        [[DBManager shareInstance] insertIntroducer:introducer];
+        
+        NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
+        if (0 != [recordArray count])
+        {
+            [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+        }
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+        [self pushViewController:introducerVC animated:YES];
+    } else {
+        [SVProgressHUD showImage:nil status:@"转换失败"];
+    }
+    
+    
+    
+}
+- (void)patientToIntroducerFailed:(NSError *)error{
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
 
 #pragma mark -PatientHeadMedicalRecordViewDelegate
 - (void)didClickAddMedicalButton{
@@ -432,5 +441,40 @@
     caseVC.title = @"新建病历";
     caseVC.patiendId = self.detailPatient.ckeyid;
     [self pushViewController:caseVC animated:YES];
+}
+- (void)didClickeditMedicalButtonWithMedicalCase:(MedicalCase *)medicalCase{
+    MedicalCase *mcase = medicalCase;
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+    CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
+    caseVC.title = @"病历详情";
+    caseVC.edit = YES;
+    caseVC.medicalCaseId = mcase.ckeyid;
+    [self pushViewController:caseVC animated:YES];
+}
+
+#pragma mark - NOtification
+- (void)addNotificationObserver {
+    [super addNotificationObserver];
+    [self addObserveNotificationWithName:MedicalCaseEditedNotification];
+    [self addObserveNotificationWithName:MedicalCaseCancleSuccessNotification];
+    // [self addObserveNotificationWithName:PatientTransferNotification];
+}
+
+- (void)removeNotificationObserver {
+    [super removeNotificationObserver];
+    [self removeObserverNotificationWithName:MedicalCaseEditedNotification];
+    //  [self removeObserverNotificationWithName:PatientTransferNotification];
+}
+
+- (void)handNotification:(NSNotification *)notifacation {
+    [super handNotification:notifacation];
+    if ([notifacation.name isEqualToString:MedicalCaseEditedNotification]
+        || [notifacation.name isEqualToString:MedicalCaseEditedNotification]) {
+        [self refreshData];
+        [self refreshView];
+    }else if ([notifacation.name isEqualToString:MedicalCaseCancleSuccessNotification]){
+        [self refreshData];
+    }
+    
 }
 @end

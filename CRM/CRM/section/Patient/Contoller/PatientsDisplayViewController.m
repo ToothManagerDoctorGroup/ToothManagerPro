@@ -23,6 +23,7 @@
 #import "LocalNotificationCenter.h"
 #import "SVProgressHUD.h"
 #import "SyncManager.h"
+#import "PatientDetailViewController.h"
 
 @interface PatientsDisplayViewController () <MudItemsBarDelegate>{
     BOOL ifNameBtnSelected;
@@ -504,11 +505,18 @@
         [self.navigationController popViewControllerAnimated:YES];
         
     }else {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-        PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-        patientDetailCtl.patientsCellMode = cellMode;
-        patientDetailCtl.hidesBottomBarWhenPushed = YES;
-        [self pushViewController:patientDetailCtl animated:YES];
+//        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+//        PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
+//        patientDetailCtl.patientsCellMode = cellMode;
+//        patientDetailCtl.hidesBottomBarWhenPushed = YES;
+//        [self pushViewController:patientDetailCtl animated:YES];
+        
+#warning 跳转页面事件
+        //跳转到新的患者详情页面
+        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+        detailVc.patientsCellMode = cellMode;
+        detailVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:detailVc animated:YES];
     }
 }
 

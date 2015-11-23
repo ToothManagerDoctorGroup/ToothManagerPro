@@ -69,6 +69,11 @@ typedef CGFloat Money;
 @property (nonatomic) BOOL isopen;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
 
+@property (nonatomic, copy)NSString *doctor_birthday; //医生的生日
+@property (nonatomic, copy)NSString *doctor_gender; //医生性别
+@property (nonatomic, copy)NSString *doctor_cv; //医生个人简介
+@property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
+
 +(Doctor *)doctorlWithResult:(FMResultSet *)result;
 + (Doctor *)DoctorFromDoctorResult:(NSDictionary *)dic;
 
@@ -279,6 +284,11 @@ typedef CGFloat Money;
 @property (nonatomic,readwrite) AuthStatus authStatus; //认证状态
 @property (nonatomic,copy) NSString *authText;
 @property (nonatomic,copy) NSString *authPic;
+
+//@property (nonatomic, copy)NSString *doctor_birthday; //医生的生日
+//@property (nonatomic, copy)NSString *doctor_gender; //医生性别
+//@property (nonatomic, copy)NSString *doctor_cv; //医生个人简介
+//@property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
 
 + (UserObject *)userobjectWithResult:(FMResultSet *)result;
 + (NSString *)authStringWithStatus:(AuthStatus)status;

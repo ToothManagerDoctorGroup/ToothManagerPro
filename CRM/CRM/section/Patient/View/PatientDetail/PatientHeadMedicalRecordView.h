@@ -11,12 +11,12 @@
 /**
  *  患者详情页面上的头视图病历详情页面
  */
-
+@class MedicalCase;
 @protocol PatientHeadMedicalRecordViewDelegate <NSObject>
 
 @optional
 - (void)didClickAddMedicalButton;
-- (void)didClickeditMedicalButton;
+- (void)didClickeditMedicalButtonWithMedicalCase:(MedicalCase *)medicalCase;
 
 @end
 @interface PatientHeadMedicalRecordView : UIImageView

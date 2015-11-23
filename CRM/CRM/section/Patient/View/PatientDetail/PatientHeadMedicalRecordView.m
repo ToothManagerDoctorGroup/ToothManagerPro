@@ -23,6 +23,9 @@
 @property (nonatomic, weak)MedicalButtonScrollView *medicalButtonScrollView; //编辑病例按钮
 @property (nonatomic, weak)MedicalDetailView *medicalDetailView; //病历详细信息
 
+//当前选中的病历
+@property (nonatomic, assign)NSUInteger currentIndex;
+
 @end
 
 @implementation PatientHeadMedicalRecordView
@@ -131,11 +134,15 @@
     
     //设置数据
     self.medicalDetailView.frame = CGRectMake(0, self.medicalButtonScrollView.bottom + 1, self.width, self.height - self.medicalButtonScrollView.bottom - 1);
-    self.medicalDetailView.medicalCase = [self.medicalCases firstObject];
+    self.medicalDetailView.medicalCase = self.medicalCases[self.currentIndex];
 }
 
 #pragma mark -MedicalButtonScrollViewDelegate
 - (void)medicalButtonScrollView:(MedicalButtonScrollView *)scrollView didSelectButtonWithIndex:(NSUInteger)index{
+    self.currentIndex = index;
+    
+    //重新设置数据
+    self.medicalDetailView.medicalCase = self.medicalCases[index];
 }
 
 #pragma mark -addMedicalButtonClick
@@ -146,8 +153,8 @@
 }
 
 - (void)editMedicalButtonClick{
-    if ([self.delegate respondsToSelector:@selector(didClickeditMedicalButton)]) {
-        [self.delegate didClickeditMedicalButton];
+    if ([self.delegate respondsToSelector:@selector(didClickeditMedicalButtonWithMedicalCase:)]) {
+        [self.delegate didClickeditMedicalButtonWithMedicalCase:self.medicalCases[self.currentIndex]];
     }
 }
 

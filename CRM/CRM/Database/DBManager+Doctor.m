@@ -65,6 +65,13 @@
         [columeArray addObject:@"update_date"]; //跟新时间
         [columeArray addObject:@"doctor_id"];
         
+        [columeArray addObject:@"doctor_birthday"];
+        [columeArray addObject:@"doctor_gender"];
+        [columeArray addObject:@"doctor_cv"];
+        [columeArray addObject:@"doctor_skill"];
+
+        
+        
         
         [valueArray addObject:doctorobj.ckeyid];
         [valueArray addObject:doctorobj.doctor_name];
@@ -83,7 +90,16 @@
         [valueArray addObject:[NSString defaultDateString]];
         [valueArray addObject:doctorobj.doctor_id];
         
+        [valueArray addObject:doctorobj.doctor_birthday];
+        [valueArray addObject:doctorobj.doctor_gender];
+        [valueArray addObject:doctorobj.doctor_cv];
+        [valueArray addObject:doctorobj.doctor_skill];
+        
 
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -148,6 +164,10 @@
         [columeArray addObject:@"auth_pic"];
         [columeArray addObject:@"update_date"]; //更新时间
         [columeArray addObject:@"doctor_id"];
+        [columeArray addObject:@"doctor_birthday"];
+        [columeArray addObject:@"doctor_gender"];
+        [columeArray addObject:@"doctor_cv"];
+        [columeArray addObject:@"doctor_skill"];
         
         [valueArray addObject:doctorobj.doctor_name];
         [valueArray addObject:doctorobj.doctor_dept];
@@ -166,6 +186,10 @@
           [valueArray addObject:doctorobj.update_date];
         }
         [valueArray addObject:doctorobj.doctor_id];
+        [valueArray addObject:doctorobj.doctor_birthday];
+        [valueArray addObject:doctorobj.doctor_gender];
+        [valueArray addObject:doctorobj.doctor_cv];
+        [valueArray addObject:doctorobj.doctor_skill];
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\" and user_id = \"%@\"", DoctorTableName, [columeArray componentsJoinedByString:@"=?,"],doctorobj.ckeyid,[AccountManager currentUserid]];

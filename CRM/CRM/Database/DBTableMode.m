@@ -394,6 +394,10 @@ NSString * const Repaired = @"已修复";
         _auth_text = @"";
         _auth_pic = @"";
         _doctor_certificate = @"";
+        _doctor_birthday = @"";
+        _doctor_cv = @"";
+        _doctor_skill = @"";
+        _doctor_gender = @"";
     }
     return self;
 }
@@ -422,6 +426,11 @@ NSString * const Repaired = @"已修复";
     doctor.update_date = [result stringForColumn:@"update_date"];
     doctor.sync_time = [result stringForColumn:@"sync_time"];
     doctor.doctor_id = [result stringForColumn:@"doctor_id"];
+    
+    doctor.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
+    doctor.doctor_gender = [result stringForColumn:@"doctor_gender"];
+    doctor.doctor_cv = [result stringForColumn:@"doctor_cv"];
+    doctor.doctor_skill = [result stringForColumn:@"doctor_skill"];
     return doctor;
 }
 
@@ -446,6 +455,11 @@ NSString * const Repaired = @"已修复";
     tmpDoctor.update_date = [NSString defaultDateString];
     tmpDoctor.doctor_id = [dic stringForKey:@"doctor_id"];
     tmpDoctor.user_id = [AccountManager currentUserid];
+    
+    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
+    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
     return tmpDoctor;
 }
 
@@ -782,6 +796,10 @@ NSString * const Repaired = @"已修复";
     user.authText = [result stringForColumn:@"auth_text"];
     user.authPic = [result stringForColumn:@"auth_pic"];
     user.img = [result stringForColumn:@"img"];
+//    user.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
+//    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
+//    user.doctor_gender = [result stringForColumn:@"doctor_gender"];
+//    user.doctor_skill = [result stringForColumn:@"doctor_skill"];
     return user;
 }
 
@@ -816,7 +834,10 @@ NSString * const Repaired = @"已修复";
     self.name = [dic stringForKey:@"username" placeholder:[dic stringForKey:@"name" placeholder:@""]];
     self.authText = [dic stringForKey:@"verifiedreason" placeholder:@"无"];
     self.img = [dic stringForKey:@"img" placeholder:@"无"];
-    
+//    self.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+//    self.doctor_cv = [dic stringForKey:@"doctor_cv"];
+//    self.doctor_gender = [dic stringForKey:@"doctor_gender"];
+//    self.doctor_skill = [dic stringForKey:@"doctor_skill"];
 }
 
 
@@ -839,6 +860,11 @@ NSString * const Repaired = @"已修复";
 //    tmpDoctor.doctor_email = @"";
 //    tmpDoctor.auth_pic = @"";
 //    tmpDoctor.update_date = [NSString defaultDateString];
+    
+//    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+//    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
+//    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+//    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
     return tmpDoctor;
 }
 

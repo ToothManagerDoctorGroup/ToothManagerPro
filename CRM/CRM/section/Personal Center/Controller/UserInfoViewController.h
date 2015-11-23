@@ -22,6 +22,8 @@
 @property (weak, nonatomic) IBOutlet SAMTextView *authTextView;
 @property (weak, nonatomic) IBOutlet UIImageView *authImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
+@property (weak, nonatomic) IBOutlet TimPickerTextField *sexTextField;
+@property (weak, nonatomic) IBOutlet TimPickerTextField *birthDayTextField;
 
 //已经有完整信息 只接传Doctor过来显示,  如果信息不完整 传一个有doctor_name 和 doctor_id的 Doctor过来,needGet set YES
 @property (nonatomic,retain) Doctor *doctor;

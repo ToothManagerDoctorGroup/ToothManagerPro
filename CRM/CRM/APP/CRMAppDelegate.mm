@@ -290,6 +290,10 @@
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    
+//    NSLog(@"deviceToken:%@",[[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding]);
+    NSLog(@"deviceToken:%@",deviceToken);
+    //b851a4cc2fb0f898a47ee2136bb023e73d0b9c85605143729a9ed10a55056a43
     [UMessage registerDeviceToken:deviceToken];
     NSString *pushToken = [[[[deviceToken description]
                              stringByReplacingOccurrencesOfString:@"<" withString:@""]

@@ -21,6 +21,7 @@
 @property (nonatomic, weak)UILabel *patientPhoneTitle; //联系电话标题
 @property (nonatomic, weak)UILabel *patientPhoneLabel; //联系电话
 @property (nonatomic, weak)UIButton *phoneButton; //联系电话按钮
+@property (nonatomic, weak)UIButton *weixinButton; //微信的按钮
 @property (nonatomic, weak)UILabel *introducerNameTitle; //介绍人姓名标题
 @property (nonatomic, weak)UILabel *introducerNameLabel; //介绍人姓名
 @property (nonatomic, weak)UILabel *transferToTitle; //转诊到标题å
@@ -90,8 +91,16 @@
     UIButton *phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [phoneButton setImage:[UIImage imageNamed:@"phone_blue"] forState:UIControlStateNormal];
     [phoneButton setImage:[UIImage imageNamed:@"phone_gray"] forState:UIControlStateHighlighted];
+    [phoneButton addTarget:self action:@selector(phoneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     self.phoneButton = phoneButton;
     [self addSubview:phoneButton];
+    
+    UIButton *weixinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
+    [phoneButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateHighlighted];
+    [weixinButton addTarget:self action:@selector(weixinButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    self.weixinButton = weixinButton;
+    [self addSubview:weixinButton];
     
     //介绍人标题
     UILabel *introducerNameTitle = [[UILabel alloc] initWithFrame:CGRectMake(Margin * 2, Margin * 5 + commentH * 2 + LineViewH * 2, commentW, commentH)];
@@ -129,7 +138,6 @@
         lineView.backgroundColor = MyColor(232, 234, 235);
         [self addSubview:lineView];
     }
-    
 }
 
 - (void)setDetailPatient:(Patient *)detailPatient{
@@ -153,6 +161,8 @@
         //电话按钮
         CGFloat commentH = phoneSize.height + Margin * 2;
         self.phoneButton.frame = CGRectMake(self.patientPhoneLabel.right + Margin * 2, commentH + 2, commentH - 4, commentH - 4);
+        
+        self.weixinButton.frame = CGRectMake(self.phoneButton.right + Margin * 0.5, commentH + 2, commentH - 4, commentH - 4);
     }
     
     //介绍人
@@ -189,5 +199,32 @@
 
 - (CGFloat)getTotalHeight{
     return self.patientNameTitle.height * 4 + Margin * 8 + LineViewH * 4;
+}
+
+#pragma mark -打电话
+- (void)phoneButtonClick{
+    if(![NSString isEmptyString:self.patientPhoneLabel.text]){
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"是否拨打该电话" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        alertView.tag = 101;
+        [alertView show];
+    }else{
+        [SVProgressHUD showImage:nil status:@"患者未留电话"];
+    }
+}
+
+#pragma mark -微信扫描
+- (void)weixinButtonClick{
+    
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == 101){
+        if(buttonIndex == 0){
+        }else{
+            NSString *number = self.patientPhoneLabel.text;
+            NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+        }
+    }
 }
 @end

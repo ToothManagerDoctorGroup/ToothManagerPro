@@ -38,6 +38,7 @@
 #define MedicalCaseCreatedNotification (@"MedicalCaseCreatedNotification")   //病例创建
 #define MedicalCaseNeedCreateNotification (@"MedicalCaseNeedCreateNotification")  //需要创建病例
 #define MedicalCaseEditedNotification (@"MedicalCaseEditedNotification")       //病例被编辑
+#define MedicalCaseCancleSuccessNotification (@"MedicalCaseCancleSuccessNotification")  //病历删除成功
 
 #define PatientCreatedNotification (@"PatientCreatedNotification")             //创建了患者
 #define PatientEditedNotification (@"PatientEditedNotification")               //编辑了患者
