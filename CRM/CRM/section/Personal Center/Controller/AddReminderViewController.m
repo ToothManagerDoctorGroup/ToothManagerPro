@@ -93,7 +93,7 @@
     }];
     
 
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(yuYueTime:) name:@"YuYueTime" object:nil];
 }
 - (void)doctorClinicSuccessWithResult:(NSDictionary *)result{
     NSArray *dicArray = [result objectForKey:@"Result"];
@@ -122,12 +122,20 @@
 - (void)clinicSeatFailedWithError:(NSError *)error{
     
 }
+
 -(void)viewWillAppear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
     self.huanzheTextField.text = [LocalNotificationCenter shareInstance].yuyuePatient.patient_name;
+    
+
+}
+-(void)yuYueTime:(NSNotification*)aNotification {
+    NSDictionary *dic = [aNotification object];
+    self.timeTextField.text = [dic objectForKey:@"time"];
+    self.timeDurationLabel.text = [dic objectForKey:@"duration"];
 }
 - (void)onBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
@@ -223,17 +231,13 @@
 - (void)weiXinMessageSuccessWithResult:(NSDictionary *)result{
     
     NSString *str = [result objectForKey:@"Result"];
-    NSRange range = [str rangeOfString:@"电话"];
-    
-    NSString *phoneStr = [str substringWithRange:NSMakeRange(range.location+2, 11)];
-    
-    
+  
     
     if( [MFMessageComposeViewController canSendText] ){
         MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
         
         
-            controller.recipients = [NSArray arrayWithObject:phoneStr];
+            controller.recipients = [NSArray arrayWithObject:[LocalNotificationCenter shareInstance].yuyuePatient.patient_phone];
             controller.body = str;
             controller.messageComposeDelegate = self;
             

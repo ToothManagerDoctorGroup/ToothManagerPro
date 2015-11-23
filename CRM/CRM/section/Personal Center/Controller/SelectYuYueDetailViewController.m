@@ -20,7 +20,10 @@
 @property (nonatomic,retain) TimPickerTextField *seatTextField;
 @property (nonatomic,strong) NSMutableArray *seatNameArray;
 @property (nonatomic,strong) NSMutableArray *seatIdArray;
+@property (nonatomic,copy) NSString *currentSeatId;
 @property (nonatomic,retain) UITableView *seatTableView;
+@property (nonatomic,assign) NSInteger actionSheetInt;
+@property (nonatomic,copy) NSString *actionSheetTime;
 @end
 
 @implementation SelectYuYueDetailViewController
@@ -199,6 +202,26 @@
     NSLog(@"%@",startDateString);
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:startDateString];
     [m_tableView reloadData];
+    
+    //选择了医院 椅位后，选择日期，然后去获取新列表信息
+   
+    
+    NSString *clinicId = nil;
+    for(NSInteger i =1;i<self.clinicNameArray.count;i++){
+        if([self.clinicTextField.text isEqualToString:self.clinicNameArray[i]]){
+            clinicId = [self.clinicIdArray objectAtIndex:i-1];
+        }
+    }
+    if(clinicId){
+        [self.remindTwoArray removeAllObjects];
+        [[DoctorManager shareInstance]yuYueInfoByClinicSeatDate:clinicId withSeatId:self.currentSeatId withDate:dateString successBlock:^{
+
+        } failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+    }
+    
+
 }
 
 #pragma tableView delegate&dataSource - mark
@@ -343,7 +366,7 @@
         if(clinicId){
             [self.remindTwoArray removeAllObjects];
             [[DoctorManager shareInstance]yuYueInfoByClinicSeatDate:clinicId withSeatId:self.seatIdArray[indexPath.row] withDate:dateString successBlock:^{
-                
+                self.currentSeatId = self.seatIdArray[indexPath.row];
             } failedBlock:^(NSError *error){
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
@@ -377,8 +400,11 @@
                                                        cancelButtonTitle:@"取消"
                                                   destructiveButtonTitle:@"30分钟"
                                                        otherButtonTitles:@"1小时",@"90分钟",@"2小时", nil];
+        self.actionSheetInt = indexPath.row;
+        self.actionSheetTime = [NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]];
         [actionSheet setActionSheetStyle:UIActionSheetStyleDefault];
         [actionSheet showInView:self.view];
+        
     }
 }
 #pragma mark - ActionSheet Delegate
@@ -387,22 +413,30 @@
     switch (buttonIndex) {
         case 0:
         {
-
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
+            [self popViewControllerAnimated:YES];
         }
             break;
         case 1:
         {
-            
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
+            [self popViewControllerAnimated:YES];
         }
             break;
         case 2:
         {
-            
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
+            [self popViewControllerAnimated:YES];
         }
             break;
         case 3:
         {
-            
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
+            [self popViewControllerAnimated:YES];
         }
         default:
             break;
