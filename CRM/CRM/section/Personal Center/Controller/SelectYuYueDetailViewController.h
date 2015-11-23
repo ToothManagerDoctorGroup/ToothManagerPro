@@ -11,7 +11,7 @@
 #import "VRGCalendarView.h"
 #import "TimPickerTextField.h"
 
-@interface SelectYuYueDetailViewController : TimViewController<VRGCalendarViewDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface SelectYuYueDetailViewController : TimViewController<VRGCalendarViewDelegate,UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate>{
     VRGCalendarView *m_calendar;
     UITableView *m_tableView;
     CGFloat headerHeight;

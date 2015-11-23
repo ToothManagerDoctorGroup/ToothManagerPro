@@ -8,8 +8,10 @@
 
 #import "TimTableViewController.h"
 #import "TimPickerTextField.h"
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
-@interface AddReminderViewController : TimTableViewController<TimPickerTextFieldDataSource,TimPickerTextFieldDelegate>
+@interface AddReminderViewController : TimTableViewController<TimPickerTextFieldDataSource,TimPickerTextFieldDelegate,MFMessageComposeViewControllerDelegate>
 {
     NSArray *selectMatterArray;
     NSArray *selectRepeatArray;
@@ -22,6 +24,7 @@
 @property (strong, nonatomic) IBOutlet TimPickerTextField *yaWeiTextField;
 
 @property (weak, nonatomic) IBOutlet TimPickerTextField *medicalPlaceTextField;
+@property (weak, nonatomic) IBOutlet TimPickerTextField *timeTextField;
 
 @property (weak, nonatomic) IBOutlet TimPickerTextField *medicalChairTextField;
 @property (weak, nonatomic) IBOutlet UILabel *timeDurationLabel;

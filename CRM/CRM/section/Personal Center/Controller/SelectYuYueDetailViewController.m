@@ -285,16 +285,24 @@
                     Patient *tpatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:localnotifi.patient_id];
                     cell.eventLabel.text = [NSString stringWithFormat:@"已预约:%@ %@",tpatient.patient_name,localnotifi.reserve_type];
                      cell.contentView.backgroundColor = [UIColor redColor];
+                }else{
+                    cell.eventLabel.text = @"";
+                    cell.contentView.backgroundColor = [UIColor whiteColor];
                 }
             }
-            for(NSInteger i=0;i<self.remindTwoArray.count;i++){
-                NSString *string1 = [self.remindTwoArray[i] substringWithRange:NSMakeRange(11, 5)];
-                
-                if([string isEqualToString:string1]){
-                    cell.eventLabel.text = @"已占用";
-                    cell.contentView.backgroundColor = [UIColor yellowColor];
+            if (![cell.eventLabel.text hasPrefix:@"已预约:"]) {
+                for(NSInteger i=0;i<self.remindTwoArray.count;i++){
+                    NSString *string1 = [self.remindTwoArray[i] substringWithRange:NSMakeRange(11, 5)];
+                    
+                    if([string isEqualToString:string1]){
+                        cell.eventLabel.text = @"已占用";
+                        cell.contentView.backgroundColor = [UIColor yellowColor];
+                    }else{
+                        cell.eventLabel.text = @"";
+                        cell.contentView.backgroundColor = [UIColor whiteColor];
+                    }
+                    
                 }
-                
             }
             cell.timeLabel.text = string;
             return cell;
@@ -339,22 +347,17 @@
             } failedBlock:^(NSError *error){
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
-            
-            
         }
-
-        
-        
         return;
     }
     
-    
+    /*
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
     addReminderVC.selectDateString = [NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]];
     NSLog(@"time = %@",[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]);
     
-    /*
+    
     [self.delegate didSelectTime:[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]  from:self.from];
     
     if (self.delegate && self.reservedPatientId.length > 0) {
@@ -363,8 +366,47 @@
         [self.delegate didSelectTime:[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]  from:self.from];
         addReminderVC.ifNextReserve = YES;
     }
-     */
     [self pushViewController:addReminderVC animated:YES];
+    
+    */
+    
+    
+    if(tableView == m_tableView){
+        UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:@"设定时长"
+                                                                delegate:self
+                                                       cancelButtonTitle:@"取消"
+                                                  destructiveButtonTitle:@"30分钟"
+                                                       otherButtonTitles:@"1小时",@"90分钟",@"2小时", nil];
+        [actionSheet setActionSheetStyle:UIActionSheetStyleDefault];
+        [actionSheet showInView:self.view];
+    }
+}
+#pragma mark - ActionSheet Delegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+        case 0:
+        {
+
+        }
+            break;
+        case 1:
+        {
+            
+        }
+            break;
+        case 2:
+        {
+            
+        }
+            break;
+        case 3:
+        {
+            
+        }
+        default:
+            break;
+    }
 }
 - (void)yuYueInfoByClinicSeatDateSuccessWithResult:(NSDictionary *)result{
     

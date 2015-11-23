@@ -3183,12 +3183,11 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="时间" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oPp-8F-3Cs">
-                                                    <rect key="frame" x="100" y="15" width="170" height="21"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MCO-8q-xQx" customClass="TimPickerTextField">
+                                                    <rect key="frame" x="100" y="0.0" width="200" height="50"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -3233,6 +3232,9 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jka-S6-Gc3">
+                                                    <rect key="frame" x="243" y="11" width="79" height="27"/>
+                                                </switch>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -3250,6 +3252,9 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5dP-JX-iQk">
+                                                    <rect key="frame" x="243" y="9" width="79" height="27"/>
+                                                </switch>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -3263,12 +3268,14 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="duanXinSwitch" destination="5dP-JX-iQk" id="sYJ-rQ-ZOA"/>
                         <outlet property="huanzheTextField" destination="UY8-vy-ECc" id="XtJ-3o-fP3"/>
                         <outlet property="medicalChairTextField" destination="F7h-sD-2V9" id="NJH-f8-940"/>
                         <outlet property="medicalPlaceTextField" destination="7il-49-crB" id="XIO-07-T2y"/>
                         <outlet property="selectMatterTextField" destination="aYs-4c-qA0" id="tER-OM-v4P"/>
                         <outlet property="timeDurationLabel" destination="Cgr-hZ-GiY" id="hXp-TS-oB3"/>
-                        <outlet property="timeLabel" destination="oPp-8F-3Cs" id="EXK-Rk-yYp"/>
+                        <outlet property="timeTextField" destination="MCO-8q-xQx" id="0bD-mc-965"/>
+                        <outlet property="weiXinSwitch" destination="Jka-S6-Gc3" id="1kR-zQ-DcC"/>
                         <outlet property="yaWeiTextField" destination="8Vs-5q-IdG" id="udo-dp-vtL"/>
                     </connections>
                 </tableViewController>

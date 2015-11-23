@@ -23,7 +23,11 @@
 #import "SelectYuYueDetailViewController.h"
 
 
-@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate>
+@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate>{
+    
+    __weak IBOutlet UISwitch *weiXinSwitch;
+    __weak IBOutlet UISwitch *duanXinSwitch;
+}
 @property (nonatomic,retain) HengYaViewController *hengYaVC;
 @property (nonatomic,retain) RuYaViewController *ruYaVC;
 @property (nonatomic,retain) NSMutableArray *clinicArray;
@@ -42,7 +46,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self setExtraCellLineHidden:self.tableView];
 
-
     selectMatterArray = [NSArray arrayWithObjects:@"预约定方案",@"预约种植",@"预约拆线",@"预约取模",@"预约戴牙",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"预约复查",@"预约修复",@"开会", nil];
 
     
@@ -57,6 +60,11 @@
     self.yaWeiTextField.mode = TextFieldInputModeKeyBoard;
     [self.yaWeiTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
     
+    self.timeTextField.borderStyle = UITextBorderStyleNone;
+    self.timeTextField.mode = TextFieldInputModeKeyBoard;
+    [self.timeTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
+    
+    
     self.huanzheTextField.borderStyle = UITextBorderStyleNone;
     self.huanzheTextField.mode = TextFieldInputModeKeyBoard;
     [self.huanzheTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
@@ -69,7 +77,7 @@
     self.medicalPlaceTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.medicalPlaceTextField setBorderStyle:UITextBorderStyleNone];
     
-    self.timeLabel.text = self.selectDateString;
+    self.timeTextField.text = self.selectDateString;
     
     
     self.clinicArray = [[NSMutableArray alloc]initWithCapacity:0];
@@ -151,11 +159,17 @@
 }
 
 - (void)onRightButtonAction:(id)sender {
-    
-    
+    if(self.huanzheTextField.text.length == 0){
+        [SVProgressHUD showImage:nil status:@"预约患者不能为空"];
+        return;
+    }
+    if(self.timeTextField.text.length == 0){
+        [SVProgressHUD showImage:nil status:@"预约时间不能为空"];
+        return;
+    }
     LocalNotification *notification = [[LocalNotification alloc] init];
   //  notification.reserve_content = self.selectMatterTextField.text;
-    notification.reserve_time = self.timeLabel.text;//[NSDate dateWithString:self.timeLabel.text];
+    notification.reserve_time = self.timeTextField.text;//[NSDate dateWithString:self.timeLabel.text];
   //  notification.reserve_type = self.repeatTimeTextField.text;
     
    // notification.reserve_content = self.repeatTimeTextField.text;
@@ -170,15 +184,10 @@
         
         BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
         if (ret) {
-//            for (UIViewController *vc in self.navigationController.viewControllers) {
-//                if ([vc isKindOfClass:[CreateCaseViewController  class]]) {
-//                    [self.navigationController popToViewController:vc animated:YES];
-//                }
-//            }
             [self.navigationController popViewControllerAnimated:YES];
         }
         
-        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeLabel.text successBlock:^{
+        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
             
         } failedBlock:^(NSError *error){
             [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -186,17 +195,25 @@
         return;
     }
     
+    //微信消息推送打开
+    if([weiXinSwitch isOn]){
+        
+    }
+    //短信消息推送打开
+    if([duanXinSwitch isOn]){
+        [[DoctorManager shareInstance] yuYueMessagePatient:[LocalNotificationCenter shareInstance].yuyuePatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"1" withSendTime:self.timeTextField.text successBlock:^{
+            
+        } failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+    }
+    
     BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
     if (ret) {
-//        for (UIViewController *vc in self.navigationController.viewControllers) {
-//            if ([vc isKindOfClass:[ScheduleReminderViewController class]] || [vc isKindOfClass:[PatientInfoViewController class]]) {
-//                [self.navigationController popToViewController:vc animated:YES];
-//            }
-//        }
          [self.navigationController popViewControllerAnimated:YES];
     }
 
-    [[DoctorManager shareInstance]weiXinMessagePatient:[LocalNotificationCenter shareInstance].selectPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeLabel.text successBlock:^{
+    [[DoctorManager shareInstance]weiXinMessagePatient:[LocalNotificationCenter shareInstance].selectPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
         
     } failedBlock:^(NSError *error){
         [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -205,8 +222,63 @@
 
 - (void)weiXinMessageSuccessWithResult:(NSDictionary *)result{
     
+    NSString *str = [result objectForKey:@"Result"];
+    NSRange range = [str rangeOfString:@"电话"];
+    
+    NSString *phoneStr = [str substringWithRange:NSMakeRange(range.location+2, 11)];
+    
+    
+    
+    if( [MFMessageComposeViewController canSendText] ){
+        MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
+        
+        
+            controller.recipients = [NSArray arrayWithObject:phoneStr];
+            controller.body = str;
+            controller.messageComposeDelegate = self;
+            
+            [self presentModalViewController:controller animated:YES];
+            
+            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
+        }
+    else{
+        [self alertWithTitle:@"提示信息" msg:@"设备没有短信功能"];
+    }
+}
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
+    [controller dismissModalViewControllerAnimated:NO];//关键的一句   不能为YES
+    switch ( result ) {
+        case MessageComposeResultCancelled:
+            //  [self alertWithTitle:@"提示" msg:@"取消发送信息"];
+            break;
+        case MessageComposeResultFailed:// send failed
+            //     [self alertWithTitle:@"提示" msg:@"发送信息成功"];
+            break;
+        case MessageComposeResultSent:
+            //     [self alertWithTitle:@"提示" msg:@"发送信息失败"];
+            break;
+        default:
+            break;
+    }
+}
+
+
+- (void) alertWithTitle:(NSString *)title msg:(NSString *)msg {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+                                                    message:msg
+                                                   delegate:self
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"确定", nil];
+    [alert show];
 }
 - (void)weiXinMessageFailedWithError:(NSError *)error{
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+- (void)yuYueMessageSuccessWithResult:(NSDictionary *)result{
+    
+}
+- (void)yuYueMessageFailedWithError:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 #pragma cellLineHidden - mark
@@ -265,9 +337,10 @@
         patientVC.isYuYuePush = YES;
         patientVC.hidesBottomBarWhenPushed = YES;
         [self pushViewController:patientVC animated:YES];
-    }else if ([self.medicalChairTextField isFirstResponder] || [self.medicalPlaceTextField isFirstResponder]){
+    }else if ([self.medicalChairTextField isFirstResponder] || [self.medicalPlaceTextField isFirstResponder] || [self.timeTextField isFirstResponder]){
         [self.medicalChairTextField resignFirstResponder];
         [self.medicalPlaceTextField resignFirstResponder];
+        [self.timeTextField resignFirstResponder];
         SelectYuYueDetailViewController  *selectDateView = [[SelectYuYueDetailViewController alloc]init];
         selectDateView.clinicNameArray = self.clinicArray;
         selectDateView.clinicIdArray = self.clinicIdArray;

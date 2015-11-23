@@ -119,8 +119,6 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
         [self alertWithTitle:@"提示信息" msg:@"设备没有短信功能"];
     }
     
-    NSLog(@"短信链接=%@",[NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:http://122.114.62.57/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,[AccountManager shareInstance].currentUser.userid,self.ckeyId]);
-    
 }
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
     
