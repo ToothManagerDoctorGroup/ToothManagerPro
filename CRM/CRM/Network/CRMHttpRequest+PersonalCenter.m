@@ -91,6 +91,11 @@
     [dataEntity setObject:[NSString stringWithFormat:@"%d",doctor.auth_status] forKey:@"doctor_is_verified"];
     [dataEntity setObject:doctor.auth_text forKey:@"doctor_verify_reason"];
     [dataEntity setObject:doctor.doctor_certificate forKey:@"doctor_certificate"];
+    [dataEntity setObject:doctor.doctor_birthday forKey:@"doctor_birthday"];
+    [dataEntity setObject:doctor.doctor_gender forKey:@"doctor_gender"];
+    [dataEntity setObject:doctor.doctor_cv forKey:@"doctor_cv"];
+    [dataEntity setObject:doctor.doctor_skill forKey:@"doctor_skill"];
+    
     [dataEntity setObject:[NSString stringWithFormat:@"%hhd",doctor.isopen] forKey:@"is_open"];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
     [paramDic setObject:doctor.ckeyid forKey:@"keyid"];

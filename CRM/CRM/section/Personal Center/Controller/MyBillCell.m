@@ -133,7 +133,7 @@
     _clinicNextImageView.frame = CGRectMake(CGRectGetMaxX(_clinicNameLabel.frame) + MarginY, (commenH - clinicNameSize.height) * 0.5 + 5, 10, clinicNameSize.height);
     
     //耗时视图
-    NSString *costTime = [NSString stringWithFormat:@"共用时:%@小时",self.model.use_time];
+    NSString *costTime = [NSString stringWithFormat:@"共用时:%@",[self minChangeToHour:self.model.use_time]];
     CGSize costTimeSize = [costTime sizeWithFont:OtherFontSize];
     _costTimeLabel.frame = CGRectMake(self.frame.size.width - costTimeSize.width - MarginX, (commenH - costTimeSize.height) * 0.5 + 5, costTimeSize.width, costTimeSize.height);
     //设置字体颜色
@@ -259,5 +259,22 @@
     if ([self.delegate respondsToSelector:@selector(didPaySuccessWithResult:)]) {
         [self.delegate didPaySuccessWithResult:result];
     }
+}
+
+//将分钟转换为小时
+- (NSString *)minChangeToHour:(NSString *)str{
+    int min = [str intValue];
+    NSString *hourStr;
+    NSString *minStr;
+    NSString *result;
+    if (min > 60) {
+        hourStr = [NSString stringWithFormat:@"%d",min / 60];
+        minStr = [NSString stringWithFormat:@"%d",min % 60];
+        result = [NSString stringWithFormat:@"%@小时%@分",hourStr,minStr];
+    }else{
+        minStr = [NSString stringWithFormat:@"%d",min];
+        result = [NSString stringWithFormat:@"%@分钟",minStr];
+    }
+    return result;
 }
 @end

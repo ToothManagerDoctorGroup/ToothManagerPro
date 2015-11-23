@@ -2197,7 +2197,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2SM-x3-6hb">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="187" height="30"/>
                                                     <animations/>
                                                     <state key="normal">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -3331,17 +3331,11 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MCO-8q-xQx" customClass="TimPickerTextField">
                                                     <rect key="frame" x="100" y="0.0" width="200" height="50"/>
-
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="时间" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oPp-8F-3Cs">
-                                                    <rect key="frame" x="100" y="15" width="170" height="21"/>
                                                     <animations/>
-
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <textInputTraits key="textInputTraits"/>
-                                                </label>
                                                 </textField>
                                             </subviews>
                                             <animations/>
@@ -3396,6 +3390,7 @@
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jka-S6-Gc3">
                                                     <rect key="frame" x="243" y="11" width="79" height="27"/>
+                                                    <animations/>
                                                 </switch>
                                             </subviews>
                                             <animations/>
@@ -3419,6 +3414,7 @@
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5dP-JX-iQk">
                                                     <rect key="frame" x="243" y="9" width="79" height="27"/>
+                                                    <animations/>
                                                 </switch>
                                             </subviews>
                                             <animations/>

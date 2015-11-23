@@ -61,6 +61,11 @@
         [columeArray addObject:@"auth_text"];
         [columeArray addObject:@"auth_pic"];
         [columeArray addObject:@"creation_date"]; //创建时间
+#warning 新添加元素
+//        [columeArray addObject:@"doctor_birthday"];
+//        [columeArray addObject:@"doctor_gender"];
+//        [columeArray addObject:@"doctor_cv"];
+//        [columeArray addObject:@"doctor_skill"];
         
         
         [valueArray addObject:userobj.accesstoken];
@@ -76,6 +81,11 @@
         [valueArray addObject:userobj.authText];
         [valueArray addObject:userobj.authPic];
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
+#warning 新添加元素
+//        [valueArray addObject:userobj.doctor_birthday];
+//        [valueArray addObject:userobj.doctor_gender];
+//        [valueArray addObject:userobj.doctor_cv];
+//        [valueArray addObject:userobj.doctor_skill];
         
         
         [titleArray addObject:@"?"];
@@ -91,6 +101,7 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
+#warning 新添加元素
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@)", UserTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
@@ -135,6 +146,11 @@
         [columeArray addObject:@"auth_text"];
         [columeArray addObject:@"auth_pic"];
         [columeArray addObject:@"update_date"]; //更新时间
+#warning 新添加元素
+//        [columeArray addObject:@"doctor_birthday"];
+//        [columeArray addObject:@"doctor_gender"];
+//        [columeArray addObject:@"doctor_cv"];
+//        [columeArray addObject:@"doctor_skill"];
         
         [valueArray addObject:userobj.accesstoken];
         [valueArray addObject:userobj.name];
@@ -148,6 +164,12 @@
         [valueArray addObject:userobj.authText];
         [valueArray addObject:userobj.authPic];
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
+        
+#warning 新添加元素
+//        [valueArray addObject:userobj.doctor_birthday];
+//        [valueArray addObject:userobj.doctor_gender];
+//        [valueArray addObject:userobj.doctor_cv];
+//        [valueArray addObject:userobj.doctor_skill];
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where user_id = %@", UserTableName, [columeArray componentsJoinedByString:@"=?,"],userobj.userid];

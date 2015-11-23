@@ -30,12 +30,22 @@
     _textView = [[UITextView alloc] initWithFrame:CGRectMake(10, 10, kScreenWidth - 20, 200)];
     _textView.backgroundColor = MyColor(237, 237, 237);
     _textView.font = [UIFont systemFontOfSize:14];
+    _textView.text = self.targetStr;
     [self.view addSubview:_textView];
 }
 
 #pragma mark -保存按钮点击事件
 - (void)onRightButtonAction:(id)sender{
-    NSLog(@"保存");
+    
+    if ([self.delegate respondsToSelector:@selector(editViewController:didUpdateUserInfoWithStr:type:)]) {
+        if ([self.title isEqualToString:@"个人简介"]) {
+            [self.delegate editViewController:self didUpdateUserInfoWithStr:_textView.text type:EditViewControllerTypeDescription];
+        }else {
+            [self.delegate editViewController:self didUpdateUserInfoWithStr:_textView.text type:EditViewControllerTypeSkill];
+        }
+    }
+    
+    [self popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

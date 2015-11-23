@@ -22,10 +22,15 @@
 #import "CRMMacro.h"
 #import "UserInfoEditViewController.h"
 
-@interface UserInfoViewController () <CRMHttpRequestDoctorDelegate,UIActionSheetDelegate>{
+@interface UserInfoViewController () <CRMHttpRequestDoctorDelegate,UIActionSheetDelegate,UserInfoEditViewControllerDelegate>{
     __weak IBOutlet UITableViewCell *_jiangeCell;
     
 }
+
+@property (nonatomic, strong)Doctor *currentDoctor;//当前登录的医生
+
+@property (nonatomic, copy)NSString *doctor_cv;
+@property (nonatomic, copy)NSString *doctor_skills;
 
 @end
 
@@ -131,28 +136,42 @@
         self.phoneTextField.text = self.doctor.doctor_phone;
         self.hospitalTextField.text = self.doctor.doctor_hospital;
         self.titleTextField.text = self.doctor.doctor_position;
-//        if ([self.doctor.doctor_gender isEqualToString:@"0"]) {
-//            self.sexTextField.text = @"男";
-//        }else{
-//            self.sexTextField.text = @"女";
-//        }
-//        self.birthDayTextField.text = self.doctor.doctor_birthday;
+        
         self.degreeTextField.text = self.doctor.doctor_degree;
         self.authstatusTextField.text = [UserObject authStringWithStatus:self.doctor.auth_status];
         self.authTextView.text = self.doctor.auth_text;
         [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.doctor.auth_pic]];
     } else {
-        UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        self.nicknameTextField.text = userobj.name;
-        self.departmentTextField.text = userobj.department;
-        self.phoneTextField.text = userobj.phone;
-        self.hospitalTextField.text = userobj.hospitalName;
-        self.titleTextField.text = userobj.title;
-        self.degreeTextField.text = userobj.degree;
-        self.authstatusTextField.text = [UserObject authStringWithStatus:userobj.authStatus];
-        self.authTextView.text = userobj.authText;
+        self.nicknameTextField.text = self.currentDoctor.doctor_name;
+        self.departmentTextField.text = self.currentDoctor.doctor_dept;
+        self.phoneTextField.text = self.currentDoctor.doctor_phone;
+        self.hospitalTextField.text = self.currentDoctor.doctor_hospital;
+        self.titleTextField.text = self.currentDoctor.doctor_position;
+        self.degreeTextField.text = self.currentDoctor.doctor_degree;
+        self.authstatusTextField.text = [UserObject authStringWithStatus:self.currentDoctor.auth_status];
+        self.authTextView.text = self.currentDoctor.auth_text;
         
-        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:userobj.authPic]];
+        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.currentDoctor.auth_pic]];
+        
+        if ([self.currentDoctor.doctor_gender isEqualToString:@"1"]) {
+            self.sexTextField.text = @"男";
+        }else{
+            self.sexTextField.text = @"女";
+        }
+        self.birthDayTextField.text = self.currentDoctor.doctor_birthday;
+        
+        
+//        UserObject *userobj = [[AccountManager shareInstance] currentUser];
+//        self.nicknameTextField.text = userobj.name;
+//        self.departmentTextField.text = userobj.department;
+//        self.phoneTextField.text = userobj.phone;
+//        self.hospitalTextField.text = userobj.hospitalName;
+//        self.titleTextField.text = userobj.title;
+//        self.degreeTextField.text = userobj.degree;
+//        self.authstatusTextField.text = [UserObject authStringWithStatus:userobj.authStatus];
+//        self.authTextView.text = userobj.authText;
+//
+//        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:userobj.authPic]];
     }
 }
 
@@ -176,13 +195,25 @@
     [doctor setAuth_status:userobj.authStatus];
     [doctor setAuth_text:userobj.authText];
     [doctor setDoctor_certificate:@""];  //证书，此处我也不知道要传什么，暂时传空，不能为nil
-//    [doctor setIsopen:YES];
-//    if ([self.sexTextField.text isEqualToString:@"男"]) {
-//        [doctor setDoctor_gender:@"0"];
-//    }else{
-//        [doctor setDoctor_gender:@"1"];
-//    }
-//    [doctor setDoctor_birthday:self.birthDayTextField.text];
+    [doctor setIsopen:YES];
+    if ([self.sexTextField.text isEqualToString:@"男"]) {
+        [doctor setDoctor_gender:@"1"];
+    }else{
+        [doctor setDoctor_gender:@"0"];
+    }
+    
+    [doctor setDoctor_birthday:self.birthDayTextField.text];
+    if (self.doctor_cv == nil) {
+        [doctor setDoctor_cv:self.currentDoctor.doctor_cv];
+    }else{
+        [doctor setDoctor_cv:self.doctor_cv];
+    }
+    if (self.doctor_skills == nil) {
+        [doctor setDoctor_skill:self.currentDoctor.doctor_skill];
+    }else{
+        [doctor setDoctor_skill:self.doctor_skills];
+    }
+    
     
     [[AccountManager shareInstance] updateUserInfo:doctor successBlock:^{
         [SVProgressHUD showWithStatus:@"正在更新个人信息..."];
@@ -276,6 +307,7 @@
     QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
     [self.navigationController pushViewController:qrVC animated:YES];
 }
+
 - (IBAction)icon:(id)sender {
     UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:nil
                                                             delegate:self
@@ -290,6 +322,8 @@
 - (IBAction)personalIntroduceAction:(id)sender {
     UserInfoEditViewController *editVc = [[UserInfoEditViewController alloc] init];
     editVc.title = @"个人简介";
+    editVc.delegate = self;
+    editVc.targetStr = self.currentDoctor.doctor_cv;
     editVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:editVc animated:YES];
     
@@ -299,6 +333,8 @@
 - (IBAction)skillsAction:(id)sender {
     UserInfoEditViewController *editVc = [[UserInfoEditViewController alloc] init];
     editVc.title = @"擅长项目";
+    editVc.delegate = self;
+    editVc.targetStr = self.currentDoctor.doctor_skill;
     editVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:editVc animated:YES];
 }
@@ -366,7 +402,7 @@
         [SVProgressHUD showImage:nil status:@"个人消息更新成功"];
         
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        Doctor *doctor = [[Doctor alloc]init];
+        Doctor *doctor = [Doctor DoctorFromDoctorResult:result];
 
         [userobj setName:self.nicknameTextField.text];
         [userobj setDepartment:self.departmentTextField.text];
@@ -376,7 +412,6 @@
         [userobj setDegree:self.degreeTextField.text];
         [userobj setAuthStatus:userobj.authStatus];
         [userobj setAuthText:userobj.authText];
-
         
         [[DBManager shareInstance] updateUserWithUserObject:userobj];
 
@@ -398,7 +433,6 @@
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
     [SVProgressHUD dismiss];
-    NSLog(@"result:%@",[result objectForKey:@"Result"]);
     NSArray *dicArray = [result objectForKey:@"Result"];
     if (dicArray && dicArray.count > 0) {
         for (NSDictionary *dic in dicArray) {
@@ -412,14 +446,22 @@
                     [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
                 }
             } else {
-                UserObject *obj = [UserObject userobjectFromDic:dic];
-                [[DBManager shareInstance] updateUserWithUserObject:obj];
-                [[AccountManager shareInstance] refreshCurrentUserInfo];
-                if(obj.img.length > 0){
-                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img]];
+                
+                Doctor *doctor = [Doctor DoctorFromDoctorResult:dic];
+                self.currentDoctor = doctor;
+                if(doctor.doctor_image.length > 0){
+                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image]];
                 }else{
                     [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
                 }
+//                UserObject *obj = [UserObject userobjectFromDic:dic];
+//                [[DBManager shareInstance] updateUserWithUserObject:obj];
+//                [[AccountManager shareInstance] refreshCurrentUserInfo];
+//                if(obj.img.length > 0){
+//                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img]];
+//                }else{
+//                    [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+//                }
             }
             [self refreshView];
             return;
@@ -428,6 +470,17 @@
 }
 - (void)getDoctorListFailedWithError:(NSError *)error {
     [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
+#pragma mark -UserInfoEditViewControllerDelegate
+- (void)editViewController:(UserInfoEditViewController *)editVc didUpdateUserInfoWithStr:(NSString *)str type:(EditViewControllerType)type{
+    if (type == EditViewControllerTypeSkill) {
+        NSLog(@"个人技能修改成功");
+        self.doctor_skills = str;
+    }else {
+        NSLog(@"个人描述修改成功");
+        self.doctor_cv = str;
+    }
 }
 
 @end

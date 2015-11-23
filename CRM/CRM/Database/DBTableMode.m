@@ -777,6 +777,12 @@ NSString * const Repaired = @"已修复";
         self.email = @"";
         self.accesstoken = @"";
         self.img = @"";
+        
+        
+//        self.doctor_birthday = nil;
+//        self.doctor_cv = nil;
+//        self.doctor_gender = nil;
+//        self.doctor_skill = nil;
     }
     return self;
 }
@@ -796,9 +802,11 @@ NSString * const Repaired = @"已修复";
     user.authText = [result stringForColumn:@"auth_text"];
     user.authPic = [result stringForColumn:@"auth_pic"];
     user.img = [result stringForColumn:@"img"];
+    
+    
 //    user.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
-//    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
 //    user.doctor_gender = [result stringForColumn:@"doctor_gender"];
+//    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
 //    user.doctor_skill = [result stringForColumn:@"doctor_skill"];
     return user;
 }
@@ -834,10 +842,12 @@ NSString * const Repaired = @"已修复";
     self.name = [dic stringForKey:@"username" placeholder:[dic stringForKey:@"name" placeholder:@""]];
     self.authText = [dic stringForKey:@"verifiedreason" placeholder:@"无"];
     self.img = [dic stringForKey:@"img" placeholder:@"无"];
-//    self.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
-//    self.doctor_cv = [dic stringForKey:@"doctor_cv"];
-//    self.doctor_gender = [dic stringForKey:@"doctor_gender"];
-//    self.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    
+#warning 添加新代码
+//    self.doctor_birthday = [dic stringForKey:@"doctor_birthday" placeholder:@""];
+//    self.doctor_gender = [dic stringForKey:@"doctor_gender" placeholder:@""];
+//    self.doctor_cv = [dic stringForKey:@"doctor_cv" placeholder:@""];
+//    self.doctor_skill = [dic stringForKey:@"doctor_skill" placeholder:@""];
 }
 
 
@@ -862,8 +872,8 @@ NSString * const Repaired = @"已修复";
 //    tmpDoctor.update_date = [NSString defaultDateString];
     
 //    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
-//    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
 //    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+//    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
 //    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
     return tmpDoctor;
 }
