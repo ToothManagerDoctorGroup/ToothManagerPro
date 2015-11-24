@@ -10,8 +10,9 @@
 #import "CRMHttpTool.h"
 #import "ClinicModel.h"
 #import "UnSignClinicModel.h"
-
+#import "AssistCountModel.h"
 #import "ClinicDetailModel.h"
+#import "MaterialCountModel.h"
 
 #define requestActionParam @"action"
 #define doctorIdParam @"doctor_id"
@@ -21,6 +22,8 @@
 #define areacodeParam @"areacode"
 
 #define clinic_idParam @"clinic_id"
+#define mat_typeParam @"mat_type"
+
 
 
 @implementation MyClinicTool
@@ -162,6 +165,59 @@
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {
             success(responseObject[@"Result"],responseObject[@"Code"]);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)getAssistentListWithClinicId:(NSString *)clinicId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/AssistantHandler.ashx";
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[requestActionParam] = @"getList";
+    params[clinicIdParam] = clinicId;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        //将数据转换成模型对象，使用MJExtention
+        NSMutableArray *array = [NSMutableArray array];
+        for (NSDictionary *dic in responseObject[@"Result"]) {
+            AssistCountModel *model = [AssistCountModel objectWithKeyValues:dic];
+            model.num = 0.0;
+            [array addObject:model];
+        }
+        if (success) {
+            success(array);
+        }
+        
+        
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)getMaterialListWithClinicId:(NSString *)clinicId matType:(NSString *)type success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/MaterialHandler.ashx";
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[requestActionParam] = @"getList";
+    params[clinicIdParam] = clinicId;
+    params[mat_typeParam] = type;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        //将数据转换成模型对象，使用MJExtention
+        NSMutableArray *array = [NSMutableArray array];
+        for (NSDictionary *dic in responseObject[@"Result"]) {
+            MaterialCountModel *model = [MaterialCountModel objectWithKeyValues:dic];
+            model.num = 0.0;
+            [array addObject:model];
+        }
+        if (success) {
+            success(array);
         }
     } failure:^(NSError *error) {
         if (failure) {

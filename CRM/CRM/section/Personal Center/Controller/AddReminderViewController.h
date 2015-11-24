@@ -34,5 +34,7 @@
 @property (strong, nonatomic) NSString *selectDateString;
 
 @property (nonatomic,strong) NSString *reservedPatiendId;
+@property (weak, nonatomic) IBOutlet UILabel *materialCountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *assistCountLabel;
 
 @end

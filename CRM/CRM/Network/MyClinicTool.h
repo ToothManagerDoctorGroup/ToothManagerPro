@@ -42,4 +42,23 @@
  */
 + (void)applyForClinicWithDoctorID:(NSString *)doctorId clinicId:(NSString *)clinicId success:(void (^)(NSString *result,NSNumber *status))success failure:(void (^)(NSError *error))failure;
 
+/**
+ *  获取诊所所有的助手信息
+ *
+ *  @param clinicId 诊所id
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)getAssistentListWithClinicId:(NSString *)clinicId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
+/**
+ *  获取诊所所有材料的信息
+ *
+ *  @param clinicId 诊所id
+ *  @param type     材料的类型 1为种植材料，2为其他材料，不传值返回所有材料
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)getMaterialListWithClinicId:(NSString *)clinicId matType:(NSString *)type success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
 @end

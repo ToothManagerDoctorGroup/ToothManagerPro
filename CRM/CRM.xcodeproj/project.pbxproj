@@ -147,6 +147,13 @@
 		2DFE7EE41B4A71980088B119 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFE7EC91B4A71980088B119 /* FMDatabaseQueue.m */; };
 		2DFE7EE51B4A71980088B119 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFE7ECB1B4A71980088B119 /* FMResultSet.m */; };
 		3D0702C11BF34D7C00BE48C7 /* ChairDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0702C01BF34D7C00BE48C7 /* ChairDetailView.m */; };
+		3D0AE7CD1C043C4400DCD4A0 /* ChooseMaterialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0AE7CC1C043C4400DCD4A0 /* ChooseMaterialViewController.m */; };
+		3D0AE7D01C043C6A00DCD4A0 /* ChooseAssistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0AE7CF1C043C6A00DCD4A0 /* ChooseAssistViewController.m */; };
+		3D0AE7D31C0442D100DCD4A0 /* ChooseAssistCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0AE7D21C0442D100DCD4A0 /* ChooseAssistCell.m */; };
+		3D0AE7D61C04564A00DCD4A0 /* AssistCountModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0AE7D51C04564A00DCD4A0 /* AssistCountModel.m */; };
+		3D0AE7D91C04565800DCD4A0 /* MaterialCountModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0AE7D81C04565800DCD4A0 /* MaterialCountModel.m */; };
+		3D0AE7DC1C045CDE00DCD4A0 /* num_add.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D0AE7DA1C045CDE00DCD4A0 /* num_add.png */; };
+		3D0AE7DD1C045CDE00DCD4A0 /* num_reduce.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D0AE7DB1C045CDE00DCD4A0 /* num_reduce.png */; };
 		3D0BE5CE1BF97F1A0023D3FA /* MyBillTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE5CD1BF97F1A0023D3FA /* MyBillTool.m */; };
 		3D0BE5D21BF981D10023D3FA /* BillModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE5D11BF981D10023D3FA /* BillModel.m */; };
 		3D0BE5D51BF986CE0023D3FA /* BillDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE5D41BF986CE0023D3FA /* BillDetailModel.m */; };
@@ -935,6 +942,18 @@
 		2DFE7ECB1B4A71980088B119 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		3D0702BF1BF34D7C00BE48C7 /* ChairDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChairDetailView.h; sourceTree = "<group>"; };
 		3D0702C01BF34D7C00BE48C7 /* ChairDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChairDetailView.m; sourceTree = "<group>"; };
+		3D0AE7CB1C043C4400DCD4A0 /* ChooseMaterialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChooseMaterialViewController.h; sourceTree = "<group>"; };
+		3D0AE7CC1C043C4400DCD4A0 /* ChooseMaterialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChooseMaterialViewController.m; sourceTree = "<group>"; };
+		3D0AE7CE1C043C6A00DCD4A0 /* ChooseAssistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChooseAssistViewController.h; sourceTree = "<group>"; };
+		3D0AE7CF1C043C6A00DCD4A0 /* ChooseAssistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChooseAssistViewController.m; sourceTree = "<group>"; };
+		3D0AE7D11C0442D100DCD4A0 /* ChooseAssistCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChooseAssistCell.h; sourceTree = "<group>"; };
+		3D0AE7D21C0442D100DCD4A0 /* ChooseAssistCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChooseAssistCell.m; sourceTree = "<group>"; };
+		3D0AE7D41C04564A00DCD4A0 /* AssistCountModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssistCountModel.h; sourceTree = "<group>"; };
+		3D0AE7D51C04564A00DCD4A0 /* AssistCountModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssistCountModel.m; sourceTree = "<group>"; };
+		3D0AE7D71C04565800DCD4A0 /* MaterialCountModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialCountModel.h; sourceTree = "<group>"; };
+		3D0AE7D81C04565800DCD4A0 /* MaterialCountModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaterialCountModel.m; sourceTree = "<group>"; };
+		3D0AE7DA1C045CDE00DCD4A0 /* num_add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = num_add.png; sourceTree = "<group>"; };
+		3D0AE7DB1C045CDE00DCD4A0 /* num_reduce.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = num_reduce.png; sourceTree = "<group>"; };
 		3D0BE5CC1BF97F1A0023D3FA /* MyBillTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyBillTool.h; sourceTree = "<group>"; };
 		3D0BE5CD1BF97F1A0023D3FA /* MyBillTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyBillTool.m; sourceTree = "<group>"; };
 		3D0BE5D01BF981D10023D3FA /* BillModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BillModel.h; sourceTree = "<group>"; };
@@ -2078,6 +2097,47 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		3D0AE7C61C043BBB00DCD4A0 /* MyReminderInfo */ = {
+			isa = PBXGroup;
+			children = (
+				3D0AE7CA1C043BD900DCD4A0 /* Controllers */,
+				3D0AE7C91C043BD300DCD4A0 /* Views */,
+				3D0AE7C81C043BCC00DCD4A0 /* Models */,
+			);
+			name = MyReminderInfo;
+			sourceTree = "<group>";
+		};
+		3D0AE7C81C043BCC00DCD4A0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3D0AE7D41C04564A00DCD4A0 /* AssistCountModel.h */,
+				3D0AE7D51C04564A00DCD4A0 /* AssistCountModel.m */,
+				3D0AE7D71C04565800DCD4A0 /* MaterialCountModel.h */,
+				3D0AE7D81C04565800DCD4A0 /* MaterialCountModel.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		3D0AE7C91C043BD300DCD4A0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3D0AE7D11C0442D100DCD4A0 /* ChooseAssistCell.h */,
+				3D0AE7D21C0442D100DCD4A0 /* ChooseAssistCell.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		3D0AE7CA1C043BD900DCD4A0 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				3D0AE7CB1C043C4400DCD4A0 /* ChooseMaterialViewController.h */,
+				3D0AE7CC1C043C4400DCD4A0 /* ChooseMaterialViewController.m */,
+				3D0AE7CE1C043C6A00DCD4A0 /* ChooseAssistViewController.h */,
+				3D0AE7CF1C043C6A00DCD4A0 /* ChooseAssistViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		3D1AB0701C00424600547809 /* MenuPopover */ = {
 			isa = PBXGroup;
 			children = (
@@ -2370,6 +2430,8 @@
 		3DAA11661BF5C0BD00FD8149 /* MyBill */ = {
 			isa = PBXGroup;
 			children = (
+				3D0AE7DA1C045CDE00DCD4A0 /* num_add.png */,
+				3D0AE7DB1C045CDE00DCD4A0 /* num_reduce.png */,
 				3DF671741BF730A900527B49 /* 找诊所-地图效果-切图 */,
 				3DF671671BF71B8B00527B49 /* 我的诊所-找诊所-切图 */,
 				3DAA11CB1BF5F83E00FD8149 /* 申请签约诊所-切图 */,
@@ -3996,6 +4058,7 @@
 			children = (
 				2D2ED8601C00981A003B7047 /* SelectYuYueDetailViewController.h */,
 				2D2ED8611C00981A003B7047 /* SelectYuYueDetailViewController.m */,
+				3D0AE7C61C043BBB00DCD4A0 /* MyReminderInfo */,
 				3DEAF5821C0317FA00445C20 /* PersonalInfo */,
 				3DAA115F1BF5BF9E00FD8149 /* MyBill */,
 				3D23A62E1BF2D8F50029943D /* MyClinic */,
@@ -4337,6 +4400,7 @@
 				2DC829071BA3F83A001CA6A4 /* ic_tabbar_me@2x.png in Resources */,
 				3DDDB87E1BFDEFA4004AD4AC /* medical_info_blue@3x.png in Resources */,
 				6436DEC519B8C48100DC667E /* search_bg_header@2x.png in Resources */,
+				3D0AE7DC1C045CDE00DCD4A0 /* num_add.png in Resources */,
 				6436DEAD19B8C48100DC667E /* icon76.png in Resources */,
 				0B100A8A1A2CB4AF00A0385B /* home_01.png in Resources */,
 				64B2B33A19D3FD6100DFA1E2 /* sys@2x.png in Resources */,
@@ -4535,6 +4599,7 @@
 				6436DE9A19B8C48100DC667E /* Default.png in Resources */,
 				2DFE7E5F1B4A20A80088B119 /* umeng_fb_audio_dialog_cancel@2x.png in Resources */,
 				64E87CA61A32D99000EDA3B7 /* select_down.png in Resources */,
+				3D0AE7DD1C045CDE00DCD4A0 /* num_reduce.png in Resources */,
 				64CFD94F19F7F6A6001EB0DA /* LocalNotificationTableViewCell.xib in Resources */,
 				6436DEC419B8C48100DC667E /* search-bg@2x.png in Resources */,
 				6436DE9219B8C48100DC667E /* btn_pack up@2x.png in Resources */,
@@ -4678,6 +4743,7 @@
 				644AB9FA1A07E9E4001F9022 /* CRMHttpRequest+Doctor.m in Sources */,
 				6436DE3519B8C48100DC667E /* DBManager+LocalNotification.m in Sources */,
 				64CFD95219F8A0D1001EB0DA /* PatientInfoViewController.m in Sources */,
+				3D0AE7D61C04564A00DCD4A0 /* AssistCountModel.m in Sources */,
 				6436DED919B8C48100DC667E /* MSCMoreOptionTableViewCell.m in Sources */,
 				8142BB451AEA0D6F00EF08EE /* RepairDoctorTableViewCell.m in Sources */,
 				6436DEF019B8C48100DC667E /* PSTGridLayoutRow.m in Sources */,
@@ -4710,6 +4776,7 @@
 				6436DEEC19B8C48100DC667E /* PSTCollectionViewLayout.m in Sources */,
 				648C6DB41A89EDE70029A985 /* RecordTableViewCell.m in Sources */,
 				2DFE7EDE1B4A71980088B119 /* UIWebView+AFNetworking.m in Sources */,
+				3D0AE7CD1C043C4400DCD4A0 /* ChooseMaterialViewController.m in Sources */,
 				6436DE3219B8C48100DC667E /* AddressBookViewController.m in Sources */,
 				6436DEFF19B8C48100DC667E /* UIImage+GIF.m in Sources */,
 				3D1B26011BFEB04D00997FDE /* PatientDetailHeadInfoView.m in Sources */,
@@ -4840,6 +4907,7 @@
 				64BD7C8C19BC28910015D47F /* SAMTextView.m in Sources */,
 				3DAA10E91BF5801D00FD8149 /* ClinicImageModel.m in Sources */,
 				64B2B32D19D3F79D00DFA1E2 /* AvatarView.m in Sources */,
+				3D0AE7D91C04565800DCD4A0 /* MaterialCountModel.m in Sources */,
 				3D1AC2E01BFAC86700F8E1D5 /* ClinicAnnotation.m in Sources */,
 				64CFD94319F7F6A6001EB0DA /* PersonalCenterViewController.m in Sources */,
 				6436DF0019B8C48100DC667E /* UIImage+MultiFormat.m in Sources */,
@@ -4869,6 +4937,7 @@
 				2DFE7EE31B4A71980088B119 /* FMDatabasePool.m in Sources */,
 				64CFD93819F7F6A6001EB0DA /* RecordMaterialTableViewCell.m in Sources */,
 				6436DF0919B8C48100DC667E /* PinyinFormatter.m in Sources */,
+				3D0AE7D01C043C6A00DCD4A0 /* ChooseAssistViewController.m in Sources */,
 				2DFE7ECD1B4A71980088B119 /* AFHTTPRequestOperationManager.m in Sources */,
 				642D7AB01A807E18007F8D58 /* CaseMaterialsTableViewCell.m in Sources */,
 				6436DF0619B8C48100DC667E /* ChineseToPinyinResource.m in Sources */,
@@ -4956,6 +5025,7 @@
 				6436DEE519B8C48100DC667E /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
 				6436DF3719B8C48100DC667E /* UITableViewHeaderFooterView+Extension.m in Sources */,
 				64B2B33019D3F7BB00DFA1E2 /* CornerButton.m in Sources */,
+				3D0AE7D31C0442D100DCD4A0 /* ChooseAssistCell.m in Sources */,
 				64BD7C7619BAF28C0015D47F /* DBManager+User.m in Sources */,
 				3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */,
 				81B1EBFA1AAFED8C0030A92C /* NSDate+convenience.m in Sources */,

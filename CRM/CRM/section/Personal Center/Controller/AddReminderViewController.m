@@ -21,9 +21,14 @@
 #import "RuYaViewController.h"
 #import "PatientsDisplayViewController.h"
 #import "SelectYuYueDetailViewController.h"
+#import "ChooseAssistViewController.h"
+#import "ChooseMaterialViewController.h"
+
+#import "MaterialCountModel.h"
+#import "AssistCountModel.h"
 
 
-@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate>{
+@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate>{
     
     __weak IBOutlet UISwitch *weiXinSwitch;
     __weak IBOutlet UISwitch *duanXinSwitch;
@@ -36,9 +41,29 @@
 @property (nonatomic,assign) float durationFloat;
 @property (nonatomic,copy) NSString *seatId;
 
+@property (nonatomic, copy)NSString *selectClinicId;//选中的诊所id
+
+@property (nonatomic, strong)NSArray *chooseMaterials; //选中的耗材数组
+
+@property (nonatomic, strong)NSArray *chooseAssists; //选中的助手数组
+
 @end
 
 @implementation AddReminderViewController
+
+- (NSArray *)chooseAssists{
+    if (!_chooseAssists) {
+        _chooseAssists = [NSArray array];
+    }
+    return _chooseAssists;
+}
+
+- (NSArray *)chooseMaterials{
+    if (!_chooseMaterials) {
+        _chooseMaterials = [NSArray array];
+    }
+    return _chooseMaterials;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -98,6 +123,7 @@
     
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(yuYueTime:) name:@"YuYueTime" object:nil];
+    
 }
 - (void)doctorClinicSuccessWithResult:(NSDictionary *)result{
     NSArray *dicArray = [result objectForKey:@"Result"];
@@ -330,6 +356,21 @@
 
 #pragma tableView delegate - mark
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 5;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    switch (section) {
+        case 0:
+            return 3;
+            break;
+            
+        default:
+            return 2;
+            break;
+    }
+}
+
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.row) {
@@ -345,6 +386,39 @@
             NSLog(@"重复");
         }
             break;
+    }
+    
+    if (indexPath.section == 3) {
+        if (indexPath.row == 0) {
+            //获取当前选中的诊所id
+            for(NSInteger i = 1;i < self.clinicArray.count;i++){
+                if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
+                    self.selectClinicId = self.clinicIdArray[i - 1];
+                }
+            }
+            //选择耗材
+            ChooseMaterialViewController *materialVc = [[ChooseMaterialViewController alloc] init];
+            materialVc.hidesBottomBarWhenPushed = YES;
+            materialVc.clinicId = self.selectClinicId;
+            materialVc.delegate = self;
+            materialVc.chooseMaterials = self.chooseMaterials;
+            [self pushViewController:materialVc animated:YES];
+        }else{
+            //获取当前选中的诊所id
+            for(NSInteger i = 1;i < self.clinicArray.count;i++){
+                if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
+                    self.selectClinicId = self.clinicIdArray[i - 1];
+                }
+            }
+            //选择助手
+            ChooseAssistViewController *assistVc = [[ChooseAssistViewController alloc] init];
+            assistVc.delegate = self;
+            assistVc.hidesBottomBarWhenPushed = YES;
+            assistVc.clinicId = self.selectClinicId;
+            assistVc.chooseAssists = self.chooseAssists;
+            [self pushViewController:assistVc animated:YES];
+            
+        }
     }
 }
 
@@ -439,4 +513,22 @@
 }
 */
 
+#pragma mark -ChooseMaterialViewControllerDelegate
+- (void)chooseMaterialViewController:(ChooseMaterialViewController *)mController didSelectMaterials:(NSArray *)materials{
+    self.chooseMaterials = materials;
+    int total = 0;
+    for (MaterialCountModel *model in materials) {
+        total = total + (int)model.num;
+    }
+    self.materialCountLabel.text = [NSString stringWithFormat:@"%d颗",total];
+}
+#pragma mark -ChooseAssistViewControllerDelegate
+- (void)chooseAssistViewController:(ChooseAssistViewController *)aController didSelectAssists:(NSArray *)assists{
+    self.chooseAssists = assists;
+    int total = 0;
+    for (AssistCountModel *model in assists) {
+        total = total + (int)model.num;
+    }
+    self.assistCountLabel.text = [NSString stringWithFormat:@"%d名",total];
+}
 @end
