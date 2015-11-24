@@ -38,6 +38,7 @@
     UIButton *menuButton;
     MenuView *menuView;
     MenuButtonPushManager *manager;
+    UIView *clearView;
 }
 
 
@@ -236,12 +237,22 @@
      */
 
 }
+-(void)disMissView{
+    [clearView removeFromSuperview];
+    [menuView removeFromSuperview];
+}
 -(void)click:(id)sender{
+    clearView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.window.bounds.size.width, self.window.bounds.size.height)];
+    UITapGestureRecognizer *tapges = [[UITapGestureRecognizer alloc]init];
+    [tapges addTarget:self action:@selector(disMissView)];
+    tapges.numberOfTapsRequired = 1;
+    [clearView addGestureRecognizer:tapges];
+    [self.window addSubview:clearView];
+    
     menuView = [[MenuView alloc]init];
     [menuView setFrame:CGRectMake(SCREEN_WIDTH/2-104/2, SCREEN_HEIGHT-_tabBarController.tabBar.frame.size.height-88, 104, 88)];
     [menuView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"menuView"]]];
     [self.window addSubview:menuView];
-    
     
     manager = [[MenuButtonPushManager alloc]init];
     manager.viewController = (UINavigationController *)_tabBarController.selectedViewController;
