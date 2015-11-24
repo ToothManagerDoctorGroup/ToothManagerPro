@@ -122,12 +122,17 @@
  *
  *  @return json字符串
  */
-+ (NSString*)dictionaryToJson:(NSDictionary *)dic{
++ (NSString *)dictionaryToJson:(NSDictionary *)dic{
     NSError *parseError = nil;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&parseError];
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
++ (NSString *)arrayToJson:(NSArray *)array{
+    NSError *parseError = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:&parseError];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
 
 
 @end

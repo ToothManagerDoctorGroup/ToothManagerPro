@@ -17,6 +17,7 @@
  "mat_type": "1",
  "creation_time": "0001-01-01 00:00:00",
  "data_flag": 0
+ num
  */
 @property (nonatomic, copy)NSString *keyId;
 @property (nonatomic, copy)NSString *mat_name;

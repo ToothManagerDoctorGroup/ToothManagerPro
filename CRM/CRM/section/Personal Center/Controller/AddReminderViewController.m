@@ -26,7 +26,9 @@
 
 #import "MaterialCountModel.h"
 #import "AssistCountModel.h"
-
+#import "AssistModel.h"
+#import "MaterialModel.h"
+#import "MyBillTool.h"
 
 @interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate>{
     
@@ -280,7 +282,35 @@
     //选择医院发生变化
     
     if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
-         [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:0 withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:nil withMaterial:nil successBlock:^{
+        
+        //计算总的money
+        float totalMoney = self.seatPrice.floatValue;
+        //将数组转成json
+        NSString *materialsJson;
+        NSString *assistsJson;
+        //获取耗材的json字符串
+        NSMutableArray *materialsArr = [NSMutableArray array];
+        if (self.chooseMaterials.count > 0) {
+            for (MaterialCountModel *countModel in self.chooseMaterials) {
+                MaterialModel *material = [MaterialModel modelWithMaterialCountModel:countModel];
+                
+                [materialsArr addObject:material.keyValues];
+                totalMoney = totalMoney + [material.actual_money floatValue];
+            }
+            materialsJson = [MyBillTool arrayToJson:materialsArr];
+        }
+        //获取助手的json字符串
+        NSMutableArray *assistsArr = [NSMutableArray array];
+        if (self.chooseAssists.count > 0) {
+            for (AssistCountModel *countModel in self.chooseAssists) {
+                AssistModel *assist = [AssistModel modelWithAssistCountModel:countModel];
+                [assistsArr addObject:assist.keyValues];
+                totalMoney = totalMoney + [assist.actual_money floatValue];
+            }
+            assistsJson = [MyBillTool arrayToJson:assistsArr];
+        }
+        
+        [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:assistsJson withMaterial:materialsJson successBlock:^{
  
             } failedBlock:^(NSError *error){
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -391,38 +421,47 @@
             break;
     }
     
-    if (indexPath.section == 3) {
-        if (indexPath.row == 0) {
-            //获取当前选中的诊所id
-            for(NSInteger i = 1;i < self.clinicArray.count;i++){
-                if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
-                    self.selectClinicId = self.clinicIdArray[i - 1];
+    UserObject *user = [[AccountManager shareInstance] currentUser];
+        if (indexPath.section == 3) {
+            if (indexPath.row == 0) {
+                if ([user.hospitalName isEqualToString:self.medicalPlaceTextField.text]) {
+                    [SVProgressHUD showErrorWithStatus:@"您所在医院不能选择耗材！"];
+                }else{
+                    //获取当前选中的诊所id
+                    for(NSInteger i = 1;i < self.clinicArray.count;i++){
+                        if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
+                            self.selectClinicId = self.clinicIdArray[i - 1];
+                        }
+                    }
+                    //选择耗材
+                    ChooseMaterialViewController *materialVc = [[ChooseMaterialViewController alloc] init];
+                    materialVc.hidesBottomBarWhenPushed = YES;
+                    materialVc.clinicId = self.selectClinicId;
+                    materialVc.delegate = self;
+                    materialVc.chooseMaterials = self.chooseMaterials;
+                    [self pushViewController:materialVc animated:YES];
                 }
-            }
-            //选择耗材
-            ChooseMaterialViewController *materialVc = [[ChooseMaterialViewController alloc] init];
-            materialVc.hidesBottomBarWhenPushed = YES;
-            materialVc.clinicId = self.selectClinicId;
-            materialVc.delegate = self;
-            materialVc.chooseMaterials = self.chooseMaterials;
-            [self pushViewController:materialVc animated:YES];
-        }else{
-            //获取当前选中的诊所id
-            for(NSInteger i = 1;i < self.clinicArray.count;i++){
-                if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
-                    self.selectClinicId = self.clinicIdArray[i - 1];
+            }else{
+                if ([user.hospitalName isEqualToString:self.medicalPlaceTextField.text]) {
+                    [SVProgressHUD showErrorWithStatus:@"您所在医院不能选择助手！"];
+                }else{
+                    //获取当前选中的诊所id
+                    for(NSInteger i = 1;i < self.clinicArray.count;i++){
+                        if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
+                            self.selectClinicId = self.clinicIdArray[i - 1];
+                        }
+                    }
+                    //选择助手
+                    ChooseAssistViewController *assistVc = [[ChooseAssistViewController alloc] init];
+                    assistVc.delegate = self;
+                    assistVc.hidesBottomBarWhenPushed = YES;
+                    assistVc.clinicId = self.selectClinicId;
+                    assistVc.chooseAssists = self.chooseAssists;
+                    [self pushViewController:assistVc animated:YES];
                 }
-            }
-            //选择助手
-            ChooseAssistViewController *assistVc = [[ChooseAssistViewController alloc] init];
-            assistVc.delegate = self;
-            assistVc.hidesBottomBarWhenPushed = YES;
-            assistVc.clinicId = self.selectClinicId;
-            assistVc.chooseAssists = self.chooseAssists;
-            [self pushViewController:assistVc animated:YES];
-            
         }
     }
+    
 }
 
 - (void)didReceiveMemoryWarning {

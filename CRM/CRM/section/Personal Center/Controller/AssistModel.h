@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MJExtension.h"
 
+@class AssistCountModel;
 @interface AssistModel : NSObject<MJKeyValue>
 /*
  "KeyId": 134,
@@ -33,5 +34,7 @@
 @property (nonatomic, copy)NSString *plan_money;
 @property (nonatomic, copy)NSString *actual_money;
 @property (nonatomic, copy)NSString *is_reserved;
+
++ (instancetype)modelWithAssistCountModel:(AssistCountModel *)countModel;
 
 @end

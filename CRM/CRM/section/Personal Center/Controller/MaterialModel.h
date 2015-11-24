@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MJExtension.h"
 
+@class MaterialCountModel;
 @interface MaterialModel : NSObject<MJKeyValue>
 
 
@@ -23,5 +24,6 @@
 @property (nonatomic, copy)NSString *actual_money;
 @property (nonatomic, copy)NSString *is_reserved;
 
++ (instancetype)modelWithMaterialCountModel:(MaterialCountModel *)countModel;
 
 @end

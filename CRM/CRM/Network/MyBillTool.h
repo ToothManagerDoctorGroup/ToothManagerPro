@@ -30,5 +30,8 @@
 + (void)payWithPayParam:(PayParam *)payParam success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
 
+//字典转json
 + (NSString*)dictionaryToJson:(NSDictionary *)dic;
+//数组转json
++ (NSString *)arrayToJson:(NSArray *)array;
 @end
