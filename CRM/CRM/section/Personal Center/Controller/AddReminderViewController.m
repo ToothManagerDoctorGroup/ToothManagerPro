@@ -32,6 +32,10 @@
 @property (nonatomic,retain) RuYaViewController *ruYaVC;
 @property (nonatomic,retain) NSMutableArray *clinicArray;
 @property (nonatomic,retain) NSMutableArray *clinicIdArray;
+@property (nonatomic,copy) NSString *originalClinic;
+@property (nonatomic,assign) float durationFloat;
+@property (nonatomic,copy) NSString *seatId;
+
 @end
 
 @implementation AddReminderViewController
@@ -136,6 +140,8 @@
     NSDictionary *dic = [aNotification object];
     self.timeTextField.text = [dic objectForKey:@"time"];
     self.timeDurationLabel.text = [dic objectForKey:@"duration"];
+    self.durationFloat = [[dic objectForKey:@"durationFloat"] floatValue];
+    self.seatId = [dic objectForKey:@"seatId"];
 }
 - (void)onBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
@@ -149,6 +155,7 @@
         for (NSDictionary *dic in dicArray) {
             Doctor *tmpDoctor = [Doctor DoctorFromDoctorResult:dic];
             self.medicalPlaceTextField.text = tmpDoctor.doctor_hospital;
+            self.originalClinic = tmpDoctor.doctor_hospital;
             
             [self.clinicArray addObject:tmpDoctor.doctor_hospital];
             
@@ -221,35 +228,65 @@
          [self.navigationController popViewControllerAnimated:YES];
     }
 
+    
+    
     [[DoctorManager shareInstance]weiXinMessagePatient:[LocalNotificationCenter shareInstance].selectPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
         
     } failedBlock:^(NSError *error){
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
+    
+    
+    NSString *clinicId = nil;
+    for(NSInteger i =1;i<self.clinicArray.count;i++){
+        if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
+            clinicId = [self.clinicIdArray objectAtIndex:i-1];
+        }
+    }
+    
+    //选择医院发生变化
+    if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
+         [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:0 withAppointMoney:0 withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:nil withMaterial:nil successBlock:^{
+ 
+            } failedBlock:^(NSError *error){
+                    [SVProgressHUD showImage:nil status:error.localizedDescription];
+            }];
+    }
+ 
+}
+
+- (void)yuYueTuiSongClinicSuccessWithResult:(NSDictionary *)result{
+    
+}
+- (void)yuYueTuiSongClinicFailedWithError:(NSError *)error{
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 - (void)weiXinMessageSuccessWithResult:(NSDictionary *)result{
     
+}
+- (void)weiXinMessageFailedWithError:(NSError *)error{
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+- (void)yuYueMessageSuccessWithResult:(NSDictionary *)result{
     NSString *str = [result objectForKey:@"Result"];
-  
-    
     if( [MFMessageComposeViewController canSendText] ){
         MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
+        controller.recipients = [NSArray arrayWithObject:[LocalNotificationCenter shareInstance].yuyuePatient.patient_phone];
+        controller.body = str;
+        controller.messageComposeDelegate = self;
         
+        [self presentModalViewController:controller animated:YES];
         
-            controller.recipients = [NSArray arrayWithObject:[LocalNotificationCenter shareInstance].yuyuePatient.patient_phone];
-            controller.body = str;
-            controller.messageComposeDelegate = self;
-            
-            [self presentModalViewController:controller animated:YES];
-            
-            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
-        }
+        [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
+    }
     else{
         [self alertWithTitle:@"提示信息" msg:@"设备没有短信功能"];
     }
 }
-
+- (void)yuYueMessageFailedWithError:(NSError *)error{
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
     [controller dismissModalViewControllerAnimated:NO];//关键的一句   不能为YES
     switch ( result ) {
@@ -276,15 +313,7 @@
                                           otherButtonTitles:@"确定", nil];
     [alert show];
 }
-- (void)weiXinMessageFailedWithError:(NSError *)error{
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
-- (void)yuYueMessageSuccessWithResult:(NSDictionary *)result{
-    
-}
-- (void)yuYueMessageFailedWithError:(NSError *)error{
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
+
 #pragma cellLineHidden - mark
 
 - (void)setExtraCellLineHidden: (UITableView *)tableView{

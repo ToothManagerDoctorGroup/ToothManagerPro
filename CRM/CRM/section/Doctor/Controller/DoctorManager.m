@@ -83,6 +83,21 @@ Realize_ShareInstance(DoctorManager);
 }
 
 /**
+ *  预约推送到诊所端
+ *
+ *  @param patientId:病人id  doctorId:医生id
+ **/
+- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString*)clinic_name withCliniId:(NSString*)clinic_id withDoctorId:(NSString*)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
+    if(patientId == nil){
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请先选择患者" errorCode:400]);
+    }
+    if(doctor_id == nil){
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请登录" errorCode:400]);
+    }
+    [[CRMHttpRequest shareInstance]YuYueTuiSongClinic:patientId withClinicName:clinic_name withCliniId:clinic_id withDoctorId:doctor_id withAppointTime:appoint_time withDuration:duration withSeatPrice:seat_price withAppointMoney:appoint_money withAppointType:appoint_type withSeatId:seat_id withToothPosition:tooth_position withAssist:assist withMaterial:material];
+    successBlock();
+}
+/**
  *  预约短信消息推送
  *
  *  @param patientId:病人id  doctorId:医生id  message_type:类型   send_type  send_time

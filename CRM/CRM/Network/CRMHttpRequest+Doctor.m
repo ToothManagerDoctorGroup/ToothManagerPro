@@ -171,6 +171,38 @@
     TimRequestParam *param = [TimRequestParam paramWithURLSting:YuYueDuanXin_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
+
+//预约推送到诊所端
+- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString *)clinic_name withCliniId:(NSString *)clinic_id withDoctorId:(NSString *)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material{
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:16];
+    [dataEntity setObject:patientId forKey:@"patient_id"];
+    [dataEntity setObject:doctor_id forKey:@"doctor_id"];
+    [dataEntity setObject:clinic_name forKey:@"clinic_name"];
+    [dataEntity setObject:clinic_id forKey:@"clinic_id"];
+    [dataEntity setObject:appoint_time forKey:@"appoint_time"];
+    
+    [dataEntity setObject:[NSString stringWithFormat:@"%f",duration] forKey:@"duration"];
+    [dataEntity setObject:[NSString stringWithFormat:@"%f",seat_price] forKey:@"seat_price"];
+    [dataEntity setObject:[NSString stringWithFormat:@"%f",appoint_money] forKey:@"appoint_money"];
+    
+    [dataEntity setObject:appoint_type forKey:@"appoint_type"];
+    [dataEntity setObject:seat_id forKey:@"seat_id"];
+    [dataEntity setObject:tooth_position forKey:@"tooth_position"];
+    
+    [dataEntity setObject:assist forKey:@"assist"];
+    [dataEntity setObject:material forKey:@"material"];
+    
+    [dataEntity setObject:@"xuyaopeihe" forKey:@"remark"];
+    [dataEntity setObject:@"0" forKey:@"expert_result"];
+    [dataEntity setObject:@"可以做" forKey:@"expert_suggestion"];
+    
+    
+    NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
+    [paramDic setObject:jsonString forKey:@"DataEntity"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:YuYueTuiSongClinic_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    [self requestWithParams:param];
+}
 #pragma mark - Request CallBack
 - (void)onDoctorRequestSuccessWithResponse:(id)response withParam:(TimRequestParam *)param {
     NSError *error = nil;
@@ -243,6 +275,8 @@
         [self requestYuYueInfoByClinicSeatDateSuccess:result andParam:param];
     } else if ([param.requestUrl isEqualToString:YuYueDuanXin_URL]){
         [self requestYuYueMessageSuccess:result andParam:param];
+    } else if ([param.requestUrl isEqualToString:YuYueTuiSongClinic_URL]){
+        [self requestYuYueTuiSongClinicSuccess:result andParam:param];
     }
 }
 
@@ -264,6 +298,10 @@
 
 - (void)requestYuYueMessageSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     [self responderPerformSelector:@selector(yuYueMessageSuccessWithResult:) withObject:result withObject:nil];
+}
+
+- (void)requestYuYueTuiSongClinicSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    [self responderPerformSelector:@selector(yuYueTuiSongClinicSuccessWithResult:) withObject:result withObject:nil];
 }
 
 - (void)requestClinicMessageSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param{
@@ -301,6 +339,8 @@
         [self requestYuYueInfoByClinicSeatDateFailure:error andParam:param];
     } else if ([param.requestUrl isEqualToString:YuYueDuanXin_URL]){
         [self requestYuYueMessageFailure:error andParam:param];
+    } else if ([param.requestUrl isEqualToString:YuYueTuiSongClinic_URL]){
+        [self requestYuYueTuiSongClinicFailure:error andParam:param];
     }
 }
 
@@ -322,6 +362,10 @@
 
 - (void)requestYuYueMessageFailure:(NSError *)error andParam:(TimRequestParam *)param{
     [self responderPerformSelector:@selector(yuYueMessageFailedWithError:) withObject:error withObject:nil];
+}
+
+- (void)requestYuYueTuiSongClinicFailure:(NSError *)error andParam:(TimRequestParam *)param{
+    [self responderPerformSelector:@selector(yuYueTuiSongClinicFailedWithError:) withObject:error withObject:nil];
 }
 
 -(void)requestClinicMessageFailure:(NSError *)error andParam:(TimRequestParam *)param{

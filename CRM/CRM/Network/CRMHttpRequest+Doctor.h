@@ -19,6 +19,7 @@ DEF_URL DoctorClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ash
 DEF_URL ClinicSeat_URL = @"http://122.114.62.57/clinicServer/ashx/SeatHandler.ashx";
 DEF_URL YuYueInfoByClinicSeatDate_URL = @"http://122.114.62.57/clinicServer/ashx/AppointmentsHandler.ashx";
 DEF_URL YuYueDuanXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx?action=getMessageItem";
+DEF_URL YuYueTuiSongClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint";
 
 @interface CRMHttpRequest (Doctor)
 
@@ -97,6 +98,13 @@ DEF_URL YuYueDuanXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHa
  **/
 - (void)yuYueMessagePatient:(NSString *)patientId fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time;
 
+/**
+ *  预约推送到诊所端
+ *
+ *  @param patientId:病人id  doctorId:医生id
+ **/
+- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString*)clinic_name withCliniId:(NSString*)clinic_id withDoctorId:(NSString*)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material;
+
 @end
 
 @protocol CRMHttpRequestDoctorDelegate <NSObject>
@@ -142,4 +150,7 @@ DEF_URL YuYueDuanXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHa
 - (void)yuYueMessageSuccessWithResult:(NSDictionary *)result;
 - (void)yuYueMessageFailedWithError:(NSError *)error;
 
+//预约推送到诊所端
+- (void)yuYueTuiSongClinicSuccessWithResult:(NSDictionary *)result;
+- (void)yuYueTuiSongClinicFailedWithError:(NSError *)error;
 @end

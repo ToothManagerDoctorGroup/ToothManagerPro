@@ -70,6 +70,13 @@ Declare_ShareInstance(DoctorManager);
 - (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
 
 /**
+ *  预约推送到诊所端
+ *
+ *  @param patientId:病人id  doctorId:医生id
+ **/
+- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString*)clinic_name withCliniId:(NSString*)clinic_id withDoctorId:(NSString*)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+
+/**
  *  预约短信消息推送
  *
  *  @param patientId:病人id  doctorId:医生id  message_type:类型   send_type  send_time

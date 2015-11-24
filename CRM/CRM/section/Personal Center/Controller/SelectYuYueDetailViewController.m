@@ -412,31 +412,39 @@
 #pragma mark - ActionSheet Delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    NSString *clinicId = nil;
+    for(NSInteger i =1;i<self.clinicNameArray.count;i++){
+        if([self.clinicTextField.text isEqualToString:self.clinicNameArray[i]]){
+            clinicId = [self.clinicIdArray objectAtIndex:i-1];
+        }
+    }
+    
     switch (buttonIndex) {
         case 0:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration", nil];
+            
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration",@"0.5",@"durationFloat",self.currentSeatId,@"seatId", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 1:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration",@"1.0",@"durationFloat",self.currentSeatId,@"seatId", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 2:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration",@"1.5",@"durationFloat",self.currentSeatId,@"seatId", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 3:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration",@"2.0",@"durationFloat",self.currentSeatId,@"seatId", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
