@@ -212,6 +212,9 @@
             clinicId = [self.clinicIdArray objectAtIndex:i-1];
         }
     }
+    if(self.currentSeatId.length == 0){
+        self.currentSeatId = @"";
+    }
     if(clinicId){
         [self.remindTwoArray removeAllObjects];
         [[DoctorManager shareInstance]yuYueInfoByClinicSeatDate:clinicId withSeatId:self.currentSeatId withDate:dateString successBlock:^{
@@ -423,28 +426,28 @@
         case 0:
         {
             
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration",@"0.5",@"durationFloat",self.currentSeatId,@"seatId", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration",@"0.5",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 1:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration",@"1.0",@"durationFloat",self.currentSeatId,@"seatId", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration",@"1.0",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 2:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration",@"1.5",@"durationFloat",self.currentSeatId,@"seatId", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration",@"1.5",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 3:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration",@"2.0",@"durationFloat",self.currentSeatId,@"seatId", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration",@"2.0",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }

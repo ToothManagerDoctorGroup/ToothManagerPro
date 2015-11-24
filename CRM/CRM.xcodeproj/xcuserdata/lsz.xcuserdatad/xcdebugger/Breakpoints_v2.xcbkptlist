@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRM/section/Personal Center/Controller/AddReminderViewController.m"
-            timestampString = "470030253.332991"
+            timestampString = "470041978.013748"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
+            startingLineNumber = "231"
+            endingLineNumber = "231"
             landmarkName = "-onRightButtonAction:"
             landmarkType = "5">
          </BreakpointContent>
@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRM/section/Personal Center/Controller/AddReminderViewController.m"
-            timestampString = "470030253.332991"
+            timestampString = "470041978.013748"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "233"
-            endingLineNumber = "233"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
             landmarkName = "-onRightButtonAction:"
             landmarkType = "5">
             <Locations>
@@ -122,12 +122,12 @@
                   moduleName = "CRM"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/lsz/GitHub/ToothManagerPro/CRM/CRM/section/Personal%20Center/Controller/AddReminderViewController.m"
-                  timestampString = "470036992.601779"
+                  timestampString = "470049143.787806"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "233"
-                  endingLineNumber = "233"
-                  offsetFromSymbolStart = "3176">
+                  startingLineNumber = "238"
+                  endingLineNumber = "238"
+                  offsetFromSymbolStart = "3321">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -137,11 +137,11 @@
                   moduleName = "CRM"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/lsz/GitHub/ToothManagerPro/CRM/CRM/section/Personal%20Center/Controller/AddReminderViewController.m"
-                  timestampString = "470036992.601984"
+                  timestampString = "470049143.788119"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "235"
-                  endingLineNumber = "235"
+                  startingLineNumber = "240"
+                  endingLineNumber = "240"
                   offsetFromSymbolStart = "12">
                </Location>
             </Locations>
@@ -154,12 +154,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRM/section/Personal Center/Controller/AddReminderViewController.m"
-            timestampString = "470030340.62678"
+            timestampString = "470041978.013748"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "198"
-            endingLineNumber = "198"
+            startingLineNumber = "203"
+            endingLineNumber = "203"
             landmarkName = "-onRightButtonAction:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRM/section/NotificationCenter/LocalNotificationCenter.m"
+            timestampString = "470040327.406542"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
+            landmarkName = "-addLocalNotification:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

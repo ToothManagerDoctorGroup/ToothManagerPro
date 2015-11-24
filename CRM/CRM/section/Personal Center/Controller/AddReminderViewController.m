@@ -142,6 +142,8 @@
     self.timeDurationLabel.text = [dic objectForKey:@"duration"];
     self.durationFloat = [[dic objectForKey:@"durationFloat"] floatValue];
     self.seatId = [dic objectForKey:@"seatId"];
+    self.medicalPlaceTextField.text = [dic objectForKey:@"clinicName"];
+    self.medicalChairTextField.text = [dic objectForKey:@"seatName"];
 }
 - (void)onBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
@@ -183,16 +185,19 @@
         return;
     }
     LocalNotification *notification = [[LocalNotification alloc] init];
-  //  notification.reserve_content = self.selectMatterTextField.text;
-    notification.reserve_time = self.timeTextField.text;//[NSDate dateWithString:self.timeLabel.text];
-  //  notification.reserve_type = self.repeatTimeTextField.text;
-    
-   // notification.reserve_content = self.repeatTimeTextField.text;
+    notification.reserve_time = self.timeTextField.text;
     notification.reserve_type = self.selectMatterTextField.text;
     notification.medical_place = self.medicalPlaceTextField.text;
     notification.medical_chair = self.medicalChairTextField.text;
     
-    notification.patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    notification.reserve_content = @"";
+    notification.creation_date = @"";
+    notification.sync_time = @"";
+    notification.creation_date = @"";
+    notification.selected = YES;
+    
+    
+    notification.patient_id = [LocalNotificationCenter shareInstance].yuyuePatient.ckeyid;
     
     if(self.ifNextReserve == YES){
         notification.patient_id = self.reservedPatiendId;
