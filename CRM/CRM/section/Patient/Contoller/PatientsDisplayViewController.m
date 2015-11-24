@@ -500,7 +500,7 @@
         Patient *tmpPatient = [[Patient alloc] init];
         tmpPatient.ckeyid = cellMode.patientId;
         tmpPatient.patient_name = cellMode.name;
-        [LocalNotificationCenter shareInstance].yuyuePatient = tmpPatient;
+        [LocalNotificationCenter shareInstance].selectPatient = tmpPatient;
         [[NSNotificationCenter defaultCenter]postNotificationName:@"yuyuePatientNotification" object:tmpPatient];
         [self.navigationController popViewControllerAnimated:YES];
         

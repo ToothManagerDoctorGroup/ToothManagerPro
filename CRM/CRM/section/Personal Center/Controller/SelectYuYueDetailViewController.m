@@ -20,7 +20,9 @@
 @property (nonatomic,retain) TimPickerTextField *seatTextField;
 @property (nonatomic,strong) NSMutableArray *seatNameArray;
 @property (nonatomic,strong) NSMutableArray *seatIdArray;
+@property (nonatomic,strong) NSMutableArray *seatPriceArray;
 @property (nonatomic,copy) NSString *currentSeatId;
+@property (nonatomic,copy) NSString *currentSeatPrice;
 @property (nonatomic,retain) UITableView *seatTableView;
 @property (nonatomic,assign) NSInteger actionSheetInt;
 @property (nonatomic,copy) NSString *actionSheetTime;
@@ -51,6 +53,7 @@
 - (void)keyboardWillShow:(CGFloat)keyboardHeight {
      [self.seatNameArray removeAllObjects];
     [self.seatIdArray removeAllObjects];
+    [self.seatPriceArray removeAllObjects];
     [self.seatTableView removeFromSuperview];
     self.seatTextField.text = @"";
     
@@ -84,6 +87,7 @@
     if (dicArray && dicArray.count > 0) {
     [self.seatNameArray removeAllObjects];
         [self.seatIdArray removeAllObjects];
+        [self.seatPriceArray removeAllObjects];
     [self.seatTableView removeFromSuperview];
         
         for(NSInteger i =0;i<[dicArray count];i++){
@@ -93,6 +97,9 @@
             
             NSString *string1 = [dic objectForKey:@"seat_id"];
             [self.seatIdArray addObject:string1];
+            
+            NSString *string2 = [dic objectForKey:@"seat_price"];
+            [self.seatPriceArray addObject:string2];
         }
     }
     
@@ -155,6 +162,7 @@
 
     self.seatNameArray = [[NSMutableArray alloc]initWithCapacity:0];
     self.seatIdArray = [[NSMutableArray alloc]initWithCapacity:0];
+    self.seatPriceArray = [[NSMutableArray alloc]initWithCapacity:0];
     
     self.clinicTextField = [[TimPickerTextField alloc]initWithFrame:CGRectMake(60, 0, 120, 50)];
     self.clinicTextField.text = [self.clinicNameArray objectAtIndex:0];
@@ -372,6 +380,7 @@
             [self.remindTwoArray removeAllObjects];
             [[DoctorManager shareInstance]yuYueInfoByClinicSeatDate:clinicId withSeatId:self.seatIdArray[indexPath.row] withDate:dateString successBlock:^{
                 self.currentSeatId = self.seatIdArray[indexPath.row];
+                self.currentSeatPrice = self.seatPriceArray[indexPath.row];
             } failedBlock:^(NSError *error){
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
@@ -426,28 +435,28 @@
         case 0:
         {
             
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration",@"0.5",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"30分钟",@"duration",@"0.5",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName",self.currentSeatPrice,@"seatPrice",nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 1:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration",@"1.0",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"1小时",@"duration",@"1.0",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName",self.currentSeatPrice,@"seatPrice", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 2:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration",@"1.5",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"90分钟",@"duration",@"1.5",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName",self.currentSeatPrice,@"seatPrice", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }
             break;
         case 3:
         {
-            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration",@"2.0",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName", nil];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:self.actionSheetTime,@"time",@"2小时",@"duration",@"2.0",@"durationFloat",self.currentSeatId,@"seatId",self.clinicTextField.text,@"clinicName",self.seatTextField.text,@"seatName",self.currentSeatPrice,@"seatPrice", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"YuYueTime" object:dic];
             [self popViewControllerAnimated:YES];
         }

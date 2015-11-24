@@ -40,6 +40,7 @@
 @property (nonatomic,copy) NSString *originalClinic;
 @property (nonatomic,assign) float durationFloat;
 @property (nonatomic,copy) NSString *seatId;
+@property (nonatomic,copy) NSString *seatPrice;
 
 @property (nonatomic, copy)NSString *selectClinicId;//选中的诊所id
 
@@ -158,7 +159,7 @@
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
-    self.huanzheTextField.text = [LocalNotificationCenter shareInstance].yuyuePatient.patient_name;
+    self.huanzheTextField.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
     
 
 }
@@ -170,10 +171,11 @@
     self.seatId = [dic objectForKey:@"seatId"];
     self.medicalPlaceTextField.text = [dic objectForKey:@"clinicName"];
     self.medicalChairTextField.text = [dic objectForKey:@"seatName"];
+    self.seatPrice = [dic objectForKey:@"seatPrice"];
 }
 - (void)onBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
-    [LocalNotificationCenter shareInstance].yuyuePatient = nil;
+    [LocalNotificationCenter shareInstance].selectPatient = nil;
 }
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
@@ -223,7 +225,7 @@
     notification.selected = YES;
     
     
-    notification.patient_id = [LocalNotificationCenter shareInstance].yuyuePatient.ckeyid;
+    notification.patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
     
     if(self.ifNextReserve == YES){
         notification.patient_id = self.reservedPatiendId;
@@ -276,8 +278,9 @@
     }
     
     //选择医院发生变化
+    
     if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
-         [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:0 withAppointMoney:0 withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:nil withMaterial:nil successBlock:^{
+         [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:0 withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:nil withMaterial:nil successBlock:^{
  
             } failedBlock:^(NSError *error){
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -303,7 +306,7 @@
     NSString *str = [result objectForKey:@"Result"];
     if( [MFMessageComposeViewController canSendText] ){
         MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
-        controller.recipients = [NSArray arrayWithObject:[LocalNotificationCenter shareInstance].yuyuePatient.patient_phone];
+        controller.recipients = [NSArray arrayWithObject:[LocalNotificationCenter shareInstance].selectPatient.patient_phone];
         controller.body = str;
         controller.messageComposeDelegate = self;
         
