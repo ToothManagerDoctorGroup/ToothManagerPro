@@ -173,7 +173,7 @@
 }
 
 //预约推送到诊所端
-- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString *)clinic_name withCliniId:(NSString *)clinic_id withDoctorId:(NSString *)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material{
+- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString *)clinic_name withCliniId:(NSString *)clinic_id withDoctorId:(NSString *)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSString *)assist withMaterial:(NSString *)material{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:16];
     [dataEntity setObject:patientId forKey:@"patient_id"];
