@@ -224,9 +224,7 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
 @property (nonatomic,copy) NSString* creation_date;   //创建时间
 
-
 @property (nonatomic,copy) NSString *update_date;
-
 
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
 

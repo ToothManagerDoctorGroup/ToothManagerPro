@@ -83,13 +83,13 @@
     self.headImageView.image = [UIImage imageNamed:@"weixin"];
     self.headImageView.frame = self.modelFrame.headImgFrame;
     
-    self.doctorNameLabel.text = self.modelFrame.model.name;
+    self.doctorNameLabel.text = self.modelFrame.model.doctor_name;
     self.doctorNameLabel.frame = self.modelFrame.nameFrame;
     
-    self.sendTimeLabel.text = self.modelFrame.model.time;
+    self.sendTimeLabel.text = self.modelFrame.model.creation_date;
     self.sendTimeLabel.frame = self.modelFrame.timeFrame;
     
-    self.contentLabel.text = self.modelFrame.model.content;
+    self.contentLabel.text = self.modelFrame.model.cons_content;
     self.contentLabel.frame = self.modelFrame.contentFrame;
     
 }

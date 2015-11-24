@@ -128,13 +128,16 @@
     self.medicalButton.frame = CGRectMake(Margin * 0.3, Margin * 0.3, medicalButtonW, medicalButtonH);
     self.addMedicalButton.frame = CGRectMake(self.width - addMedicalButtonW - Margin * 0.3, Margin * 0.3, addMedicalButtonW, addMedicalButtonH);
     self.medicalButtonScrollView.frame = CGRectMake(0, 45, medicalButtonScrollViewW, medicalButtonScrollViewH);
-    self.medicalButtonScrollView.medicalCases = self.medicalCases;
-    
-    self.editMedicalButton.frame = CGRectMake(self.width - editMedicalButtonW - Margin * .3, 47.5, editMedicalButtonW, editMedicalButtonH);
+    if (self.medicalCases.count > 0) {
+        self.medicalButtonScrollView.medicalCases = self.medicalCases;
+        self.editMedicalButton.frame = CGRectMake(self.width - editMedicalButtonW - Margin * .3, 47.5, editMedicalButtonW, editMedicalButtonH);
+    }
     
     //设置数据
     self.medicalDetailView.frame = CGRectMake(0, self.medicalButtonScrollView.bottom + 1, self.width, self.height - self.medicalButtonScrollView.bottom - 1);
-    self.medicalDetailView.medicalCase = self.medicalCases[self.currentIndex];
+    if (self.medicalCases.count > 0) {
+        self.medicalDetailView.medicalCase = self.medicalCases[self.currentIndex];
+    }
 }
 
 #pragma mark -MedicalButtonScrollViewDelegate

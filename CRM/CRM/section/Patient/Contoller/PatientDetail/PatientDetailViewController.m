@@ -31,6 +31,8 @@
 #import "IntroducerViewController.h"
 #import "NSDictionary+Extension.h"
 #import "CRMMacro.h"
+#import "DBTableMode.h"
+#import "CRMHttpRequest+Doctor.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -93,15 +95,18 @@
     if (!_comments) {
         _comments = [NSMutableArray array];
         
-        for (int i = 0; i < 5; i++) {
-            CommentModel *model = [[CommentModel alloc] init];
-            model.name = [NSString stringWithFormat:@"张三%d",i];
-            model.time = @"2015-10-09 12:13:05";
-            model.content = @"我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论我是评论";
-            CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
-            modelFrame.model = model;
-            
-            [_comments addObject:modelFrame];
+        NSArray *commentArr = [[DBManager shareInstance] getPatientConsultationWithPatientId:self.patientsCellMode.patientId];
+        if (commentArr.count > 0) {
+            for (int i = 0; i < commentArr.count; i++) {
+                PatientConsultation *model = commentArr[i];
+                
+                CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
+                modelFrame.model = model;
+                
+                [_comments addObject:modelFrame];
+            }
+            //刷新单元格
+            [_tableView reloadData];
         }
     }
     return _comments;
@@ -189,8 +194,9 @@
         _detailIntroducer.intr_name = [AccountManager shareInstance].currentUser.name;
         _detailIntroducer.ckeyid = [AccountManager currentUserid];
     }
+    
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
-    //为控件赋值
+        //为控件赋值
     _headerMedicalView.medicalCases = array;
 }
 
@@ -330,30 +336,49 @@
 #pragma mark -UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     
-    //创建一个model
-    CommentModel *model = [[CommentModel alloc] init];
-    model.name = @"李四";
-    NSDate *date = [NSDate date];
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSString *dateStr = [formatter stringFromDate:date];
-    model.time = dateStr;
-    model.content = textField.text;
-    
+    PatientConsultation *model = [self createPatientConsultationWithContent:textField.text];
     CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
     modelFrame.model = model;
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.comments.count inSection:0];
-    
-    [self.comments addObject:modelFrame];
-    [_tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
-    
-    textField.text = @"";
-    
-    [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    
-    
+    BOOL result = [[DBManager shareInstance] insertPatientConsultation:model];
+    if (result) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.comments.count inSection:0];
+
+        [self.comments addObject:modelFrame];
+        [_tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+        
+        textField.text = @"";
+        
+        [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"发送失败"];
+    }
     return YES;
+}
+
+//陈云7
+#pragma mark -创建一个会诊信息
+- (PatientConsultation *)createPatientConsultationWithContent:(NSString *)content{
+    UserObject *user = [[AccountManager shareInstance] currentUser];
+    PatientConsultation *consultation = [[PatientConsultation alloc] init];
+    consultation.patient_id = self.patientsCellMode.patientId;
+    consultation.doctor_name = user.name;
+    consultation.cons_content = content;
+    consultation.cons_type = @"0";
+    consultation.amr_file = @"";
+    consultation.amr_time = @"0";
+    consultation.data_flag = 0;
+    consultation.update_date = @"";
+    
+    NSDate *date = [NSDate date];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    consultation.sync_time = @"";
+    consultation.user_id = user.userid;
+    consultation.creation_date = [formatter stringFromDate:date];
+    consultation.doctor_id = user.userid;
+    
+    return consultation;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{

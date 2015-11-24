@@ -598,7 +598,7 @@ NSInteger curTimeMCNum_rs = 0;
     counterOfPatientConsultationPost = [patient_consultation count];
     for (int i=0; i<[patient_consultation count]; i++) {
         
-        PatientConsultation *patientC =patient_consultation[i];
+        PatientConsultation *patientC = patient_consultation[i];
         
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
         

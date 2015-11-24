@@ -17,7 +17,7 @@
 
 @implementation CommentModelFrame
 
-- (void)setModel:(CommentModel *)model{
+- (void)setModel:(PatientConsultation *)model{
     _model = model;
     
     
@@ -30,19 +30,19 @@
     //计算姓名的frame
     CGFloat docNameX = CGRectGetMaxX(_headImgFrame) + Margin;
     CGFloat docNameY = Margin * 2;
-    CGSize doctorSize = [model.name sizeWithFont:DoctorNameFont];
+    CGSize doctorSize = [model.doctor_name sizeWithFont:DoctorNameFont];
     _nameFrame = CGRectMake(docNameX, docNameY, doctorSize.width, doctorSize.height);
     
     //计算时间frame
     CGFloat timeX = CGRectGetMaxX(_headImgFrame) + Margin;
     CGFloat timeY = CGRectGetMaxY(_nameFrame) + Margin;
-    CGSize timeSize = [model.time sizeWithFont:SendTimeFont];
+    CGSize timeSize = [model.creation_date sizeWithFont:SendTimeFont];
     _timeFrame = CGRectMake(timeX, timeY, timeSize.width, timeSize.height);
     
     //计算内容的frame
     CGFloat contentX = timeX;
     CGFloat contentY = CGRectGetMaxY(_timeFrame) + Margin;
-    CGSize contentSize = [model.content sizeWithFont:ContentFont constrainedToSize:CGSizeMake(kScreenWidth - Margin * 3 - _headImgFrame.size.width, MAXFLOAT)];
+    CGSize contentSize = [model.cons_content sizeWithFont:ContentFont constrainedToSize:CGSizeMake(kScreenWidth - Margin * 3 - _headImgFrame.size.width, MAXFLOAT)];
     _contentFrame = CGRectMake(contentX, contentY, contentSize.width, contentSize.height);
     
     

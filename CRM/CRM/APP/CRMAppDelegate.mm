@@ -333,7 +333,7 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    [BMKMapView didForeGround];//当应用恢复前台状态时调用，回复地图的渲染和opengl相关的操作
+    [BMKMapView didForeGround];//当应用恢复前台状态时调用，恢复地图的渲染和opengl相关的操作
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

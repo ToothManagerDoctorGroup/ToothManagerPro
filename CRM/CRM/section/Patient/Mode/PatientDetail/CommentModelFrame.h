@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DBTableMode.h"
 
-@class CommentModel;
 @interface CommentModelFrame : NSObject
 /**
  *  数据模型
  */
-@property (nonatomic, strong)CommentModel *model;
+@property (nonatomic, strong)PatientConsultation *model;
 /**
  *  头像Frame
  */
@@ -35,6 +35,11 @@
  *  cell的高度
  */
 @property (nonatomic, assign)CGFloat cellHeight;
+
+/**
+ *  头像
+ */
+@property (nonatomic, copy)NSString *headImg_url;
 
 
 @end
