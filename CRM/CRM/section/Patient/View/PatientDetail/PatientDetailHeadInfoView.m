@@ -7,6 +7,8 @@
 //
 
 #import "PatientDetailHeadInfoView.h"
+#import "QrCodeViewController.h"
+#import "UIView+WXViewController.h"
 
 #define Margin 8
 #define CommenTitleFont [UIFont systemFontOfSize:16]
@@ -161,8 +163,6 @@
         //电话按钮
         CGFloat commentH = phoneSize.height + Margin * 2;
         self.phoneButton.frame = CGRectMake(self.patientPhoneLabel.right + Margin * 2, commentH + 2, commentH - 4, commentH - 4);
-        
-        self.weixinButton.frame = CGRectMake(self.phoneButton.right + Margin * 0.5, commentH + 2, commentH - 4, commentH - 4);
     }
     
     //介绍人
@@ -180,6 +180,17 @@
         CGSize transferSize = [transfer sizeWithFont:CommenTitleFont];
         self.transferToLabel.frame = CGRectMake(self.transferToTitle.right + Margin * 2, self.transferToTitle.top, transferSize.width, transferSize.height);
         self.transferToLabel.text = transfer;
+    }
+}
+
+- (void)setIsWeixin:(BOOL)isWeixin{
+    _isWeixin = isWeixin;
+    
+    if (self.isWeixin) {
+        CGFloat commentH = self.phoneButton.height + 4;
+        self.weixinButton.frame = CGRectMake(self.phoneButton.right + Margin * 0.5, commentH + 2, commentH - 4, commentH - 4);
+    }else{
+        self.weixinButton.frame = CGRectZero;
     }
 }
 
@@ -214,7 +225,9 @@
 
 #pragma mark -微信扫描
 - (void)weixinButtonClick{
-    
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
+    [self.viewController.navigationController pushViewController:qrVC animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{

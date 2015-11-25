@@ -101,6 +101,7 @@
     }
     
     self.contentSize = CGSizeMake(offset + 1 * (self.medicalCases.count - 1), self.height);
+    
 }
 
 

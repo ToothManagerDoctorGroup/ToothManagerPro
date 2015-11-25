@@ -32,6 +32,7 @@
 #import "DBManager+User.h"
 #import "MenuButtonPushManager.h"
 #import "MenuView.h"
+#import "IntroducerViewController.h"
 
 
 @implementation CRMAppDelegate{
@@ -161,18 +162,24 @@
     //viewController1.navigationBarHidden=YES;
     
     
-    UIStoryboard *storypcboard = [UIStoryboard storyboardWithName:@"PersonalCenterStoryboard" bundle:nil];
-    SysMsgViewController *sysmsgVC = [storypcboard instantiateViewControllerWithIdentifier:@"SysMsgViewController"];
-    [self setTabbarItemState:sysmsgVC withTitle:@"系统通知" withImage1:@"ic_tabbar_message" withImage2:@"ic_tabbar_message_active"];
-    TimNavigationViewController *ncViewController2=[[TimNavigationViewController alloc]initWithRootViewController:sysmsgVC];
-    
+//    UIStoryboard *storypcboard = [UIStoryboard storyboardWithName:@"PersonalCenterStoryboard" bundle:nil];
+//    SysMsgViewController *sysmsgVC = [storypcboard instantiateViewControllerWithIdentifier:@"SysMsgViewController"];
+//    [self setTabbarItemState:sysmsgVC withTitle:@"系统通知" withImage1:@"ic_tabbar_message" withImage2:@"ic_tabbar_message_active"];
+//    TimNavigationViewController *ncViewController2=[[TimNavigationViewController alloc]initWithRootViewController:sysmsgVC];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+    [self setTabbarItemState:introducerVC withTitle:@"介绍人" withImage1:@"ic_tabbar_library" withImage2:@"ic_tabbar_library_active"];
+    introducerVC.isHome = YES;
+    TimNavigationViewController* ncViewController2=[[TimNavigationViewController alloc]initWithRootViewController:introducerVC];
+    
+    
     PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
     patientVC.patientStatus = PatientStatuspeAll;
     patientVC.isTabbarVc = YES;
     [self setTabbarItemState:patientVC withTitle:@"患者库" withImage1:@"ic_tabbar_library" withImage2:@"ic_tabbar_library_active"];
     TimNavigationViewController* ncViewController3=[[TimNavigationViewController alloc]initWithRootViewController:patientVC];
+    
     
     AccountViewController *account = [storyboard instantiateViewControllerWithIdentifier:@"AccountViewController"];
     TimNavigationViewController* ncViewController4=[[TimNavigationViewController alloc]initWithRootViewController:account];
@@ -203,7 +210,7 @@
     
     
     
-    NSMutableArray *array = [NSMutableArray arrayWithObjects:viewController1, ncViewController2, nc3,ncViewController3, ncViewController4,nil];
+    NSMutableArray *array = [NSMutableArray arrayWithObjects:viewController1, ncViewController3, nc3,ncViewController2, ncViewController4,nil];
     [_tabBarController setViewControllers:array];
     
     menuButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -139,9 +139,12 @@
 }
 
 - (BOOL)saveData {
-    [self.tableHeaderView setCase:_medicalCase andRes:_medicalRes];
+    if (self.edit != YES) {
+        [self.tableHeaderView setCase:_medicalCase andRes:_medicalRes];
+    }
+    
     if([[DBManager shareInstance] insertMedicalCase:_medicalCase]) {  //先保存病例表
-      [[DBManager shareInstance]updateUpdateDate:self.patiendId];
+      [[DBManager shareInstance] updateUpdateDate:self.patiendId];
         NSString *caseid = _medicalCase.ckeyid;
         if ([NSString isNotEmptyString:caseid]) {
             //存储ct照片
@@ -290,10 +293,11 @@
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }
-        
         [SVProgressHUD showImage:nil status:@"保存成功"];
-        [self postNotificationName:MedicalCaseEditedNotification object:nil];
+        
+        [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
         [self popViewControllerAnimated:YES];
+        
     } else {
         [SVProgressHUD showImage:nil status:@"保存失败"];
     }
@@ -492,14 +496,27 @@
     [self.hengYaVC.view removeFromSuperview];
     [self.hengYaVC removeFromParentViewController];
 }
--(void)queDingHengYa:(NSMutableArray *)hengYaArray{
-    self.tableHeaderView.casenameTextField.text = [hengYaArray componentsJoinedByString:@","];
+
+- (void)queDingHengYa:(NSMutableArray *)hengYaArray toothStr:(NSString *)toothStr{
+    
+    if ([toothStr isEqualToString:@"未连续"]) {
+        self.tableHeaderView.casenameTextField.text = [hengYaArray componentsJoinedByString:@","];
+    }else{
+        self.tableHeaderView.casenameTextField.text = toothStr;
+    }
+    
     [self removeHengYaVC];
 }
--(void)queDingRuYa:(NSMutableArray *)ruYaArray{
-    self.tableHeaderView.casenameTextField.text = [ruYaArray componentsJoinedByString:@","];
+
+- (void)queDingRuYa:(NSMutableArray *)ruYaArray toothStr:(NSString *)toothStr{
+    if ([toothStr isEqualToString:@"未连续"]) {
+        self.tableHeaderView.casenameTextField.text = [ruYaArray componentsJoinedByString:@","];
+    }else{
+        self.tableHeaderView.casenameTextField.text = toothStr;
+    }
     [self removeRuYaVC];
 }
+
 -(void)removeRuYaVC{
     [self.ruYaVC willMoveToParentViewController:nil];
     [self.ruYaVC.view removeFromSuperview];

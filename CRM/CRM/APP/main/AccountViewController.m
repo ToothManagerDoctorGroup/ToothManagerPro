@@ -312,6 +312,7 @@
         if(indexPath.row == 0){
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
             IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+            introducerVC.isHome = NO;
             introducerVC.hidesBottomBarWhenPushed = YES;
            [self.navigationController pushViewController:introducerVC animated:YES];
         }else if (indexPath.row == 1){

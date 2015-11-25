@@ -94,7 +94,7 @@ Realize_ShareInstance(DoctorManager);
     if(doctor_id == nil){
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请登录" errorCode:400]);
     }
-    [[CRMHttpRequest shareInstance]YuYueTuiSongClinic:patientId withClinicName:clinic_name withCliniId:clinic_id withDoctorId:doctor_id withAppointTime:appoint_time withDuration:duration withSeatPrice:seat_price withAppointMoney:appoint_money withAppointType:appoint_type withSeatId:seat_id withToothPosition:tooth_position withAssist:assist withMaterial:material];
+    [[CRMHttpRequest shareInstance] YuYueTuiSongClinic:patientId withClinicName:clinic_name withCliniId:clinic_id withDoctorId:doctor_id withAppointTime:appoint_time withDuration:duration withSeatPrice:seat_price withAppointMoney:appoint_money withAppointType:appoint_type withSeatId:seat_id withToothPosition:tooth_position withAssist:assist withMaterial:material];
     successBlock();
 }
 /**

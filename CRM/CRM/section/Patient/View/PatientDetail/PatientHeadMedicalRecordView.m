@@ -130,11 +130,13 @@
     self.medicalButtonScrollView.frame = CGRectMake(0, 45, medicalButtonScrollViewW, medicalButtonScrollViewH);
     if (self.medicalCases.count > 0) {
         self.medicalButtonScrollView.medicalCases = self.medicalCases;
+        
         self.editMedicalButton.frame = CGRectMake(self.width - editMedicalButtonW - Margin * .3, 47.5, editMedicalButtonW, editMedicalButtonH);
     }
     
     //设置数据
     self.medicalDetailView.frame = CGRectMake(0, self.medicalButtonScrollView.bottom + 1, self.width, self.height - self.medicalButtonScrollView.bottom - 1);
+    
     if (self.medicalCases.count > 0) {
         self.medicalDetailView.medicalCase = self.medicalCases[self.currentIndex];
     }
@@ -142,6 +144,7 @@
 
 #pragma mark -MedicalButtonScrollViewDelegate
 - (void)medicalButtonScrollView:(MedicalButtonScrollView *)scrollView didSelectButtonWithIndex:(NSUInteger)index{
+    
     self.currentIndex = index;
     
     //重新设置数据

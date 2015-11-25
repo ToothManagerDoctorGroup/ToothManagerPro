@@ -152,6 +152,7 @@ Realize_ShareInstance(CRMHttpRequest);
         responseObject = @{};
     }
     
+    
     if (params != nil && params.callbackPrefix != nil) {
         SEL selector = NSSelectorFromString([NSString stringWithFormat:@"on%@RequestSuccessWithResponse:withParam:", params.callbackPrefix]);
         if ([self respondsToSelector:selector]) {

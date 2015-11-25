@@ -39,8 +39,8 @@
     model.plan_num = [NSString stringWithFormat:@"%ld",(long)countModel.num];
     model.actual_num = [NSString stringWithFormat:@"%ld",(long)countModel.num];
     model.price = countModel.assist_price;
-    model.plan_money = [NSString stringWithFormat:@"%.f",countModel.num * [countModel.assist_price floatValue]];
-    model.actual_money = [NSString stringWithFormat:@"%.f",countModel.num * [countModel.assist_price floatValue]];
+    model.plan_money = [NSString stringWithFormat:@"%.2f",countModel.num * [countModel.assist_price floatValue]];
+    model.actual_money = [NSString stringWithFormat:@"%.2f",countModel.num * [countModel.assist_price floatValue]];
     model.is_reserved = @"1";
     return model;
 }

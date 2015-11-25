@@ -50,6 +50,8 @@
 
 @property (nonatomic, strong)NSArray *chooseAssists; //选中的助手数组
 
+@property (nonatomic, strong)LocalNotification *currentNoti;//当前需要保存的预约对象
+
 @end
 
 @implementation AddReminderViewController
@@ -68,9 +70,6 @@
     return _chooseMaterials;
 }
 
-- (void)dealloc{
-    NSLog(@"************************我被销毁了");
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -235,10 +234,11 @@
     
     notification.selected = YES;
     notification.tooth_position = self.yaWeiTextField.text;
-    notification.clinic_reserve_id = clinicId;
-    notification.duration = [NSString stringWithFormat:@"%.f",self.durationFloat];
-    
+    notification.clinic_reserve_id = @"1";
+    notification.duration = [NSString stringWithFormat:@"%.2f",self.durationFloat];
     notification.patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    
+    self.currentNoti = notification;
     
     if(self.ifNextReserve == YES){
         notification.patient_id = self.reservedPatiendId;
@@ -247,12 +247,25 @@
         if (ret) {
             [self.navigationController popViewControllerAnimated:YES];
         }
+        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
+            
+        } failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+        
         return;
+    }
+    
+    BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
+    if (ret) {
+        NSLog(@"预约保存本地成功");
+    }else{
+        NSLog(@"预约保存本地失败");
     }
     
     //微信消息推送打开
     if([weiXinSwitch isOn]){
-        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
+        [[DoctorManager shareInstance]weiXinMessagePatient:[LocalNotificationCenter shareInstance].selectPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
             
         } failedBlock:^(NSError *error){
             [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -266,20 +279,6 @@
             [SVProgressHUD showImage:nil status:error.localizedDescription];
         }];
     }
-    
-    BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
-    if (ret) {
-         [self.navigationController popViewControllerAnimated:YES];
-    }
-
-    
-    
-    [[DoctorManager shareInstance]weiXinMessagePatient:[LocalNotificationCenter shareInstance].selectPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
-        
-    } failedBlock:^(NSError *error){
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
-    
     
     //选择医院发生变化
     if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
@@ -316,9 +315,29 @@
 }
 
 - (void)yuYueTuiSongClinicSuccessWithResult:(NSDictionary *)result{
-    NSLog(@"预约成功");
+    
+    [SVProgressHUD showSuccessWithStatus:@"预约成功"];
+    //获取当前的返回结果
+    NSNumber *clinic_reserve_id = result[@"Result"];
+    //修改clinic_reserve_id
+    if (self.currentNoti) {
+        self.currentNoti.clinic_reserve_id = [NSString stringWithFormat:@"%.2f",[clinic_reserve_id floatValue]];
+    }
+    //更新当前保存的本地预约信息
+    BOOL res = [[LocalNotificationCenter shareInstance] updateLocalNotification:self.currentNoti];
+    if (res) {
+        NSLog(@"预约更新成功");
+    }else{
+        NSLog(@"预约更新失败");
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.navigationController popViewControllerAnimated:YES];
+    });
 }
 - (void)yuYueTuiSongClinicFailedWithError:(NSError *)error{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.navigationController popViewControllerAnimated:YES];
+    });
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
@@ -500,19 +519,34 @@
    
 }
 
+#pragma mark -HengYaDeleate
+
 -(void)removeHengYaVC{
     [self.hengYaVC willMoveToParentViewController:nil];
     [self.hengYaVC.view removeFromSuperview];
     [self.hengYaVC removeFromParentViewController];
 }
--(void)queDingHengYa:(NSMutableArray *)hengYaArray{
-    self.yaWeiTextField.text = [hengYaArray componentsJoinedByString:@","];
+
+- (void)queDingHengYa:(NSMutableArray *)hengYaArray toothStr:(NSString *)toothStr{
+    
+    if ([toothStr isEqualToString:@"未连续"]) {
+        self.yaWeiTextField.text = [hengYaArray componentsJoinedByString:@","];
+    }else{
+        self.yaWeiTextField.text = toothStr;
+    }
+    
     [self removeHengYaVC];
 }
--(void)queDingRuYa:(NSMutableArray *)ruYaArray{
-    self.yaWeiTextField.text = [ruYaArray componentsJoinedByString:@","];
+
+- (void)queDingRuYa:(NSMutableArray *)ruYaArray toothStr:(NSString *)toothStr{
+    if ([toothStr isEqualToString:@"未连续"]) {
+        self.yaWeiTextField.text = [ruYaArray componentsJoinedByString:@","];
+    }else{
+        self.yaWeiTextField.text = toothStr;
+    }
     [self removeRuYaVC];
 }
+
 -(void)removeRuYaVC{
     [self.ruYaVC willMoveToParentViewController:nil];
     [self.ruYaVC.view removeFromSuperview];

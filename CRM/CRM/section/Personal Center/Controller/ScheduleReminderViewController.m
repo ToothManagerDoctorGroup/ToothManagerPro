@@ -17,12 +17,17 @@
 #import "TimAlertView.h"
 #import "MudDatePickerView.h"
 #import "SyncManager.h"
+#import "PatientDetailViewController.h"
+#import "SysMsgViewController.h"
+#import "PMCalendar.h"
 
-@interface ScheduleReminderViewController ()<MudDatePickerViewDelegate>
+@interface ScheduleReminderViewController ()<MudDatePickerViewDelegate,PMCalendarControllerDelegate>
 {
     MudDatePickerView *datePickerView;
 }
 @property (nonatomic,retain) NSArray *remindArray;
+
+@property (nonatomic, weak)PMCalendarController *pmCalenderController;
 @end
 
 @implementation ScheduleReminderViewController
@@ -35,10 +40,9 @@
     
     self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-    
-    //[self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back.png"]];
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+    [self setRightBarButtonWithTitle:@"消息"];
+    //[self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back.png"]];
     
 
     
@@ -76,12 +80,11 @@
 
 - (void)onRightButtonAction:(id)sender
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
-    patientVC.patientStatus = PatientStatuspeAll;
-    patientVC.isScheduleReminderPush = YES;
-    patientVC.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:patientVC animated:YES];
+    
+    UIStoryboard *storypcboard = [UIStoryboard storyboardWithName:@"PersonalCenterStoryboard" bundle:nil];
+    SysMsgViewController *sysmsgVC = [storypcboard instantiateViewControllerWithIdentifier:@"SysMsgViewController"];
+    sysmsgVC.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:sysmsgVC animated:YES];
 }
 
 - (void)initView
@@ -260,7 +263,21 @@
             break;
         case 2:
         {
-            [self createDatePicker];
+//            [self createDatePicker];
+            PMCalendarController *pmCalenderController = [[PMCalendarController alloc] init];
+            self.pmCalenderController = pmCalenderController;
+            pmCalenderController.delegate = self;
+            pmCalenderController.mondayFirstDayOfWeek = YES;
+            
+            [pmCalenderController presentCalendarFromView:sender
+                 permittedArrowDirections:PMCalendarArrowDirectionAny
+                                 animated:YES];
+            /*    [pmCC presentCalendarFromRect:[sender frame]
+             inView:[sender superview]
+             permittedArrowDirections:PMCalendarArrowDirectionAny
+             animated:YES];*/
+//            [self calendarController:pmCalenderController didChangePeriod:pmCalenderController.period];
+
             
         }
             break;
@@ -279,6 +296,15 @@
         [m_tableView reloadData];
     }
     
+}
+
+#pragma mark PMCalendarControllerDelegate methods
+- (void)calendarController:(PMCalendarController *)calendarController didChangePeriod:(PMPeriod *)newPeriod
+{
+    [self.pmCalenderController dismissCalendarAnimated:YES];
+    NSLog(@"%@",[NSString stringWithFormat:@"%@ - %@"
+                        , [newPeriod.startDate dateStringWithFormat:@"dd-MM-yyyy"]
+                        , [newPeriod.endDate dateStringWithFormat:@"dd-MM-yyyy"]]);
 }
 
 - (void)createDatePicker
@@ -414,10 +440,19 @@
     LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
     PatientsCellMode *cellMode = [[PatientsCellMode alloc] init];
     cellMode.patientId = notifi.patient_id;
-    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-    patientDetailCtl.patientsCellMode = cellMode;
-    patientDetailCtl.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:patientDetailCtl animated:YES];
+    
+    
+//    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
+//    patientDetailCtl.patientsCellMode = cellMode;
+//    patientDetailCtl.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:patientDetailCtl animated:YES];
+    
+#warning 跳转页面事件
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellMode;
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:detailVc animated:YES];
     
 }
 

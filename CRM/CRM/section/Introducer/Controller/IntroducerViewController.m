@@ -22,6 +22,7 @@
 #import "MudItemBarItem.h"
 #import "MudItemsBar.h"
 #import "CreateIntroducerViewController.h"
+#import "SyncManager.h"
 
 @interface IntroducerViewController () <MudItemsBarDelegate>
 @property (nonatomic,retain) MudItemsBar *menubar;
@@ -42,7 +43,11 @@
 
 - (void)initView {
     [super initView];
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    if (self.isHome) {
+        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+    }else{
+        [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    }
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     self.searchDisplayController.searchBar.placeholder = @"搜索介绍人";
     self.title = @"介绍人";
@@ -144,6 +149,26 @@
     } else {
         [super onBackButtonAction:sender];
     }
+}
+
+-(void)onLeftButtonAction:(id)sender{
+    [SVProgressHUD showWithStatus:@"同步中..."];
+    if ([[AccountManager shareInstance] isLogin]) {
+        [NSTimer scheduledTimerWithTimeInterval:0.2
+                                         target:self
+                                       selector:@selector(callSync)
+                                       userInfo:nil
+                                        repeats:NO];
+        
+    } else {
+        NSLog(@"User did not login");
+        [SVProgressHUD showWithStatus:@"同步失败，请先登录..."];
+        [SVProgressHUD dismiss];
+        [NSThread sleepForTimeInterval: 1];
+    }
+}
+- (void)callSync {
+    [[SyncManager shareInstance] startSync];
 }
 
 - (void)onRightButtonAction:(id)sender {
@@ -290,6 +315,7 @@
     } else {
         IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc]init];
         [detailCtl setIntroducer:introducer];
+        detailCtl.hidesBottomBarWhenPushed = YES;
         [self pushViewController:detailCtl animated:YES];
     }
 }
@@ -331,12 +357,14 @@
         {
             AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
             addressBook.type = ImportTypeIntroducer;
+            addressBook.hidesBottomBarWhenPushed = YES;
             [self pushViewController:addressBook animated:YES];
         }
             break;
         case 1:
         {
             CreateIntroducerViewController *newIntoducerVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreateIntroducerViewController"];
+            newIntoducerVC.hidesBottomBarWhenPushed = YES;
             [self pushViewController:newIntoducerVC animated:YES];
         }
             break;

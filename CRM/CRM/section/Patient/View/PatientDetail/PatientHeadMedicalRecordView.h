@@ -23,6 +23,8 @@
 
 @property (nonatomic, strong)NSArray *medicalCases;
 
+@property (nonatomic, strong)MedicalCase *selectCase;
+
 @property (nonatomic, weak)id<PatientHeadMedicalRecordViewDelegate> delegate;
 
 @end

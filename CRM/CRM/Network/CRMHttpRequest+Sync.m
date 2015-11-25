@@ -672,6 +672,10 @@ NSInteger curTimeMCNum_rs = 0;
         [subParamDic setObject:local.medical_chair forKey:@"medical_chair"];
         [subParamDic setObject:local.doctor_id forKey:@"doctor_id"];
         
+        [subParamDic setObject:local.tooth_position forKey:@"tooth_position"];
+        [subParamDic setObject:local.clinic_reserve_id forKey:@"clinic_reserve_id"];
+        [subParamDic setObject:local.duration forKey:@"duration"];
+        
         NSError *error;
         NSString *jsonString;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:subParamDic

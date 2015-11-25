@@ -18,6 +18,8 @@
 @property (nonatomic, copy)NSString *introducerName;
 @property (nonatomic, copy)NSString *transferStr;
 
+@property (nonatomic, assign)BOOL isWeixin;
+
 - (CGFloat)getTotalHeight;
 
 @end

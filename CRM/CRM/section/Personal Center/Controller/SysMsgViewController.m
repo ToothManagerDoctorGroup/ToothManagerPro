@@ -63,12 +63,13 @@
 
 - (void)initView {
     [super initView];
-    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     self.title = @"系统通知";
     self.view.backgroundColor = [UIColor whiteColor];
     [self refreshData];
 }
--(void)onLeftButtonAction:(id)sender{
+-(void)onRightButtonAction:(id)sender{
     [SVProgressHUD showWithStatus:@"同步中..."];
     if ([[AccountManager shareInstance] isLogin]) {
         [NSTimer scheduledTimerWithTimeInterval:0.2

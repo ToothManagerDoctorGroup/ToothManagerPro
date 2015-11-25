@@ -195,6 +195,14 @@
 		3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */; };
 		3D23A6641BF33B610029943D /* ClinicDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A6631BF33B610029943D /* ClinicDetailViewController.m */; };
 		3D2A00471C05651600B1EF65 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00461C05651600B1EF65 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		3D2A004C1C05DAC100B1EF65 /* MyPatientTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A004B1C05DAC100B1EF65 /* MyPatientTool.m */; };
+		3D2A00611C05E55600B1EF65 /* NSDate+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00521C05E55600B1EF65 /* NSDate+Helpers.m */; };
+		3D2A00621C05E55600B1EF65 /* PMCalendarBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00541C05E55600B1EF65 /* PMCalendarBackgroundView.m */; };
+		3D2A00631C05E55600B1EF65 /* PMCalendarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00571C05E55600B1EF65 /* PMCalendarController.m */; };
+		3D2A00641C05E55600B1EF65 /* PMCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A005A1C05E55600B1EF65 /* PMCalendarView.m */; };
+		3D2A00651C05E55600B1EF65 /* PMDimmingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A005C1C05E55600B1EF65 /* PMDimmingView.m */; };
+		3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A005E1C05E55600B1EF65 /* PMPeriod.m */; };
+		3D2A00671C05E55600B1EF65 /* PMSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00601C05E55600B1EF65 /* PMSelectionView.m */; };
 		3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */; };
 		3DAA10E91BF5801D00FD8149 /* ClinicImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E81BF5801D00FD8149 /* ClinicImageModel.m */; };
 		3DAA10EC1BF5819C00FD8149 /* SeatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10EB1BF5819C00FD8149 /* SeatModel.m */; };
@@ -1029,6 +1037,25 @@
 		3D23A6631BF33B610029943D /* ClinicDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailViewController.m; sourceTree = "<group>"; };
 		3D2A00451C05651600B1EF65 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		3D2A00461C05651600B1EF65 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		3D2A004A1C05DAC100B1EF65 /* MyPatientTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPatientTool.h; sourceTree = "<group>"; };
+		3D2A004B1C05DAC100B1EF65 /* MyPatientTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyPatientTool.m; sourceTree = "<group>"; };
+		3D2A004F1C05E55600B1EF65 /* PMCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMCalendar.h; sourceTree = "<group>"; };
+		3D2A00511C05E55600B1EF65 /* NSDate+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Helpers.h"; sourceTree = "<group>"; };
+		3D2A00521C05E55600B1EF65 /* NSDate+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Helpers.m"; sourceTree = "<group>"; };
+		3D2A00531C05E55600B1EF65 /* PMCalendarBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMCalendarBackgroundView.h; sourceTree = "<group>"; };
+		3D2A00541C05E55600B1EF65 /* PMCalendarBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMCalendarBackgroundView.m; sourceTree = "<group>"; };
+		3D2A00551C05E55600B1EF65 /* PMCalendarConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMCalendarConstants.h; sourceTree = "<group>"; };
+		3D2A00561C05E55600B1EF65 /* PMCalendarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMCalendarController.h; sourceTree = "<group>"; };
+		3D2A00571C05E55600B1EF65 /* PMCalendarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMCalendarController.m; sourceTree = "<group>"; };
+		3D2A00581C05E55600B1EF65 /* PMCalendarHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMCalendarHelpers.h; sourceTree = "<group>"; };
+		3D2A00591C05E55600B1EF65 /* PMCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMCalendarView.h; sourceTree = "<group>"; };
+		3D2A005A1C05E55600B1EF65 /* PMCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMCalendarView.m; sourceTree = "<group>"; };
+		3D2A005B1C05E55600B1EF65 /* PMDimmingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMDimmingView.h; sourceTree = "<group>"; };
+		3D2A005C1C05E55600B1EF65 /* PMDimmingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMDimmingView.m; sourceTree = "<group>"; };
+		3D2A005D1C05E55600B1EF65 /* PMPeriod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMPeriod.h; sourceTree = "<group>"; };
+		3D2A005E1C05E55600B1EF65 /* PMPeriod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMPeriod.m; sourceTree = "<group>"; };
+		3D2A005F1C05E55600B1EF65 /* PMSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMSelectionView.h; sourceTree = "<group>"; };
+		3D2A00601C05E55600B1EF65 /* PMSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMSelectionView.m; sourceTree = "<group>"; };
 		3DAA10E41BF5774400FD8149 /* ClinicDetailModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailModel.h; sourceTree = "<group>"; };
 		3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailModel.m; sourceTree = "<group>"; };
 		3DAA10E71BF5801D00FD8149 /* ClinicImageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicImageModel.h; sourceTree = "<group>"; };
@@ -2260,12 +2287,7 @@
 			isa = PBXGroup;
 			children = (
 				3DAA115E1BF5BF7000FD8149 /* MyHttpTools */,
-				3D1AB0701C00424600547809 /* MenuPopover */,
-				3DF671571BF70B2000527B49 /* Catory */,
-				3DF671531BF70A9900527B49 /* UIViewExt */,
-				3DAA117D1BF5C1B900FD8149 /* WMPageController */,
-				3DAA10F41BF5946300FD8149 /* MJPhotoBrowser */,
-				3D23A6421BF300CC0029943D /* MJExtension */,
+				3D2A004D1C05E53B00B1EF65 /* Tools */,
 			);
 			name = MyNetwork;
 			sourceTree = "<group>";
@@ -2310,6 +2332,61 @@
 				3D23A6511BF300CC0029943D /* NSObject+MJKeyValue.m */,
 			);
 			path = MJExtension;
+			sourceTree = "<group>";
+		};
+		3D2A00491C05DA8F00B1EF65 /* MyPatientTool */ = {
+			isa = PBXGroup;
+			children = (
+				3D2A004A1C05DAC100B1EF65 /* MyPatientTool.h */,
+				3D2A004B1C05DAC100B1EF65 /* MyPatientTool.m */,
+			);
+			name = MyPatientTool;
+			sourceTree = "<group>";
+		};
+		3D2A004D1C05E53B00B1EF65 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				3D2A004E1C05E55600B1EF65 /* PMCalendar */,
+				3DF671571BF70B2000527B49 /* Catory */,
+				3DF671531BF70A9900527B49 /* UIViewExt */,
+				3DAA117D1BF5C1B900FD8149 /* WMPageController */,
+				3DAA10F41BF5946300FD8149 /* MJPhotoBrowser */,
+				3D23A6421BF300CC0029943D /* MJExtension */,
+				3D1AB0701C00424600547809 /* MenuPopover */,
+			);
+			name = Tools;
+			sourceTree = "<group>";
+		};
+		3D2A004E1C05E55600B1EF65 /* PMCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				3D2A004F1C05E55600B1EF65 /* PMCalendar.h */,
+				3D2A00501C05E55600B1EF65 /* src */,
+			);
+			path = PMCalendar;
+			sourceTree = "<group>";
+		};
+		3D2A00501C05E55600B1EF65 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				3D2A00511C05E55600B1EF65 /* NSDate+Helpers.h */,
+				3D2A00521C05E55600B1EF65 /* NSDate+Helpers.m */,
+				3D2A00531C05E55600B1EF65 /* PMCalendarBackgroundView.h */,
+				3D2A00541C05E55600B1EF65 /* PMCalendarBackgroundView.m */,
+				3D2A00551C05E55600B1EF65 /* PMCalendarConstants.h */,
+				3D2A00561C05E55600B1EF65 /* PMCalendarController.h */,
+				3D2A00571C05E55600B1EF65 /* PMCalendarController.m */,
+				3D2A00581C05E55600B1EF65 /* PMCalendarHelpers.h */,
+				3D2A00591C05E55600B1EF65 /* PMCalendarView.h */,
+				3D2A005A1C05E55600B1EF65 /* PMCalendarView.m */,
+				3D2A005B1C05E55600B1EF65 /* PMDimmingView.h */,
+				3D2A005C1C05E55600B1EF65 /* PMDimmingView.m */,
+				3D2A005D1C05E55600B1EF65 /* PMPeriod.h */,
+				3D2A005E1C05E55600B1EF65 /* PMPeriod.m */,
+				3D2A005F1C05E55600B1EF65 /* PMSelectionView.h */,
+				3D2A00601C05E55600B1EF65 /* PMSelectionView.m */,
+			);
+			path = src;
 			sourceTree = "<group>";
 		};
 		3DAA10E21BF576B800FD8149 /* ClinicDetail */ = {
@@ -2374,6 +2451,7 @@
 			isa = PBXGroup;
 			children = (
 				3D23A6381BF2EE6E0029943D /* HttpTool */,
+				3D2A00491C05DA8F00B1EF65 /* MyPatientTool */,
 				3D23A6371BF2EDFC0029943D /* MyClinicTool */,
 				3DAA115D1BF5BF4B00FD8149 /* MyBillTool */,
 				3DE5FBBE1BFC2A9E001E7728 /* DoctorTool */,
@@ -4793,6 +4871,7 @@
 				3D23A6541BF300CC0029943D /* MJIvar.m in Sources */,
 				6436DF0719B8C48100DC667E /* HanyuPinyinOutputFormat.m in Sources */,
 				6436DEEA19B8C48100DC667E /* PSTCollectionViewFlowLayout.m in Sources */,
+				3D2A00621C05E55600B1EF65 /* PMCalendarBackgroundView.m in Sources */,
 				6436DE3719B8C48100DC667E /* DBManager+Patients.m in Sources */,
 				6436DE3819B8C48100DC667E /* DBManager.m in Sources */,
 				6404D5621A6AB4B2001F6F7B /* CreateCaseHeaderViewController.m in Sources */,
@@ -4881,6 +4960,7 @@
 				2DFE7ED31B4A71980088B119 /* AFURLResponseSerialization.m in Sources */,
 				3D1B260A1BFEED5400997FDE /* MedicalDetailView.m in Sources */,
 				812FD13C19F8CDDE005C32AF /* ScheduleReminderViewController.m in Sources */,
+				3D2A00641C05E55600B1EF65 /* PMCalendarView.m in Sources */,
 				2DFE7ED01B4A71980088B119 /* AFSecurityPolicy.m in Sources */,
 				2D2ED8521C00942D003B7047 /* MenuView.m in Sources */,
 				6436DF3919B8C48100DC667E /* TimNavigationBarMenuView.m in Sources */,
@@ -4918,6 +4998,7 @@
 				64CFD94319F7F6A6001EB0DA /* PersonalCenterViewController.m in Sources */,
 				6436DF0019B8C48100DC667E /* UIImage+MultiFormat.m in Sources */,
 				64CFD92A19F7F6A6001EB0DA /* PatientTableViewCell.m in Sources */,
+				3D2A00671C05E55600B1EF65 /* PMSelectionView.m in Sources */,
 				3D1B260E1BFF031400997FDE /* CommentCell.m in Sources */,
 				64CFD94019F7F6A6001EB0DA /* InfoViewController.m in Sources */,
 				2DFE7E7C1B4A23010088B119 /* UMTextView.m in Sources */,
@@ -4930,6 +5011,8 @@
 				3D23A6571BF300CC0029943D /* NSObject+MJIvar.m in Sources */,
 				3D0BE5E11BF99F680023D3FA /* UIView+WXViewController.m in Sources */,
 				AE545A7E1AFF122D009D904A /* DoctorInfoViewController.m in Sources */,
+				3D2A00611C05E55600B1EF65 /* NSDate+Helpers.m in Sources */,
+				3D2A00651C05E55600B1EF65 /* PMDimmingView.m in Sources */,
 				3DAA118C1BF5C1B900FD8149 /* WMMenuView.m in Sources */,
 				3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */,
 				64CFD94E19F7F6A6001EB0DA /* LocalNotificationTableViewCell.m in Sources */,
@@ -4987,6 +5070,7 @@
 				6436DEDD19B8C48100DC667E /* MWPhoto.m in Sources */,
 				2D5167C01BD8D68B00C0C3C6 /* HengYaViewController.m in Sources */,
 				3DEAF5851C03182800445C20 /* UserInfoEditViewController.m in Sources */,
+				3D2A004C1C05DAC100B1EF65 /* MyPatientTool.m in Sources */,
 				2DFE7E7B1B4A23010088B119 /* UMRadialView.m in Sources */,
 				6436DEEE19B8C48100DC667E /* PSTGridLayoutInfo.m in Sources */,
 				64CFD90B19F7F6A6001EB0DA /* IntroducePersonViewController.m in Sources */,
@@ -5021,6 +5105,7 @@
 				64CFD92F19F7F6A6001EB0DA /* ExpenseTableViewCell.m in Sources */,
 				3D23A63B1BF2EE800029943D /* CRMHttpTool.m in Sources */,
 				6404D5521A6A2313001F6F7B /* UIDevice+Exension.m in Sources */,
+				3D2A00631C05E55600B1EF65 /* PMCalendarController.m in Sources */,
 				6436DE2819B8C48100DC667E /* CRMAppDelegate.mm in Sources */,
 				6436DEE219B8C48100DC667E /* DACircularProgressView.m in Sources */,
 				3DE5FBCA1BFC68E1001E7728 /* PayParam.m in Sources */,
@@ -5064,6 +5149,7 @@
 				6436DF3019B8C48100DC667E /* NSString+Conversion.m in Sources */,
 				6436DEDB19B8C48100DC667E /* MWGridCell.m in Sources */,
 				3D0BE5DE1BF99A260023D3FA /* PayedBillViewController.m in Sources */,
+				3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */,
 				6436DEF819B8C48100DC667E /* SDWebImageCompat.m in Sources */,
 				6436DF3F19B8C48100DC667E /* TimPickerView.m in Sources */,
 				6436DE3E19B8C48100DC667E /* CRMHttpRequest.m in Sources */,

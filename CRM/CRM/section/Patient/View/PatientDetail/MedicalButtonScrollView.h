@@ -11,7 +11,7 @@
 /**
  *  病历详情页面病历按钮滚动视图
  */
-@class MedicalButtonScrollView;
+@class MedicalButtonScrollView,MedicalCase;
 @protocol MedicalButtonScrollViewDelegate <NSObject>
 
 @optional
@@ -22,6 +22,8 @@
 @interface MedicalButtonScrollView : UIScrollView
 
 @property (nonatomic, strong)NSArray *medicalCases;
+
+@property (nonatomic, strong)MedicalCase *selectCase;
 
 @property (nonatomic, weak)id<MedicalButtonScrollViewDelegate> medicalDelegate;
 

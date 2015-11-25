@@ -171,7 +171,6 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *sync_time;  //同步时间
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
 
-
 + (MedicalCase *)medicalCaseWithResult:(FMResultSet *)result;
 + (MedicalCase *)MedicalCaseFromPatientMedicalCase:(NSDictionary *)medcas;
 

@@ -33,6 +33,8 @@
 #import "CRMMacro.h"
 #import "DBTableMode.h"
 #import "CRMHttpRequest+Doctor.h"
+#import "MyPatientTool.h"
+#import "CRMHttpRespondModel.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -67,9 +69,10 @@
 @property (nonatomic,retain) Patient *detailPatient;
 @property (nonatomic,retain) Introducer *detailIntroducer;
 @property (nonatomic,retain) Introducer *changeIntroducer;
-
 @property (nonatomic, strong)NSMutableArray *medicalCases;
 @property (nonatomic, strong)NSMutableArray *cTLibs;
+
+@property (nonatomic, assign)MedicalCase *selectCase;
 
 @end
 
@@ -118,8 +121,8 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
-    [self initData];
-    [self refreshView];
+//    [self initData];
+//    [self refreshView];
 }
 
 - (void)viewDidLoad {
@@ -135,7 +138,13 @@
     
     //加载子视图
     [self setUpSubView];
-
+    
+    //加载数据
+    [self initData];
+    [self refreshView];
+    
+    //设置
+    
 }
 
 #pragma mark -添加监听
@@ -196,13 +205,29 @@
     }
     
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
+
+    for (MedicalCase *mcase in array) {
+        NSLog(@"medicalCaseKeyId:%@",mcase.ckeyid);
+    }
         //为控件赋值
     _headerMedicalView.medicalCases = array;
+    
 }
 
 - (void)refreshView {
     [super refreshView];
     self.detailPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
+    //获取患者绑定微信的状态
+    [MyPatientTool getWeixinStatusWithPatientName:self.detailPatient.patient_name patientPhone:self.detailPatient.patient_phone success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //未绑定
+            _headerInfoView.isWeixin = YES;
+        }else{
+            _headerInfoView.isWeixin = NO;
+        }
+    } failure:^(NSError *error) {
+        NSLog(@"error:%@",error);
+    }];
     _headerInfoView.detailPatient = self.detailPatient;
     
     if(self.changeIntroducer != nil){
@@ -229,6 +254,7 @@
 - (void)refreshData {
     [super refreshData];
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
+
     _headerMedicalView.medicalCases = array;
 }
 
@@ -356,7 +382,6 @@
     return YES;
 }
 
-//陈云7
 #pragma mark -创建一个会诊信息
 - (PatientConsultation *)createPatientConsultationWithContent:(NSString *)content{
     UserObject *user = [[AccountManager shareInstance] currentUser];
@@ -451,9 +476,6 @@
     } else {
         [SVProgressHUD showImage:nil status:@"转换失败"];
     }
-    
-    
-    
 }
 - (void)patientToIntroducerFailed:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -469,6 +491,7 @@
 }
 - (void)didClickeditMedicalButtonWithMedicalCase:(MedicalCase *)medicalCase{
     MedicalCase *mcase = medicalCase;
+    _selectCase = mcase;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
     caseVC.title = @"病历详情";

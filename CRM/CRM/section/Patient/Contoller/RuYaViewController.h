@@ -22,5 +22,5 @@
 
 - (void)changeToHengYaVC;
 
-- (void)queDingRuYa:(NSMutableArray *)ruYaArray;
+- (void)queDingRuYa:(NSMutableArray *)ruYaArray toothStr:(NSString *)toothStr;
 @end

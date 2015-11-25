@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, IntroducePersonView) {
 @property (nonatomic,assign) id <IntroducePersonViewControllerDelegate> delegate;
 @property (nonatomic,readwrite) IntroducePersonView Mode;
 
+@property (nonatomic, assign)BOOL isHome; //判断是否是从首页进入
+
 @end
 
 @protocol IntroducePersonViewControllerDelegate <NSObject>

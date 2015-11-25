@@ -23,7 +23,7 @@
 
 - (void)removeHengYaVC;
 
-- (void)queDingHengYa:(NSMutableArray *)hengYaArray;
+- (void)queDingHengYa:(NSMutableArray *)hengYaArray toothStr:(NSString *)toothStr;
 
 - (void)changeToRuYaVC;
 @end

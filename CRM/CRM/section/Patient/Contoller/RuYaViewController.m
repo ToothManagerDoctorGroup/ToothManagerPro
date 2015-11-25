@@ -39,12 +39,20 @@
     xiaHeArray = [[NSMutableArray alloc]initWithObjects:@"71",@"72",@"73",@"74",@"75",@"81",@"82",@"83",@"84",@"85", nil];
     quanKouArray = [[NSMutableArray alloc]initWithObjects:@"51",@"52",@"53",@"54",@"55",@"61",@"62",@"63",@"64",@"65",@"71",@"72",@"73",@"74",@"75",@"81",@"82",@"83",@"84",@"85", nil];
     
-    if(self.ruYaString.length > 0 && ![self isShuZi:self.ruYaString]){
-        NSArray *ru = [self.ruYaString componentsSeparatedByString:@","];
-        for(NSInteger i = 0;i<[ru count];i++){
-            UIButton *button = (UIButton *)[self.view viewWithTag:[[ru objectAtIndex:i]integerValue]];
-            button.selected = YES;
-            [ruYaArray addObject:ru[i]];
+    if ([self.ruYaString isEqualToString:@"上颌"]) {
+        [self shClick:shangHeBtn];
+    }else if([self.ruYaString isEqualToString:@"下颌"]){
+        [self xhClick:xiaHeBtn];
+    }else if ([self.ruYaString isEqualToString:@"全口"]){
+        [self qkClick:quanKouBtn];
+    }else{
+        if(self.ruYaString.length > 0 && ![self isShuZi:self.ruYaString]){
+            NSArray *ru = [self.ruYaString componentsSeparatedByString:@","];
+            for(NSInteger i = 0;i<[ru count];i++){
+                UIButton *button = (UIButton *)[self.view viewWithTag:[[ru objectAtIndex:i]integerValue]];
+                button.selected = YES;
+                [ruYaArray addObject:ru[i]];
+            }
         }
     }
 }
@@ -69,6 +77,11 @@
             button.selected = NO;
             [ruYaArray removeObject:shangHeArray[i]];
         }
+        //判断全口按钮是否被选中
+        if (quanKouBtn.selected) {
+            quanKouBtn.selected = NO;
+        }
+        
     }else{
         button.selected = YES;
         for(NSInteger i = 0;i<[shangHeArray count];i++){
@@ -81,6 +94,8 @@
             button.selected = YES;
             [ruYaArray addObject:shangHeArray[i]];
         }
+        
+        
         if(ruYaArray.count == 20){
             quanKouBtn.selected = YES;
         }
@@ -94,6 +109,11 @@
             UIButton *button = (UIButton *)[self.view viewWithTag:[[xiaHeArray objectAtIndex:i]integerValue]];
             button.selected = NO;
             [ruYaArray removeObject:xiaHeArray[i]];
+        }
+        
+        //判断全口按钮是否被选中
+        if (quanKouBtn.selected) {
+            quanKouBtn.selected = NO;
         }
     }else{
         button.selected = YES;
@@ -151,9 +171,48 @@
     if(button.selected){
         button.selected = NO;
         [ruYaArray removeObject:[NSString stringWithFormat:@"%ld",button.tag]];
+        
+        if ([shangHeArray containsObject:[NSString stringWithFormat:@"%ld",(long)button.tag]]) {
+            shangHeBtn.selected = NO;
+        }
+        
+        if ([xiaHeArray containsObject:[NSString stringWithFormat:@"%ld",(long)button.tag]]) {
+            xiaHeBtn.selected = NO;
+        }
+        quanKouBtn.selected = NO;
+        
     }else{
         button.selected = YES;
         [ruYaArray addObject:[NSString stringWithFormat:@"%ld",button.tag]];
+        
+        //全口
+        if (ruYaArray.count == 20) {
+            shangHeBtn.selected = YES;
+            xiaHeBtn.selected = YES;
+            quanKouBtn.selected = YES;
+        }else{
+            
+            if (ruYaArray.count >= 10) {
+                int shIndex = 0;
+                for (NSString *str in shangHeArray) {
+                    if ([ruYaArray containsObject:str]) {
+                        shIndex++;
+                    }
+                }
+                if (shIndex == 10) {
+                    shangHeBtn.selected = YES;
+                }
+                int xhIndex = 0;
+                for (NSString *str in xiaHeArray) {
+                    if ([ruYaArray containsObject:str]) {
+                        xhIndex++;
+                    }
+                }
+                if (xhIndex == 10) {
+                    xiaHeBtn.selected = YES;
+                }
+            }
+        }
     }
 }
 - (IBAction)queDingClick:(id)sender {
@@ -165,6 +224,20 @@
         }
         return NSOrderedSame;
     }]];
-    [self.delegate queDingRuYa:ruYaArray];
+    
+    //判断当前有哪些按钮被选中
+    NSString *toothStr;
+    if (quanKouBtn.selected) {
+        toothStr = @"全口";
+    }else if (shangHeBtn.selected){
+        toothStr = @"上颌";
+    }else if (xiaHeBtn.selected){
+        toothStr = @"下颌";
+    }else{
+        toothStr = @"未连续";
+    }
+    if ([self.delegate respondsToSelector:@selector(queDingRuYa:toothStr:)]) {
+        [self.delegate queDingRuYa:ruYaArray toothStr:toothStr];
+    }
 }
 @end

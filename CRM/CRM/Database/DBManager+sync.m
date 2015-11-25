@@ -929,7 +929,6 @@
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         result = [db executeQuery:[NSString stringWithFormat:@"select * from %@ where update_date > datetime('%@') and user_id = '%@'", LocalNotificationTableName, localNotiLastSyncDate, [AccountManager currentUserid]]];
     
-    
         while ([result next]) {
             LocalNotification * localNoti = [LocalNotification notificaitonWithResult:result];
             [resultArray addObject:localNoti];
