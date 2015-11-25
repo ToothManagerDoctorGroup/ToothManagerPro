@@ -80,12 +80,10 @@
     //关闭当前视图
     [self popViewControllerAnimated:YES];
     
-    if (self.selectMarials.count > 0) {
         //调用代理方法
         if ([self.delegate respondsToSelector:@selector(chooseMaterialViewController:didSelectMaterials:)]) {
             [self.delegate chooseMaterialViewController:self didSelectMaterials:self.selectMarials];
         }
-    }
     
 }
 

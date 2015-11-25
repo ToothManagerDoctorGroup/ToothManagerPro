@@ -14,16 +14,16 @@
 
 + (instancetype)modelWithMaterialCountModel:(MaterialCountModel *)countModel{
     MaterialModel *model = [[self alloc] init];
-    model.KeyId = countModel.keyId;
-    model.reserve_id = @"";
-    model.mat_id = @"";
+    model.KeyId = @"1";
+    model.reserve_id = @"0";
+    model.mat_id = countModel.keyId;
     model.mat_name = countModel.mat_name;
-    model.plan_num = @"";
+    model.plan_num = [NSString stringWithFormat:@"%ld",(long)countModel.num];
     model.actual_num = [NSString stringWithFormat:@"%ld",(long)countModel.num];
     model.price = countModel.mat_price;
-    model.plan_money = @"";
-    model.actual_money = [NSString stringWithFormat:@"%f",countModel.num * [countModel.mat_price floatValue]];
-    model.is_reserved = @"";
+    model.plan_money = [NSString stringWithFormat:@"%.f",countModel.num * [countModel.mat_price floatValue]];
+    model.actual_money = [NSString stringWithFormat:@"%.f",countModel.num * [countModel.mat_price floatValue]];
+    model.is_reserved = @"1";
     return model;
 }
 

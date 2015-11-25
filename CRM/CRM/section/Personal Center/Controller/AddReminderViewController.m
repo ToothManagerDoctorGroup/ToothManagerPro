@@ -214,18 +214,25 @@
         [SVProgressHUD showImage:nil status:@"预约时间不能为空"];
         return;
     }
+    
+    NSString *clinicId = nil;
+    for(NSInteger i =1;i<self.clinicArray.count;i++){
+        if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
+            clinicId = [self.clinicIdArray objectAtIndex:i-1];
+        }
+    }
+    
+    
     LocalNotification *notification = [[LocalNotification alloc] init];
     notification.reserve_time = self.timeTextField.text;
     notification.reserve_type = self.selectMatterTextField.text;
     notification.medical_place = self.medicalPlaceTextField.text;
     notification.medical_chair = self.medicalChairTextField.text;
     
-    notification.reserve_content = @"";
-    notification.creation_date = @"";
-    notification.sync_time = @"";
-    notification.creation_date = @"";
     notification.selected = YES;
-    
+    notification.tooth_position = self.yaWeiTextField.text;
+    notification.clinic_reserve_id = clinicId;
+    notification.duration = [NSString stringWithFormat:@"%.f",self.durationFloat];
     
     notification.patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
     
@@ -272,22 +279,11 @@
     }];
     
     
-    NSString *clinicId = nil;
-    for(NSInteger i =1;i<self.clinicArray.count;i++){
-        if([self.medicalPlaceTextField.text isEqualToString:self.clinicArray[i]]){
-            clinicId = [self.clinicIdArray objectAtIndex:i-1];
-        }
-    }
-    
     //选择医院发生变化
-    
     if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
         
         //计算总的money
         float totalMoney = self.seatPrice.floatValue;
-        //将数组转成json
-        NSString *materialsJson;
-        NSString *assistsJson;
         //获取耗材的json字符串
         NSMutableArray *materialsArr = [NSMutableArray array];
         if (self.chooseMaterials.count > 0) {
@@ -297,7 +293,6 @@
                 [materialsArr addObject:material.keyValues];
                 totalMoney = totalMoney + [material.actual_money floatValue];
             }
-            materialsJson = [MyBillTool arrayToJson:materialsArr];
         }
         //获取助手的json字符串
         NSMutableArray *assistsArr = [NSMutableArray array];
@@ -307,10 +302,9 @@
                 [assistsArr addObject:assist.keyValues];
                 totalMoney = totalMoney + [assist.actual_money floatValue];
             }
-            assistsJson = [MyBillTool arrayToJson:assistsArr];
         }
         
-        [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:assistsJson withMaterial:materialsJson successBlock:^{
+        [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:assistsArr withMaterial:materialsArr successBlock:^{
  
             } failedBlock:^(NSError *error){
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -562,7 +556,12 @@
     for (MaterialCountModel *model in materials) {
         total = total + (int)model.num;
     }
-    self.materialCountLabel.text = [NSString stringWithFormat:@"%d颗",total];
+    if(total > 0){
+        self.materialCountLabel.text = [NSString stringWithFormat:@"%d颗",total];
+    }else{
+        self.materialCountLabel.text = @"";
+    }
+    
 }
 #pragma mark -ChooseAssistViewControllerDelegate
 - (void)chooseAssistViewController:(ChooseAssistViewController *)aController didSelectAssists:(NSArray *)assists{
@@ -571,6 +570,12 @@
     for (AssistCountModel *model in assists) {
         total = total + (int)model.num;
     }
-    self.assistCountLabel.text = [NSString stringWithFormat:@"%d名",total];
+    if (total > 0) {
+        self.assistCountLabel.text = [NSString stringWithFormat:@"%d名",total];
+    }else{
+        self.assistCountLabel.text = @"";
+    }
+    
+    
 }
 @end

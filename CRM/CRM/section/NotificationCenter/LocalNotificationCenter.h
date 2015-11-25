@@ -14,14 +14,19 @@
 @interface LocalNotification : DBTableMode
 @property (nonatomic,copy) NSString *reserve_time;
 @property (nonatomic,copy) NSString *reserve_content;  //提醒内容
-@property (nonatomic) NSString *reserve_type;
+@property (nonatomic, copy) NSString *reserve_type;
 @property (nonatomic,copy) NSString *medical_place;   //就诊地点
 @property (nonatomic,copy) NSString *medical_chair;   //椅位
-@property (nonatomic) NSString  *patient_id;
+@property (nonatomic, copy) NSString  *patient_id;
 @property (nonatomic,copy) NSString *creation_date;
 @property (nonatomic,copy) NSString *sync_time;
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic) BOOL selected;   //同步的时候此字段没有用处
+
+
+@property (nonatomic, copy)NSString *tooth_position;
+@property (nonatomic, copy)NSString *clinic_reserve_id;
+@property (nonatomic, copy)NSString *duration;
 
 + (LocalNotification *)notificaitonWithResult:(FMResultSet *)result;
 + (LocalNotification *)LNFromLNFResult:(NSDictionary *)lnRe;

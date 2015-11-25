@@ -32,16 +32,16 @@
 
 + (instancetype)modelWithAssistCountModel:(AssistCountModel *)countModel{
     AssistModel *model = [[self alloc] init];
-    model.KeyId = countModel.keyId;
-    model.reserve_id = @"";
-    model.assist_id = @"";
+    model.KeyId = @"1";
+    model.reserve_id = @"0";
+    model.assist_id = countModel.keyId;
     model.assist_name = countModel.assist_name;
-    model.plan_num = @"";
+    model.plan_num = [NSString stringWithFormat:@"%ld",(long)countModel.num];
     model.actual_num = [NSString stringWithFormat:@"%ld",(long)countModel.num];
     model.price = countModel.assist_price;
-    model.plan_money = @"";
-    model.actual_money = [NSString stringWithFormat:@"%f",countModel.num * [countModel.assist_price floatValue]];
-    model.is_reserved = @"";
+    model.plan_money = [NSString stringWithFormat:@"%.f",countModel.num * [countModel.assist_price floatValue]];
+    model.actual_money = [NSString stringWithFormat:@"%.f",countModel.num * [countModel.assist_price floatValue]];
+    model.is_reserved = @"1";
     return model;
 }
 

@@ -110,7 +110,7 @@ Realize_ShareInstance(DBManager);
     
     [self createDBTableWithTableName:MedicalReserveTableName andParams:@"patient_id text, case_id text , reserve_time text, actual_time text, repair_time text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
     
-    [self createDBTableWithTableName:LocalNotificationTableName andParams:@"patient_id text, reserve_type text , reserve_time text, reserve_content text, medical_place text, medical_chair text, user_id text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
+    [self createDBTableWithTableName:LocalNotificationTableName andParams:@"patient_id text, reserve_type text , reserve_time text, reserve_content text, medical_place text, medical_chair text, user_id text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, tooth_position text, clinic_reserve_id text, duration text"];
     
     [self createDBTableWithTableName:UserTableName andParams:@"accesstoken text,user_id text,name text, phone text,email text, hospital_name text, department text, title text, degree text, auth_status integer, auth_text text, auth_pic text, creation_date text, update_date text, ckeyid text, sync_time text, doctor_id text"];
     

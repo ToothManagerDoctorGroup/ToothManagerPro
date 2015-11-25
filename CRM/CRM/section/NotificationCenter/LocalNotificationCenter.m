@@ -38,6 +38,13 @@ NSString * const RepeatIntervalNone = @"不重复";
     notification.user_id = [result stringForColumn:@"user_id"];
     notification.ckeyid = [result stringForColumn:@"ckeyid"];
     notification.doctor_id = [result stringForColumn:@"doctor_id"];
+    
+    
+    notification.tooth_position = [result stringForColumn:@"tooth_position"];
+    notification.clinic_reserve_id = [result stringForColumn:@"clinic_reserve_id"];
+    notification.duration = [result stringForColumn:@"duration"];
+    
+    
     return notification;
 }
 
@@ -55,6 +62,11 @@ NSString * const RepeatIntervalNone = @"不重复";
     tempLN.update_date = [NSString defaultDateString];
     tempLN.sync_time = [lnRe stringForKey:@"sync_time"];
     tempLN.doctor_id = [lnRe stringForKey:@"doctor_id"];
+    
+    tempLN.tooth_position = [lnRe stringForKey:@"tooth_position"];
+    tempLN.clinic_reserve_id = [lnRe stringForKey:@"clinic_reserve_id"];
+    tempLN.duration = [lnRe stringForKey:@"duration"];
+
 
     return tempLN;
 }

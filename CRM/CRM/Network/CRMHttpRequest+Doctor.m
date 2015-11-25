@@ -10,6 +10,8 @@
 #import "NSError+Extension.h"
 #import "NSJSONSerialization+jsonString.h"
 
+#import "JSONKit.h"
+
 @implementation CRMHttpRequest (Doctor)
 
 /**
@@ -173,7 +175,7 @@
 }
 
 //预约推送到诊所端
-- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString *)clinic_name withCliniId:(NSString *)clinic_id withDoctorId:(NSString *)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSString *)assist withMaterial:(NSString *)material{
+- (void)YuYueTuiSongClinic:(NSString *)patientId withClinicName:(NSString *)clinic_name withCliniId:(NSString *)clinic_id withDoctorId:(NSString *)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:16];
     [dataEntity setObject:patientId forKey:@"patient_id"];
@@ -198,7 +200,8 @@
     [dataEntity setObject:@"可以做" forKey:@"expert_suggestion"];
     
     
-    NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
+//    NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
+    NSString *jsonString = [dataEntity JSONString];
     [paramDic setObject:jsonString forKey:@"DataEntity"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:YuYueTuiSongClinic_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];

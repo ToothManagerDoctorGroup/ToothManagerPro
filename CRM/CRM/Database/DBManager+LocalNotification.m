@@ -69,6 +69,11 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
+        [columeArray addObject:@"tooth_position"];
+        [columeArray addObject:@"clinic_reserve_id"];
+        [columeArray addObject:@"duration"];
+        
+        
         [valueArray addObject:notification.ckeyid];
         [valueArray addObject:notification.user_id];
         [valueArray addObject:notification.patient_id];
@@ -86,6 +91,14 @@
         }
         [valueArray addObject:notification.doctor_id];
         
+        [valueArray addObject:notification.tooth_position];
+        [valueArray addObject:notification.clinic_reserve_id];
+        [valueArray addObject:notification.duration];
+        
+        
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -149,6 +162,10 @@
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"user_id"];
         
+        [columeArray addObject:@"tooth_position"];
+        [columeArray addObject:@"clinic_reserve_id"];
+        [columeArray addObject:@"duration"];
+        
         
         [valueArray addObject:notification.patient_id];
         [valueArray addObject:notification.reserve_type];
@@ -174,6 +191,10 @@
         }
         [valueArray addObject:notification.doctor_id];
         [valueArray addObject:notification.user_id];
+        
+        [valueArray addObject:notification.tooth_position];
+        [valueArray addObject:notification.clinic_reserve_id];
+        [valueArray addObject:notification.duration];
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", LocalNotificationTableName, [columeArray componentsJoinedByString:@"=?,"],notification.ckeyid];

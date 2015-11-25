@@ -194,6 +194,7 @@
 		3D23A65B1BF307A60029943D /* ClinicCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65A1BF307A60029943D /* ClinicCell.m */; };
 		3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */; };
 		3D23A6641BF33B610029943D /* ClinicDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A6631BF33B610029943D /* ClinicDetailViewController.m */; };
+		3D2A00471C05651600B1EF65 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00461C05651600B1EF65 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */; };
 		3DAA10E91BF5801D00FD8149 /* ClinicImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E81BF5801D00FD8149 /* ClinicImageModel.m */; };
 		3DAA10EC1BF5819C00FD8149 /* SeatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10EB1BF5819C00FD8149 /* SeatModel.m */; };
@@ -1026,6 +1027,8 @@
 		3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchClinicViewController.m; sourceTree = "<group>"; };
 		3D23A6621BF33B610029943D /* ClinicDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailViewController.h; sourceTree = "<group>"; };
 		3D23A6631BF33B610029943D /* ClinicDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailViewController.m; sourceTree = "<group>"; };
+		3D2A00451C05651600B1EF65 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
+		3D2A00461C05651600B1EF65 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		3DAA10E41BF5774400FD8149 /* ClinicDetailModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailModel.h; sourceTree = "<group>"; };
 		3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailModel.m; sourceTree = "<group>"; };
 		3DAA10E71BF5801D00FD8149 /* ClinicImageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicImageModel.h; sourceTree = "<group>"; };
@@ -2714,6 +2717,8 @@
 		3DF671571BF70B2000527B49 /* Catory */ = {
 			isa = PBXGroup;
 			children = (
+				3D2A00451C05651600B1EF65 /* JSONKit.h */,
+				3D2A00461C05651600B1EF65 /* JSONKit.m */,
 				3D0BE5DF1BF99F680023D3FA /* UIView+WXViewController.h */,
 				3D0BE5E01BF99F680023D3FA /* UIView+WXViewController.m */,
 				3DF671581BF70B4400527B49 /* UIImage+LBImage.h */,
@@ -4847,6 +4852,7 @@
 				64CFD93D19F7F6A6001EB0DA /* AccountManager.m in Sources */,
 				6436DF4419B8C48100DC667E /* TimViewController.m in Sources */,
 				64CFD93E19F7F6A6001EB0DA /* ChangePasswdViewController.m in Sources */,
+				3D2A00471C05651600B1EF65 /* JSONKit.m in Sources */,
 				64BD7C8219BC025A0015D47F /* TimManager.m in Sources */,
 				64CFD90E19F7F6A6001EB0DA /* IntroducerCellMode.m in Sources */,
 				6436DEEB19B8C48100DC667E /* PSTCollectionViewItemKey.m in Sources */,

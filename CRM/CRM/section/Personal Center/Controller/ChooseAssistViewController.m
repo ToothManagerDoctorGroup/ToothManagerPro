@@ -82,12 +82,10 @@
     //关闭当前视图
     [self popViewControllerAnimated:YES];
     
-    if (self.selectAssists.count > 0) {
         //调用代理方法
         if ([self.delegate respondsToSelector:@selector(chooseAssistViewController:didSelectAssists:)]) {
             [self.delegate chooseAssistViewController:self didSelectAssists:self.selectAssists];
         }
-    }
     
 }
 
