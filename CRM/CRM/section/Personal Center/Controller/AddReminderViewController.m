@@ -68,6 +68,10 @@
     return _chooseMaterials;
 }
 
+- (void)dealloc{
+    NSLog(@"************************我被销毁了");
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -243,18 +247,16 @@
         if (ret) {
             [self.navigationController popViewControllerAnimated:YES];
         }
-        
-        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
-            
-        } failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
         return;
     }
     
     //微信消息推送打开
     if([weiXinSwitch isOn]){
-        
+        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
+            
+        } failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
     }
     //短信消息推送打开
     if([duanXinSwitch isOn]){
@@ -314,7 +316,7 @@
 }
 
 - (void)yuYueTuiSongClinicSuccessWithResult:(NSDictionary *)result{
-    
+    NSLog(@"预约成功");
 }
 - (void)yuYueTuiSongClinicFailedWithError:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
