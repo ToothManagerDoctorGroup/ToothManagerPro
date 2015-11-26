@@ -29,6 +29,7 @@
 #import "AssistModel.h"
 #import "MaterialModel.h"
 #import "MyBillTool.h"
+#import "DBManager+Patients.h"
 
 @interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate>{
     
@@ -73,11 +74,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
-    self.title = @"添加新提醒";
+    self.title = @"新增预约";
     self.view.backgroundColor = [UIColor whiteColor];
     [self setExtraCellLineHidden:self.tableView];
 
@@ -99,7 +99,6 @@
     self.timeTextField.mode = TextFieldInputModeKeyBoard;
     [self.timeTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
     
-    
     self.huanzheTextField.borderStyle = UITextBorderStyleNone;
     self.huanzheTextField.mode = TextFieldInputModeKeyBoard;
     [self.huanzheTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
@@ -112,8 +111,24 @@
     self.medicalPlaceTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.medicalPlaceTextField setBorderStyle:UITextBorderStyleNone];
     
-    self.timeTextField.text = self.selectDateString;
-    
+    //如果是下次预约，设置患者的姓名
+    if (self.isNextReserve) {
+        self.patientArrowImageView.hidden = YES;
+        self.huanzheTextField.enabled = NO;
+        //查询数据库
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.medicalCase.patient_id];
+        if (patient) {
+            //设置当前文本框内的值
+            self.huanzheTextField.text = patient.patient_name;
+        }
+        self.yaWeiTextField.text = self.medicalCase.case_name;
+    }else if (self.isAddLocationToPatient){
+        self.patientArrowImageView.hidden = YES;
+        self.huanzheTextField.enabled = NO;
+        if (self.patient) {
+            self.huanzheTextField.text = self.patient.patient_name;
+        }
+    }
     
     self.clinicArray = [[NSMutableArray alloc]initWithCapacity:0];
     self.clinicIdArray = [[NSMutableArray alloc]initWithCapacity:0];
@@ -122,12 +137,9 @@
     UserObject *userobj = [[AccountManager shareInstance] currentUser];
     [self refreshView];
     [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-
     } failedBlock:^(NSError *error) {
-        
     }];
     
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(yuYueTime:) name:@"YuYueTime" object:nil];
     
 }
@@ -164,19 +176,28 @@
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
-    self.huanzheTextField.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
+    if (!self.isNextReserve && !self.isAddLocationToPatient) {
+        self.huanzheTextField.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
+    }
     
-
 }
 -(void)yuYueTime:(NSNotification*)aNotification {
     NSDictionary *dic = [aNotification object];
-    self.timeTextField.text = [dic objectForKey:@"time"];
-    self.timeDurationLabel.text = [dic objectForKey:@"duration"];
+    
     self.durationFloat = [[dic objectForKey:@"durationFloat"] floatValue];
     self.seatId = [dic objectForKey:@"seatId"];
     self.medicalPlaceTextField.text = [dic objectForKey:@"clinicName"];
     self.medicalChairTextField.text = [dic objectForKey:@"seatName"];
     self.seatPrice = [dic objectForKey:@"seatPrice"];
+    
+    if (dic[@"seatName"] == nil || [dic[@"seatName"] isEqualToString:@""]) {
+        self.timeTextField.text = @"";
+        self.timeDurationLabel.text = @"";
+        [SVProgressHUD showImage:nil status:@"当前医院没有椅位信息"];
+    }else{
+        self.timeTextField.text = [dic objectForKey:@"time"];
+        self.timeDurationLabel.text = [dic objectForKey:@"duration"];
+    }
 }
 - (void)onBackButtonAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
@@ -217,6 +238,10 @@
         [SVProgressHUD showImage:nil status:@"预约时间不能为空"];
         return;
     }
+    if (self.medicalPlaceTextField.text.length == 0) {
+        [SVProgressHUD showImage:nil status:@"医院不能为空"];
+        return;
+    }
     
     NSString *clinicId = nil;
     for(NSInteger i =1;i<self.clinicArray.count;i++){
@@ -235,33 +260,22 @@
     notification.selected = YES;
     notification.tooth_position = self.yaWeiTextField.text;
     notification.clinic_reserve_id = @"1";
-    notification.duration = [NSString stringWithFormat:@"%.2f",self.durationFloat];
-    notification.patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    notification.duration = [NSString stringWithFormat:@"%f",self.durationFloat];
+    
+    //判断是否是下一次预约
+    NSString *patient_id;
+    if (self.isNextReserve) {
+        patient_id = self.medicalCase.patient_id;
+    }else if(self.isAddLocationToPatient){
+        patient_id = self.patient.ckeyid;
+    }else{
+        patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    }
+    notification.patient_id = patient_id;
     
     self.currentNoti = notification;
     
-    if(self.ifNextReserve == YES){
-        notification.patient_id = self.reservedPatiendId;
-        
-        BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
-        if (ret) {
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-        [[DoctorManager shareInstance]weiXinMessagePatient:notification.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
-            
-        } failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
-        
-        return;
-    }
-    
     BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
-    if (ret) {
-        NSLog(@"预约保存本地成功");
-    }else{
-        NSLog(@"预约保存本地失败");
-    }
     
     //微信消息推送打开
     if([weiXinSwitch isOn]){
@@ -280,12 +294,11 @@
         }];
     }
     
-    //选择医院发生变化
+    //选择如果选择的不是自己的医院
     if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
-        
         //计算总的money
         float totalMoney = self.seatPrice.floatValue;
-        //获取耗材的json字符串
+        //获取耗材的数组
         NSMutableArray *materialsArr = [NSMutableArray array];
         if (self.chooseMaterials.count > 0) {
             for (MaterialCountModel *countModel in self.chooseMaterials) {
@@ -295,7 +308,7 @@
                 totalMoney = totalMoney + [material.actual_money floatValue];
             }
         }
-        //获取助手的json字符串
+        //获取助手的数组
         NSMutableArray *assistsArr = [NSMutableArray array];
         if (self.chooseAssists.count > 0) {
             for (AssistCountModel *countModel in self.chooseAssists) {
@@ -304,14 +317,22 @@
                 totalMoney = totalMoney + [assist.actual_money floatValue];
             }
         }
-        
-        [[DoctorManager shareInstance]YuYueTuiSongClinic:[LocalNotificationCenter shareInstance].selectPatient.ckeyid withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:assistsArr withMaterial:materialsArr successBlock:^{
+        //发送预约信息给服务器
+        [[DoctorManager shareInstance]YuYueTuiSongClinic:patient_id withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:assistsArr withMaterial:materialsArr successBlock:^{
  
             } failedBlock:^(NSError *error){
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
+    }else{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.navigationController popViewControllerAnimated:YES];
+        });
+        if (ret) {
+            [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
+        }else{
+            [SVProgressHUD showErrorWithStatus:@"本地预约保存失败"];
+        }
     }
- 
 }
 
 - (void)yuYueTuiSongClinicSuccessWithResult:(NSDictionary *)result{
@@ -330,11 +351,25 @@
     }else{
         NSLog(@"预约更新失败");
     }
+    if (self.isNextReserve) {
+        //调用代理方法
+        if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+            [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
+        }
+    }
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.navigationController popViewControllerAnimated:YES];
     });
 }
 - (void)yuYueTuiSongClinicFailedWithError:(NSError *)error{
+    //调用代理方法
+    if (self.isNextReserve) {
+        //调用代理方法
+        if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+            [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
+        }
+    }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.navigationController popViewControllerAnimated:YES];
     });
@@ -575,15 +610,7 @@
 - (void)keyboardWillHidden:(CGFloat)keyboardHeight {
 
 }
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark -ChooseMaterialViewControllerDelegate
 - (void)chooseMaterialViewController:(ChooseMaterialViewController *)mController didSelectMaterials:(NSArray *)materials{

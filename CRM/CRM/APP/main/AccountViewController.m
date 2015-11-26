@@ -30,6 +30,7 @@
 #import "DoctorTool.h"
 #import "DoctorInfoModel.h"
 
+#import "CRMUserDefalut.h"
 
 
 @interface AccountViewController (){
@@ -96,21 +97,33 @@
                                              nil] forState:UIControlStateNormal];
     
     
-    [SVProgressHUD showWithStatus:@"正在加载"];
-    //请求网络数据获取医生的信息
-    [DoctorTool requestDoctorInfoWithDoctorId:[AccountManager shareInstance].currentUser.userid success:^(DoctorInfoModel *dcotorInfo) {
-        [SVProgressHUD dismiss];
-        self.isSign = [dcotorInfo.is_sign isEqualToString:@"1"] ? YES : NO;
-        
-        [self.tableView reloadData];
-        
-        
-    } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+    //获取当前用户的签约状态
+    UserObject *curentUser = [[AccountManager shareInstance] currentUser];
+    NSString *key = [NSString stringWithFormat:@"%@isSign",curentUser.userid];
+    NSString *signState = [CRMUserDefalut objectForKey:key];
+    if ([signState isEqualToString:@"1"]) {
+        self.isSign = YES;
+    }else if([signState isEqualToString:@"0"]){
+        self.isSign = NO;
+    }else{
+        [SVProgressHUD showWithStatus:@"正在加载"];
+        //请求网络数据获取医生的信息
+        [DoctorTool requestDoctorInfoWithDoctorId:[AccountManager shareInstance].currentUser.userid success:^(DoctorInfoModel *dcotorInfo) {
+            [SVProgressHUD dismiss];
+            //保存当前的状态
+            [CRMUserDefalut setObject:dcotorInfo.is_sign forKey:key];
+            //设置当前的签约状态
+            self.isSign = [dcotorInfo.is_sign isEqualToString:@"1"] ? YES : NO;
+            //刷新表视图
+            [self.tableView reloadData];
+            
+        } failure:^(NSError *error) {
+            [SVProgressHUD dismiss];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
 }
 
 //获取用户的医生列表

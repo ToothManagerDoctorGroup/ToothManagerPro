@@ -28,6 +28,8 @@
 @property (nonatomic,retain) NSArray *remindArray;
 
 @property (nonatomic, weak)PMCalendarController *pmCalenderController;
+
+@property (nonatomic, strong)NSDate *selectDate;
 @end
 
 @implementation ScheduleReminderViewController
@@ -263,22 +265,17 @@
             break;
         case 2:
         {
-//            [self createDatePicker];
-            PMCalendarController *pmCalenderController = [[PMCalendarController alloc] init];
-            self.pmCalenderController = pmCalenderController;
-            pmCalenderController.delegate = self;
-            pmCalenderController.mondayFirstDayOfWeek = YES;
-            
-            [pmCalenderController presentCalendarFromView:sender
-                 permittedArrowDirections:PMCalendarArrowDirectionAny
-                                 animated:YES];
-            /*    [pmCC presentCalendarFromRect:[sender frame]
-             inView:[sender superview]
-             permittedArrowDirections:PMCalendarArrowDirectionAny
-             animated:YES];*/
-//            [self calendarController:pmCalenderController didChangePeriod:pmCalenderController.period];
+            [self createDatePicker];
+//            PMCalendarController *pmCalenderController = [[PMCalendarController alloc] init];
+//            self.pmCalenderController = pmCalenderController;
+//            pmCalenderController.delegate = self;
+//            pmCalenderController.mondayFirstDayOfWeek = YES;
+//            pmCalenderController.allowsPeriodSelection = NO;
+//            pmCalenderController.allowsLongPressYearChange = NO;
+//            [pmCalenderController presentCalendarFromView:sender
+//                 permittedArrowDirections:PMCalendarArrowDirectionAny
+//                                 animated:YES];
 
-            
         }
             break;
         default:
@@ -301,10 +298,15 @@
 #pragma mark PMCalendarControllerDelegate methods
 - (void)calendarController:(PMCalendarController *)calendarController didChangePeriod:(PMPeriod *)newPeriod
 {
-    [self.pmCalenderController dismissCalendarAnimated:YES];
-    NSLog(@"%@",[NSString stringWithFormat:@"%@ - %@"
-                        , [newPeriod.startDate dateStringWithFormat:@"dd-MM-yyyy"]
-                        , [newPeriod.endDate dateStringWithFormat:@"dd-MM-yyyy"]]);
+    NSString *selectDateStr = [newPeriod.endDate dateStringWithFormat:@"yyyy-MM-dd"];
+    NSDate *selectDate = [dateFormatter dateFromString:selectDateStr];
+    dayLabel.text = selectDateStr;
+    weekLabel.text = [self getWeekdayFromDate:selectDate];
+    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr];
+    self.remindArray = [self updateListTimeArray:self.remindArray];
+    [m_tableView reloadData];
+    
+//    [self.pmCalenderController dismissCalendarAnimated:YES];
 }
 
 - (void)createDatePicker
@@ -429,7 +431,7 @@
     cell.personLabel.text = patient.patient_name;
     cell.statusLabel.text = notifi.reserve_type;
     cell.timeLabel.text = [notifi.reserve_time substringFromIndex:11];
-    cell.medical_chairLabel.text = notifi.medical_chair;
+    cell.medical_chairLabel.text = notifi.tooth_position;
     return cell;
 }
 

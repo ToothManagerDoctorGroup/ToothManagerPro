@@ -381,11 +381,11 @@ Realize_ShareInstance(SyncManager);
     [NSThread sleepForTimeInterval: 0.5];
     
     [NSThread sleepForTimeInterval: 0.5];
- [[CRMHttpRequest shareInstance]getPatientConsulationTable];
+    [[CRMHttpRequest shareInstance]getPatientConsulationTable];
     
     [NSThread sleepForTimeInterval: 0.5]; 
     
-   [[CRMHttpRequest shareInstance] getPatientTable];
+    [[CRMHttpRequest shareInstance] getPatientTable];
     
     [NSThread sleepForTimeInterval: 0.5];
     

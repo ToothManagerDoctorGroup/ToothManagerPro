@@ -43,15 +43,13 @@
 - (void)initView {
     [super initView];
 
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     if(self.isTabbarVc == YES){
         [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     }else{
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     }
     [self setupView];
-    
- 
     
     NSDate* curDate = [NSDate date];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];

@@ -44,11 +44,11 @@
 - (void)initView {
     [super initView];
     if (self.isHome) {
+        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
         [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     }else{
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     }
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     self.searchDisplayController.searchBar.placeholder = @"搜索介绍人";
     self.title = @"介绍人";
     self.view.backgroundColor = [UIColor whiteColor];

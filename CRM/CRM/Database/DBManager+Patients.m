@@ -1221,17 +1221,6 @@
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         
-        // \"patient_id\" integer,\n\t \"case_id\" integer ,\n\t \"reserve_time\" text,\n\t \"actual_time\" text,\n\t \"repair_time\" text,\n\t \"creation_date\" text,\n\t， \"creation_date_sync\" text"];
-        /*@property (nonatomic,copy) NSString *patient_id;        //患者id
-         @property (nonatomic,copy) NSString *case_id;           //病例id
-         @property (nonatomic,copy) NSString *reserve_time; //预约时间
-         @property (nonatomic,copy) NSString *actual_time;   //就诊时间
-         @property (nonatomic,copy) NSString *repair_time;  //修复时间
-         @property (nonatomic,copy) NSString *creationdate; //创建时间
-         @property (nonatomic,copy) NSString *user_id;
-         @property (nonatomic,copy) NSString *update_date;
-         @property (nonatomic,copy) NSString *sync_time;      //同步时间*/
-        
         NSMutableArray *columeArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *titleArray = [NSMutableArray arrayWithCapacity:0];
@@ -1284,21 +1273,21 @@
         
     }];
     
-    if ([NSString isNotEmptyString:medicalReserve.reserve_time] && ![medicalReserve.reserve_time  isEqualToString:@"0"]) {
-        LocalNotification *notificaton = [[LocalNotification alloc]init];
-       // notificaton.reserve_content = @"种植";//[self getPatientWithPatientCkeyid:medicalReserve.patient_id].patient_name;
-        notificaton.reserve_time = medicalReserve.reserve_time;//[NSString stringWithFormat:@"预约 %@ 前来",medicalReserve.reserve_time];
-       // notificaton.reserve_type = RepeatIntervalNone;
-        
-        notificaton.reserve_content = RepeatIntervalNone;
-        notificaton.reserve_type = @"种植";
-        
-        notificaton.medical_place = [AccountManager shareInstance].currentUser.hospitalName;
-        notificaton.medical_chair = @"";
-        notificaton.patient_id = medicalReserve.patient_id;
-        notificaton.user_id = [AccountManager currentUserid];
-        [[LocalNotificationCenter shareInstance] addLocalNotification:notificaton];
-    }
+//    if ([NSString isNotEmptyString:medicalReserve.reserve_time] && ![medicalReserve.reserve_time  isEqualToString:@"0"]) {
+//        LocalNotification *notificaton = [[LocalNotification alloc]init];
+//       // notificaton.reserve_content = @"种植";//[self getPatientWithPatientCkeyid:medicalReserve.patient_id].patient_name;
+//        notificaton.reserve_time = medicalReserve.reserve_time;//[NSString stringWithFormat:@"预约 %@ 前来",medicalReserve.reserve_time];
+//       // notificaton.reserve_type = RepeatIntervalNone;
+//        
+//        notificaton.reserve_content = RepeatIntervalNone;
+//        notificaton.reserve_type = @"种植";
+//        
+//        notificaton.medical_place = [AccountManager shareInstance].currentUser.hospitalName;
+//        notificaton.medical_chair = @"";
+//        notificaton.patient_id = medicalReserve.patient_id;
+//        notificaton.user_id = [AccountManager currentUserid];
+//        [[LocalNotificationCenter shareInstance] addLocalNotification:notificaton];
+//    }
     
     if (ret) {
         [self updatePatientStatusWithMedicalReserve:medicalReserve];

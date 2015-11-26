@@ -97,10 +97,9 @@
     self.phoneButton = phoneButton;
     [self addSubview:phoneButton];
     
+    //微信按钮
     UIButton *weixinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
-    [phoneButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateHighlighted];
-    [weixinButton addTarget:self action:@selector(weixinButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
     self.weixinButton = weixinButton;
     [self addSubview:weixinButton];
     
@@ -163,6 +162,9 @@
         //电话按钮
         CGFloat commentH = phoneSize.height + Margin * 2;
         self.phoneButton.frame = CGRectMake(self.patientPhoneLabel.right + Margin * 2, commentH + 2, commentH - 4, commentH - 4);
+        
+//        CGFloat commentH = self.phoneButton.height + 4;
+        self.weixinButton.frame = CGRectMake(self.phoneButton.right, commentH + 2, commentH - 4, commentH - 4);
     }
     
     //介绍人
@@ -187,10 +189,11 @@
     _isWeixin = isWeixin;
     
     if (self.isWeixin) {
-        CGFloat commentH = self.phoneButton.height + 4;
-        self.weixinButton.frame = CGRectMake(self.phoneButton.right + Margin * 0.5, commentH + 2, commentH - 4, commentH - 4);
+        [self.weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
+        [self.weixinButton addTarget:self action:@selector(weixinButtonClick) forControlEvents:UIControlEventTouchUpInside];
     }else{
-        self.weixinButton.frame = CGRectZero;
+        
+        [self.weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
     }
 }
 

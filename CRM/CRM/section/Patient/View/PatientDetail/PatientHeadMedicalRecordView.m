@@ -138,7 +138,7 @@
     self.medicalDetailView.frame = CGRectMake(0, self.medicalButtonScrollView.bottom + 1, self.width, self.height - self.medicalButtonScrollView.bottom - 1);
     
     if (self.medicalCases.count > 0) {
-        self.medicalDetailView.medicalCase = self.medicalCases[self.currentIndex];
+        self.medicalDetailView.medicalCase = self.medicalCases[0];
     }
 }
 

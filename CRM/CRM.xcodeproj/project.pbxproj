@@ -203,6 +203,7 @@
 		3D2A00651C05E55600B1EF65 /* PMDimmingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A005C1C05E55600B1EF65 /* PMDimmingView.m */; };
 		3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A005E1C05E55600B1EF65 /* PMPeriod.m */; };
 		3D2A00671C05E55600B1EF65 /* PMSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00601C05E55600B1EF65 /* PMSelectionView.m */; };
+		3D7F19F71C07280000BE79ED /* MyDateTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7F19F61C07280000BE79ED /* MyDateTool.m */; };
 		3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */; };
 		3DAA10E91BF5801D00FD8149 /* ClinicImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E81BF5801D00FD8149 /* ClinicImageModel.m */; };
 		3DAA10EC1BF5819C00FD8149 /* SeatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10EB1BF5819C00FD8149 /* SeatModel.m */; };
@@ -299,6 +300,9 @@
 		3DDDB87C1BFDEFA4004AD4AC /* medical_info_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DDDB85B1BFDEFA4004AD4AC /* medical_info_blue.png */; };
 		3DDDB87D1BFDEFA4004AD4AC /* medical_info_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DDDB85C1BFDEFA4004AD4AC /* medical_info_blue@2x.png */; };
 		3DDDB87E1BFDEFA4004AD4AC /* medical_info_blue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DDDB85D1BFDEFA4004AD4AC /* medical_info_blue@3x.png */; };
+		3DE2DD591C06BC45005F7832 /* MXPullDownMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD581C06BC45005F7832 /* MXPullDownMenu.m */; };
+		3DE2DD621C06C980005F7832 /* MyYuyueTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */; };
+		3DE2DD651C06D157005F7832 /* MenuTitleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */; };
 		3DE5FBC11BFC2ABC001E7728 /* DoctorTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5FBC01BFC2ABC001E7728 /* DoctorTool.m */; };
 		3DE5FBC41BFC2AE3001E7728 /* DoctorInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5FBC31BFC2AE3001E7728 /* DoctorInfoModel.m */; };
 		3DE5FBCA1BFC68E1001E7728 /* PayParam.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5FBC91BFC68E1001E7728 /* PayParam.m */; };
@@ -1056,6 +1060,8 @@
 		3D2A005E1C05E55600B1EF65 /* PMPeriod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMPeriod.m; sourceTree = "<group>"; };
 		3D2A005F1C05E55600B1EF65 /* PMSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMSelectionView.h; sourceTree = "<group>"; };
 		3D2A00601C05E55600B1EF65 /* PMSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMSelectionView.m; sourceTree = "<group>"; };
+		3D7F19F51C07280000BE79ED /* MyDateTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDateTool.h; sourceTree = "<group>"; };
+		3D7F19F61C07280000BE79ED /* MyDateTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDateTool.m; sourceTree = "<group>"; };
 		3DAA10E41BF5774400FD8149 /* ClinicDetailModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailModel.h; sourceTree = "<group>"; };
 		3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailModel.m; sourceTree = "<group>"; };
 		3DAA10E71BF5801D00FD8149 /* ClinicImageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicImageModel.h; sourceTree = "<group>"; };
@@ -1173,6 +1179,12 @@
 		3DDDB85B1BFDEFA4004AD4AC /* medical_info_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = medical_info_blue.png; sourceTree = "<group>"; };
 		3DDDB85C1BFDEFA4004AD4AC /* medical_info_blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "medical_info_blue@2x.png"; sourceTree = "<group>"; };
 		3DDDB85D1BFDEFA4004AD4AC /* medical_info_blue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "medical_info_blue@3x.png"; sourceTree = "<group>"; };
+		3DE2DD571C06BC45005F7832 /* MXPullDownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXPullDownMenu.h; sourceTree = "<group>"; };
+		3DE2DD581C06BC45005F7832 /* MXPullDownMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXPullDownMenu.m; sourceTree = "<group>"; };
+		3DE2DD601C06C980005F7832 /* MyYuyueTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyYuyueTitleView.h; sourceTree = "<group>"; };
+		3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyYuyueTitleView.m; sourceTree = "<group>"; };
+		3DE2DD631C06D157005F7832 /* MenuTitleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTitleViewController.h; sourceTree = "<group>"; };
+		3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTitleViewController.m; sourceTree = "<group>"; };
 		3DE5FBBF1BFC2ABC001E7728 /* DoctorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoctorTool.h; sourceTree = "<group>"; };
 		3DE5FBC01BFC2ABC001E7728 /* DoctorTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoctorTool.m; sourceTree = "<group>"; };
 		3DE5FBC21BFC2AE3001E7728 /* DoctorInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoctorInfoModel.h; sourceTree = "<group>"; };
@@ -2346,6 +2358,7 @@
 		3D2A004D1C05E53B00B1EF65 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3DE2DD561C06BC45005F7832 /* MXPullDownMenu */,
 				3D2A004E1C05E55600B1EF65 /* PMCalendar */,
 				3DF671571BF70B2000527B49 /* Catory */,
 				3DF671531BF70A9900527B49 /* UIViewExt */,
@@ -2763,6 +2776,50 @@
 			name = newImg;
 			sourceTree = "<group>";
 		};
+		3DE2DD561C06BC45005F7832 /* MXPullDownMenu */ = {
+			isa = PBXGroup;
+			children = (
+				3DE2DD571C06BC45005F7832 /* MXPullDownMenu.h */,
+				3DE2DD581C06BC45005F7832 /* MXPullDownMenu.m */,
+			);
+			path = MXPullDownMenu;
+			sourceTree = "<group>";
+		};
+		3DE2DD5B1C06C91D005F7832 /* MyYuyue */ = {
+			isa = PBXGroup;
+			children = (
+				3DE2DD5F1C06C960005F7832 /* Controllers */,
+				3DE2DD5E1C06C95A005F7832 /* Views */,
+				3DE2DD5D1C06C954005F7832 /* Models */,
+			);
+			name = MyYuyue;
+			sourceTree = "<group>";
+		};
+		3DE2DD5D1C06C954005F7832 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		3DE2DD5E1C06C95A005F7832 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3DE2DD601C06C980005F7832 /* MyYuyueTitleView.h */,
+				3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		3DE2DD5F1C06C960005F7832 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				3DE2DD631C06D157005F7832 /* MenuTitleViewController.h */,
+				3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		3DE5FBBE1BFC2A9E001E7728 /* DoctorTool */ = {
 			isa = PBXGroup;
 			children = (
@@ -2801,6 +2858,8 @@
 				3D0BE5E01BF99F680023D3FA /* UIView+WXViewController.m */,
 				3DF671581BF70B4400527B49 /* UIImage+LBImage.h */,
 				3DF671591BF70B4400527B49 /* UIImage+LBImage.m */,
+				3D7F19F51C07280000BE79ED /* MyDateTool.h */,
+				3D7F19F61C07280000BE79ED /* MyDateTool.m */,
 			);
 			name = Catory;
 			sourceTree = "<group>";
@@ -4141,6 +4200,7 @@
 			children = (
 				2D2ED8601C00981A003B7047 /* SelectYuYueDetailViewController.h */,
 				2D2ED8611C00981A003B7047 /* SelectYuYueDetailViewController.m */,
+				3DE2DD5B1C06C91D005F7832 /* MyYuyue */,
 				3D0AE7C61C043BBB00DCD4A0 /* MyReminderInfo */,
 				3DEAF5821C0317FA00445C20 /* PersonalInfo */,
 				3DAA115F1BF5BF9E00FD8149 /* MyBill */,
@@ -5003,6 +5063,7 @@
 				64CFD94019F7F6A6001EB0DA /* InfoViewController.m in Sources */,
 				2DFE7E7C1B4A23010088B119 /* UMTextView.m in Sources */,
 				6436DF4619B8C48100DC667E /* TimRequestBase.m in Sources */,
+				3DE2DD591C06BC45005F7832 /* MXPullDownMenu.m in Sources */,
 				3DE778351BF4227E00CB4D6B /* ChairDetailScrollView.m in Sources */,
 				8142BB5C1AEA4BDE00EF08EE /* RepairDocDetailTableViewCell.m in Sources */,
 				6436DEE719B8C48100DC667E /* PSTCollectionViewCell.m in Sources */,
@@ -5020,6 +5081,7 @@
 				64B2B33619D3F9E200DFA1E2 /* UIView+WebCacheOperation.m in Sources */,
 				3D0BE5DB1BF9883B0023D3FA /* AssistModel.m in Sources */,
 				3D0BE5D51BF986CE0023D3FA /* BillDetailModel.m in Sources */,
+				3DE2DD621C06C980005F7832 /* MyYuyueTitleView.m in Sources */,
 				3D1B26071BFEE23C00997FDE /* MedicalButtonScrollView.m in Sources */,
 				3DAA11971BF5EB0300FD8149 /* BillDetailViewController.m in Sources */,
 				6436DF3619B8C48100DC667E /* UITableViewCell+Exension.m in Sources */,
@@ -5133,6 +5195,7 @@
 				2DFE7ECF1B4A71980088B119 /* AFNetworkReachabilityManager.m in Sources */,
 				6436DEFC19B8C48100DC667E /* SDWebImageManager.m in Sources */,
 				6436DED319B8C48100DC667E /* UMEGORefreshTableHeaderView.m in Sources */,
+				3DE2DD651C06D157005F7832 /* MenuTitleViewController.m in Sources */,
 				6436DED619B8C48100DC667E /* MMDrawerController.m in Sources */,
 				3DF6715E1BF7136E00527B49 /* ClinicPopMenu.m in Sources */,
 				6436DF0B19B8C48100DC667E /* PinyinHelper.m in Sources */,
@@ -5164,6 +5227,7 @@
 				64BD7C7C19BB2D590015D47F /* NSError+Extension.m in Sources */,
 				6436DED819B8C48100DC667E /* UIViewController+MMDrawerController.m in Sources */,
 				6404D5551A6A2359001F6F7B /* UIDevice+OpenUDID.m in Sources */,
+				3D7F19F71C07280000BE79ED /* MyDateTool.m in Sources */,
 				2D2ED8511C00942D003B7047 /* MenuButtonPushManager.m in Sources */,
 				64CFD92519F7F6A6001EB0DA /* CaseFunction.m in Sources */,
 			);

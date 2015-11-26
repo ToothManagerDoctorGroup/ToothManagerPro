@@ -20,7 +20,7 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"数据分析";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 
@@ -43,14 +43,5 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

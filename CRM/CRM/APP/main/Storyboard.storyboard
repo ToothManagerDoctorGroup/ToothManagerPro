@@ -3191,8 +3191,8 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
-                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="5Qy-C5-1aB">
-                                                    <rect key="frame" x="292" y="16" width="13" height="18"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="D8d-gX-hN7">
+                                                    <rect key="frame" x="293" y="16" width="19" height="19"/>
                                                     <animations/>
                                                 </imageView>
                                             </subviews>
@@ -3215,16 +3215,16 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="g4l-qm-JWC">
-                                                    <rect key="frame" x="292" y="16" width="13" height="18"/>
-                                                    <animations/>
-                                                </imageView>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8Vs-5q-IdG" customClass="TimPickerTextField">
                                                     <rect key="frame" x="104" y="10" width="180" height="30"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="hCK-BI-lFf">
+                                                    <rect key="frame" x="293" y="15" width="19" height="19"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -3251,6 +3251,10 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="syW-hb-TPZ">
+                                                    <rect key="frame" x="293" y="16" width="19" height="19"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -3281,6 +3285,10 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="At4-uZ-gTP">
+                                                    <rect key="frame" x="293" y="16" width="19" height="19"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -3307,6 +3315,10 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="2Nn-Eo-aIk">
+                                                    <rect key="frame" x="293" y="16" width="19" height="19"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -3337,6 +3349,10 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="5ej-my-zlq">
+                                                    <rect key="frame" x="293" y="16" width="19" height="19"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -3503,6 +3519,7 @@
                         <outlet property="materialCountLabel" destination="fqg-Xt-mUz" id="cLI-fJ-D8B"/>
                         <outlet property="medicalChairTextField" destination="F7h-sD-2V9" id="NJH-f8-940"/>
                         <outlet property="medicalPlaceTextField" destination="7il-49-crB" id="XIO-07-T2y"/>
+                        <outlet property="patientArrowImageView" destination="D8d-gX-hN7" id="ebJ-Lu-J9l"/>
                         <outlet property="selectMatterTextField" destination="aYs-4c-qA0" id="tER-OM-v4P"/>
                         <outlet property="timeDurationLabel" destination="Cgr-hZ-GiY" id="hXp-TS-oB3"/>
                         <outlet property="timeTextField" destination="MCO-8q-xQx" id="0bD-mc-965"/>
@@ -3512,7 +3529,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1QO-og-lhk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-11" y="2189"/>
+            <point key="canvasLocation" x="60" y="2193"/>
         </scene>
     </scenes>
     <resources>

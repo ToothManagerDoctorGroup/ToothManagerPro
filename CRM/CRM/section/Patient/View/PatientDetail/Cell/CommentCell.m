@@ -9,6 +9,7 @@
 #import "CommentCell.h"
 #import "CommentModelFrame.h"
 #import "CommentModel.h"
+#import "UIImageView+WebCache.h"
 
 #define CommenTitleColor MyColor(69, 69, 70)
 #define DoctorNameFont [UIFont systemFontOfSize:14]
@@ -80,7 +81,8 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
 
-    self.headImageView.image = [UIImage imageNamed:@"weixin"];
+    NSURL *imageUrl = [NSURL URLWithString:self.modelFrame.headImg_url];
+    [self.headImageView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"header_defult"]];
     self.headImageView.frame = self.modelFrame.headImgFrame;
     
     self.doctorNameLabel.text = self.modelFrame.model.doctor_name;

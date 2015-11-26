@@ -203,20 +203,20 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
-        addReminderVC.selectDateString = [NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]];
-        NSLog(@"time = %@",[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]);
-    
-        
-        [self.delegate didSelectTime:[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]  from:self.from];
-        
-        if (self.delegate && self.reservedPatientId.length > 0) {
-            addReminderVC.reservedPatiendId = self.reservedPatientId;
-            
-            [self.delegate didSelectTime:[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]  from:self.from];
-            addReminderVC.ifNextReserve = YES;
-    }
-     [self pushViewController:addReminderVC animated:YES];
+//        AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
+//        addReminderVC.selectDateString = [NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]];
+//        NSLog(@"time = %@",[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]);
+//    
+//        
+//        [self.delegate didSelectTime:[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]  from:self.from];
+//        
+//        if (self.delegate && self.reservedPatientId.length > 0) {
+//            addReminderVC.reservedPatiendId = self.reservedPatientId;
+//            
+//            [self.delegate didSelectTime:[NSString stringWithFormat:@"%@ %@",dateString,[timeArray objectAtIndex:indexPath.row]]  from:self.from];
+//            addReminderVC.isNextReserve = YES;
+//    }
+//     [self pushViewController:addReminderVC animated:YES];
 }
 
 

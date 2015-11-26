@@ -34,6 +34,7 @@
 #import "DBTableMode.h"
 #import "CRMHttpRequest+Doctor.h"
 #import "MyPatientTool.h"
+#import "AddReminderViewController.h"
 #import "CRMHttpRespondModel.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
@@ -72,7 +73,7 @@
 @property (nonatomic, strong)NSMutableArray *medicalCases;
 @property (nonatomic, strong)NSMutableArray *cTLibs;
 
-@property (nonatomic, assign)MedicalCase *selectCase;
+@property (nonatomic, strong)MedicalCase *selectCase;
 
 @end
 
@@ -98,14 +99,19 @@
     if (!_comments) {
         _comments = [NSMutableArray array];
         
+        UserObject *currentUser = [[AccountManager shareInstance] currentUser];
         NSArray *commentArr = [[DBManager shareInstance] getPatientConsultationWithPatientId:self.patientsCellMode.patientId];
         if (commentArr.count > 0) {
             for (int i = 0; i < commentArr.count; i++) {
                 PatientConsultation *model = commentArr[i];
-                
                 CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
                 modelFrame.model = model;
-                
+                Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:model.doctor_id];
+                if ([currentUser.userid isEqualToString:model.doctor_id]) {
+                    modelFrame.headImg_url = currentUser.img;
+                }else{
+                    modelFrame.headImg_url = doctor.doctor_image;
+                }
                 [_comments addObject:modelFrame];
             }
             //刷新单元格
@@ -121,8 +127,8 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:YES];
-//    [self initData];
-//    [self refreshView];
+    [self initData];
+    [self refreshView];
 }
 
 - (void)viewDidLoad {
@@ -138,12 +144,6 @@
     
     //加载子视图
     [self setUpSubView];
-    
-    //加载数据
-    [self initData];
-    [self refreshView];
-    
-    //设置
     
 }
 
@@ -361,10 +361,11 @@
 }
 #pragma mark -UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    
+    UserObject *user = [[AccountManager shareInstance] currentUser];
     PatientConsultation *model = [self createPatientConsultationWithContent:textField.text];
     CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
     modelFrame.model = model;
+    modelFrame.headImg_url = user.img;
     
     BOOL result = [[DBManager shareInstance] insertPatientConsultation:model];
     if (result) {
@@ -449,9 +450,12 @@
 }
 //新建提醒
 - (void)createNotificationAction:(id)sender {
-    [LocalNotificationCenter shareInstance].selectPatient = _detailPatient;
-    SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
-    [self.navigationController pushViewController:selectDateView animated:YES];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
+    addReminderVC.isAddLocationToPatient = YES;
+    addReminderVC.patient = self.detailPatient;
+    [self.navigationController pushViewController:addReminderVC animated:YES];
 }
 
 //患者转介绍人

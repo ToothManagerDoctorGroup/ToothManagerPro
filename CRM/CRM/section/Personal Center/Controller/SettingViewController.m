@@ -144,6 +144,7 @@
          [self.navigationController pushViewController:changepasswdVC animated:YES];
         }else if (indexPath.row == 1){
             [[AccountManager shareInstance] logout];
+            
         }
     }
 }

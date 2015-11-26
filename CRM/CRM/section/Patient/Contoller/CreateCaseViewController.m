@@ -28,8 +28,9 @@
 #import "LocalNotificationCenter.h"
 #import "HengYaViewController.h"
 #import "RuYaViewController.h"
+#import "AddReminderViewController.h"
 
-@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,SelectDateViewControllerDelegate,HengYaDeleate,RuYaDelegate>
+@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,AddReminderViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
 @property (nonatomic,retain) MedicalCase *medicalCase;
 @property (nonatomic,retain) MedicalReserve *medicalRes;
@@ -82,7 +83,6 @@
     [self.tableView addGestureRecognizer:tapges];
     
 }
-
 
 - (void)dismissKeyboard {
     [self.recordTextField resignFirstResponder];
@@ -139,9 +139,7 @@
 }
 
 - (BOOL)saveData {
-    if (self.edit != YES) {
-        [self.tableHeaderView setCase:_medicalCase andRes:_medicalRes];
-    }
+    [self.tableHeaderView setCase:_medicalCase andRes:_medicalRes];
     
     if([[DBManager shareInstance] insertMedicalCase:_medicalCase]) {  //先保存病例表
       [[DBManager shareInstance] updateUpdateDate:self.patiendId];
@@ -475,11 +473,15 @@
         [self presentViewController:nav animated:YES completion:^{}];
     } else if ([self.tableHeaderView.nextReserveTextField isFirstResponder]) {
         [self.tableHeaderView.nextReserveTextField resignFirstResponder];
-        SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
-        selectDateView.from = @"nextReserveTextField";
-        selectDateView.delegate = self;
-        selectDateView.reservedPatientId = self.patiendId;
-        [self.navigationController pushViewController:selectDateView animated:YES];
+#warning 跳转到添加预约的页面
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+         AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
+        addReminderVC.isNextReserve = YES;
+        addReminderVC.delegate = self;
+        addReminderVC.medicalCase = _medicalCase;
+        [self.navigationController pushViewController:addReminderVC animated:YES];
+        
+        
     } else if ([self.tableHeaderView.casenameTextField isFirstResponder]){
         [self.tableHeaderView.casenameTextField resignFirstResponder];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
@@ -563,10 +565,9 @@
     [_tableHeaderView setExpenseArray:_expenseArray];
 }
 
-- (void)didSelectTime:(NSString *)time from:(NSString *)from {
-    if ([from isEqualToString:@"nextReserveTextField"]) {
-        self.tableHeaderView.nextReserveTextField.text = time;
-    }
+#pragma mark - AddReminderViewControllerDelegate
+- (void)addReminderViewController:(AddReminderViewController *)vc didSelectDateTime:(NSString *)dateStr{
+    self.tableHeaderView.nextReserveTextField.text = dateStr;
 }
 
 - (void)didSelectedRepairDoctor:(RepairDoctor *)doctor {
