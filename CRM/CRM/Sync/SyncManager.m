@@ -372,13 +372,13 @@ Realize_ShareInstance(SyncManager);
     
     [[CRMHttpRequest shareInstance] getRepairDoctorTable];
     
-    [NSThread sleepForTimeInterval: 0.5];
-    
-    [NSThread sleepForTimeInterval: 0.5];
-    
-    [NSThread sleepForTimeInterval: 0.5]; 
-    
-    [NSThread sleepForTimeInterval: 0.5];
+//    [NSThread sleepForTimeInterval: 0.5];
+//    
+//    [NSThread sleepForTimeInterval: 0.5];
+//    
+//    [NSThread sleepForTimeInterval: 0.5]; 
+//    
+//    [NSThread sleepForTimeInterval: 0.5];
     
     [NSThread sleepForTimeInterval: 0.5];
     [[CRMHttpRequest shareInstance]getPatientConsulationTable];

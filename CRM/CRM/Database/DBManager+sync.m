@@ -11,6 +11,8 @@
 #import "DBManager+LocalNotification.h"
 #import "NSString+Conversion.h"
 
+#import "MyDateTool.h"
+
 
 @implementation DBManager (Sync)
 
@@ -693,7 +695,7 @@
     }
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
-        result = [db executeQuery:[NSString stringWithFormat:@"select * from %@ where creation_date_sync > datetime('%@') and sync_time = datetime('%@') and user_id = '%@'", PatientConsultationTableName, medRecLastSyncDate, [NSString defaultDateString], [AccountManager currentUserid]]];
+        result = [db executeQuery:[NSString stringWithFormat:@"select * from %@ where creation_date > datetime('%@') and sync_time = datetime('%@') and user_id = '%@'", PatientConsultationTableName, medRecLastSyncDate, [NSString defaultDateString], [AccountManager currentUserid]]];
         
         
         while ([result next]) {
@@ -887,6 +889,10 @@
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
     NSString *localNotiLastSynKey = [NSString stringWithFormat:@"syncDataPost%@%@", LocalNotificationTableName, [AccountManager currentUserid]];
     NSString *localNotiLastSyncDate = [userDefalut stringForKey:localNotiLastSynKey];
+    
+//    NSDate *tempDate = [MyDateTool dateWithStringWithSec:localNotiLastSyncDate];
+//    tempDate = [tempDate dateByAddingTimeInterval:-60 * 2];
+//    localNotiLastSyncDate = [MyDateTool stringWithDateWithSec:tempDate];
 
     if (nil == localNotiLastSyncDate) {
         NSDate *def = [NSDate dateWithTimeIntervalSince1970:0];

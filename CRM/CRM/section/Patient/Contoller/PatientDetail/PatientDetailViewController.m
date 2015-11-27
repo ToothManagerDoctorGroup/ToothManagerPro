@@ -385,6 +385,7 @@
 
 #pragma mark -创建一个会诊信息
 - (PatientConsultation *)createPatientConsultationWithContent:(NSString *)content{
+    
     UserObject *user = [[AccountManager shareInstance] currentUser];
     PatientConsultation *consultation = [[PatientConsultation alloc] init];
     consultation.patient_id = self.patientsCellMode.patientId;
@@ -394,14 +395,15 @@
     consultation.amr_file = @"";
     consultation.amr_time = @"0";
     consultation.data_flag = 0;
-    consultation.update_date = @"";
     
     NSDate *date = [NSDate date];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    consultation.sync_time = @"";
+    consultation.sync_time = [NSString defaultDateString];
     consultation.user_id = user.userid;
     consultation.creation_date = [formatter stringFromDate:date];
+    consultation.creation_date_sync = [formatter stringFromDate:date];
+    consultation.update_date = [formatter stringFromDate:date];
     consultation.doctor_id = user.userid;
     
     return consultation;

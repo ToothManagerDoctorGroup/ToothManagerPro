@@ -17,6 +17,7 @@
 #import "DBManager+User.h"
 #import "ForgetPasswordViewController.h"
 #import "UserInfoViewController.h"
+#import "DoctorInfoModel.h"
 
 @interface SigninViewController () <CRMHttpRequestPersonalCenterDelegate>{
     BOOL check;
@@ -140,13 +141,41 @@
 
 #pragma mark - Delgates 
 - (void)loginSucessWithResult:(NSDictionary *)result {
-    [SVProgressHUD showSuccessWithStatus:@"登录成功"];
+    
     NSDictionary *resultDic = [result objectForKey:@"Result"];
     [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+    
+    UserObject *userobj = [[AccountManager shareInstance] currentUser];
+    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
+    } failedBlock:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+    }];
+    
+}
+//获取用户的医生列表
+- (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
+    [SVProgressHUD showSuccessWithStatus:@"登录成功"];
     if(self.navigationController.topViewController == self){
         [self postNotificationName:SignInSuccessNotification object:nil];
     }
+    NSArray *dicArray = [result objectForKey:@"Result"];
+    if (dicArray && dicArray.count > 0) {
+        for (NSDictionary *dic in dicArray) {
+            DoctorInfoModel *doctorInfo = [DoctorInfoModel objectWithKeyValues:dic];
+            //设置当前的签约状态
+            NSString *signKey = [NSString stringWithFormat:@"%@isSign",doctorInfo.doctor_id];
+            [CRMUserDefalut setObject:doctorInfo.is_sign forKey:signKey];
+            
+            UserObject *obj = [UserObject userobjectFromDic:dic];
+            [[DBManager shareInstance] updateUserWithUserObject:obj];
+            [[AccountManager shareInstance] refreshCurrentUserInfo];
+            return;
+        }
+    }
     
+}
+- (void)getDoctorListFailedWithError:(NSError *)error {
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 - (void)loginFailedWithError:(NSError *)error {

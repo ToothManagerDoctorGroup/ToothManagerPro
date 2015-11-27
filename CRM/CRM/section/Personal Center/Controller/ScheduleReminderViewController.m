@@ -20,6 +20,8 @@
 #import "PatientDetailViewController.h"
 #import "SysMsgViewController.h"
 #import "PMCalendar.h"
+#import "LewPopupViewController.h"
+#import "SchedulePopMenu.h"
 
 @interface ScheduleReminderViewController ()<MudDatePickerViewDelegate,PMCalendarControllerDelegate>
 {
@@ -61,6 +63,8 @@
 }
 
 -(void)onLeftButtonAction:(id)sender{
+    
+    
     [SVProgressHUD showWithStatus:@"同步中..."];
     if ([[AccountManager shareInstance] isLogin]) {
         [NSTimer scheduledTimerWithTimeInterval:0.2
@@ -370,11 +374,13 @@
 - (void)addNotificationObserver {
     [self addObserveNotificationWithName:NotificationCreated];
     [self addObserveNotificationWithName:NOtificationUpdated];
+    [self addObserveNotificationWithName:@"tongbu"];
 }
 
 - (void)removeNotificationObserver {
     [self removeObserverNotificationWithName:NotificationCreated];
     [self removeObserverNotificationWithName:NOtificationUpdated];
+    [self removeObserverNotificationWithName:@"tongbu"];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
@@ -383,6 +389,15 @@
         NSString *destDateString = [dateFormatter stringFromDate:startDate];
         self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:destDateString];
         self.remindArray = [self updateListTimeArray:self.remindArray];
+        [m_tableView reloadData];
+    }
+
+    if ([notifacation.name isEqualToString:@"tongbu"]) {
+        //同步之后，重新请求本地数据进行显示
+        NSString *dateString = dayLabel.text;
+        self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateString];
+        self.remindArray = [self updateListTimeArray:self.remindArray];
+        
         [m_tableView reloadData];
     }
 }
@@ -428,33 +443,49 @@
     }
     LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notifi.patient_id];
-    cell.personLabel.text = patient.patient_name;
-    cell.statusLabel.text = notifi.reserve_type;
-    cell.timeLabel.text = [notifi.reserve_time substringFromIndex:11];
-    cell.medical_chairLabel.text = notifi.tooth_position;
+    
+    cell.personLabel.text = [notifi.reserve_time substringFromIndex:11];
+    cell.statusLabel.text = patient.patient_name;
+    cell.timeLabel.text = notifi.tooth_position;
+    cell.medical_chairLabel.text = notifi.reserve_type;
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
-    PatientsCellMode *cellMode = [[PatientsCellMode alloc] init];
-    cellMode.patientId = notifi.patient_id;
+//    PatientsCellMode *cellMode = [[PatientsCellMode alloc] init];
+//    cellMode.patientId = notifi.patient_id;
+//#warning 跳转页面事件
+//    //跳转到新的患者详情页面
+//    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+//    detailVc.patientsCellMode = cellMode;
+//    detailVc.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:detailVc animated:YES];
+    SchedulePopMenu *menuView = [SchedulePopMenu defaultPopupView];
+    menuView.parentVC = self;
     
+    [self lew_presentPopupView:menuView animation:[LewPopupViewAnimationSpring new] dismissed:^{
+        switch (menuView.type) {
+            case SchedulePopMenuType1:
+                NSLog(@"点击了菜单一");
+                break;
+            case SchedulePopMenuType2:
+                NSLog(@"点击了菜单二");
+                break;
+            case SchedulePopMenuType3:
+                NSLog(@"点击了菜单三");
+                break;
+            case SchedulePopMenuType4:
+                NSLog(@"点击了菜单四");
+                break;
+            default:
+                break;
+        }
+    }];
     
-//    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-//    patientDetailCtl.patientsCellMode = cellMode;
-//    patientDetailCtl.hidesBottomBarWhenPushed = YES;
-//    [self pushViewController:patientDetailCtl animated:YES];
-    
-#warning 跳转页面事件
-    //跳转到新的患者详情页面
-    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-    detailVc.patientsCellMode = cellMode;
-    detailVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:detailVc animated:YES];
     
 }
 

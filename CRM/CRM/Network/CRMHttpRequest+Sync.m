@@ -23,6 +23,7 @@
 #import "CaseFunction.h"
 #import "PatientManager.h"
 #import <objc/runtime.h>
+#import "JSONKit.h"
 
 char* const ASSOCIATION_DATATABLE_SYNC = "ASSOCIATION_DATATABLE_SYNC";
 
@@ -186,6 +187,7 @@ NSInteger curTimeMCNum_rs = 0;
         [subParamDic setObject:[[NSNumber numberWithInt: pat.patient_status] stringValue] forKey:@"patient_status"];
         [subParamDic setObject:pat.introducer_id forKey:@"introducer_id"];
         [subParamDic setObject:pat.doctor_id forKey:@"doctor_id"];
+        
      
         NSString *jsonString = [NSJSONSerialization jsonStringWithObject:subParamDic];
         [params setObject:jsonString forKey:@"DataEntity"];
@@ -613,7 +615,7 @@ NSInteger curTimeMCNum_rs = 0;
         [subParamDic setObject:patientC.amr_time forKey:@"amr_time"];
         [subParamDic setObject:patientC.cons_type forKey:@"cons_type"];
         [subParamDic setObject:patientC.cons_content forKey:@"cons_content"];
-        [subParamDic setObject:[NSString stringWithFormat:@"%ld",patientC.data_flag] forKey:@"data_flag"];
+        [subParamDic setObject:[NSString stringWithFormat:@"%ld",(long)patientC.data_flag] forKey:@"data_flag"];
         
         
         NSError *error;
@@ -663,7 +665,6 @@ NSInteger curTimeMCNum_rs = 0;
         //}
         
         [subParamDic setObject:[NSString currentDateString] forKey:@"sync_time"];
-        
         [subParamDic setObject:local.patient_id forKey:@"patient_id"];
         [subParamDic setObject:local.reserve_time forKey:@"reserve_time"];
         [subParamDic setObject:local.reserve_type forKey:@"reserve_type"];
@@ -676,19 +677,20 @@ NSInteger curTimeMCNum_rs = 0;
         [subParamDic setObject:local.clinic_reserve_id forKey:@"clinic_reserve_id"];
         [subParamDic setObject:local.duration forKey:@"duration"];
         
-        NSError *error;
-        NSString *jsonString;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:subParamDic
-                            //options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
-                                                           options: 0
-                                                             error:&error];
-        if (! jsonData) {
-            NSLog(@"Got an error: %@", error);
-        }
-        else {
-            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            NSLog(@"%@", jsonString);
-        }
+//        NSError *error;
+//        NSString *jsonString;
+//        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:subParamDic
+//                            //options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+//                                                           options: 0
+//                                                             error:&error];
+//        if (! jsonData) {
+//            NSLog(@"Got an error: %@", error);
+//        }
+//        else {
+//            jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//            NSLog(@"%@", jsonString);
+//        }
+        NSString *jsonString = [subParamDic JSONString];
         
         [params setObject:jsonString forKey:@"DataEntity"];
         
@@ -1170,8 +1172,8 @@ NSInteger curTimeMCNum_rs = 0;
         // do something like a log:
         NSLog(@"%@", aKey);
         NSLog(@"value %@", [result valueForKey:aKey]);
-        
     }
+    NSLog(@"数据插入成功***************");
     
     
     counterOfReserveRecPost--;
@@ -1726,6 +1728,10 @@ NSInteger curTimeMCNum_rs = 0;
         [subParamDic setObject:local.medical_place forKey:@"medical_place"];
         [subParamDic setObject:local.medical_chair forKey:@"medical_chair"];
         [subParamDic setObject:local.doctor_id forKey:@"doctor_id"];
+        
+        [subParamDic setObject:local.tooth_position forKey:@"tooth_position"];
+        [subParamDic setObject:local.duration forKey:@"duration"];
+        [subParamDic setObject:local.clinic_reserve_id forKey:@"clinic_reserve_id"];
 
         NSError *error;
         NSString *jsonString;
@@ -1942,7 +1948,6 @@ NSInteger curTimeMCNum_rs = 0;
         // do something like a log:
         NSLog(@"%@", aKey);
         NSLog(@"value %@", [result valueForKey:aKey]);
-        
     }
     
     counterOfIntroducerEdit --;
@@ -4125,6 +4130,7 @@ NSInteger curTimeMCNum_rs = 0;
         
         [userDefalut synchronize];
         
+#pragma mark - ***************************第二次同步结束
         [SVProgressHUD showWithStatus:@"同步结束..."];
         
         [NSThread sleepForTimeInterval: 1];
@@ -4265,13 +4271,13 @@ NSInteger curTimeMCNum_rs = 0;
         
         [userDefalut setObject:curDate forKey:patServLastSynKey];
         [userDefalut synchronize];
-        
-        [SVProgressHUD showWithStatus:@"同步结束..."];
-        
-        [NSThread sleepForTimeInterval: 1];
-        
-        [SVProgressHUD dismiss];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+#pragma mark - ***************************************** 第一次同步结束
+//        [SVProgressHUD showWithStatus:@"同步结束..."];
+//        
+//        [NSThread sleepForTimeInterval: 1];
+//        
+//        [SVProgressHUD dismiss];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
         
     }
     
@@ -4374,7 +4380,7 @@ NSInteger curTimeMCNum_rs = 0;
 
 - (void)requestGetPatientConsultationSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     NSLog(@"suc getPatientConsultationTable");
-    NSLog(@"total return number %ld", [result count]);
+    NSLog(@"total return number %ld", (unsigned long)[result count]);
     
     [self.delegate dataSycnResultWithTable:PatientConsultationTableName isSucesseful: YES];
     
@@ -4730,7 +4736,7 @@ NSInteger curTimeMCNum_rs = 0;
 
 - (void)requestGetPatientFailure:(NSError *)error andParam:(TimRequestParam *)param {
     NSLog(@"error: %@", [error localizedDescription]);
-    NSLog(@"error: %d", [error code]);
+    NSLog(@"error: %ld", (long)[error code]);
     
     [SVProgressHUD showWithStatus:@"同步结束..."];
     

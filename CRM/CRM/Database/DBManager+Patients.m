@@ -59,7 +59,6 @@
         [columeArray addObject:@"update_date"]; //创建时间
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
-       
         
         [valueArray addObject:patient.ckeyid];
         [valueArray addObject:patient.patient_name];
@@ -78,6 +77,7 @@
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
+
        
 
         [titleArray addObject:@"?"];
@@ -93,7 +93,7 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
-        
+
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@)", PatientTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
@@ -180,8 +180,7 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
-      //  [titleArray addObject:@"?"];
-        
+
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@)", PatientTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
@@ -346,7 +345,6 @@
         [columeArray addObject:@"doctor_id"];
         
         
-        
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
         [valueArray addObject:patient.patient_avatar];
@@ -370,6 +368,7 @@
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
+        
         
         
         // 3. 写入数据库
@@ -763,7 +762,6 @@
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"doctor_id"];
         
-        
         [valueArray addObject:PatIntro.ckeyid];
         [valueArray addObject:PatIntro.patient_id];
         [valueArray addObject:PatIntro.intr_id];
@@ -779,7 +777,7 @@
         }
         [valueArray addObject:PatIntro.user_id];
         [valueArray addObject:PatIntro.doctor_id];
-        
+
         
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];

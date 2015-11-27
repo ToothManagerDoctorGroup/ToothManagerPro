@@ -24,27 +24,6 @@
         return userid;
     }
 }
-/**
- *  获取当前登录用户的签约状态
- *
- *  @return 用户签约状态
- */
-+ (NSString *)isSign{
-    NSString *key = [NSString stringWithFormat:@"%@isSign",[self latestUserId]];
-    NSString *signState = [CRMUserDefalut objectForKey:key];
-    if ([signState isEmpty]) {
-        return nil;
-    }else{
-        return signState;
-    }
-}
-
-+ (void)setIsSign:(NSString *)isSign{
-    NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
-    NSString *key = [NSString stringWithFormat:@"%@isSign",[self latestUserId]];
-    [userdefaults setObject:isSign forKey:key];
-    [userdefaults synchronize];
-}
 
 /**
  *  设置最后使用者id

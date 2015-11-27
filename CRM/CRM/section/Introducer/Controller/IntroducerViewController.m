@@ -209,19 +209,20 @@
     [super addNotificationObserver];
     [self addObserveNotificationWithName:IntroducerCreatedNotification];
     [self addObserveNotificationWithName:IntroducerEditedNotification];
+    [self addObserveNotificationWithName:@"tongbu"];
 }
 
-- (void)removeNotificationObserver {
-    [super removeNotificationObserver];
-    [self removeObserverNotificationWithName:IntroducerCreatedNotification];
-    [self removeObserverNotificationWithName:IntroducerEditedNotification];
-}
 
 - (void)handNotification:(NSNotification *)notifacation {
     [super handNotification:notifacation];
     if ([notifacation.name isEqualToString:IntroducerCreatedNotification]
         || [notifacation.name isEqualToString:IntroducerEditedNotification]) {
         [self refreshData];
+        [self refreshView];
+    }
+    //如果是同步的通知
+    if ([notifacation.name isEqualToString:@"tongbu"]) {
+        [self initData];
         [self refreshView];
     }
 }

@@ -31,6 +31,7 @@
 #import "DoctorInfoModel.h"
 
 #import "CRMUserDefalut.h"
+#import "CRMHttpRequest+Sync.h"
 
 
 @interface AccountViewController (){
@@ -67,20 +68,6 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"我的空间";
     
-  //  _nameLabel.text = [AccountManager shareInstance].currentUser.name;
-    
-    
-    /*
-    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-    //_detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",userobj.hospitalName,userobj.department,userobj.title];
-   
-    
-    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-        
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
-     */
     _tableView.delegate=self;
     _tableView.dataSource=self;
     _tableView.backgroundColor=[UIColor clearColor];
@@ -96,71 +83,27 @@
                                              [UIColor lightGrayColor], NSForegroundColorAttributeName,
                                              nil] forState:UIControlStateNormal];
     
-    
-    //获取当前用户的签约状态
-    UserObject *curentUser = [[AccountManager shareInstance] currentUser];
-    NSString *key = [NSString stringWithFormat:@"%@isSign",curentUser.userid];
-    NSString *signState = [CRMUserDefalut objectForKey:key];
-    if ([signState isEqualToString:@"1"]) {
-        self.isSign = YES;
-    }else if([signState isEqualToString:@"0"]){
-        self.isSign = NO;
-    }else{
-        [SVProgressHUD showWithStatus:@"正在加载"];
-        //请求网络数据获取医生的信息
-        [DoctorTool requestDoctorInfoWithDoctorId:[AccountManager shareInstance].currentUser.userid success:^(DoctorInfoModel *dcotorInfo) {
-            [SVProgressHUD dismiss];
-            //保存当前的状态
-            [CRMUserDefalut setObject:dcotorInfo.is_sign forKey:key];
-            //设置当前的签约状态
-            self.isSign = [dcotorInfo.is_sign isEqualToString:@"1"] ? YES : NO;
-            //刷新表视图
-            [self.tableView reloadData];
-            
-        } failure:^(NSError *error) {
-            [SVProgressHUD dismiss];
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];
-    }
-}
-
-//获取用户的医生列表
-- (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD dismiss];
-    NSArray *dicArray = [result objectForKey:@"Result"];
-    if (dicArray && dicArray.count > 0) {
-        for (NSDictionary *dic in dicArray) {
-                UserObject *obj = [UserObject userobjectFromDic:dic];
-                [[DBManager shareInstance] updateUserWithUserObject:obj];
-                [[AccountManager shareInstance] refreshCurrentUserInfo];
-                _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
-                _nameLabel.text = obj.name;
-            if(obj.img.length > 0){
-                [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img]];
-            }else{
-                [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
-            }
-            [self refreshView];
-            return;
-        }
-    }
-}
-- (void)getDoctorListFailedWithError:(NSError *)error {
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-        
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
+    
+    UserObject *obj = [[AccountManager shareInstance] currentUser];
+    _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
+        _nameLabel.text = obj.name;
+    if(obj.img.length > 0){
+        [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img]];
+    }else{
+        [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+    }
+    
+    NSString *signKey = [NSString stringWithFormat:@"%@isSign",obj.userid];
+    //设置当前的签约状态
+    self.isSign = [[CRMUserDefalut objectForKey:signKey] isEqualToString:@"1"] ? YES : NO;
+    
+    
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{

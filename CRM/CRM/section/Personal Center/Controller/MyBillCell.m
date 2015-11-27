@@ -147,12 +147,12 @@
     CGSize timeSize = [time sizeWithFont:OtherFontSize];
     NSString *name = self.model.patient_name;
     CGSize nameSize = [name sizeWithFont:OtherFontSize];
-    NSString *type = self.model.seat_name;
-    CGSize typeSize = [type sizeWithFont:OtherFontSize];
+//    NSString *type = self.model.seat_name;
+//    CGSize typeSize = [type sizeWithFont:OtherFontSize];
     NSString *action = self.model.type;
     CGSize actionSize = [action sizeWithFont:OtherFontSize];
     
-    CGFloat middleMargin = (self.frame.size.width - timeSize.width - nameSize.width - typeSize.width - actionSize.width - MarginX * 2) / 3;
+    CGFloat middleMargin = (self.frame.size.width - timeSize.width - nameSize.width - actionSize.width - MarginX * 2) / 2;
     
     //时间视图
     CGFloat timeY = commenH + (commenH - timeSize.height) * 0.5 + 5;
@@ -160,7 +160,6 @@
     _timeLabel.text = time;
     
     //名称视图
-    
     CGFloat userNameX = CGRectGetMaxX(_timeLabel.frame) + middleMargin;
     CGFloat userNameY = timeY;
     CGFloat userNameW = nameSize.width;
@@ -169,15 +168,15 @@
     _userNameLabel.text = name;
     
     //类型视图
-    CGFloat typeX = CGRectGetMaxX(_userNameLabel.frame) + middleMargin;
-    CGFloat typeY = timeY;
-    CGFloat typeW = typeSize.width;
-    CGFloat typeH = typeSize.height;
-    _typeLabel.frame = CGRectMake(typeX, typeY, typeW, typeH);
-    _typeLabel.text = type;
+//    CGFloat typeX = CGRectGetMaxX(_userNameLabel.frame) + middleMargin;
+//    CGFloat typeY = timeY;
+//    CGFloat typeW = typeSize.width;
+//    CGFloat typeH = typeSize.height;
+//    _typeLabel.frame = CGRectMake(typeX, typeY, typeW, typeH);
+//    _typeLabel.text = type;
     
     //类型视图
-    CGFloat actionX = CGRectGetMaxX(_typeLabel.frame) + middleMargin;
+    CGFloat actionX = CGRectGetMaxX(_userNameLabel.frame) + middleMargin;
     CGFloat actionY = timeY;
     CGFloat actionW = actionSize.width;
     CGFloat actionH = actionSize.height;

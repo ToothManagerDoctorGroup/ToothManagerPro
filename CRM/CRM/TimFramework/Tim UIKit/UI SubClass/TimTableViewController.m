@@ -67,7 +67,7 @@
 }
 
 - (void)refreshView {
-    // Do any setup when want to refresh the view.
+    
 }
 
 - (void)initData {

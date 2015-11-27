@@ -82,7 +82,13 @@
         [valueArray addObject:notification.reserve_content];
         [valueArray addObject:notification.medical_place];
         [valueArray addObject:notification.medical_chair];
-        [valueArray addObject:[NSString currentDateString]];
+        
+        if (notification.update_date == nil || [notification.update_date isEmpty]) {
+            [valueArray addObject:notification.update_date];
+        }else{
+            [valueArray addObject:[NSString currentDateString]];
+        }
+        
         [valueArray addObject:[NSString defaultDateString]];
         if (notification.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];

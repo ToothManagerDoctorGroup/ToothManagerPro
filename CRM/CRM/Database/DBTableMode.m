@@ -252,6 +252,7 @@ NSString * const Repaired = @"已修复";
         self.introducer_id = @"";
         self.patient_status = PatientStatusUntreatment;
         self.ori_user_id = @"";
+        self.intr_name = @"";
     }
     return self;
 }

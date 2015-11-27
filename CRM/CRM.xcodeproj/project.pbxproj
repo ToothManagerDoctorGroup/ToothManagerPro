@@ -194,6 +194,14 @@
 		3D23A65B1BF307A60029943D /* ClinicCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65A1BF307A60029943D /* ClinicCell.m */; };
 		3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */; };
 		3D23A6641BF33B610029943D /* ClinicDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A6631BF33B610029943D /* ClinicDetailViewController.m */; };
+		3D27F7B31C08A6A800C50CBF /* LewPopupBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7A71C08A6A800C50CBF /* LewPopupBackgroundView.m */; };
+		3D27F7B41C08A6A800C50CBF /* LewPopupViewAnimationDrop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7A91C08A6A800C50CBF /* LewPopupViewAnimationDrop.m */; };
+		3D27F7B51C08A6A800C50CBF /* LewPopupViewAnimationFade.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7AB1C08A6A800C50CBF /* LewPopupViewAnimationFade.m */; };
+		3D27F7B61C08A6A800C50CBF /* LewPopupViewAnimationSlide.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7AD1C08A6A800C50CBF /* LewPopupViewAnimationSlide.m */; };
+		3D27F7B71C08A6A800C50CBF /* LewPopupViewAnimationSpring.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7AF1C08A6A800C50CBF /* LewPopupViewAnimationSpring.m */; };
+		3D27F7B81C08A6A800C50CBF /* UIViewController+LewPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7B21C08A6A800C50CBF /* UIViewController+LewPopupViewController.m */; };
+		3D27F7BC1C08A7D200C50CBF /* SchedulePopMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7BB1C08A7D200C50CBF /* SchedulePopMenu.m */; };
+		3D27F7BE1C08A82B00C50CBF /* SchedulePopMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D27F7BD1C08A82B00C50CBF /* SchedulePopMenu.xib */; };
 		3D2A00471C05651600B1EF65 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00461C05651600B1EF65 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3D2A004C1C05DAC100B1EF65 /* MyPatientTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A004B1C05DAC100B1EF65 /* MyPatientTool.m */; };
 		3D2A00611C05E55600B1EF65 /* NSDate+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00521C05E55600B1EF65 /* NSDate+Helpers.m */; };
@@ -1039,6 +1047,22 @@
 		3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchClinicViewController.m; sourceTree = "<group>"; };
 		3D23A6621BF33B610029943D /* ClinicDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailViewController.h; sourceTree = "<group>"; };
 		3D23A6631BF33B610029943D /* ClinicDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailViewController.m; sourceTree = "<group>"; };
+		3D27F7A61C08A6A800C50CBF /* LewPopupBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupBackgroundView.h; sourceTree = "<group>"; };
+		3D27F7A71C08A6A800C50CBF /* LewPopupBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LewPopupBackgroundView.m; sourceTree = "<group>"; };
+		3D27F7A81C08A6A800C50CBF /* LewPopupViewAnimationDrop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupViewAnimationDrop.h; sourceTree = "<group>"; };
+		3D27F7A91C08A6A800C50CBF /* LewPopupViewAnimationDrop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LewPopupViewAnimationDrop.m; sourceTree = "<group>"; };
+		3D27F7AA1C08A6A800C50CBF /* LewPopupViewAnimationFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupViewAnimationFade.h; sourceTree = "<group>"; };
+		3D27F7AB1C08A6A800C50CBF /* LewPopupViewAnimationFade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LewPopupViewAnimationFade.m; sourceTree = "<group>"; };
+		3D27F7AC1C08A6A800C50CBF /* LewPopupViewAnimationSlide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupViewAnimationSlide.h; sourceTree = "<group>"; };
+		3D27F7AD1C08A6A800C50CBF /* LewPopupViewAnimationSlide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LewPopupViewAnimationSlide.m; sourceTree = "<group>"; };
+		3D27F7AE1C08A6A800C50CBF /* LewPopupViewAnimationSpring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupViewAnimationSpring.h; sourceTree = "<group>"; };
+		3D27F7AF1C08A6A800C50CBF /* LewPopupViewAnimationSpring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LewPopupViewAnimationSpring.m; sourceTree = "<group>"; };
+		3D27F7B01C08A6A800C50CBF /* LewPopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupViewController.h; sourceTree = "<group>"; };
+		3D27F7B11C08A6A800C50CBF /* UIViewController+LewPopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+LewPopupViewController.h"; sourceTree = "<group>"; };
+		3D27F7B21C08A6A800C50CBF /* UIViewController+LewPopupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+LewPopupViewController.m"; sourceTree = "<group>"; };
+		3D27F7BA1C08A7D200C50CBF /* SchedulePopMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SchedulePopMenu.h; sourceTree = "<group>"; };
+		3D27F7BB1C08A7D200C50CBF /* SchedulePopMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SchedulePopMenu.m; sourceTree = "<group>"; };
+		3D27F7BD1C08A82B00C50CBF /* SchedulePopMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SchedulePopMenu.xib; sourceTree = "<group>"; };
 		3D2A00451C05651600B1EF65 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		3D2A00461C05651600B1EF65 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		3D2A004A1C05DAC100B1EF65 /* MyPatientTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPatientTool.h; sourceTree = "<group>"; };
@@ -2346,6 +2370,36 @@
 			path = MJExtension;
 			sourceTree = "<group>";
 		};
+		3D27F7A51C08A6A800C50CBF /* popupViewController */ = {
+			isa = PBXGroup;
+			children = (
+				3D27F7A61C08A6A800C50CBF /* LewPopupBackgroundView.h */,
+				3D27F7A71C08A6A800C50CBF /* LewPopupBackgroundView.m */,
+				3D27F7A81C08A6A800C50CBF /* LewPopupViewAnimationDrop.h */,
+				3D27F7A91C08A6A800C50CBF /* LewPopupViewAnimationDrop.m */,
+				3D27F7AA1C08A6A800C50CBF /* LewPopupViewAnimationFade.h */,
+				3D27F7AB1C08A6A800C50CBF /* LewPopupViewAnimationFade.m */,
+				3D27F7AC1C08A6A800C50CBF /* LewPopupViewAnimationSlide.h */,
+				3D27F7AD1C08A6A800C50CBF /* LewPopupViewAnimationSlide.m */,
+				3D27F7AE1C08A6A800C50CBF /* LewPopupViewAnimationSpring.h */,
+				3D27F7AF1C08A6A800C50CBF /* LewPopupViewAnimationSpring.m */,
+				3D27F7B01C08A6A800C50CBF /* LewPopupViewController.h */,
+				3D27F7B11C08A6A800C50CBF /* UIViewController+LewPopupViewController.h */,
+				3D27F7B21C08A6A800C50CBF /* UIViewController+LewPopupViewController.m */,
+			);
+			path = popupViewController;
+			sourceTree = "<group>";
+		};
+		3D27F7B91C08A76800C50CBF /* SchedulePopMenu */ = {
+			isa = PBXGroup;
+			children = (
+				3D27F7BA1C08A7D200C50CBF /* SchedulePopMenu.h */,
+				3D27F7BB1C08A7D200C50CBF /* SchedulePopMenu.m */,
+				3D27F7BD1C08A82B00C50CBF /* SchedulePopMenu.xib */,
+			);
+			name = SchedulePopMenu;
+			sourceTree = "<group>";
+		};
 		3D2A00491C05DA8F00B1EF65 /* MyPatientTool */ = {
 			isa = PBXGroup;
 			children = (
@@ -2358,6 +2412,7 @@
 		3D2A004D1C05E53B00B1EF65 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3D27F7A51C08A6A800C50CBF /* popupViewController */,
 				3DE2DD561C06BC45005F7832 /* MXPullDownMenu */,
 				3D2A004E1C05E55600B1EF65 /* PMCalendar */,
 				3DF671571BF70B2000527B49 /* Catory */,
@@ -4198,13 +4253,14 @@
 		64CFD8DA19F7F6A6001EB0DA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				2D2ED8601C00981A003B7047 /* SelectYuYueDetailViewController.h */,
-				2D2ED8611C00981A003B7047 /* SelectYuYueDetailViewController.m */,
+				3D27F7B91C08A76800C50CBF /* SchedulePopMenu */,
 				3DE2DD5B1C06C91D005F7832 /* MyYuyue */,
 				3D0AE7C61C043BBB00DCD4A0 /* MyReminderInfo */,
 				3DEAF5821C0317FA00445C20 /* PersonalInfo */,
 				3DAA115F1BF5BF9E00FD8149 /* MyBill */,
 				3D23A62E1BF2D8F50029943D /* MyClinic */,
+				2D2ED8601C00981A003B7047 /* SelectYuYueDetailViewController.h */,
+				2D2ED8611C00981A003B7047 /* SelectYuYueDetailViewController.m */,
 				2DEE02D11B33AB880045BD35 /* QrCodeViewController.h */,
 				2DEE02D21B33AB880045BD35 /* QrCodeViewController.m */,
 				64CFD8DB19F7F6A6001EB0DA /* AboutProductViewController.h */,
@@ -4611,6 +4667,7 @@
 				2D4085AA1B429683003DDE29 /* phone@2x.png in Resources */,
 				642D7AB11A807E18007F8D58 /* CaseMaterialsTableViewCell.xib in Resources */,
 				6436DE9419B8C48100DC667E /* btn_Personal center@2x.png in Resources */,
+				3D27F7BE1C08A82B00C50CBF /* SchedulePopMenu.xib in Resources */,
 				A62C8FDD1A0921410013146D /* CRM-Info.plist in Resources */,
 				3DDDB8381BFD637D004AD4AC /* kj_zs@2x.png in Resources */,
 				6436DECB19B8C48100DC667E /* star_normal@2x.png in Resources */,
@@ -4873,6 +4930,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81B1EBFF1AAFEE080030A92C /* VRGCalendarView.m in Sources */,
+				3D27F7B61C08A6A800C50CBF /* LewPopupViewAnimationSlide.m in Sources */,
 				6436DF0219B8C48100DC667E /* UIImageView+WebCache.m in Sources */,
 				2DFE7ED81B4A71980088B119 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				2DFE7ECC1B4A71980088B119 /* AFHTTPRequestOperation.m in Sources */,
@@ -4904,6 +4962,7 @@
 				2DC0356D1B4BC168007A70D8 /* TSPopoverTouchView.m in Sources */,
 				646C3CE51A7DD9D0009B928B /* ImageBrowserViewController.m in Sources */,
 				6436DEEF19B8C48100DC667E /* PSTGridLayoutItem.m in Sources */,
+				3D27F7BC1C08A7D200C50CBF /* SchedulePopMenu.m in Sources */,
 				64ED49EA1AAEE87700EFE6FE /* NSJSONSerialization+jsonString.m in Sources */,
 				6436DEE119B8C48100DC667E /* MWZoomingScrollView.m in Sources */,
 				6436DF3119B8C48100DC667E /* TimMutableArray.m in Sources */,
@@ -5001,6 +5060,7 @@
 				81B1EBFD1AAFED8C0030A92C /* UIView+convenience.m in Sources */,
 				64CFD93619F7F6A6001EB0DA /* PatientsTableViewCell.m in Sources */,
 				3DF671561BF70A9900527B49 /* UIViewExt.m in Sources */,
+				3D27F7B71C08A6A800C50CBF /* LewPopupViewAnimationSpring.m in Sources */,
 				2DFE7E771B4A23010088B119 /* UMChatTableViewCell.m in Sources */,
 				81C589631AA6F556003BAD13 /* AddReminderViewController.m in Sources */,
 				3D23A65B1BF307A60029943D /* ClinicCell.m in Sources */,
@@ -5077,6 +5137,7 @@
 				3DAA118C1BF5C1B900FD8149 /* WMMenuView.m in Sources */,
 				3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */,
 				64CFD94E19F7F6A6001EB0DA /* LocalNotificationTableViewCell.m in Sources */,
+				3D27F7B81C08A6A800C50CBF /* UIViewController+LewPopupViewController.m in Sources */,
 				64CFD90F19F7F6A6001EB0DA /* PeopleInfoCell.m in Sources */,
 				64B2B33619D3F9E200DFA1E2 /* UIView+WebCacheOperation.m in Sources */,
 				3D0BE5DB1BF9883B0023D3FA /* AssistModel.m in Sources */,
@@ -5128,6 +5189,7 @@
 				8142BB531AEA481900EF08EE /* RepairDoctorDetailViewController.m in Sources */,
 				64CFD94519F7F6A6001EB0DA /* SigninViewController.m in Sources */,
 				3D23A6411BF2F8360029943D /* ClinicModel.m in Sources */,
+				3D27F7B51C08A6A800C50CBF /* LewPopupViewAnimationFade.m in Sources */,
 				3D23A6561BF300CC0029943D /* NSObject+MJCoding.m in Sources */,
 				6436DEDD19B8C48100DC667E /* MWPhoto.m in Sources */,
 				2D5167C01BD8D68B00C0C3C6 /* HengYaViewController.m in Sources */,
@@ -5162,6 +5224,7 @@
 				81B1EBE81AAFE7D30030A92C /* SelectDateViewController.m in Sources */,
 				2DEE02D31B33AB880045BD35 /* QrCodeViewController.m in Sources */,
 				6436DE3019B8C48100DC667E /* ShareMode.m in Sources */,
+				3D27F7B41C08A6A800C50CBF /* LewPopupViewAnimationDrop.m in Sources */,
 				2DD07F641B6240CE0076128D /* IntroducerViewController.m in Sources */,
 				64CFD91119F7F6A6001EB0DA /* StarPickerTableViewCell.m in Sources */,
 				64CFD92F19F7F6A6001EB0DA /* ExpenseTableViewCell.m in Sources */,
@@ -5175,6 +5238,7 @@
 				3D0BE5CE1BF97F1A0023D3FA /* MyBillTool.m in Sources */,
 				2DC0356A1B4BC168007A70D8 /* TSActionSheet.m in Sources */,
 				64CFD94619F7F6A6001EB0DA /* SignUpViewController.m in Sources */,
+				3D27F7B31C08A6A800C50CBF /* LewPopupBackgroundView.m in Sources */,
 				6436DEE519B8C48100DC667E /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
 				6436DF3719B8C48100DC667E /* UITableViewHeaderFooterView+Extension.m in Sources */,
 				64B2B33019D3F7BB00DFA1E2 /* CornerButton.m in Sources */,

@@ -21,12 +21,6 @@
  */
 + (NSString *)latestUserId;
 
-/**
- *  是否签约
- *
- *  @return 签约状态
- */
-+ (NSString *)isSign;
 
 /**
  *  设置最后使用者id
@@ -35,7 +29,6 @@
  */
 + (void)setLatestUserId:(NSString *)userid;
 
-+ (void)setIsSign:(NSString *)isSign;
 
 + (void)setObject:(id)object forKey:(NSString *)akey;
 

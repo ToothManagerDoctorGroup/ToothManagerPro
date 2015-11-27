@@ -498,7 +498,7 @@
         self.clinicTitleView.title = title;
         //根据所选的诊所名称查询椅位名称
         NSString *clinicId = nil;
-        for(NSInteger i =1;i<self.clinicNameArray.count;i++){
+        for(NSInteger i = 1;i<self.clinicNameArray.count;i++){
             if([title isEqualToString:self.clinicNameArray[i]]){
                 clinicId = [self.clinicIdArray objectAtIndex:i-1];
             }

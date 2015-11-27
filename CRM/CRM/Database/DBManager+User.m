@@ -61,6 +61,8 @@
         [columeArray addObject:@"auth_text"];
         [columeArray addObject:@"auth_pic"];
         [columeArray addObject:@"creation_date"]; //创建时间
+        
+        [columeArray addObject:@"img"];
 #warning 新添加元素
 //        [columeArray addObject:@"doctor_birthday"];
 //        [columeArray addObject:@"doctor_gender"];
@@ -81,6 +83,7 @@
         [valueArray addObject:userobj.authText];
         [valueArray addObject:userobj.authPic];
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
+        [valueArray addObject:userobj.img];
 #warning 新添加元素
 //        [valueArray addObject:userobj.doctor_birthday];
 //        [valueArray addObject:userobj.doctor_gender];
@@ -88,6 +91,7 @@
 //        [valueArray addObject:userobj.doctor_skill];
         
         
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -146,6 +150,7 @@
         [columeArray addObject:@"auth_text"];
         [columeArray addObject:@"auth_pic"];
         [columeArray addObject:@"update_date"]; //更新时间
+        [columeArray addObject:@"img"];
 #warning 新添加元素
 //        [columeArray addObject:@"doctor_birthday"];
 //        [columeArray addObject:@"doctor_gender"];
@@ -164,7 +169,7 @@
         [valueArray addObject:userobj.authText];
         [valueArray addObject:userobj.authPic];
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
-        
+        [valueArray addObject:userobj.img];
 #warning 新添加元素
 //        [valueArray addObject:userobj.doctor_birthday];
 //        [valueArray addObject:userobj.doctor_gender];

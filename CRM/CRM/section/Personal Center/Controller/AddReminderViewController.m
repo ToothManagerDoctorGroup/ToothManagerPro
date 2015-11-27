@@ -30,6 +30,10 @@
 #import "MaterialModel.h"
 #import "MyBillTool.h"
 #import "DBManager+Patients.h"
+#import "CRMUserDefalut.h"
+#import "MyPatientTool.h"
+#import "CRMHttpRespondModel.h"
+#import "NSDate+Conversion.h"
 
 @interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate>{
     
@@ -71,6 +75,17 @@
     return _chooseMaterials;
 }
 
+- (void)dealloc
+{
+    self.hengYaVC = nil;
+    self.ruYaVC = nil;
+    [self.clinicArray removeAllObjects];
+    self.clinicArray = nil;
+    [self.clinicIdArray removeAllObjects];
+    self.clinicIdArray = nil;
+    self.huanzheTextField.text = @"";
+    NSLog(@"我被销毁了*********************");
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -135,10 +150,10 @@
     
     //这个主要来获取医院信息
     UserObject *userobj = [[AccountManager shareInstance] currentUser];
-    [self refreshView];
     [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
     } failedBlock:^(NSError *error) {
     }];
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(yuYueTime:) name:@"YuYueTime" object:nil];
     
@@ -153,23 +168,13 @@
 
             NSString *clinicId = [dic objectForKey:@"clinic_id"];
             [self.clinicIdArray addObject:clinicId];
-            
-            [[DoctorManager shareInstance]clinicSeat:clinicId successBlock:^{
-                
-            } failedBlock:^(NSError *error){
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
         }
     }
 }
 - (void)doctorClinicFailedWithError:(NSError *)error{
-    
+    [SVProgressHUD showImage:nil status:@"预约诊所获取失败"];
 }
--(void)clinicSeatSuccessWithResult:(NSDictionary *)result{
-}
-- (void)clinicSeatFailedWithError:(NSError *)error{
-    
-}
+
 
 -(void)viewWillAppear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -189,14 +194,11 @@
     self.medicalPlaceTextField.text = [dic objectForKey:@"clinicName"];
     self.medicalChairTextField.text = [dic objectForKey:@"seatName"];
     self.seatPrice = [dic objectForKey:@"seatPrice"];
+    self.timeTextField.text = [dic objectForKey:@"time"];
+    self.timeDurationLabel.text = [dic objectForKey:@"duration"];
     
     if (dic[@"seatName"] == nil || [dic[@"seatName"] isEqualToString:@""]) {
-        self.timeTextField.text = @"";
-        self.timeDurationLabel.text = @"";
         [SVProgressHUD showImage:nil status:@"当前医院没有椅位信息"];
-    }else{
-        self.timeTextField.text = [dic objectForKey:@"time"];
-        self.timeDurationLabel.text = [dic objectForKey:@"duration"];
     }
 }
 - (void)onBackButtonAction:(id)sender {
@@ -215,12 +217,15 @@
             
             [self.clinicArray addObject:tmpDoctor.doctor_hospital];
             
-            [[DoctorManager shareInstance]doctorClinic:[AccountManager shareInstance].currentUser.userid successBlock:^{
-                
-            } failedBlock:^(NSError *error){
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
             
+            NSString *signKey = [NSString stringWithFormat:@"%@isSign",[[AccountManager shareInstance] currentUser].userid];
+            if ([[CRMUserDefalut objectForKey:signKey] isEqualToString:@"1"]) {
+                [[DoctorManager shareInstance] doctorClinic:[AccountManager shareInstance].currentUser.userid successBlock:^{
+                    
+                } failedBlock:^(NSError *error){
+                    [SVProgressHUD showImage:nil status:error.localizedDescription];
+                }];
+            }
             return;
         }
     }
@@ -250,17 +255,17 @@
         }
     }
     
-    
     LocalNotification *notification = [[LocalNotification alloc] init];
     notification.reserve_time = self.timeTextField.text;
     notification.reserve_type = self.selectMatterTextField.text;
     notification.medical_place = self.medicalPlaceTextField.text;
     notification.medical_chair = self.medicalChairTextField.text;
+    notification.update_date = [NSString defaultDateString];
     
     notification.selected = YES;
     notification.tooth_position = self.yaWeiTextField.text;
     notification.clinic_reserve_id = @"1";
-    notification.duration = [NSString stringWithFormat:@"%f",self.durationFloat];
+    notification.duration = [NSString stringWithFormat:@"%.1f",self.durationFloat];
     
     //判断是否是下一次预约
     NSString *patient_id;
@@ -296,6 +301,14 @@
     
     //选择如果选择的不是自己的医院
     if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
+        if(patient_id == nil){
+            [SVProgressHUD showErrorWithStatus:@"请先选择患者"];
+            return;
+        }
+        if([AccountManager shareInstance].currentUser.userid == nil){
+            [SVProgressHUD showErrorWithStatus:@"请登陆"];
+            return;
+        }
         //计算总的money
         float totalMoney = self.seatPrice.floatValue;
         //获取耗材的数组
@@ -317,13 +330,55 @@
                 totalMoney = totalMoney + [assist.actual_money floatValue];
             }
         }
+        [SVProgressHUD showWithStatus:@"正在预约"];
         //发送预约信息给服务器
-        [[DoctorManager shareInstance]YuYueTuiSongClinic:patient_id withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId  withToothPosition:self.yaWeiTextField.text withAssist:assistsArr withMaterial:materialsArr successBlock:^{
- 
-            } failedBlock:^(NSError *error){
-                    [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
+        [MyPatientTool postAppointInfoTuiSongClinic:patient_id withClinicName:self.medicalPlaceTextField.text withCliniId:clinicId withDoctorId:[AccountManager shareInstance].currentUser.userid  withAppointTime:self.timeTextField.text withDuration:self.durationFloat withSeatPrice:self.seatPrice.floatValue withAppointMoney:totalMoney withAppointType:self.selectMatterTextField.text withSeatId:self.seatId withToothPosition:self.yaWeiTextField.text withAssist:assistsArr withMaterial:materialsArr success:^(CRMHttpRespondModel *respondModel) {
+            [SVProgressHUD showSuccessWithStatus:@"预约成功"];
+            //获取当前的返回结果
+            NSNumber *clinic_reserve_id = respondModel.result;
+            //修改clinic_reserve_id
+            if (self.currentNoti) {
+                self.currentNoti.clinic_reserve_id = [NSString stringWithFormat:@"%d",[clinic_reserve_id intValue]];
+            }
+            //更新当前保存的本地预约信息
+            BOOL res = [[LocalNotificationCenter shareInstance] updateLocalNotification:self.currentNoti];
+            if (res) {
+                NSLog(@"预约更新成功");
+            }else{
+                NSLog(@"预约更新失败");
+            }
+            if (self.isNextReserve) {
+                //调用代理方法
+                if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+                    [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
+                }
+            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.navigationController popViewControllerAnimated:YES];
+            });
+        } failure:^(NSError *error) {
+            if (error) {
+                //调用代理方法
+                if (self.isNextReserve) {
+                    //调用代理方法
+                    if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+                        [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
+                    }
+                }
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+                [SVProgressHUD showImage:nil status:@"预约失败"];
+            }
+        }];
     }else{
+        //调用代理方法
+        if (self.isNextReserve) {
+            //调用代理方法
+            if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+                [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
+            }
+        }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.navigationController popViewControllerAnimated:YES];
         });
@@ -333,47 +388,6 @@
             [SVProgressHUD showErrorWithStatus:@"本地预约保存失败"];
         }
     }
-}
-
-- (void)yuYueTuiSongClinicSuccessWithResult:(NSDictionary *)result{
-    
-    [SVProgressHUD showSuccessWithStatus:@"预约成功"];
-    //获取当前的返回结果
-    NSNumber *clinic_reserve_id = result[@"Result"];
-    //修改clinic_reserve_id
-    if (self.currentNoti) {
-        self.currentNoti.clinic_reserve_id = [NSString stringWithFormat:@"%.2f",[clinic_reserve_id floatValue]];
-    }
-    //更新当前保存的本地预约信息
-    BOOL res = [[LocalNotificationCenter shareInstance] updateLocalNotification:self.currentNoti];
-    if (res) {
-        NSLog(@"预约更新成功");
-    }else{
-        NSLog(@"预约更新失败");
-    }
-    if (self.isNextReserve) {
-        //调用代理方法
-        if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
-            [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
-        }
-    }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.navigationController popViewControllerAnimated:YES];
-    });
-}
-- (void)yuYueTuiSongClinicFailedWithError:(NSError *)error{
-    //调用代理方法
-    if (self.isNextReserve) {
-        //调用代理方法
-        if ([self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
-            [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
-        }
-    }
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.navigationController popViewControllerAnimated:YES];
-    });
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 - (void)weiXinMessageSuccessWithResult:(NSDictionary *)result{

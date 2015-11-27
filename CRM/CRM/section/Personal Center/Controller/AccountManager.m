@@ -217,8 +217,9 @@ Realize_ShareInstance(AccountManager);
     self.currentUser.userid = nil;
     self.currentUser.accesstoken = nil;
     [CRMUserDefalut setLatestUserId:nil];
-    [CRMUserDefalut setIsSign:nil];
-    
+    NSString *signKey = [NSString stringWithFormat:@"%@isSign",[self currentUser].userid];
+    [CRMUserDefalut setObject:nil forKey:signKey];
+
     [[NSNotificationCenter defaultCenter] postNotificationName:SignOutSuccessNotification object:nil];
 }
 
