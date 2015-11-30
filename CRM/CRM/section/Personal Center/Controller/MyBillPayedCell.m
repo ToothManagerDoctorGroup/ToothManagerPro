@@ -1,12 +1,8 @@
-//
-//  MyBillCell.m
-//  CRM
-//
-//  Created by Argo Zhang on 15/11/13.
-//  Copyright © 2015年 TimTiger. All rights reserved.
-//
 
-#import "MyBillCell.h"
+
+
+
+#import "MyBillPayedCell.h"
 #import "BillModel.h"
 #import "BillDetailViewController.h"
 #import "UIView+WXViewController.h"
@@ -17,7 +13,7 @@
 #define MarginX 10
 #define MarginY 13
 
-@interface MyBillCell ()<UIAlertViewDelegate,BillDetailViewControllerDelegate>{
+@interface MyBillPayedCell ()<UIAlertViewDelegate,BillDetailViewControllerDelegate>{
     UILabel *_clinicNameLabel; //诊所名称
     UIImageView *_clinicNextImageView;//图片名称
     
@@ -36,7 +32,7 @@
 
 @end
 
-@implementation MyBillCell
+@implementation MyBillPayedCell
 
 - (void)dealloc{
     [self.timer invalidate];
@@ -45,7 +41,7 @@
 
 + (instancetype)cellWithTableView:(UITableView *)tableView{
     static NSString *ID = @"bill_cell";
-    MyBillCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
+    MyBillPayedCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
         cell = [[self alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
@@ -88,7 +84,7 @@
     _timeLabel.textColor = MyColor(117, 117, 117);
     _timeLabel.font = OtherFontSize;
     [self.contentView addSubview:_timeLabel];
-
+    
     //名称视图
     _userNameLabel = [[UILabel alloc] init];
     _userNameLabel.textColor = MyColor(117, 117, 117);
@@ -154,8 +150,8 @@
     CGSize timeSize = [time sizeWithFont:OtherFontSize];
     NSString *name = self.model.patient_name;
     CGSize nameSize = [name sizeWithFont:OtherFontSize];
-//    NSString *type = self.model.seat_name;
-//    CGSize typeSize = [type sizeWithFont:OtherFontSize];
+    //    NSString *type = self.model.seat_name;
+    //    CGSize typeSize = [type sizeWithFont:OtherFontSize];
     NSString *action = self.model.type;
     CGSize actionSize = [action sizeWithFont:OtherFontSize];
     
@@ -175,12 +171,12 @@
     _userNameLabel.text = name;
     
     //类型视图
-//    CGFloat typeX = CGRectGetMaxX(_userNameLabel.frame) + middleMargin;
-//    CGFloat typeY = timeY;
-//    CGFloat typeW = typeSize.width;
-//    CGFloat typeH = typeSize.height;
-//    _typeLabel.frame = CGRectMake(typeX, typeY, typeW, typeH);
-//    _typeLabel.text = type;
+    //    CGFloat typeX = CGRectGetMaxX(_userNameLabel.frame) + middleMargin;
+    //    CGFloat typeY = timeY;
+    //    CGFloat typeW = typeSize.width;
+    //    CGFloat typeH = typeSize.height;
+    //    _typeLabel.frame = CGRectMake(typeX, typeY, typeW, typeH);
+    //    _typeLabel.text = type;
     
     //类型视图
     CGFloat actionX = CGRectGetMaxX(_userNameLabel.frame) + middleMargin;
@@ -206,39 +202,10 @@
     
     //价格视图
     NSString *money;
-        _payButton.hidden = YES;
-        if ([self.model.reserve_status isEqualToString:@"0"]) {//等待计时
-            money = @"等待计时";
-            _payButton.hidden = NO;
-            [_payButton setTitle:@"取消预约" forState:UIControlStateNormal];
-            _moneyLabel.text = money;
-            
-            [self.timer invalidate];
-            self.timer = nil;
-        }else if([self.model.reserve_status isEqualToString:@"1"]){//手术中
-            
-            _moneyLabel.text = [NSString stringWithFormat:@"已用时 %@", [self.model.start_time timeToNow]];
-            self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
-            NSRunLoop *currentRunLoop = [NSRunLoop currentRunLoop];
-            [currentRunLoop addTimer:self.timer forMode:NSRunLoopCommonModes];
-            //开启一个定时器
-            _payButton.hidden = YES;
-        }else if ([self.model.reserve_status isEqualToString:@"2"]){//手术结束
-            money = @"手术结束";
-            _payButton.hidden = YES;
-            _moneyLabel.text = money;
-            
-            [self.timer invalidate];
-            self.timer = nil;
-        }else{ //待付款
-            _payButton.hidden = NO;
-            [_payButton setTitle:@"去付款" forState:UIControlStateNormal];
-            money = [NSString stringWithFormat:@"待付款：￥%@",self.model.total_money];
-            _moneyLabel.text = money;
-            
-            [self.timer invalidate];
-            self.timer = nil;
-        }
+    
+    [_payButton setTitle:@"付款详情" forState:UIControlStateNormal];
+    money = [NSString stringWithFormat:@"已付款：￥%@",self.model.total_money];
+    _moneyLabel.text = money;
     
 }
 
@@ -266,7 +233,7 @@
         detailVc.hidesBottomBarWhenPushed = YES;
         detailVc.billId = self.model.KeyId;
         detailVc.delegate = self;
-        detailVc.type = @"1";
+        detailVc.type = @"0";
         [self.viewController.navigationController pushViewController:detailVc animated:YES];
     }
 }

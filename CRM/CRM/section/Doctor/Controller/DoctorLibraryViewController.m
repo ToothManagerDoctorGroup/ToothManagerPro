@@ -26,11 +26,16 @@
 #import "AvatarView.h"
 #import "CRMHttpRequest+Sync.h"
 #import "UIImageView+WebCache.h"
+#import "DoctorTool.h"
+#import "CRMHttpRespondModel.h"
+#import "DBManager+Introducer.h"
 
-@interface DoctorLibraryViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate,RequestIntroducerDelegate>
+@interface DoctorLibraryViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate,RequestIntroducerDelegate,UIAlertViewDelegate>
 @property (nonatomic,retain) NSArray *modeArray;
 @property (nonatomic,retain) NSArray *searchHistoryArray;
 @property (nonatomic,retain) Doctor *selectDoctor;
+
+@property (nonatomic, strong)Doctor *deleteDoctor;//当前要删除的医生好友
 @end
 
 @implementation DoctorLibraryViewController
@@ -38,9 +43,15 @@
 @synthesize userId;
 @synthesize patientId;
 
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tongbuAction:) name:@"tongbu" object:nil];
 }
 
 - (void)initView {
@@ -144,29 +155,70 @@
     
     //转诊病人
     if (isTransfer && self.selectDoctor == nil) {
+        
         self.selectDoctor = doctor;
         
-        /*
-        Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
-        tmppatient.doctor_id =  self.selectDoctor.doctor_id;
-        tmppatient.introducer_id = [AccountManager currentUserid];
-        [[DBManager shareInstance] updatePatient:tmppatient];
-        [[DBManager shareInstance]updateUpdateDate:patientId];
-         [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:tmppatient, nil]];
-        */
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确认转诊给此好友吗?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+        alertView.tag = 110;
+        [alertView show];
         
-        [[DoctorManager shareInstance] trasferPatient:patientId fromDoctor:[AccountManager shareInstance].currentUser.userid toReceiver:doctor.doctor_id successBlock:^{
-            [SVProgressHUD showWithStatus:@"正在转诊患者..."];
-            [[DBManager shareInstance]updateUpdateDate:patientId];
-        } failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
     } else if (self.selectDoctor == nil) {
         DoctorInfoViewController *doctorinfoVC = [[DoctorInfoViewController alloc]init];
         doctorinfoVC.repairDoctorID = doctor.ckeyid;
         doctorinfoVC.ifDoctorInfo = YES;
         [self pushViewController:doctorinfoVC animated:YES];
     }
+}
+
+
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Doctor *doctor = self.searchHistoryArray[indexPath.row];
+    self.deleteDoctor = doctor;
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确定删除该好友吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        alertView.tag = 111;
+        [alertView show];
+    }
+}
+
+#pragma mark -UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (alertView.tag == 110) {
+        if (buttonIndex == 1) {
+            [[DoctorManager shareInstance] trasferPatient:patientId fromDoctor:[AccountManager shareInstance].currentUser.userid toReceiver:self.selectDoctor.doctor_id successBlock:^{
+                [SVProgressHUD showWithStatus:@"正在转诊患者..."];
+                [[DBManager shareInstance]updateUpdateDate:patientId];
+            } failedBlock:^(NSError *error){
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
+            }];
+        }
+    }else{
+        if (buttonIndex == 1) {
+            [SVProgressHUD showWithStatus:@"删除中..."];
+            [DoctorTool deleteFriendWithDoctorId:self.deleteDoctor.ckeyid introId:[[AccountManager shareInstance] currentUser].userid success:^(CRMHttpRespondModel *result) {
+                [SVProgressHUD showSuccessWithStatus:@"删除成功"];
+                BOOL res = [[DBManager shareInstance] deleteDoctorWithUserObject:self.deleteDoctor];
+                if (res) {
+                    self.searchHistoryArray = [[DBManager shareInstance] getAllDoctor];
+                    [self.tableView reloadData];
+                }else{
+                    [SVProgressHUD showErrorWithStatus:@"删除失败"];
+                }
+                
+            } failure:^(NSError *error) {
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }
+    }
+    
 }
 
 #pragma mark - SearchDisplay delegate
@@ -237,23 +289,34 @@
             
           //  [[CRMHttpRequest shareInstance]postPatientIntroducerMap:tmppatient.ckeyid withDoctorId:self.selectDoctor.ckeyid withIntrId:[AccountManager shareInstance].currentUser.userid];
             
-            
+            //插入患者介绍人
             [self insertPatientIntroducerMap];
             
+            [SVProgressHUD showWithStatus:@"转诊中..."];
+            //调用同步方法
+            [NSTimer scheduledTimerWithTimeInterval:0.2
+                                             target:self
+                                           selector:@selector(callSync)
+                                           userInfo:nil
+                                            repeats:NO];
             
-         //  [[SyncManager shareInstance] startSync];
-            
-            
-            [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:tmppatient, nil]];
-            
+    
             self.selectDoctor = nil;
         }
-       // [self postNotificationName:PatientTransferNotification object:nil];
-        [SVProgressHUD showImage:nil status:@"转诊患者成功"];
-        [self popViewControllerAnimated:YES];
+        
     } else {
-        [SVProgressHUD showImage:nil status:@"转诊患者失败"];
+        [SVProgressHUD showErrorWithStatus:@"转诊患者失败"];
     }
+}
+//同步
+- (void)callSync {
+    [[SyncManager shareInstance] startSync];
+}
+
+#pragma mark -同步监听
+- (void)tongbuAction:(NSNotification *)notif{
+    [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
+    [self popViewControllerAnimated:YES];
 }
 
 -(void)postPatientIntroducerMapSuccess:(NSDictionary *)result{

@@ -177,7 +177,7 @@
     PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
     patientVC.patientStatus = PatientStatuspeAll;
     patientVC.isTabbarVc = YES;
-    [self setTabbarItemState:patientVC withTitle:@"患者库" withImage1:@"ic_tabbar_library" withImage2:@"ic_tabbar_library_active"];
+    [self setTabbarItemState:patientVC withTitle:@"患者" withImage1:@"ic_tabbar_library" withImage2:@"ic_tabbar_library_active"];
     TimNavigationViewController* ncViewController3=[[TimNavigationViewController alloc]initWithRootViewController:patientVC];
     
     

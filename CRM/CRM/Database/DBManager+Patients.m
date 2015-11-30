@@ -1344,7 +1344,7 @@
     }];
     
     //自动添加通知，暂时注释掉
-    if ([medicalReserve.reserve_time isNotEmpty] && ![medicalReserve.reserve_time isEqualToString:@"0"]) {
+    /*if ([medicalReserve.reserve_time isNotEmpty] && ![medicalReserve.reserve_time isEqualToString:@"0"]) {
         LocalNotification *notificaton = [[LocalNotification alloc]init];
        // notificaton.reserve_content = @"种植";
         //[self getPatientWithPatientCkeyid:medicalReserve.patient_id].patient_name;
@@ -1362,7 +1362,7 @@
         notificaton.user_id = [AccountManager currentUserid];
         notificaton.doctor_id = [AccountManager currentUserid];
         [[LocalNotificationCenter shareInstance] addLocalNotification:notificaton];
-    }
+    }*/
     
     if (ret) { //病例保存成功，更新患者状态
        [self updatePatientStatusWithMedicalReserve:medicalReserve];

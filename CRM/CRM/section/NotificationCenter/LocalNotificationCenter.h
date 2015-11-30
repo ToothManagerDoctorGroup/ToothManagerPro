@@ -23,7 +23,6 @@
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic) BOOL selected;   //同步的时候此字段没有用处
 
-
 @property (nonatomic, copy)NSString *tooth_position;
 @property (nonatomic, copy)NSString *clinic_reserve_id;
 @property (nonatomic, copy)NSString *duration;

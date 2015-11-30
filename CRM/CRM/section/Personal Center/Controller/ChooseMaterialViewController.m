@@ -116,7 +116,7 @@
 #pragma mark -请求网络数据
 - (void)requestMaterialData{
     
-    [MyClinicTool getMaterialListWithClinicId:self.clinicId matType:@"" success:^(NSArray *result) {
+    [MyClinicTool getMaterialListWithClinicId:self.clinicId matType:@"1" success:^(NSArray *result) {
         
         self.dataList = result;
         //请求网络数据成功后

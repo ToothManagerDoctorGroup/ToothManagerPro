@@ -24,6 +24,7 @@
         _innerView.frame = frame;
         _innerView.layer.cornerRadius = 10;
         _innerView.layer.masksToBounds = YES;
+        
         [self addSubview:_innerView];
     }
     return self;
@@ -36,23 +37,21 @@
 
 - (IBAction)menuone:(id)sender {
     self.type = SchedulePopMenuType1;
-    [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationFade new]];
+   [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationFade new]];
 }
 
 - (IBAction)menutwo:(id)sender {
     self.type = SchedulePopMenuType2;
-    LewPopupViewAnimationSlide *animation = [[LewPopupViewAnimationSlide alloc]init];
-    animation.type = LewPopupViewAnimationSlideTypeTopBottom;
-    [_parentVC lew_dismissPopupViewWithanimation:animation];
+    [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationFade new]];
 }
 
 - (IBAction)menuThree:(id)sender {
     self.type = SchedulePopMenuType3;
-    [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationSpring new]];
+    [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationFade new]];
 }
 - (IBAction)menufour:(id)sender {
     self.type = SchedulePopMenuType4;
-    [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationDrop new]];
+    [_parentVC lew_dismissPopupViewWithanimation:[LewPopupViewAnimationFade new]];
 }
 
 @end

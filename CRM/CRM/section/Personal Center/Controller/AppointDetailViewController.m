@@ -12,7 +12,8 @@
 #import "BillDetailModel.h"
 #import "MaterialModel.h"
 #import "AssistModel.h"
-
+#import "LocalNotificationCenter.h"
+#import "DBManager+Patients.h"
 
 @interface AppointDetailViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel; //预约信息
@@ -48,8 +49,33 @@
 }
 #pragma mark -请求网络数据
 - (void)requestAppoinDetailData{
+    NSString *reserveId;
+    if (self.isHomeTo) {
+        if ([self.localNoti.clinic_reserve_id intValue] == 0) {
+            //设置控件的数据
+            Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.localNoti.patient_id];
+            self.timeLabel.text = self.localNoti.reserve_time;
+            self.patientLabel.text = patient.patient_name;
+            self.toothLabel.text = self.localNoti.tooth_position;
+            self.projectLabel.text = self.localNoti.reserve_type;
+            self.appointTimeLabel.text = [NSString stringWithFormat:@"%@小时",self.localNoti.duration];
+            self.clinicLabel.text = self.localNoti.medical_place;
+            self.chairLabel.text = self.localNoti.medical_chair;
+        }else{
+            reserveId = self.localNoti.clinic_reserve_id;
+            [self requestAppointDataWithReserveId:reserveId];
+        }
+        
+    }else{
+        reserveId = self.model.KeyId;
+        [self requestAppointDataWithReserveId:reserveId];
+    }
+}
+
+//请求网络预约信息
+- (void)requestAppointDataWithReserveId:(NSString *)reserveId{
     [SVProgressHUD showWithStatus:@"正在加载"];
-    [MyBillTool requestBillDetailWithBillId:self.model.KeyId success:^(BillDetailModel *billDetail) {
+    [MyBillTool requestBillDetailWithBillId:reserveId success:^(BillDetailModel *billDetail) {
         [SVProgressHUD dismiss];
         
         //设置控件的数据
@@ -64,7 +90,7 @@
         if (billDetail.materials.count > 0) {
             NSString *materialStr = @"";
             for (MaterialModel *material in billDetail.materials) {
-               materialStr = [materialStr stringByAppendingFormat:@"%@%@个 ",material.mat_name,material.actual_num];
+                materialStr = [materialStr stringByAppendingFormat:@"%@%@个 ",material.mat_name,material.actual_num];
             }
             self.materialLabel.text = materialStr;
         }
@@ -75,7 +101,7 @@
                 assistStr = [assistStr stringByAppendingFormat:@"%@%@人 ",assist.assist_name,assist.actual_num];
             }
             self.assistentLabel.text = assistStr;
-         }
+        }
         
     } failure:^(NSError *error) {
         [SVProgressHUD dismiss];
@@ -83,8 +109,8 @@
             NSLog(@"error:%@",error);
         }
     }];
-
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

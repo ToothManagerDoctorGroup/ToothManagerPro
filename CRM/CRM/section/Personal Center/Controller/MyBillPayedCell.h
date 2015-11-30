@@ -1,15 +1,15 @@
 //
-//  MyBillCell.h
+//  MyBillPayedCell.h
 //  CRM
 //
-//  Created by Argo Zhang on 15/11/13.
+//  Created by Argo Zhang on 15/11/30.
 //  Copyright © 2015年 TimTiger. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
 @class BillModel;
-@protocol MyBillCellDelegate <NSObject>
+@protocol MyBillPayedCellDelegate <NSObject>
 
 @optional
 //点击预约取消按钮回调
@@ -20,12 +20,12 @@
 
 @end
 
-@interface MyBillCell : UITableViewCell
+@interface MyBillPayedCell : UITableViewCell
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
 @property (nonatomic, strong)BillModel *model;
 
-@property (nonatomic, weak)id<MyBillCellDelegate> delegate;
+@property (nonatomic, weak)id<MyBillPayedCellDelegate> delegate;
 
 @end

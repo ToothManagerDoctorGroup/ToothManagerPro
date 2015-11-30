@@ -22,8 +22,10 @@
 #import "PMCalendar.h"
 #import "LewPopupViewController.h"
 #import "SchedulePopMenu.h"
+#import <MessageUI/MFMessageComposeViewController.h>
+#import "AppointDetailViewController.h"
 
-@interface ScheduleReminderViewController ()<MudDatePickerViewDelegate,PMCalendarControllerDelegate>
+@interface ScheduleReminderViewController ()<MudDatePickerViewDelegate,PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate>
 {
     MudDatePickerView *datePickerView;
 }
@@ -32,6 +34,9 @@
 @property (nonatomic, weak)PMCalendarController *pmCalenderController;
 
 @property (nonatomic, strong)NSDate *selectDate;
+
+@property (nonatomic, strong)Patient *selectPatient;//当前选中的患者
+
 @end
 
 @implementation ScheduleReminderViewController
@@ -446,47 +451,124 @@
     
     cell.personLabel.text = [notifi.reserve_time substringFromIndex:11];
     cell.statusLabel.text = patient.patient_name;
-    cell.timeLabel.text = notifi.tooth_position;
-    cell.medical_chairLabel.text = notifi.reserve_type;
+    cell.timeLabel.text = notifi.reserve_type;
+    cell.medical_chairLabel.text = notifi.tooth_position;
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+    
     LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
-//    PatientsCellMode *cellMode = [[PatientsCellMode alloc] init];
-//    cellMode.patientId = notifi.patient_id;
-//#warning 跳转页面事件
-//    //跳转到新的患者详情页面
-//    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-//    detailVc.patientsCellMode = cellMode;
-//    detailVc.hidesBottomBarWhenPushed = YES;
-//    [self pushViewController:detailVc animated:YES];
+    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notifi.patient_id];
+    self.selectPatient = patient;
+    
     SchedulePopMenu *menuView = [SchedulePopMenu defaultPopupView];
     menuView.parentVC = self;
     
-    [self lew_presentPopupView:menuView animation:[LewPopupViewAnimationSpring new] dismissed:^{
+    __weak typeof(self) weakSelf = self;
+    [self lew_presentPopupView:menuView animation:[LewPopupViewAnimationFade new] dismissed:^{
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
         switch (menuView.type) {
             case SchedulePopMenuType1:
-                NSLog(@"点击了菜单一");
+                //预约详情
+                [weakSelf junpToAppointDetailWithNotification:notifi];
                 break;
             case SchedulePopMenuType2:
-                NSLog(@"点击了菜单二");
+                //患者详情
+                [weakSelf junpToPatientDetailWithNotification:notifi];
                 break;
             case SchedulePopMenuType3:
-                NSLog(@"点击了菜单三");
+                //打电话
+                [weakSelf junpToPhoneWithNotification:notifi];
                 break;
             case SchedulePopMenuType4:
-                NSLog(@"点击了菜单四");
+                //发短信
+                [weakSelf junpToMessageWithNotification:notifi];
                 break;
             default:
                 break;
         }
     }];
+}
+//预约详情
+- (void)junpToAppointDetailWithNotification:(LocalNotification *)notifi{
+    //跳转到详情页面
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    AppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"AppointDetailViewController"];
+    detailVc.hidesBottomBarWhenPushed = YES;
+    detailVc.isHomeTo = YES;
+    detailVc.localNoti = notifi;
+    [self.navigationController pushViewController:detailVc animated:YES];
+}
+
+//患者详情
+- (void)junpToPatientDetailWithNotification:(LocalNotification *)notifi{
+    PatientsCellMode *cellMode = [[PatientsCellMode alloc] init];
+    cellMode.patientId = notifi.patient_id;
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellMode;
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:detailVc animated:YES];
+}
+
+//打电话
+- (void)junpToPhoneWithNotification:(LocalNotification *)notifi{
     
-    
+    if(![NSString isEmptyString:self.selectPatient.patient_phone]){
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:[NSString stringWithFormat:@"拨打电话%@",self.selectPatient.patient_phone] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        alertView.tag = 101;
+        [alertView show];
+    }else{
+        [SVProgressHUD showImage:nil status:@"患者未留电话"];
+    }
+}
+//发短信
+- (void)junpToMessageWithNotification:(LocalNotification *)notifi{
+    if(![NSString isEmptyString:self.selectPatient.patient_phone]){
+        if( [MFMessageComposeViewController canSendText] ){
+            MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
+            controller.recipients = @[self.selectPatient.patient_phone];
+            controller.body = notifi.reserve_type;
+            controller.messageComposeDelegate = self;
+            //跳转到发送短信的页面
+            [self presentViewController:controller animated:YES completion:nil];
+            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
+        }
+        else{
+            [SVProgressHUD showErrorWithStatus:@"设备没有短信功能"];
+        }
+    }else{
+        [SVProgressHUD showImage:nil status:@"患者未留电话"];
+    }
+}
+//短信是否发送成功
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
+    [controller dismissViewControllerAnimated:NO completion:nil];//关键的一句   不能为YES
+    switch ( result ) {
+        case MessageComposeResultCancelled:
+            [SVProgressHUD showImage:nil status:@"取消发送信息"];
+            break;
+        case MessageComposeResultFailed:
+            [SVProgressHUD showImage:nil status:@"发送信息失败"];
+            break;
+        case MessageComposeResultSent:
+            [SVProgressHUD showImage:nil status:@"发送信息成功"];
+            break;
+        default:
+            break;
+    }
+}
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == 101){
+        if(buttonIndex == 0){
+        }else{
+            NSString *number = self.selectPatient.patient_phone;
+            NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+        }
+    }
 }
 
 - (void)setExtraCellLineHidden: (UITableView *)tableView{

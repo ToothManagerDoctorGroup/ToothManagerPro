@@ -75,13 +75,14 @@
 
 @property (nonatomic, strong)MedicalCase *selectCase;
 
+
 @end
 
 @implementation PatientDetailViewController
 
 - (MLKMenuPopover *)menuPopover{
     if (!_menuPopover) {
-        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 140 - 8, 0, 140, self.menuList.count * 44) menuItems:self.menuList];
+        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 140 - 8, 64, 140, self.menuList.count * 44) menuItems:self.menuList];
         menuPopover.menuPopoverDelegate = self;
         _menuPopover = menuPopover;
     }
@@ -90,7 +91,7 @@
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"转诊患者",@"增加提醒",@"转为介绍人", nil];
+        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"转诊患者",@"新增预约",@"转为介绍人", nil];
     }
     return _menuList;
 }
@@ -206,9 +207,6 @@
     
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
 
-    for (MedicalCase *mcase in array) {
-        NSLog(@"medicalCaseKeyId:%@",mcase.ckeyid);
-    }
         //为控件赋值
     _headerMedicalView.medicalCases = array;
     
@@ -220,9 +218,10 @@
     //获取患者绑定微信的状态
     [MyPatientTool getWeixinStatusWithPatientName:self.detailPatient.patient_name patientPhone:self.detailPatient.patient_phone success:^(CRMHttpRespondModel *respondModel) {
         if ([respondModel.result isEqualToString:@"1"]) {
-            //未绑定
+            //绑定
             _headerInfoView.isWeixin = YES;
         }else{
+            //未绑定
             _headerInfoView.isWeixin = NO;
         }
     } failure:^(NSError *error) {
@@ -307,7 +306,8 @@
 
 #pragma mark -导航栏菜单按钮点击事件
 - (void)onRightButtonAction:(id)sender{
-    [self.menuPopover showInView:self.view];
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    [self.menuPopover showInView:keyWindow];
 }
 
 #pragma mark -UITableViewDataSource

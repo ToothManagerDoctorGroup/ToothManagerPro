@@ -85,7 +85,6 @@
     
     //添加模型数据
     cell.model = model;
-    cell.type = @"1";
     
     return cell;
     

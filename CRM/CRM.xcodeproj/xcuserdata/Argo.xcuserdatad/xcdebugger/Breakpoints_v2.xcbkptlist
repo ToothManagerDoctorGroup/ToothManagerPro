@@ -52,38 +52,6 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRM/Network/CRMHttpRequest+Sync.m"
-            timestampString = "470313221.041581"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "644"
-            endingLineNumber = "644"
-            landmarkName = "-postAllNeedSyncReserve_record:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRM/Database/DBManager+sync.m"
-            timestampString = "470317282.894237"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "908"
-            endingLineNumber = "908"
-            landmarkName = "-getAllNeedSyncLocal_Notification"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRM/Network/CRMHttpRequest+Sync.m"
             timestampString = "470315164.185333"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"

@@ -33,13 +33,13 @@
         _statusLabel.font = [UIFont systemFontOfSize:14.0f];
         [self addSubview:_statusLabel];
         
-        _medical_chairLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 10, 100, 20)];
+        _medical_chairLabel = [[UILabel alloc]initWithFrame:CGRectMake(150, 10, 65, 20)];
         _medical_chairLabel.backgroundColor = [UIColor clearColor];
         _medical_chairLabel.textAlignment = NSTextAlignmentCenter;
         _medical_chairLabel.font = [UIFont systemFontOfSize:14.0f];
         [self addSubview:_medical_chairLabel];
         
-        _timeLabel = [[UILabel alloc]initWithFrame:CGRectMake(250, 10, 65, 20)];
+        _timeLabel = [[UILabel alloc]initWithFrame:CGRectMake(215, 10, 100, 20)];
         _timeLabel.backgroundColor = [UIColor clearColor];
         _timeLabel.textAlignment = NSTextAlignmentCenter;
         _timeLabel.font = [UIFont systemFontOfSize:14.0f];

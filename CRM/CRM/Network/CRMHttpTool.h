@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MyUploadParam.h"
 
 @interface CRMHttpTool : NSObject
 
@@ -34,6 +35,12 @@
   parameters:(id)parameters
      success:(void (^)(id responseObject))success
      failure:(void (^)(NSError *error))failure;
+
++ (void)Upload:(NSString *)URLString
+    parameters:(id)parameters
+   uploadParam:(MyUploadParam *)uploadParam
+       success:(void (^)())success
+       failure:(void (^)(NSError *error))failure;
 
 
 @end

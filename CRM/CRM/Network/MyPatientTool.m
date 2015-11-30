@@ -19,9 +19,11 @@
 
 + (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
     
+    
     NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/PatientInfoHandler.ashx";
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[ActionParam] = @"weixinBind";
+//    NSString *encodingPatientName = [patientName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     params[Patient_NameParam] = patientName;
     params[Patient_PhoneParam] = patientPhone;
     

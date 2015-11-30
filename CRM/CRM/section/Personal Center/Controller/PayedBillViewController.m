@@ -7,7 +7,7 @@
 //
 
 #import "PayedBillViewController.h"
-#import "MyBillCell.h"
+#import "MyBillPayedCell.h"
 #import "BillDetailViewController.h"
 
 #import "MyBillTool.h"
@@ -95,11 +95,10 @@
     BillModel *model = self.dataList[indexPath.row];
     
     //创建cell
-    MyBillCell *cell = [MyBillCell cellWithTableView:tableView];
+    MyBillPayedCell *cell = [MyBillPayedCell cellWithTableView:tableView];
     
     //添加模型数据
     cell.model = model;
-    cell.type = @"2";
     
     return cell;
     

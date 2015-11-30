@@ -103,7 +103,7 @@
     
     //给控件赋值
     NSURL *imageUrl = [NSURL URLWithString:self.model.clinic_image];
-    [_iconView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"doctor_headimage.png"]];
+    [_iconView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"doctor_headimage"]];
     
     _clinicName.text = self.model.clinic_name;
     

@@ -338,7 +338,6 @@
     [super viewDidLoad];
 
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"zd_jsq"]];
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];

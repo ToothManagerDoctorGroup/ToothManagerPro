@@ -84,6 +84,8 @@
     [self.clinicIdArray removeAllObjects];
     self.clinicIdArray = nil;
     self.huanzheTextField.text = @"";
+    //移除所有通知
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     NSLog(@"我被销毁了*********************");
 }
 
@@ -177,6 +179,7 @@
 
 
 -(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -264,7 +267,7 @@
     
     notification.selected = YES;
     notification.tooth_position = self.yaWeiTextField.text;
-    notification.clinic_reserve_id = @"1";
+    notification.clinic_reserve_id = @"0";
     notification.duration = [NSString stringWithFormat:@"%.1f",self.durationFloat];
     
     //判断是否是下一次预约
@@ -284,7 +287,7 @@
     
     //微信消息推送打开
     if([weiXinSwitch isOn]){
-        [[DoctorManager shareInstance]weiXinMessagePatient:[LocalNotificationCenter shareInstance].selectPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
+        [[DoctorManager shareInstance]weiXinMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
             
         } failedBlock:^(NSError *error){
             [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -292,7 +295,7 @@
     }
     //短信消息推送打开
     if([duanXinSwitch isOn]){
-        [[DoctorManager shareInstance] yuYueMessagePatient:[LocalNotificationCenter shareInstance].yuyuePatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"1" withSendTime:self.timeTextField.text successBlock:^{
+        [[DoctorManager shareInstance] yuYueMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"1" withSendTime:self.timeTextField.text successBlock:^{
             
         } failedBlock:^(NSError *error){
             [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -300,7 +303,7 @@
     }
     
     //选择如果选择的不是自己的医院
-    if(![self.medicalPlaceTextField.text isEqualToString:self.originalClinic]){
+    if(![self.medicalPlaceTextField.text isEqualToString:[[AccountManager shareInstance] currentUser].hospitalName]){
         if(patient_id == nil){
             [SVProgressHUD showErrorWithStatus:@"请先选择患者"];
             return;
@@ -443,7 +446,6 @@
 }
 
 #pragma cellLineHidden - mark
-
 - (void)setExtraCellLineHidden: (UITableView *)tableView{
     UIView *view =[[UIView alloc]init];
     view.backgroundColor = [UIColor clearColor];
@@ -470,21 +472,6 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (indexPath.row) {
-        case 0:
-            break;
-        case 1:
-        {
-            break;
-        }
-            break;
-        default:
-        {
-            NSLog(@"重复");
-        }
-            break;
-    }
-    
     UserObject *user = [[AccountManager shareInstance] currentUser];
         if (indexPath.section == 3) {
             if (indexPath.row == 0) {

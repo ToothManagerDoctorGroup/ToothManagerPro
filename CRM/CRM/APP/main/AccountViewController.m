@@ -32,9 +32,12 @@
 
 #import "CRMUserDefalut.h"
 #import "CRMHttpRequest+Sync.h"
+#import "WXApi.h"
+#import "WXApiObject.h"
+#import "Share.h"
 
 
-@interface AccountViewController (){
+@interface AccountViewController ()<UIAlertViewDelegate>{
     
     __weak IBOutlet UITableView *_tableView;
     IBOutlet UITableViewCell *_zhangHuCell;
@@ -42,7 +45,6 @@
     __weak IBOutlet UILabel *_detailLabel;
     
     
-    IBOutlet UITableViewCell *_introducerCell;
     IBOutlet UITableViewCell *_doctorCell;
     IBOutlet UITableViewCell *_repairDoctorCell;
     IBOutlet UITableViewCell *_zhongZhiTiCell;
@@ -50,6 +52,8 @@
     IBOutlet UITableViewCell *_shuJuFenXiCell;
     IBOutlet UITableViewCell *_sheZhiCell;
     IBOutlet UITableViewCell *_myClinicCell;
+    
+    IBOutlet UITableViewCell *_shareCell;
     
     IBOutlet UITableViewCell *_myBillCell;
     __weak IBOutlet UIImageView *iconImageView;
@@ -82,29 +86,58 @@
     [self.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                              [UIColor lightGrayColor], NSForegroundColorAttributeName,
                                              nil] forState:UIControlStateNormal];
+ 
     
+}
+
+//获取用户的医生列表
+- (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
+    [SVProgressHUD dismiss];
+    NSArray *dicArray = [result objectForKey:@"Result"];
+    if (dicArray && dicArray.count > 0) {
+        for (NSDictionary *dic in dicArray) {
+            UserObject *obj = [UserObject userobjectFromDic:dic];
+            [[DBManager shareInstance] updateUserWithUserObject:obj];
+            [[AccountManager shareInstance] refreshCurrentUserInfo];
+            _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
+            _nameLabel.text = obj.name;
+            if(obj.img.length > 0){
+                [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img] placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
+            }else{
+                [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+            }
+            self.isSign = [dic[@"is_sign"] intValue] == 1 ? YES : NO;
+            //更新用户偏好中的数据
+            NSString *key = [NSString stringWithFormat:@"%@isSign",obj.userid];
+            [CRMUserDefalut setObject:[NSString stringWithFormat:@"%d",[dic[@"is_sign"] intValue]] forKey:key];
+            
+            [self refreshView];
+            return;
+        }
+    }
+}
+- (void)getDoctorListFailedWithError:(NSError *)error {
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
+- (void)refreshView{
+    [super refreshView];
+    
+    [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    
-    UserObject *obj = [[AccountManager shareInstance] currentUser];
-    _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
-        _nameLabel.text = obj.name;
-    if(obj.img.length > 0){
-        [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img]];
-    }else{
-        [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
-    }
-    
-    NSString *signKey = [NSString stringWithFormat:@"%@isSign",obj.userid];
-    //设置当前的签约状态
-    self.isSign = [[CRMUserDefalut objectForKey:signKey] isEqualToString:@"1"] ? YES : NO;
-    
-    
+    UserObject *userobj = [[AccountManager shareInstance] currentUser];
+    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
+        
+    } failedBlock:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+    }];
 }
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     if (self.isSign == YES) {
@@ -120,11 +153,11 @@
         if(section==0){
             return 1;
         }else if (section==1){
-            return 4;
+            return 3;
         }else if (section==2){
             return 2;
         }else if (section==3){
-            return 1;
+            return 2;
         }else{
             return 1;
         }
@@ -132,9 +165,9 @@
         if(section==0){
             return 1;
         }else if (section==1){
-            return 4;
+            return 3;
         }else if (section==2){
-            return 1;
+            return 2;
         }else{
             return 1;
         }
@@ -202,13 +235,11 @@
         if(indexPath.section == 0){
             return _zhangHuCell;
         }else if (indexPath.section == 1){
-            if(indexPath.row == 0){
-                return _introducerCell;
-            }else if (indexPath.row == 1){
+            if (indexPath.row == 0){
                 return _doctorCell;
-            }else if (indexPath.row == 2){
+            }else if (indexPath.row == 1){
                 return _repairDoctorCell;
-            }else if (indexPath.row == 3){
+            }else if (indexPath.row == 2){
                 return _zhongZhiTiCell;
             }
         }else if (indexPath.section == 2){
@@ -219,7 +250,12 @@
                 return _myClinicCell;
             }
         }else if (indexPath.section == 3){
-            return _shuJuFenXiCell;
+            if (indexPath.row == 0) {
+                return _shuJuFenXiCell;
+            }else if(indexPath.row == 1){
+                return _shareCell;
+            }
+            
         }else if (indexPath.section == 4){
             return _sheZhiCell;
         }
@@ -227,17 +263,19 @@
         if(indexPath.section == 0){
             return _zhangHuCell;
         }else if (indexPath.section == 1){
-            if(indexPath.row == 0){
-                return _introducerCell;
-            }else if (indexPath.row == 1){
+            if (indexPath.row == 0){
                 return _doctorCell;
-            }else if (indexPath.row == 2){
+            }else if (indexPath.row == 1){
                 return _repairDoctorCell;
-            }else if (indexPath.row == 3){
+            }else if (indexPath.row == 2){
                 return _zhongZhiTiCell;
             }
         }else if (indexPath.section == 2){
-            return _shuJuFenXiCell;
+            if (indexPath.row == 0) {
+                return _shuJuFenXiCell;
+            }else if(indexPath.row == 1){
+                return _shareCell;
+            }
         }else if (indexPath.section == 3){
             return _sheZhiCell;
         }
@@ -266,32 +304,20 @@
     }
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
-            introducerVC.isHome = NO;
-            introducerVC.hidesBottomBarWhenPushed = YES;
-           [self.navigationController pushViewController:introducerVC animated:YES];
-        }else if (indexPath.row == 1){
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
             DoctorLibraryViewController *doctorVC = [storyboard instantiateViewControllerWithIdentifier:@"DoctorLibraryViewController"];
             doctorVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:doctorVC animated:YES];
-        }else if (indexPath.row == 2){
+        }else if (indexPath.row == 1){
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
             RepairDoctorViewController *repairDoctorVC = [storyboard instantiateViewControllerWithIdentifier:@"RepairDoctorViewController"];
             repairDoctorVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:repairDoctorVC animated:YES];
-        }else if (indexPath.row == 3){
+        }else if (indexPath.row == 2){
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
             MaterialsViewController *materialsVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
             materialsVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:materialsVC animated:YES];
-        }else if (indexPath.row == 4){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            MyClinicViewController *clinicVc = [storyboard instantiateViewControllerWithIdentifier:@"MyClinicViewController"];
-            clinicVc.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:clinicVc animated:YES];
-            
         }
     }
     if (self.isSign == YES) {
@@ -321,6 +347,8 @@
                 ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
                 shuju.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:shuju animated:YES];
+            }else{
+                [self showShareActionChoose];
             }
         }
         if(indexPath.section == 4){
@@ -338,6 +366,8 @@
                 ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
                 shuju.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:shuju animated:YES];
+            }else{
+                [self showShareActionChoose];
             }
         }
         if(indexPath.section == 3){
@@ -345,13 +375,38 @@
                 SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
                 set.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:set animated:YES];
-                
             }
-            
         }
     }
     
     
+}
+//分享选择
+- (void)showShareActionChoose{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"分享" message:@"确认打开微信进行分享吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+    [alertView show];
+}
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 1) {
+        [self shareAction];
+    }
+}
+
+//分享
+- (void)shareAction{
+    if(![WXApi isWXAppInstalled]){
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alertView show];
+    }else{
+        UserObject *userobj = [[AccountManager shareInstance] currentUser];
+        ShareMode *mode = [[ShareMode alloc]init];
+        mode.title = @"邀请好友";
+        mode.message = [NSString stringWithFormat:@"亲，用我的邀请码注册种牙管家，可以快速通过审核呦！快戳我!下载app注册吧！"];
+        mode.url = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/InviteFriends.aspx?doctorId=%@",userobj.userid];
+        mode.image = [UIImage imageNamed:@"crm_logo"];
+        [Share shareToPlatform:weixin WithMode:mode];
+    }
+
 }
 
 //创建控制器
@@ -381,17 +436,7 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

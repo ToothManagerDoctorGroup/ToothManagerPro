@@ -8,9 +8,13 @@
 
 #import "TimViewController.h"
 
-@class BillModel;
+@class BillModel,LocalNotification;
 @interface AppointDetailViewController : TimViewController
 
-@property (nonatomic, strong)BillModel *model;
+@property (nonatomic, strong)BillModel *model;//账单详情
+
+@property (nonatomic, assign)BOOL isHomeTo;//是首页跳转过来
+
+@property (nonatomic, strong)LocalNotification *localNoti;//本地预约详情的数据
 
 @end

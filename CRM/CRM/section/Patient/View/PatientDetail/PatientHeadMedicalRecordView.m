@@ -75,7 +75,7 @@
     
     //添加病例的按钮
     UIButton *addMedicalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [addMedicalButton setTitle:@"新增病例" forState:UIControlStateNormal];
+    [addMedicalButton setTitle:@"新增病历" forState:UIControlStateNormal];
     [addMedicalButton setImage:[UIImage imageNamed:@"medical_add"] forState:UIControlStateNormal];
     [addMedicalButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
     addMedicalButton.titleLabel.font = [UIFont systemFontOfSize:16];
@@ -92,7 +92,7 @@
     
     //编辑病例的按钮
     UIButton *editMedicalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [editMedicalButton setTitle:@"编辑病例" forState:UIControlStateNormal];
+    [editMedicalButton setTitle:@"编辑病历" forState:UIControlStateNormal];
     [editMedicalButton setImage:[UIImage imageNamed:@"medical_edit"] forState:UIControlStateNormal];
     [editMedicalButton setTitleColor:MyColor(19, 150, 233) forState:UIControlStateNormal];
     [editMedicalButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];

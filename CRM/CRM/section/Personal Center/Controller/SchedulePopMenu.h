@@ -25,4 +25,10 @@ typedef enum{
 
 + (instancetype)defaultPopupView;
 
+@property (weak, nonatomic) IBOutlet UIButton *menuButton1;
+@property (weak, nonatomic) IBOutlet UIButton *menuButton2;
+@property (weak, nonatomic) IBOutlet UIButton *menuButton3;
+@property (weak, nonatomic) IBOutlet UIButton *menuButton4;
+
+
 @end

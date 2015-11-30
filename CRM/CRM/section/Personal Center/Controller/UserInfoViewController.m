@@ -21,6 +21,7 @@
 #import "QrCodeViewController.h"
 #import "CRMMacro.h"
 #import "UserInfoEditViewController.h"
+#import "DoctorTool.h"
 
 @interface UserInfoViewController () <CRMHttpRequestDoctorDelegate,UIActionSheetDelegate,UserInfoEditViewControllerDelegate>{
     __weak IBOutlet UITableViewCell *_jiangeCell;
@@ -140,7 +141,7 @@
         self.degreeTextField.text = self.doctor.doctor_degree;
         self.authstatusTextField.text = [UserObject authStringWithStatus:self.doctor.auth_status];
         self.authTextView.text = self.doctor.auth_text;
-        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.doctor.auth_pic]];
+        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.doctor.auth_pic] placeholderImage:[UIImage imageNamed:@"header"]];
     } else {
         self.nicknameTextField.text = self.currentDoctor.doctor_name;
         self.departmentTextField.text = self.currentDoctor.doctor_dept;
@@ -151,7 +152,7 @@
         self.authstatusTextField.text = [UserObject authStringWithStatus:self.currentDoctor.auth_status];
         self.authTextView.text = self.currentDoctor.auth_text;
         
-        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.currentDoctor.auth_pic]];
+        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.currentDoctor.auth_pic] placeholderImage:[UIImage imageNamed:@"header"]];
         
         if ([self.currentDoctor.doctor_gender isEqualToString:@"1"]) {
             self.sexTextField.text = @"男";
@@ -159,7 +160,6 @@
             self.sexTextField.text = @"女";
         }
         self.birthDayTextField.text = self.currentDoctor.doctor_birthday;
-        
         
 //        UserObject *userobj = [[AccountManager shareInstance] currentUser];
 //        self.nicknameTextField.text = userobj.name;
@@ -242,6 +242,7 @@
 #pragma mark - ActionSheet Delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    
     switch (buttonIndex) {
         case 0:
         {
@@ -249,12 +250,9 @@
             UIImagePickerController *pickerImage = [[UIImagePickerController alloc] init];
             if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
                 pickerImage.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-                //pickerImage.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-                pickerImage.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:pickerImage.sourceType];
-                
             }
             pickerImage.delegate = self;
-            pickerImage.allowsEditing = NO;
+            pickerImage.allowsEditing = YES;
             [self presentViewController:pickerImage animated:YES completion:nil];
         }
             break;
@@ -323,7 +321,11 @@
     UserInfoEditViewController *editVc = [[UserInfoEditViewController alloc] init];
     editVc.title = @"个人简介";
     editVc.delegate = self;
-    editVc.targetStr = self.currentDoctor.doctor_cv;
+    if (self.doctor_cv) {
+        editVc.targetStr = self.doctor_cv;
+    }else{
+        editVc.targetStr = self.currentDoctor.doctor_cv;
+    }
     editVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:editVc animated:YES];
     
@@ -334,7 +336,11 @@
     UserInfoEditViewController *editVc = [[UserInfoEditViewController alloc] init];
     editVc.title = @"擅长项目";
     editVc.delegate = self;
-    editVc.targetStr = self.currentDoctor.doctor_skill;
+    if (self.doctor_skills) {
+        editVc.targetStr = self.doctor_skills;
+    }else{
+        editVc.targetStr = self.currentDoctor.doctor_skill;
+    }
     editVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:editVc animated:YES];
 }
@@ -346,9 +352,8 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     if (info != nil) {
-        UIImage* image = [info objectForKey:UIImagePickerControllerOriginalImage];
+        UIImage* image = info[UIImagePickerControllerEditedImage];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self setAuthImage:image];
             [self saveImage:image WithName:@"userAvatar"];
         });
         [picker dismissViewControllerAnimated:YES completion:nil];
@@ -365,18 +370,29 @@
     NSData* imageData = UIImagePNGRepresentation(tempImage);
     NSString* documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString* totalPath = [documentPath stringByAppendingPathComponent:imageName];
-    
     //保存到 document
     [imageData writeToFile:totalPath atomically:NO];
-    
     //保存到 NSUserDefaults
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults setObject:totalPath forKey:@"avatar"];
     
     //上传服务器
-   // [[HSLoginClass new] uploadAvatar:totalPath];
-    
-      [[AccountManager shareInstance] uploadUserAvatar:imageData withUserid:[AccountManager currentUserid]];
+//    [[AccountManager shareInstance] uploadUserAvatar:imageData withUserid:[AccountManager currentUserid]];
+    __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"上传中..."];
+    [DoctorTool composeTeacherHeadImg:tempImage userId:[[AccountManager shareInstance] currentUser].userid success:^{
+        //清除图片缓存
+        [[SDImageCache sharedImageCache] cleanDisk];
+        [[SDImageCache sharedImageCache] clearMemory];
+        
+        [weakSelf setAuthImage:tempImage];
+        [SVProgressHUD dismiss];
+        NSLog(@"上传图片成功");
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
+        NSLog(@"上传图片失败%@",error);
+    }];
     
     
 }
@@ -441,7 +457,7 @@
                 [[DBManager shareInstance] updateDoctorWithDoctor:tmpDoctor];
                 self.doctor = tmpDoctor;
                 if(self.doctor.doctor_image.length > 0){
-                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:self.doctor.doctor_image]];
+                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:self.doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
                 }else{
                     [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
                 }
@@ -450,18 +466,10 @@
                 Doctor *doctor = [Doctor DoctorFromDoctorResult:dic];
                 self.currentDoctor = doctor;
                 if(doctor.doctor_image.length > 0){
-                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image]];
+                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
                 }else{
                     [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
                 }
-//                UserObject *obj = [UserObject userobjectFromDic:dic];
-//                [[DBManager shareInstance] updateUserWithUserObject:obj];
-//                [[AccountManager shareInstance] refreshCurrentUserInfo];
-//                if(obj.img.length > 0){
-//                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img]];
-//                }else{
-//                    [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
-//                }
             }
             [self refreshView];
             return;
