@@ -165,32 +165,32 @@ DEF_URL ImageDown = @"http://122.114.62.57/his.crm/UploadFiles/";
 
 //get
 
-- (void)getDoctorTable;
+- (void)getDoctorTable;//同步医生信息
 
-- (void)getMaterialTable;
+- (void)getMaterialTable;//同步耗材信息
 
-- (void)getIntroducerTable;
+- (void)getIntroducerTable;//同步介绍人信息
 
-- (void)getPatientTable;
+- (void)getPatientTable;//同步患者信息
 
-- (void)getReserverecordTable;
+- (void)getReserverecordTable;//同步预约信息
 
-- (void)getPatIntrMapTable;
+- (void)getPatIntrMapTable;//同步患者介绍人信息
 
-- (void)getRepairDoctorTable;
+- (void)getRepairDoctorTable;//同步修复医生信息
 
 - (void)getMedicalResvTable;
 
-- (void)getCTLibTable;
+- (void)getCTLibTable; //需要重复下载
 
-- (void)getMedicalCaseTable;
+- (void)getMedicalCaseTable; //需要重复下载
 
-- (void)getMedicalExpenseTable;
+- (void)getMedicalExpenseTable;//需要重复下载
 
-- (void)getMedicalRecordTable;
+- (void)getMedicalRecordTable; //需要重复下载
 //miss reserve record
 
-- (void)getPatientConsulationTable;
+- (void)getPatientConsulationTable;//同步会诊信息
 @end
 
 

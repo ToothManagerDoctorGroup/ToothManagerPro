@@ -227,8 +227,8 @@
         || [notifacation.name isEqualToString:MedicalCaseEditedNotification]
        ) {
         //有新患者创建或者患者被编辑，需要更新界面
-      //  [self refreshData];
-      //  [self refreshView];
+        [self refreshData];
+        [self refreshView];
     }
     if ([notifacation.name isEqualToString:@"tongbu"]) {
         [self initData];

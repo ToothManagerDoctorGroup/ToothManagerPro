@@ -18,6 +18,7 @@
 #import "DBManager+Doctor.h"
 #import "DBManager+Patients.h"
 #import "UIImageView+WebCache.h"
+#import "PatientDetailViewController.h"
 
 @interface DoctorInfoViewController ()
 @property (nonatomic,retain) RepairDocHeaderTableViewController *tbheaderView;
@@ -133,11 +134,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+    
     PatientsCellMode *cellMode = [self.patientCellModeArray objectAtIndex:indexPath.row];
-    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-    patientDetailCtl.patientsCellMode = cellMode;
-    [self pushViewController:patientDetailCtl animated:YES];
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellMode;
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:detailVc animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -136,8 +136,8 @@ NSLog(@"%@", [[NSString alloc] initWithData:request.HTTPBody encoding:4]);    AF
    NSMutableURLRequest *request = [requestManager.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:requestManager.baseURL] absoluteString] parameters:params.params constructingBodyWithBlock:block error:nil];
     
     request.timeoutInterval = params.timeoutInterval;
-    NSLog(@"%@", [request HTTPBody]);
-    NSLog(@"%@", URLString);
+    NSLog(@"HTTPBody:%@", [request HTTPBody]);
+    NSLog(@"URLString:%@", URLString);
     NSLog(@"%@", [[NSString alloc] initWithData:request.HTTPBody encoding:4]);
     
     AFHTTPRequestOperation *operation = [requestManager HTTPRequestOperationWithRequest:request success:success failure:failure];

@@ -20,9 +20,18 @@
     NSString *weiXinPageUrl;
 }
 
+@property (nonatomic, strong)NSOperationQueue *opQueue;
+
 @end
 
 @implementation QrCodeViewController
+
+- (NSOperationQueue *)opQueue{
+    if (!_opQueue) {
+        _opQueue = [[NSOperationQueue alloc] init];
+    }
+    return _opQueue;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -93,7 +102,10 @@
 - (void)qrCodeImageSuccessWithResult:(NSDictionary *)result{
     NSLog(@"二维码=%@",result);
     NSString *imageUrl = [result objectForKey:@"Message"];
-    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
+    
+    //下载图片，不带缓存
+    [self downloadImageWithImageUrl:imageUrl];
+//    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
     weiXinPageUrl = imageUrl;
 }
 - (void)qrCodeImageFailedWithError:(NSError *)error{
@@ -108,14 +120,26 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)downloadImageWithImageUrl:(NSString *)imageStr{
+    
+    // 1.创建多线程
+    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
+        [NSThread sleepForTimeInterval:0.5];
+        //执行下载操作
+        NSURL *url = [NSURL URLWithString:imageStr];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        UIImage *image = [UIImage imageWithData:data];
+        
+        //回到主线程更新ui
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            self.QrCodeImageView.image = image;
+        }];
+    }];
+    // 2.必须将任务添加到队列中才能执行
+    [self.opQueue addOperation:downOp];
+    
 }
-*/
+
 
 @end

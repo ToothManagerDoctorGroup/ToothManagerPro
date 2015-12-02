@@ -34,4 +34,17 @@
  *  @param failure  失败回调
  */
 + (void)deleteFriendWithDoctorId:(NSString *)doctorId introId:(NSString *)introId success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure;
+
+/**
+ *  短信预约信息获取
+ *
+ *  @param patientId    患者id
+ *  @param doctorId     医生id
+ *  @param message_type 信息类型
+ *  @param send_type    发送类型
+ *  @param send_time    发送时间
+ *  @param success      成功回调
+ *  @param failure      失败回调
+ */
++ (void)yuYueMessagePatient:(NSString *)patientId fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure;
 @end

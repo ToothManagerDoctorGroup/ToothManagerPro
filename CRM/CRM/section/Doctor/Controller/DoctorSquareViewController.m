@@ -88,16 +88,19 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    Doctor *doctor = nil;
-    if ([self isSearchResultsTableView:tableView]) {
-        doctor = [self.scellModeArray objectAtIndex:indexPath.row];
-    } else {
-        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
-    }
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-    userInfoVC.doctor = doctor;
-    [self pushViewController:userInfoVC animated:YES];
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+//    Doctor *doctor = nil;
+//    if ([self isSearchResultsTableView:tableView]) {
+//        doctor = [self.scellModeArray objectAtIndex:indexPath.row];
+//    } else {
+//        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
+//    }
+//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+//    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
+//    userInfoVC.doctor = doctor;
+//    [self pushViewController:userInfoVC animated:YES];
 }
 
 #pragma mark - SearchDisplay delegate

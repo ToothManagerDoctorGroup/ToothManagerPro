@@ -20,7 +20,6 @@
     IBOutlet UITableViewCell *_guanyuwomenCell;
     IBOutlet UITableViewCell *_yijianfankuiCell;
     IBOutlet UITableViewCell *_fuwuCell;
-    IBOutlet UITableViewCell *_gengxinCell;
     __weak IBOutlet UILabel *_versionLabel;
     IBOutlet UITableViewCell *_genggaimimaCell;
     IBOutlet UITableViewCell *_tuichuCell;
@@ -66,7 +65,7 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section==0){
-        return 4;
+        return 3;
     }else{
         return 2;
     }
@@ -91,8 +90,6 @@
             return _yijianfankuiCell;
         }else if (indexPath.row == 2){
             return _fuwuCell;
-        }else if (indexPath.row == 3){
-            return _gengxinCell;
         }
     }else if (indexPath.section == 1){
         if(indexPath.row == 0){

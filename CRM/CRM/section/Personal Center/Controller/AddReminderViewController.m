@@ -34,6 +34,8 @@
 #import "MyPatientTool.h"
 #import "CRMHttpRespondModel.h"
 #import "NSDate+Conversion.h"
+#import "DoctorTool.h"
+#import "CRMHttpRespondModel.h"
 
 @interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate>{
     
@@ -294,13 +296,24 @@
         }];
     }
     //短信消息推送打开
-    if([duanXinSwitch isOn]){
-        [[DoctorManager shareInstance] yuYueMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"1" withSendTime:self.timeTextField.text successBlock:^{
-            
-        } failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
-    }
+//    if([duanXinSwitch isOn]){
+//        [[DoctorManager shareInstance] yuYueMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"1" withSendTime:self.timeTextField.text successBlock:^{
+//            
+//        } failedBlock:^(NSError *error){
+//            [SVProgressHUD showImage:nil status:error.localizedDescription];
+//        }];
+//    }
+//    [DoctorTool yuYueMessagePatient:patient_id fromDoctor:[[AccountManager shareInstance] currentUser].userid withMessageType:self.selectMatterTextField.text withSendType:@"1" withSendTime:self.timeTextField.text success:^(CRMHttpRespondModel *result) {
+//        
+//        NSLog(@"%@",result.result);
+//        
+//    } failure:^(NSError *error) {
+//        if (error) {
+//            NSLog(@"error:%@",error);
+//        }
+//    }];
+    
+    
     
     //选择如果选择的不是自己的医院
     if(![self.medicalPlaceTextField.text isEqualToString:[[AccountManager shareInstance] currentUser].hospitalName]){
@@ -356,9 +369,12 @@
                     [self.delegate addReminderViewController:self didSelectDateTime:self.timeTextField.text];
                 }
             }
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.navigationController popViewControllerAnimated:YES];
-            });
+            
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+        
+            
         } failure:^(NSError *error) {
             if (error) {
                 //调用代理方法
@@ -385,6 +401,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.navigationController popViewControllerAnimated:YES];
         });
+        
         if (ret) {
             [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
         }else{
@@ -407,7 +424,7 @@
         controller.body = str;
         controller.messageComposeDelegate = self;
         
-        [self presentModalViewController:controller animated:YES];
+        [self presentViewController:controller animated:YES completion:nil];
         
         [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
     }
@@ -419,7 +436,8 @@
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
-    [controller dismissModalViewControllerAnimated:NO];//关键的一句   不能为YES
+    
+    [controller dismissViewControllerAnimated:NO completion:nil];//关键的一句   不能为YES
     switch ( result ) {
         case MessageComposeResultCancelled:
             //  [self alertWithTitle:@"提示" msg:@"取消发送信息"];
@@ -463,7 +481,9 @@
         case 0:
             return 3;
             break;
-            
+        case 4:
+            return 1;
+            break;
         default:
             return 2;
             break;

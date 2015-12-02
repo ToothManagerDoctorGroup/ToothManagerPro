@@ -212,6 +212,7 @@
 		3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A005E1C05E55600B1EF65 /* PMPeriod.m */; };
 		3D2A00671C05E55600B1EF65 /* PMSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A00601C05E55600B1EF65 /* PMSelectionView.m */; };
 		3D7F19F71C07280000BE79ED /* MyDateTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7F19F61C07280000BE79ED /* MyDateTool.m */; };
+		3D9C84771C0D7126007B2CD2 /* UIImageView+DownLoadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */; };
 		3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */; };
 		3DAA10E91BF5801D00FD8149 /* ClinicImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E81BF5801D00FD8149 /* ClinicImageModel.m */; };
 		3DAA10EC1BF5819C00FD8149 /* SeatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10EB1BF5819C00FD8149 /* SeatModel.m */; };
@@ -1101,6 +1102,8 @@
 		3D2A00601C05E55600B1EF65 /* PMSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PMSelectionView.m; sourceTree = "<group>"; };
 		3D7F19F51C07280000BE79ED /* MyDateTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDateTool.h; sourceTree = "<group>"; };
 		3D7F19F61C07280000BE79ED /* MyDateTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDateTool.m; sourceTree = "<group>"; };
+		3D9C84751C0D7126007B2CD2 /* UIImageView+DownLoadImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+DownLoadImage.h"; sourceTree = "<group>"; };
+		3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+DownLoadImage.m"; sourceTree = "<group>"; };
 		3DAA10E41BF5774400FD8149 /* ClinicDetailModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailModel.h; sourceTree = "<group>"; };
 		3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailModel.m; sourceTree = "<group>"; };
 		3DAA10E71BF5801D00FD8149 /* ClinicImageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicImageModel.h; sourceTree = "<group>"; };
@@ -2957,6 +2960,8 @@
 				3DE584501C0C2CE200B509C1 /* NSString+MyString.m */,
 				3DE584531C0C2D2F00B509C1 /* NSDate+MyDate.h */,
 				3DE584541C0C2D2F00B509C1 /* NSDate+MyDate.m */,
+				3D9C84751C0D7126007B2CD2 /* UIImageView+DownLoadImage.h */,
+				3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */,
 			);
 			name = Catory;
 			sourceTree = "<group>";
@@ -5344,6 +5349,7 @@
 				6436DEDB19B8C48100DC667E /* MWGridCell.m in Sources */,
 				3D0BE5DE1BF99A260023D3FA /* PayedBillViewController.m in Sources */,
 				3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */,
+				3D9C84771C0D7126007B2CD2 /* UIImageView+DownLoadImage.m in Sources */,
 				6436DEF819B8C48100DC667E /* SDWebImageCompat.m in Sources */,
 				6436DF3F19B8C48100DC667E /* TimPickerView.m in Sources */,
 				6436DE3E19B8C48100DC667E /* CRMHttpRequest.m in Sources */,
@@ -5447,7 +5453,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "47e6ddec-280a-44de-929e-eaf881626fd7";
+				PROVISIONING_PROFILE = "a50a8f00-5dc0-420c-bc32-592872a439e6";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -5480,7 +5486,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PROVISIONING_PROFILE = "a103e9b8-4bb4-49c2-8eb4-16fc08bdb54c";
+				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -5491,8 +5497,8 @@
 			baseConfigurationReference = 7A99EAEA497C4B3BA3423409 /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jianmin Yin (HJBR7XV88R)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jianmin Yin (HJBR7XV88R)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)\"/**",
@@ -5522,8 +5528,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "a50a8f00-5dc0-420c-bc32-592872a439e6";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = NO;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
@@ -5534,9 +5541,9 @@
 			baseConfigurationReference = 7A99EAEA497C4B3BA3423409 /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Micrometa Technology Company (QSGXKT37VS)";
 				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Distribution: Micrometa Technology Company (QSGXKT37VS)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Micrometa Technology Company (QSGXKT37VS)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)\"/**",
@@ -5566,7 +5573,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

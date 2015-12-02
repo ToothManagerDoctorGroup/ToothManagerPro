@@ -30,12 +30,25 @@
 
 @property (nonatomic, strong)Doctor *currentDoctor;//当前登录的医生
 
+/**
+ *  线程队列,创建子线程
+ */
+@property (nonatomic, strong)NSOperationQueue *opQueue;
+
+
 @property (nonatomic, copy)NSString *doctor_cv;
 @property (nonatomic, copy)NSString *doctor_skills;
 
 @end
 
 @implementation UserInfoViewController
+
+- (NSOperationQueue *)opQueue{
+    if (!_opQueue) {
+        _opQueue = [[NSOperationQueue alloc] init];
+    }
+    return _opQueue;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -282,12 +295,6 @@
 
 - (void)setAuthImage:(UIImage *)image
 {
-    /*
-    if (self.authImageView.image != nil) {
-        [self.authImageView setImage:nil];
-    }
-    [self.authImageView setImage:image];
-    */
     
     [self.iconImageView setImage:image];
 }
@@ -386,12 +393,12 @@
         [[SDImageCache sharedImageCache] clearMemory];
         
         [weakSelf setAuthImage:tempImage];
-        [SVProgressHUD dismiss];
-        NSLog(@"上传图片成功");
+
+        [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
-        NSLog(@"上传图片失败%@",error);
+        NSLog(@"error:%@",error);
+        [SVProgressHUD showErrorWithStatus:@"图片上传失败"];
     }];
     
     
@@ -456,19 +463,20 @@
                 Doctor *tmpDoctor = [Doctor DoctorFromDoctorResult:dic];
                 [[DBManager shareInstance] updateDoctorWithDoctor:tmpDoctor];
                 self.doctor = tmpDoctor;
+                
+                [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
                 if(self.doctor.doctor_image.length > 0){
-                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:self.doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
-                }else{
-                    [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+                    [self downloadImageWithImageUrl:self.doctor.doctor_image];
                 }
             } else {
                 
                 Doctor *doctor = [Doctor DoctorFromDoctorResult:dic];
                 self.currentDoctor = doctor;
+                
+                [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+                
                 if(doctor.doctor_image.length > 0){
-                    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
-                }else{
-                    [self.iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+                    [self downloadImageWithImageUrl:doctor.doctor_image];
                 }
             }
             [self refreshView];
@@ -489,6 +497,27 @@
         NSLog(@"个人描述修改成功");
         self.doctor_cv = str;
     }
+}
+
+
+- (void)downloadImageWithImageUrl:(NSString *)imageStr{
+    
+    // 1.创建多线程
+    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
+        [NSThread sleepForTimeInterval:0.5];
+        //执行下载操作
+        NSURL *url = [NSURL URLWithString:imageStr];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        UIImage *image = [UIImage imageWithData:data];
+        
+        //回到主线程更新ui
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            self.iconImageView.image = image;
+        }];
+    }];
+    // 2.必须将任务添加到队列中才能执行
+    [self.opQueue addOperation:downOp];
+    
 }
 
 @end

@@ -63,9 +63,21 @@
 
 @property (nonatomic, assign)BOOL isSign; //是否签约
 
+/**
+ *  线程队列,创建子线程
+ */
+@property (nonatomic, strong)NSOperationQueue *opQueue;
+
 @end
 
 @implementation AccountViewController
+
+- (NSOperationQueue *)opQueue{
+    if (!_opQueue) {
+        _opQueue = [[NSOperationQueue alloc] init];
+    }
+    return _opQueue;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -87,7 +99,8 @@
                                              [UIColor lightGrayColor], NSForegroundColorAttributeName,
                                              nil] forState:UIControlStateNormal];
  
-    
+    //设置头像的默认图片
+    [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
 }
 
 //获取用户的医生列表
@@ -101,11 +114,12 @@
             [[AccountManager shareInstance] refreshCurrentUserInfo];
             _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
             _nameLabel.text = obj.name;
-            if(obj.img.length > 0){
-                [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img] placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
-            }else{
-                [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+            
+            if (obj.img.length > 0) {
+                //下载图片
+                [self downloadImageWithImageUrl:obj.img];
             }
+            
             self.isSign = [dic[@"is_sign"] intValue] == 1 ? YES : NO;
             //更新用户偏好中的数据
             NSString *key = [NSString stringWithFormat:@"%@isSign",obj.userid];
@@ -432,6 +446,26 @@
     pageVC.postNotification = YES;
     pageVC.bounces = YES;
     return pageVC;
+}
+
+- (void)downloadImageWithImageUrl:(NSString *)imageStr{
+    
+    // 1.创建多线程
+    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
+        [NSThread sleepForTimeInterval:0.5];
+        //执行下载操作
+        NSURL *url = [NSURL URLWithString:imageStr];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        UIImage *image = [UIImage imageWithData:data];
+        
+        //回到主线程更新ui
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            iconImageView.image = image;
+        }];
+    }];
+    // 2.必须将任务添加到队列中才能执行
+    [self.opQueue addOperation:downOp];
+    
 }
 
 - (void)didReceiveMemoryWarning {

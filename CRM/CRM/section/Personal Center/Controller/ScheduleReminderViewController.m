@@ -398,6 +398,7 @@
     }
 
     if ([notifacation.name isEqualToString:@"tongbu"]) {
+        
         //同步之后，重新请求本地数据进行显示
         NSString *dateString = dayLabel.text;
         self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateString];

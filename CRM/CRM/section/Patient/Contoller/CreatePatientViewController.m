@@ -40,10 +40,21 @@
     }
     return self;
 }
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createMedicalCaseSuccessAction:) name:@"CreateMedicalCaseSuccessNotification" object:nil];
+}
+
+#pragma mark -创建病历成功
+- (void)createMedicalCaseSuccessAction:(NSNotification *)noti{
+    //创建成功后，返回此界面时，直接返回添加病历界面
+    [self popViewControllerAnimated:YES];
 }
 
 - (void)initView

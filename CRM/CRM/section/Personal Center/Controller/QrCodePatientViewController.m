@@ -22,9 +22,18 @@
     NSString *weiXinPageUrl;
 }
 
+@property (nonatomic, strong)NSOperationQueue *opQueue;
+
 @end
 
 @implementation QrCodePatientViewController
+
+- (NSOperationQueue *)opQueue{
+    if (!_opQueue) {
+        _opQueue = [[NSOperationQueue alloc] init];
+    }
+    return _opQueue;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -66,7 +75,11 @@
 - (void)qrCodeImageSuccessWithResult:(NSDictionary *)result{
     NSLog(@"二维码=%@",result);
     NSString *imageUrl = [result objectForKey:@"Message"];
-    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
+    
+    //下载图片，不带缓存
+    [self downloadImageWithImageUrl:imageUrl];
+    
+//    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
     weiXinPageUrl = imageUrl;
 }
 - (void)qrCodeImageFailedWithError:(NSError *)error{
@@ -89,7 +102,7 @@
         mode.title = @"分享种牙管家医生二维码";
         // mode.message = [NSString stringWithFormat:@"这是来自%@的%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.hospitalName,[AccountManager shareInstance].currentUser.name];
         mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
-        mode.url = weiXinPageUrl;
+        mode.url = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/Introduce/DoctorDetail.aspx?doctor_id=%@",[[AccountManager shareInstance] currentUser].userid];
         mode.image = self.QrCodeImageView.image;
         [Share shareToPlatform:weixin WithMode:mode];
     }
@@ -106,14 +119,25 @@
     [self pushViewController:addressBook animated:YES];
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)downloadImageWithImageUrl:(NSString *)imageStr{
+    
+    // 1.创建多线程
+    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
+        [NSThread sleepForTimeInterval:0.5];
+        //执行下载操作
+        NSURL *url = [NSURL URLWithString:imageStr];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        UIImage *image = [UIImage imageWithData:data];
+        
+        //回到主线程更新ui
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            self.QrCodeImageView.image = image;
+        }];
+    }];
+    // 2.必须将任务添加到队列中才能执行
+    [self.opQueue addOperation:downOp];
+    
 }
-*/
 
 @end

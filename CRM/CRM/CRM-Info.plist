@@ -44,7 +44,7 @@
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.trasen.dev.CRM</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
@@ -73,7 +73,12 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.0.2</string>
+	<string>2.0.3</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>wechat</string>
+		<string>weixin</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -81,6 +86,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>允许定位</string>
 	<key>UILaunchImageFile</key>
 	<string>Default</string>
 	<key>UILaunchImages</key>
@@ -178,13 +185,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>允许定位</string>
-    
-    <key>LSApplicationQueriesSchemes</key><array>
-        <!-- 微信 URL Scheme 白名单-->
-        <string>wechat</string>
-        <string>weixin</string>
-        </array>
 </dict>
 </plist>

@@ -109,7 +109,7 @@
 
 - (void)setUrlStr:(NSString *)urlStr {
     _urlStr = urlStr;
-    [self.avatarButton sd_setImageWithURL:[NSURL URLWithString:urlStr] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"header_defult"]];
+    [self.avatarButton sd_setImageWithURL:[NSURL URLWithString:urlStr] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
 }
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents {

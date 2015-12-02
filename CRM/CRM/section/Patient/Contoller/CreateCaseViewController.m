@@ -294,6 +294,7 @@
         [SVProgressHUD showImage:nil status:@"保存成功"];
         
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateMedicalCaseSuccessNotification" object:nil];
         [self popViewControllerAnimated:YES];
         
     } else {

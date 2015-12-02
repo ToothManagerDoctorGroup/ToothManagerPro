@@ -24,6 +24,7 @@
 #import "PatientManager.h"
 #import <objc/runtime.h>
 #import "JSONKit.h"
+#import "SyncManager.h"
 
 char* const ASSOCIATION_DATATABLE_SYNC = "ASSOCIATION_DATATABLE_SYNC";
 
@@ -857,6 +858,8 @@ NSInteger curTimeMCNum_rs = 0;
 
 - (void)requestAddDoctorSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     
+    
+    
     NSLog(@"requestAddDoctorSuccess");
     
     NSLog(@"total return number %d", [result count]);
@@ -873,6 +876,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddMaterialSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     
     NSLog(@"requestAddMaterialSuccess");
     
@@ -908,6 +912,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddIntroducerSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     
     NSLog(@"requestAddMaterialSuccess");
     
@@ -1005,6 +1010,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddCTLibSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     NSLog(@"requestAddCTLibSuccess");
     
     NSLog(@"total return number %d", [result count]);
@@ -1040,6 +1046,8 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddMedicalCaseSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
+    
     NSLog(@"requestAddMedicalCaseSuccess");
     
     NSLog(@"total return number %d", [result count]);
@@ -1075,6 +1083,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddMedicalExpenseSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -1105,6 +1114,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddMedicalRecordSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -1135,6 +1145,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddPatientConsultationSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     NSLog(@"requestAddPatientConsultationSuccess");
     
     NSLog(@"total return number %ld", [result count]);
@@ -1167,6 +1178,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestAddReserveRecordSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -1189,6 +1201,7 @@ NSInteger curTimeMCNum_rs = 0;
 
 
 - (void)requestAddRepairDoctorSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -1972,6 +1985,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestEditPatientSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     NSLog(@"requestEditPatientSuccess");
     
     NSLog(@"total return number %d", [result count]);
@@ -2134,6 +2148,8 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestEditPatientConsultationSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param{
+
+    
     NSLog(@"requestEditPatientConsultationSuccess");
     
     NSLog(@"total return number %ld", [result count]);
@@ -2496,12 +2512,9 @@ NSInteger curTimeMCNum_rs = 0;
 
 -(void)deleteIntroducersFromDataBase
 {
-    
     for (int i = 0; i < [deletedIntroducers count]; i++) {
         [[DBManager shareInstance] deleteIntroducerWithId_sync: deletedIntroducers[i]];
     }
-    
-    
 }
 
 
@@ -3024,7 +3037,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestDeleteIntroducerSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
-   
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -3041,7 +3054,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestDeletePatientSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
-      
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -3061,6 +3074,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestDeleteCTLibSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -3117,7 +3131,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestDeleteMedicalRecordSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
-  
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -3160,6 +3174,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestDeleteRepairDoctorSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+
     
     for( NSString *aKey in [result allKeys] )
     {
@@ -3388,6 +3403,7 @@ NSInteger curTimeMCNum_rs = 0;
     TimRequestParam *param = [TimRequestParam paramWithURLSting:DOC_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     NSLog(@"enter getDoctorTable");
     [self requestWithParams:param];
+    
 }
 
 - (void)getMaterialTable{
@@ -3833,6 +3849,7 @@ NSInteger curTimeMCNum_rs = 0;
 
 - (void)requestGetDoctorSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     
+    
     NSLog(@"suc getDoctorTable");
     NSLog(@"total return number %d", [result count]);
     
@@ -3962,6 +3979,9 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestGetPatientSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
+    [self.delegate dataSycnResultWithTable:PatientTableName isSucesseful: YES];
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -3996,12 +4016,11 @@ NSInteger curTimeMCNum_rs = 0;
     }
   
     if (0 == [patientArray count]){
-        [SVProgressHUD showWithStatus:@"同步结束..."];
-        
-        [NSThread sleepForTimeInterval: 1];
-        
-        [SVProgressHUD dismiss];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+#pragma mark - ***********************同步结束
+//        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+//        [NSThread sleepForTimeInterval:1.0];
+//        [SVProgressHUD dismiss];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
     }
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
@@ -4052,6 +4071,7 @@ NSInteger curTimeMCNum_rs = 0;
 
 - (void)requestGetCTLibSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     
+
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -4130,23 +4150,22 @@ NSInteger curTimeMCNum_rs = 0;
         
         [userDefalut synchronize];
         
+        [self.delegate dataSycnResultWithTable:CTLibTableName isSucesseful: YES];
+        
 #pragma mark - ***************************第二次同步结束
-        [SVProgressHUD showWithStatus:@"同步结束..."];
-        
-        [NSThread sleepForTimeInterval: 1];
-        
+        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+        [NSThread sleepForTimeInterval:1.0];
         [SVProgressHUD dismiss];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+        
         return;
     }
     
-    [SVProgressHUD showWithStatus:@"同步结束..."];
-    
-    [NSThread sleepForTimeInterval: 1];
-    
+#pragma mark - ***********************同步结束
+    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+    [NSThread sleepForTimeInterval:1.0];
     [SVProgressHUD dismiss];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
-    
 }
 
 - (void)requestGetMedicalCaseSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
@@ -4239,6 +4258,7 @@ NSInteger curTimeMCNum_rs = 0;
         }
         
         [self getMedicalCaseTable];
+        
     } else {
         
         if (0 != [downloadMedicalCasesME count]) {
@@ -4271,13 +4291,9 @@ NSInteger curTimeMCNum_rs = 0;
         
         [userDefalut setObject:curDate forKey:patServLastSynKey];
         [userDefalut synchronize];
+        
+        [self.delegate dataSycnResultWithTable:MedicalCaseTableName isSucesseful: YES];
 #pragma mark - ***************************************** 第一次同步结束
-//        [SVProgressHUD showWithStatus:@"同步结束..."];
-//        
-//        [NSThread sleepForTimeInterval: 1];
-//        
-//        [SVProgressHUD dismiss];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
         
     }
     
@@ -4290,6 +4306,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestGetMedicalExpenseSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -4354,6 +4371,8 @@ NSInteger curTimeMCNum_rs = 0;
         
         [userDefalut setObject:curDate forKey:meServLastSynKey];
         [userDefalut synchronize];
+        
+        [self.delegate dataSycnResultWithTable:MedicalExpenseTableName isSucesseful: YES];
 
         
         if (0 != [downloadMedicalCasesMR count]) {
@@ -4379,6 +4398,9 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestGetPatientConsultationSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
+    
+    
     NSLog(@"suc getPatientConsultationTable");
     NSLog(@"total return number %ld", (unsigned long)[result count]);
     
@@ -4451,9 +4473,7 @@ NSInteger curTimeMCNum_rs = 0;
                 if (NSNotFound != index) {
                     [downloadMedicalCasesMR removeObjectAtIndex:index];
                 }
-                
             }
-            
         }
     }
     
@@ -4508,11 +4528,20 @@ NSInteger curTimeMCNum_rs = 0;
             }
             
             [self getCTLibTable];
+            
         }
+//        else{
+//            [self.delegate dataSycnResultWithTable:MedicalRecordableName isSucesseful: YES];
+//        }
     }
 }
 
 - (void)requestGetMedicalResevSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
+    //  
+    
+    
+    [self.delegate dataSycnResultWithTable:MedicalReserveTableName isSucesseful: YES];
     
     for( NSString *aKey in [result allKeys] )
     {
@@ -4607,6 +4636,11 @@ NSInteger curTimeMCNum_rs = 0;
 
 - (void)requestGetPatientIntroducerSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     
+    //  
+    
+    [self.delegate dataSycnResultWithTable:PatIntrMapTableName isSucesseful: YES];
+    
+    
     for( NSString *aKey in [result allKeys] )
     {
         // do something like a log:
@@ -4643,6 +4677,9 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestGetRepairDoctorSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
+    
+    //  
+    
     
     [self.delegate dataSycnResultWithTable:RepairDocTableName isSucesseful: YES];
     
@@ -4738,34 +4775,34 @@ NSInteger curTimeMCNum_rs = 0;
     NSLog(@"error: %@", [error localizedDescription]);
     NSLog(@"error: %ld", (long)[error code]);
     
-    [SVProgressHUD showWithStatus:@"同步结束..."];
-    
-    [NSThread sleepForTimeInterval: 1];
-    
+    #pragma mark - ***********************同步结束
+    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+    [NSThread sleepForTimeInterval:1.0];
     [SVProgressHUD dismiss];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
-
     
    
 }
 
 - (void)requestGetCTLibFailure:(NSError *)error andParam:(TimRequestParam *)param {
-    NSLog(@"error: %@", [error localizedDescription]);
+    NSLog(@"CT片同步失败error: %@", [error localizedDescription]);
     NSLog(@"error: %d", [error code]);
+    
+    //重新请求时
     [self getCTLibTable];
     
   //  static NSInteger retry = 5;
     
   //  if (--retry != 0)
   //  {
-        [self getCTLibTable];
-        
+//        [self getCTLibTable];
+    
   //  }
 
 }
 
 - (void)requestGetMedicalCaseFailure:(NSError *)error andParam:(TimRequestParam *)param {
-    NSLog(@"error: %@", [error localizedDescription]);
+    NSLog(@"获取病历信息失败:error: %@", [error localizedDescription]);
     NSLog(@"error: %d", [error code]);
     
   //  static NSInteger retry = 5;
@@ -4780,7 +4817,7 @@ NSInteger curTimeMCNum_rs = 0;
 }
 
 - (void)requestGetMedicalExpenseFailure:(NSError *)error andParam:(TimRequestParam *)param {
-    NSLog(@"error: %@", [error localizedDescription]);
+    NSLog(@"获取病历Expense失败error: %@", [error localizedDescription]);
     NSLog(@"error: %d", [error code]);
     
    // static NSInteger retry = 5;
@@ -4788,12 +4825,12 @@ NSInteger curTimeMCNum_rs = 0;
    // if (--retry != 0)
    // {
       [self getMedicalExpenseTable];
-        
+    
    // }
 }
 
 - (void)requestGetMedicalRecordFailure:(NSError *)error andParam:(TimRequestParam *)param {
-    NSLog(@"error: %@", [error localizedDescription]);
+    NSLog(@"获取病历记录失败:error: %@", [error localizedDescription]);
     NSLog(@"error: %d", [error code]);
     
   //  static NSInteger retry = 5;
@@ -4801,7 +4838,7 @@ NSInteger curTimeMCNum_rs = 0;
   //  if (--retry != 0)
    // {
         [self getMedicalRecordTable];
-        
+    
    // }
 }
 
@@ -4832,5 +4869,8 @@ NSInteger curTimeMCNum_rs = 0;
     NSLog(@"error: %@", [error localizedDescription]);
     NSLog(@"error: %ld", [error code]);
 }
+
+
+
 @end
 
