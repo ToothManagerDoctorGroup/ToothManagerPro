@@ -491,7 +491,7 @@
 - (void)didClickAddMedicalButton{
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-    caseVC.title = @"新建病历";
+    caseVC.title = @"新建病程";
     caseVC.patiendId = self.detailPatient.ckeyid;
     [self pushViewController:caseVC animated:YES];
 }
@@ -500,7 +500,7 @@
     _selectCase = mcase;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-    caseVC.title = @"病历详情";
+    caseVC.title = @"病程详情";
     caseVC.edit = YES;
     caseVC.medicalCaseId = mcase.ckeyid;
     [self pushViewController:caseVC animated:YES];

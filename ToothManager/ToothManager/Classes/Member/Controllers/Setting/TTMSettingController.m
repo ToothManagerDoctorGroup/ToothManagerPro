@@ -78,16 +78,16 @@
                                                                          accessType:TTMMemberCellModelAccessTypeArrow];
         protocolModel.controllerClass = [TTMPrivateController class];
         
-        NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-        TTMMemberCellModel *versionModel = [[TTMMemberCellModel alloc] initWithTitle:@"版本号:"
-                                                                              content:version
-                                                                          buttonTitle:nil
-                                                                          contenColor:nil
-                                                                           messageNum:0
-                                                                           accessType:TTMMemberCellModelAccessTypeNone];
+//        NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+//        TTMMemberCellModel *versionModel = [[TTMMemberCellModel alloc] initWithTitle:@"版本号:"
+//                                                                              content:version
+//                                                                          buttonTitle:nil
+//                                                                          contenColor:nil
+//                                                                           messageNum:0
+//                                                                           accessType:TTMMemberCellModelAccessTypeNone];
         
         NSArray *section1 = @[updatePayPasswordModel, updatePasswordModel];
-        NSArray *section2 = @[aboutModel, fadebackModel, protocolModel, versionModel];
+        NSArray *section2 = @[aboutModel, fadebackModel, protocolModel];
         _dataArray = @[section1, section2];
     }
     return _dataArray;

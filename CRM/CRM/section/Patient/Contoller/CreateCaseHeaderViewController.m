@@ -129,6 +129,12 @@
     } else {
         mCase.repair_time = self.repairTextField.text;
     }
+    
+    if ([NSString isEmptyString:self.casenameTextField.text]) {
+        mCase.case_name = @"无";
+    } else {
+        mCase.case_name = self.casenameTextField.text;
+    }
     /*
     if ([NSString isEmptyString:self.repairDoctorTextField.text]) {
         mCase.repair_doctor = @"";

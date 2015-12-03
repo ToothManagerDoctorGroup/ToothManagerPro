@@ -14,7 +14,7 @@
 
 @property (weak,nonatomic) id <CaseMaterialsTableViewCellDelegate> delegate;
 
-@property (weak, nonatomic) IBOutlet TimPickerTextField *materialName;
+@property (weak, nonatomic) IBOutlet UILabel *materialName;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *materialNum;
 
 - (void)setCell:(NSArray *)array;

@@ -16,11 +16,22 @@
 
 @implementation CaseMaterialsTableViewCell
 
+- (void)dealloc{
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)setCell:(NSArray *)array {
     // Initialization code
-    self.materialName.mode = TextFieldInputModeExternal;
-    self.materialName.borderStyle = UITextBorderStyleNone;
-    self.materialName.delegate = self;
+//    self.materialName.mode = TextFieldInputModeExternal;
+//    self.materialName.borderStyle = UITextBorderStyleNone;
+//    self.materialName.delegate = self;
+    
+    //添加通知
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChangedAction:) name:UITextFieldTextDidChangeNotification object:nil];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [self.materialName addGestureRecognizer:tap];
+    
     self.materialNum.keyboardType = UIKeyboardTypeNumberPad;
     self.materialNum.borderStyle = UITextBorderStyleNone;
     self.materialNum.actiondelegate = self;
@@ -31,17 +42,21 @@
     // Configure the view for the selected state
 }
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-    if (textField == self.materialName) {
-        [self.delegate didBeginEdit:self];
-    }
-    [textField resignFirstResponder];
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [self.delegate didBeginEdit:self];
 }
 
+//完成按钮点击的回调
 - (void)pickerViewFinish:(UIPickerView *)pickerView {
     [self.delegate tableViewCell:self materialNum:[self.materialNum.text integerValue]];
 }
 
+//取消按钮点击的回调
+- (void)pickerViewCancel:(UIPickerView *)pickerView{
+    [self.delegate tableViewCell:self materialNum:[self.materialNum.text integerValue]];
+}
+
+//完成按钮点击回调
 - (void)pickerView:(UIPickerView *)pickerView finishSelectWithRow:(NSInteger)row inComponent:(NSInteger)component {
     [self.delegate tableViewCell:self materialNum:[self.materialNum.text integerValue]];
 }

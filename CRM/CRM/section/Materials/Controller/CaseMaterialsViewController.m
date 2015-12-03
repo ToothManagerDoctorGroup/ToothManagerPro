@@ -52,16 +52,30 @@
 
 #pragma mark - Actions 
 - (void)onBackButtonAction:(id)sender {
+    //隐藏当前编辑框
+    [self.view endEditing:YES];
     [self dismissViewControllerAnimated:YES completion:^{
         
     }];
 }
 
 - (void)onRightButtonAction:(id)sender {
-    [self.delegate didSelectedMaterialsArray:self.materialsArray];
-    [self dismissViewControllerAnimated:YES completion:^{
-        
-    }];
+    
+    for (int i = 0; i < self.materialsArray.count; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        MedicalExpense *expense = self.materialsArray[i];
+        expense.expense_num = [cell.materialNum.text integerValue];
+    }
+    
+    
+    //隐藏当前编辑框
+    [self.view endEditing:YES];
+    
+    if ([self.delegate respondsToSelector:@selector(didSelectedMaterialsArray:)]) {
+        [self.delegate didSelectedMaterialsArray:self.materialsArray];
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)addLineAction:(id)sender {
@@ -133,13 +147,14 @@
     } else {
         cell.materialName.text = @"名称";
     }
-    cell.materialNum.text = [NSString stringWithFormat:@"%d",expense.expense_num];
+    cell.materialNum.text = [NSString stringWithFormat:@"%ld",(long)expense.expense_num];
     return cell;
 }
 
 #pragma mark - cell Delegate
 - (void)didBeginEdit:(CaseMaterialsTableViewCell *)cell {
-    self.selectIndex = cell.tag-100;
+    
+    self.selectIndex = cell.tag - 100;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     MaterialsViewController *materialVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
     materialVC.delegate = self;
@@ -148,7 +163,7 @@
 }
 
 - (void)tableViewCell:(CaseMaterialsTableViewCell *)cell materialNum:(NSInteger)num {
-    MedicalExpense *expense = [self.materialsArray objectAtIndex:cell.tag-100];
+    MedicalExpense *expense = [self.materialsArray objectAtIndex:cell.tag - 100];
     expense.expense_num = num;
 }
 
@@ -157,6 +172,8 @@
     expense.mat_id = material.ckeyid;
     [self.tableView reloadData];
 }
+
+
 
 
 @end

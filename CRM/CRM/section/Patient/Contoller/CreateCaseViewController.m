@@ -92,7 +92,7 @@
     [super initData];
     //初始化table 每段的数据容器
     if (self.edit == YES) {
-        self.title = @"编辑病历";
+        self.title = @"编辑病程";
         _medicalCase = [[DBManager shareInstance] getMedicalCaseWithCaseId:self.medicalCaseId];
         _medicalRes  = [[DBManager shareInstance] getMedicalReserveWithCaseId:self.medicalCaseId];
         if (_medicalRes == nil) {
@@ -115,7 +115,7 @@
         }
         self.patiendId = _medicalCase.patient_id;
     } else {
-        self.title = @"新建病历";
+        self.title = @"新建病程";
         _medicalCase = [[MedicalCase alloc]init];
         _medicalCase.patient_id = self.patiendId;
         _medicalCase.case_status = 1;
@@ -291,6 +291,7 @@
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }
+        
         [SVProgressHUD showImage:nil status:@"保存成功"];
         
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
@@ -334,7 +335,7 @@
     label.font = [UIFont boldSystemFontOfSize:12.0f];
     label.backgroundColor = [UIColor clearColor];
     label.textColor = [UIColor viewFlipsideBackgroundColor];
-    label.text = @"病历描述";
+    label.text = @"病程描述";
     [headerView addSubview:label];
     return headerView;
 }

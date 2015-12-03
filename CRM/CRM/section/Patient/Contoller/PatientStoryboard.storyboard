@@ -25,7 +25,7 @@
                                 <animations/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="lLJ-Rg-Rfy"/>
-                                    <barButtonItem title="新建病历" id="c9g-LK-Ixk">
+                                    <barButtonItem title="新建病程" id="c9g-LK-Ixk">
                                         <connections>
                                             <action selector="createCaseAction:" destination="BAc-zx-Saf" id="nI4-wC-pCK"/>
                                         </connections>
