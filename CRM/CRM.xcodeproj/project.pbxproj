@@ -163,6 +163,12 @@
 		3D0BE5E11BF99F680023D3FA /* UIView+WXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE5E01BF99F680023D3FA /* UIView+WXViewController.m */; };
 		3D0BE5E41BF9A2700023D3FA /* AppointDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE5E31BF9A2700023D3FA /* AppointDetailViewController.m */; };
 		3D0BE5E71BF9C0ED0023D3FA /* SignDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE5E61BF9C0ED0023D3FA /* SignDetailViewController.m */; };
+		3D18C8431C156C7900EF83DE /* PatientSegumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8421C156C7900EF83DE /* PatientSegumentController.m */; };
+		3D18C84B1C156FE000EF83DE /* NYSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8461C156FE000EF83DE /* NYSegment.m */; };
+		3D18C84C1C156FE000EF83DE /* NYSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8481C156FE000EF83DE /* NYSegmentedControl.m */; };
+		3D18C84D1C156FE000EF83DE /* NYSegmentIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C84A1C156FE000EF83DE /* NYSegmentIndicator.m */; };
+		3D18C8501C15782200EF83DE /* TwoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C84F1C15782200EF83DE /* TwoViewController.m */; };
+		3D18C8531C15833C00EF83DE /* TimTabBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8521C15833C00EF83DE /* TimTabBarViewController.m */; };
 		3D1AB06D1C0006E400547809 /* medical_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1AB06A1C0006E400547809 /* medical_bg.png */; };
 		3D1AB06E1C0006E400547809 /* medical_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1AB06B1C0006E400547809 /* medical_bg@2x.png */; };
 		3D1AB06F1C0006E400547809 /* medical_bg@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1AB06C1C0006E400547809 /* medical_bg@3x.png */; };
@@ -1009,6 +1015,19 @@
 		3D0BE5E31BF9A2700023D3FA /* AppointDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppointDetailViewController.m; sourceTree = "<group>"; };
 		3D0BE5E51BF9C0ED0023D3FA /* SignDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignDetailViewController.h; sourceTree = "<group>"; };
 		3D0BE5E61BF9C0ED0023D3FA /* SignDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignDetailViewController.m; sourceTree = "<group>"; };
+		3D18C83D1C153D3900EF83DE /* BaseUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseUrl.h; sourceTree = "<group>"; };
+		3D18C8411C156C7900EF83DE /* PatientSegumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PatientSegumentController.h; sourceTree = "<group>"; };
+		3D18C8421C156C7900EF83DE /* PatientSegumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PatientSegumentController.m; sourceTree = "<group>"; };
+		3D18C8451C156FE000EF83DE /* NYSegment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYSegment.h; sourceTree = "<group>"; };
+		3D18C8461C156FE000EF83DE /* NYSegment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYSegment.m; sourceTree = "<group>"; };
+		3D18C8471C156FE000EF83DE /* NYSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYSegmentedControl.h; sourceTree = "<group>"; };
+		3D18C8481C156FE000EF83DE /* NYSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYSegmentedControl.m; sourceTree = "<group>"; };
+		3D18C8491C156FE000EF83DE /* NYSegmentIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYSegmentIndicator.h; sourceTree = "<group>"; };
+		3D18C84A1C156FE000EF83DE /* NYSegmentIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYSegmentIndicator.m; sourceTree = "<group>"; };
+		3D18C84E1C15782200EF83DE /* TwoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoViewController.h; sourceTree = "<group>"; };
+		3D18C84F1C15782200EF83DE /* TwoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoViewController.m; sourceTree = "<group>"; };
+		3D18C8511C15833C00EF83DE /* TimTabBarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimTabBarViewController.h; sourceTree = "<group>"; };
+		3D18C8521C15833C00EF83DE /* TimTabBarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimTabBarViewController.m; sourceTree = "<group>"; };
 		3D1AB06A1C0006E400547809 /* medical_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = medical_bg.png; sourceTree = "<group>"; };
 		3D1AB06B1C0006E400547809 /* medical_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "medical_bg@2x.png"; sourceTree = "<group>"; };
 		3D1AB06C1C0006E400547809 /* medical_bg@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "medical_bg@3x.png"; sourceTree = "<group>"; };
@@ -2240,6 +2259,38 @@
 			name = Controllers;
 			sourceTree = "<group>";
 		};
+		3D18C83F1C153D4700EF83DE /* BaseUrl */ = {
+			isa = PBXGroup;
+			children = (
+				3D18C83D1C153D3900EF83DE /* BaseUrl.h */,
+			);
+			name = BaseUrl;
+			sourceTree = "<group>";
+		};
+		3D18C8401C1568B700EF83DE /* PatientSegumentController */ = {
+			isa = PBXGroup;
+			children = (
+				3D18C8411C156C7900EF83DE /* PatientSegumentController.h */,
+				3D18C8421C156C7900EF83DE /* PatientSegumentController.m */,
+				3D18C84E1C15782200EF83DE /* TwoViewController.h */,
+				3D18C84F1C15782200EF83DE /* TwoViewController.m */,
+			);
+			name = PatientSegumentController;
+			sourceTree = "<group>";
+		};
+		3D18C8441C156FE000EF83DE /* NYSegmentedControl */ = {
+			isa = PBXGroup;
+			children = (
+				3D18C8451C156FE000EF83DE /* NYSegment.h */,
+				3D18C8461C156FE000EF83DE /* NYSegment.m */,
+				3D18C8471C156FE000EF83DE /* NYSegmentedControl.h */,
+				3D18C8481C156FE000EF83DE /* NYSegmentedControl.m */,
+				3D18C8491C156FE000EF83DE /* NYSegmentIndicator.h */,
+				3D18C84A1C156FE000EF83DE /* NYSegmentIndicator.m */,
+			);
+			path = NYSegmentedControl;
+			sourceTree = "<group>";
+		};
 		3D1AB0701C00424600547809 /* MenuPopover */ = {
 			isa = PBXGroup;
 			children = (
@@ -2450,6 +2501,7 @@
 		3D2A004D1C05E53B00B1EF65 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3D18C8441C156FE000EF83DE /* NYSegmentedControl */,
 				3D27F7A51C08A6A800C50CBF /* popupViewController */,
 				3DE2DD561C06BC45005F7832 /* MXPullDownMenu */,
 				3D2A004E1C05E55600B1EF65 /* PMCalendar */,
@@ -3187,6 +3239,7 @@
 		6436DC1B19B8C48000DC667E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				3D18C83F1C153D4700EF83DE /* BaseUrl */,
 				6436DC1C19B8C48000DC667E /* Function */,
 				6436DC2119B8C48000DC667E /* Share */,
 			);
@@ -3897,6 +3950,8 @@
 				6436DE1C19B8C48100DC667E /* TimViewController.h */,
 				6436DE1D19B8C48100DC667E /* TimViewController.m */,
 				6436DE1E19B8C48100DC667E /* UISubClass.h */,
+				3D18C8511C15833C00EF83DE /* TimTabBarViewController.h */,
+				3D18C8521C15833C00EF83DE /* TimTabBarViewController.m */,
 			);
 			path = "UI SubClass";
 			sourceTree = "<group>";
@@ -4198,6 +4253,7 @@
 		64CFD89619F7F6A5001EB0DA /* Contoller */ = {
 			isa = PBXGroup;
 			children = (
+				3D18C8401C1568B700EF83DE /* PatientSegumentController */,
 				3D1B25F81BFEAE4900997FDE /* PatientDetail */,
 				64CFD89719F7F6A5001EB0DA /* CreatePatientViewController.h */,
 				64CFD89819F7F6A5001EB0DA /* CreatePatientViewController.m */,
@@ -5152,6 +5208,7 @@
 				3D2A00641C05E55600B1EF65 /* PMCalendarView.m in Sources */,
 				2DFE7ED01B4A71980088B119 /* AFSecurityPolicy.m in Sources */,
 				2D2ED8521C00942D003B7047 /* MenuView.m in Sources */,
+				3D18C84B1C156FE000EF83DE /* NYSegment.m in Sources */,
 				6436DF3919B8C48100DC667E /* TimNavigationBarMenuView.m in Sources */,
 				64CFD91719F7F6A6001EB0DA /* MaterialTableViewCell.m in Sources */,
 				2DFE7ED61B4A71980088B119 /* README.md in Sources */,
@@ -5176,6 +5233,8 @@
 				64CFD92B19F7F6A6001EB0DA /* AddButtonFooterView.m in Sources */,
 				2DFE7EDD1B4A71980088B119 /* UIRefreshControl+AFNetworking.m in Sources */,
 				6436DE3B19B8C48100DC667E /* CRMHttpRequest+Materials.m in Sources */,
+				3D18C84C1C156FE000EF83DE /* NYSegmentedControl.m in Sources */,
+				3D18C84D1C156FE000EF83DE /* NYSegmentIndicator.m in Sources */,
 				6436DE2B19B8C48100DC667E /* LeftMenuTableViewCell.m in Sources */,
 				6436DF3E19B8C48100DC667E /* TimNavigationViewController.m in Sources */,
 				A62C8FDE1A0921410013146D /* CRM.xcdatamodeld in Sources */,
@@ -5207,6 +5266,7 @@
 				3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */,
 				64CFD94E19F7F6A6001EB0DA /* LocalNotificationTableViewCell.m in Sources */,
 				3D27F7B81C08A6A800C50CBF /* UIViewController+LewPopupViewController.m in Sources */,
+				3D18C8431C156C7900EF83DE /* PatientSegumentController.m in Sources */,
 				64CFD90F19F7F6A6001EB0DA /* PeopleInfoCell.m in Sources */,
 				64B2B33619D3F9E200DFA1E2 /* UIView+WebCacheOperation.m in Sources */,
 				3D0BE5DB1BF9883B0023D3FA /* AssistModel.m in Sources */,
@@ -5281,6 +5341,7 @@
 				6436DE3C19B8C48100DC667E /* CRMHttpRequest+Patients.m in Sources */,
 				6436DE2A19B8C48100DC667E /* LeftMenuViewController.m in Sources */,
 				2D4F38461BA6D3BF00D603AE /* ShuJuFenXiViewController.m in Sources */,
+				3D18C8531C15833C00EF83DE /* TimTabBarViewController.m in Sources */,
 				0B4CB13C19D32E34006E438F /* NewMainViewController.m in Sources */,
 				8142BB3E1AEA0CAA00EF08EE /* RepairDoctorViewController.m in Sources */,
 				2DC828F71BA2CF30001CA6A4 /* AccountViewController.m in Sources */,
@@ -5340,6 +5401,7 @@
 				6436DE3A19B8C48100DC667E /* MediaManager.m in Sources */,
 				6436DE3619B8C48100DC667E /* DBManager+Materials.m in Sources */,
 				64CFD91019F7F6A6001EB0DA /* IntroducerTableViewCell.m in Sources */,
+				3D18C8501C15782200EF83DE /* TwoViewController.m in Sources */,
 				2DFE7ED91B4A71980088B119 /* UIAlertView+AFNetworking.m in Sources */,
 				64CFD91919F7F6A6001EB0DA /* CreatePatientViewController.m in Sources */,
 				2DFE7E0E1B4431550088B119 /* ForgetPasswordViewController.m in Sources */,
@@ -5452,7 +5514,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "8b1050ad-e3df-4aad-8380-00210252a199";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -5486,7 +5548,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PROVISIONING_PROFILE = "8b1050ad-e3df-4aad-8380-00210252a199";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -5531,7 +5593,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8b1050ad-e3df-4aad-8380-00210252a199";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = NO;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -5579,7 +5641,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8b1050ad-e3df-4aad-8380-00210252a199";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

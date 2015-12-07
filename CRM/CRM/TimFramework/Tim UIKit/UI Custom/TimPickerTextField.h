@@ -18,12 +18,23 @@ typedef NS_ENUM(NSInteger, TextFieldInputMode) {
     TextFieldInputModeTable = 5,        //下拉列表模式
     TextFieldInputModeExternal = 6,     //跳转到其它界面选择
 };
+//如果是时间选择器，设置时间的获取格式
+typedef NS_ENUM(NSInteger, TextFieldDateMode) {
+    TextFieldDateModeTime = 1, //只显示时间
+    TextFieldDateModeDate = 2, //只显示日期
+    TextFieldDateModeDateAndTime = 3, //显示时间和日期
+    TextFieldDateModeCountDownTimer = 4 //显示毫秒
+};
 
 @protocol  TimPickerTextFieldDelegate,TimPickerTextFieldDataSource;
 
 @interface TimPickerTextField : UITextField
 //通过设置mode来使用不同的输入源，默认为键盘输入
 @property (nonatomic,readwrite) TextFieldInputMode mode;
+//设置日期选择器的时间格式
+@property (nonatomic,readwrite) TextFieldDateMode dateMode;
+
+@property (nonatomic, assign)BOOL *isBirthDay; //是否是选择生日
 
 #pragma mark - Picker
 //普通选择器作为输入源，只能用于一列的情况。

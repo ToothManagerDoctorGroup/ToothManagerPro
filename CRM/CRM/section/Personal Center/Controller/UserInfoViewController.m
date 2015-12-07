@@ -99,6 +99,7 @@
     }
     
     self.birthDayTextField.mode = TextFieldInputModeDatePicker;
+    self.birthDayTextField.isBirthDay = YES;
     
     
     NSMutableArray *selectSexArray = [NSMutableArray arrayWithObjects:@"男",@"女" ,nil];

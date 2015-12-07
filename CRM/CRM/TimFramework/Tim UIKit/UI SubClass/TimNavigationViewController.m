@@ -8,10 +8,17 @@
 
 #import "TimNavigationViewController.h"
 #import "TimFramework.h"
+#import "IntroducerViewController.h"
+#import "ScheduleReminderViewController.h"
+#import "AccountViewController.h"
+#import "PatientSegumentController.h"
+#import "MenuView.h"
+#import "MenuButtonPushManager.h"
+#import "SigninViewController.h"
+#import "SignUpViewController.h"
 
 
 @interface TimNavigationViewController ()
-
 @end
 
 @implementation TimNavigationViewController
@@ -36,23 +43,10 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Set View
 - (void)setupView {
-
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

@@ -44,8 +44,8 @@
     [super initView];
 
     if(self.isTabbarVc == YES){
-        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
-        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+//        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+//        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     }else{
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     }

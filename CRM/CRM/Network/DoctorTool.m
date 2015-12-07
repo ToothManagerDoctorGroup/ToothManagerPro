@@ -20,7 +20,8 @@
 
 + (void)requestDoctorInfoWithDoctorId:(NSString *)doctorId success:(void(^)(DoctorInfoModel *dcotorInfo))success failure:(void(^)(NSError *error))failure{
     
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getdatabyid";
     params[userIdParam] = doctorId;
@@ -42,6 +43,8 @@
 
 + (void)composeTeacherHeadImg:(UIImage *)image userId:(NSString *)userId success:(void (^)())success failure:(void (^)(NSError *))failure{
     
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx",DomainName,Method_His_Crm];
+    
     //创建上传参数
     MyUploadParam *uploadParam = [[MyUploadParam alloc] init];
     uploadParam.data = UIImageJPEGRepresentation(image, .2);
@@ -54,7 +57,7 @@
     params[@"Action"] = @"avatar";
     params[@"KeyId"] = userId;
     
-    [CRMHttpTool Upload:@"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx" parameters:params uploadParam:uploadParam success:^{
+    [CRMHttpTool Upload:urlStr parameters:params uploadParam:uploadParam success:^{
         if (success) {
             success();
         }
@@ -67,7 +70,8 @@
 }
 
 + (void)deleteFriendWithDoctorId:(NSString *)doctorId introId:(NSString *)introId success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"delete";
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionary];
@@ -91,7 +95,9 @@
 
 
 + (void)yuYueMessagePatient:(NSString *)patientId fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorPatientMapHandler.ashx",DomainName,Method_Weixin];
+    
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getMessageItem";
     

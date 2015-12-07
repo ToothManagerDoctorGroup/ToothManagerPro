@@ -2917,7 +2917,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "a2ca664f-a9ed-412d-aa56-1439de978318";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2955,7 +2955,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "a2ca664f-a9ed-412d-aa56-1439de978318";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2980,7 +2980,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.clinic.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "a2ca664f-a9ed-412d-aa56-1439de978318";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -3003,7 +3003,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.clinic.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "a2ca664f-a9ed-412d-aa56-1439de978318";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

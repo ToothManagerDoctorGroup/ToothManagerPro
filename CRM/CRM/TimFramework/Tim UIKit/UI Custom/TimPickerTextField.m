@@ -106,8 +106,13 @@ NSString *const UIKeyboardHideNotification = @"UIKeyboardHideNotification";
 }
 
 - (void)initDatePicker {
-    _datePickerView = [[UIDatePicker alloc]initWithFrame:CGRectMake(0,44, self.bounds.size.width, 216)];
-    _datePickerView.datePickerMode = UIDatePickerModeDateAndTime;
+    _datePickerView = [[UIDatePicker alloc]initWithFrame:CGRectMake(0,44, kScreenWidth, 216)];
+    if (self.isBirthDay) {
+        _datePickerView.datePickerMode = UIDatePickerModeDate;
+    }else{
+        _datePickerView.datePickerMode = UIDatePickerModeDateAndTime;
+    }
+    
     [_datePickerView addTarget:self action:@selector(dateDidChange:) forControlEvents:UIControlEventValueChanged];
 }
 
@@ -117,12 +122,12 @@ NSString *const UIKeyboardHideNotification = @"UIKeyboardHideNotification";
         _inputPickerView.delegate = self;
         _inputPickerView.dataSource = self;
     }
-    _inputPickerView.frame = CGRectMake(0,44, 320, 216);
+    _inputPickerView.frame = CGRectMake(0,44, kScreenWidth, 216);
 }
 
 - (void)initToolBar {
     if (toolBar == nil) {
-        toolBar = [[TimToolBar alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
+        toolBar = [[TimToolBar alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, 44)];
         UIControl *lineControl = [[UIControl alloc]initWithFrame:CGRectMake(0, 0, toolBar.bounds.size.width, 0.5)];
         lineControl.backgroundColor = [UIColor grayColor];
         [toolBar addSubview:lineControl];
@@ -180,14 +185,23 @@ NSString *const UIKeyboardHideNotification = @"UIKeyboardHideNotification";
 
 #pragma mark - BUttton action
 - (void)dateDidChange:(UIDatePicker *)picker {
-    self.text = [[picker date] dateToNSString];
+    if (self.isBirthDay) {
+        self.text = [[picker date] dateToNSStringWithoutTime];
+    }else{
+        self.text = [[picker date] dateToNSString];
+    }
 }
 
 #pragma mark - UIPickerView Delegate /DataSource
 - (void)onFinishButtonAction:(UIBarButtonItem *)sender {
     
     if (self.mode == TextFieldInputModeDatePicker) {
-        self.text = [_datePickerView.date dateToNSString];
+        if (self.isBirthDay) {
+            self.text = [_datePickerView.date dateToNSStringWithoutTime];
+        }else{
+            self.text = [_datePickerView.date dateToNSString];
+        }
+        
     } else if (self.mode == TextFieldInputModePicker) {
         if (self.pickerDataSource && _inputPickerView) {
             NSInteger selectRow = [_inputPickerView selectedRowInComponent:0];
@@ -260,7 +274,7 @@ NSString *const UIKeyboardHideNotification = @"UIKeyboardHideNotification";
            return [self.dataSource pickerView:pickerView widthForComponent:component];
         }
     }
-    return 320;
+    return kScreenWidth;
 }
 
 - (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {

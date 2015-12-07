@@ -102,7 +102,7 @@
         mode.title = @"分享种牙管家医生二维码";
         // mode.message = [NSString stringWithFormat:@"这是来自%@的%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.hospitalName,[AccountManager shareInstance].currentUser.name];
         mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
-        mode.url = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/Introduce/DoctorDetail.aspx?doctor_id=%@",[[AccountManager shareInstance] currentUser].userid];
+        mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainName,Method_Weixin,[[AccountManager shareInstance] currentUser].userid];
         mode.image = self.QrCodeImageView.image;
         [Share shareToPlatform:weixin WithMode:mode];
     }

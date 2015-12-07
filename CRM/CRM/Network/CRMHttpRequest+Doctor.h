@@ -8,18 +8,41 @@
 
 #import "CRMHttpRequest.h"
 
+
 DEF_STATIC_CONST_STRING(Doctor_Prefix,Doctor);
-DEF_URL GetDoctorList_URL =  @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=getdatabyid";
-DEF_URL SearchDoctor_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=getdata";
-DEF_URL Transfer_URL = @"http://122.114.62.57/his.crm/ashx/NotificationPatientHandler.ashx?action=transfer";
-DEF_URL WeiXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
-DEF_URL ClinicMessage_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-DEF_URL DoctorIcon_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx";
-DEF_URL DoctorClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-DEF_URL ClinicSeat_URL = @"http://122.114.62.57/clinicServer/ashx/SeatHandler.ashx";
-DEF_URL YuYueInfoByClinicSeatDate_URL = @"http://122.114.62.57/clinicServer/ashx/AppointmentsHandler.ashx";
-DEF_URL YuYueDuanXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx?action=getMessageItem";
-DEF_URL YuYueTuiSongClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint";
+
+//DEF_URL GetDoctorList_URL =  @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=getdatabyid";
+#define GetDoctorList_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx?action=getdatabyid",DomainName,Method_His_Crm]
+
+//DEF_URL SearchDoctor_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=getdata";
+#define SearchDoctor_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx?action=getdata",DomainName,Method_His_Crm]
+
+//DEF_URL Transfer_URL = @"http://122.114.62.57/his.crm/ashx/NotificationPatientHandler.ashx?action=transfer";
+#define Transfer_URL [NSString stringWithFormat:@"%@%@/ashx/NotificationPatientHandler.ashx?action=transfer",DomainName,Method_His_Crm]
+
+//DEF_URL WeiXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
+#define WeiXin_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorPatientMapHandler.ashx",DomainName,Method_Weixin]
+
+//DEF_URL ClinicMessage_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+#define ClinicMessage_URL [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm]
+
+//DEF_URL DoctorIcon_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx";
+#define DoctorIcon_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx",DomainName,Method_His_Crm]
+
+//DEF_URL DoctorClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+#define DoctorClinic_URL [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm]
+
+//DEF_URL ClinicSeat_URL = @"http://122.114.62.57/clinicServer/ashx/SeatHandler.ashx";
+#define ClinicSeat_URL [NSString stringWithFormat:@"%@%@/ashx/SeatHandler.ashx",DomainName,Method_ClinicServer]
+
+//DEF_URL YuYueInfoByClinicSeatDate_URL = @"http://122.114.62.57/clinicServer/ashx/AppointmentsHandler.ashx";
+#define YuYueInfoByClinicSeatDate_URL [NSString stringWithFormat:@"%@%@/ashx/AppointmentsHandler.ashx",DomainName,Method_ClinicServer]
+
+//DEF_URL YuYueDuanXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx?action=getMessageItem";
+#define YuYueDuanXin_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorPatientMapHandler.ashx?action=getMessageItem",DomainName,Method_Weixin]
+
+//DEF_URL YuYueTuiSongClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint";
+#define YuYueTuiSongClinic_URL [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx?action=appoint",DomainName,Method_His_Crm]
 
 @interface CRMHttpRequest (Doctor)
 

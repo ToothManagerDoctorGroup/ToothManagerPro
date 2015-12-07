@@ -28,7 +28,8 @@
 
 + (void)requestBillsWithDoctorId:(NSString *)doctocId type:(NSString *)type success:(void(^)(NSArray *bills))success failure:(void(^)(NSError *error))failure{
     
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getBill";
     params[doctorIdParam] = doctocId;
@@ -56,7 +57,8 @@
 }
 
 + (void)requestBillDetailWithBillId:(NSString *)billId success:(void(^)(BillDetailModel *billDetail))success failure:(void(^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getBillDetail";
     params[billIdParam] = billId;
@@ -79,7 +81,8 @@
 
 
 + (void)cancleAppointWithAppointId:(NSString *)appointId success:(void (^)(NSString * result,NSNumber *code))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"cancelreserve";
     params[@"keyid"] = appointId;
@@ -98,7 +101,8 @@
 }
 
 + (void)payWithPayParam:(PayParam *)payParam success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"pay";
     params[dataEntityParam] = [self dictionaryToJson:payParam.keyValues];

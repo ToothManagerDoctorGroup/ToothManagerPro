@@ -30,7 +30,8 @@
 
 + (void)requestClinicInfoWithDoctorId:(NSString *)doctocId success:(void (^)(NSArray *))success failure:(void (^)(NSError *))failure{
 
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getClinic";
     params[doctorIdParam] = doctocId;
@@ -56,7 +57,8 @@
 
 
 + (void)searchClinicInfoWithDoctorId:(NSString *)doctorId clinicName:(NSString *)clinicName success:(void(^)(NSArray *clinics))success failure:(void(^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"searchClinic";
     params[doctorIdParam] = doctorId;
@@ -82,7 +84,8 @@
 }
 
 + (void)requestClinicDetailWithClinicId:(NSString *)clinicId accessToken:(NSString *)accessToken success:(void (^)(ClinicDetailModel *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicHandler.ashx",DomainName,Method_ClinicServer];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getalldetail";
     params[clinicIdParam] = clinicId;
@@ -105,7 +108,8 @@
 
 
 + (void)requestClinicInfoWithAreacode:(NSString *)areacode success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicHandler.ashx",DomainName,Method_ClinicServer];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getList";
     params[areacodeParam] = areacode;
@@ -130,7 +134,8 @@
 }
 
 + (void)requestClinicInfoWithAreacode:(NSString *)areacode clinicName:(NSString *)clinicName success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicHandler.ashx",DomainName,Method_ClinicServer];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getListByNameAndArea";
     params[@"clinicname"] = clinicName;
@@ -156,7 +161,8 @@
 }
 
 + (void)applyForClinicWithDoctorID:(NSString *)doctorId clinicId:(NSString *)clinicId success:(void (^)(NSString *result,NSNumber *status))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"sign";
     params[doctorIdParam] = doctorId;
@@ -174,7 +180,8 @@
 }
 
 + (void)getAssistentListWithClinicId:(NSString *)clinicId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/AssistantHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/AssistantHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/AssistantHandler.ashx",DomainName,Method_ClinicServer];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getList";
     params[clinicIdParam] = clinicId;
@@ -201,7 +208,8 @@
 }
 
 + (void)getMaterialListWithClinicId:(NSString *)clinicId matType:(NSString *)type success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/MaterialHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/MaterialHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MaterialHandler.ashx",DomainName,Method_ClinicServer];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"getList";
     params[clinicIdParam] = clinicId;

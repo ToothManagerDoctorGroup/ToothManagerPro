@@ -102,7 +102,8 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
         
         if(![NSString isEmptyString:self.phoneTextField.text]){
             controller.recipients = [NSArray arrayWithObject:self.phoneTextField.text];
-            controller.body = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:http://122.114.62.57/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+            controller.body = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+            
             controller.messageComposeDelegate = self;
             
             [self presentModalViewController:controller animated:YES];

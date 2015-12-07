@@ -104,7 +104,7 @@
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
 
-    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://122.114.62.57/his.crm/avatar/%@.jpg",doctor.ckeyid]]];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]]];
     
     
 }

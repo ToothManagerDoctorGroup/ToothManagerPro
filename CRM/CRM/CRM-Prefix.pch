@@ -29,6 +29,10 @@
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 #define MyColor(r,g,b) [UIColor colorWithRed:(r) / 255.0 green:(g) / 255.0 blue:(b) / 255.0 alpha:1]
 
+//基本接口url
+#import "BaseUrl.h"
+
+
 #if DEBUG
 #define NSLog(format, ...) do {                                                                          \
 fprintf(stderr, "<%s : %d> %s\n",                                           \

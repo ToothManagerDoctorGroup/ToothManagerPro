@@ -10,59 +10,144 @@
 #import "CRMHttpRequest.h"
 
 DEF_STATIC_CONST_STRING(DataSyncPost_Prefix, DataSyncPost);
-DEF_URL PATIENT_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=add";
-DEF_URL MATERIAL_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=material&action=add";
-DEF_URL INTRODUCE_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=introducer&action=add";
-DEF_URL MEDICAL_CASE_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalcase&action=add";
-DEF_URL CTLIB_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=ctlib&action=add";
-DEF_URL MEDICAL_EXPENSE_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalexpense&action=add";
-DEF_URL MEDICAL_RECORD_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalrecord&action=add";
-DEF_URL REPAIRDOCTOR_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=repairdoctor&action=add";
-DEF_URL RESERVERECORD_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=reserverecord&action=add";
-DEF_URL PATIENTCONSULTATION_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=add";
-DEF_URL PATIENT_INTRODUCER_MAP_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientintroducermap&action=add";
+//DEF_URL PATIENT_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=add";
+#define PATIENT_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patient&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL MATERIAL_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=material&action=add";
+#define MATERIAL_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=material&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL INTRODUCE_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=introducer&action=add";
+#define INTRODUCE_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=introducer&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_CASE_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalcase&action=add";
+#define MEDICAL_CASE_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL CTLIB_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=ctlib&action=add";
+#define CTLIB_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=ctlib&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_EXPENSE_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalexpense&action=add";
+#define MEDICAL_EXPENSE_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalexpense&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_RECORD_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalrecord&action=add";
+#define MEDICAL_RECORD_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalrecord&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL REPAIRDOCTOR_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=repairdoctor&action=add";
+#define REPAIRDOCTOR_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=repairdoctor&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL RESERVERECORD_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=reserverecord&action=add";
+#define RESERVERECORD_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=reserverecord&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENTCONSULTATION_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=add";
+#define PATIENTCONSULTATION_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientconsultation&action=add",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENT_INTRODUCER_MAP_ADD_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientintroducermap&action=add";
+#define PATIENT_INTRODUCER_MAP_ADD_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientintroducermap&action=add",DomainName,Method_His_Crm]
 
 DEF_STATIC_CONST_STRING(DataSyncEdit_Prefix, DataSyncEdit);
-DEF_URL PATIENT_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=edit";
-DEF_URL MATERIAL_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=material&action=edit";
-DEF_URL INTRODUCE_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=introducer&action=edit";
-DEF_URL MEDICAL_CASE_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalcase&action=edit";
-DEF_URL CTLIB_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=ctlib&action=edit";
-DEF_URL MEDICAL_EXPENSE_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalexpense&action=edit";
-DEF_URL MEDICAL_RECORD_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalrecord&action=edit";
-DEF_URL REPAIRDOCTOR_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=repairdoctor&action=edit";
-DEF_URL RESERVERECORD_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=reserverecord&action=edit";
-DEF_URL PATIENTCONSULTATION_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=edit";
+//DEF_URL PATIENT_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=edit";
+#define PATIENT_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patient&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL MATERIAL_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=material&action=edit";
+#define MATERIAL_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=material&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL INTRODUCE_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=introducer&action=edit";
+#define INTRODUCE_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=introducer&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_CASE_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalcase&action=edit";
+#define MEDICAL_CASE_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL CTLIB_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=ctlib&action=edit";
+#define CTLIB_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=ctlib&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_EXPENSE_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalexpense&action=edit";
+#define MEDICAL_EXPENSE_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalexpense&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_RECORD_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalrecord&action=edit";
+#define MEDICAL_RECORD_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalrecord&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL REPAIRDOCTOR_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=repairdoctor&action=edit";
+#define REPAIRDOCTOR_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=repairdoctor&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL RESERVERECORD_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=reserverecord&action=edit";
+#define RESERVERECORD_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=reserverecord&action=edit",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENTCONSULTATION_EDIT_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=edit";
+#define PATIENTCONSULTATION_EDIT_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientconsultation&action=edit",DomainName,Method_His_Crm]
 
 DEF_STATIC_CONST_STRING(DataSyncDelete_Prefix, DataSyncDelete);
-DEF_URL PATIENT_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=delete";
-DEF_URL MATERIAL_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=material&action=delete";
-DEF_URL INTRODUCE_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=introducer&action=delete";
-DEF_URL MEDICAL_CASE_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalcase&action=delete";
-DEF_URL CTLIB_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=ctlib&action=delete";
-DEF_URL MEDICAL_EXPENSE_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalexpense&action=delete";
-DEF_URL MEDICAL_RECORD_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalrecord&action=delete";
-DEF_URL REPAIRDOCTOR_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=repairdoctor&action=delete";
-DEF_URL RESERVERECORD_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=reserverecord&action=delete";
-DEF_URL PATIENTCONSULTATION_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=delete";
+//DEF_URL PATIENT_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=delete";
+#define PATIENT_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patient&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL MATERIAL_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=material&action=delete";
+#define MATERIAL_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=material&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL INTRODUCE_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=introducer&action=delete";
+#define INTRODUCE_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=introducer&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_CASE_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalcase&action=delete";
+#define MEDICAL_CASE_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL CTLIB_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=ctlib&action=delete";
+#define CTLIB_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=ctlib&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_EXPENSE_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalexpense&action=delete";
+#define MEDICAL_EXPENSE_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalexpense&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_RECORD_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=medicalrecord&action=delete";
+#define MEDICAL_RECORD_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalrecord&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL REPAIRDOCTOR_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=repairdoctor&action=delete";
+#define REPAIRDOCTOR_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=repairdoctor&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL RESERVERECORD_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=reserverecord&action=delete";
+#define RESERVERECORD_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=reserverecord&action=delete",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENTCONSULTATION_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=delete";
+#define PATIENTCONSULTATION_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientconsultation&action=delete",DomainName,Method_His_Crm]
 
 DEF_STATIC_CONST_STRING(DataSyncGet_Prefix, DataSyncGet);
 //DEF_URL DOC_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=doctorinfo";
-DEF_URL DOC_GET_URL = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx?action=getdoctor";
-DEF_URL MATERIAL_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=material";
-DEF_URL INTRODUCE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=introducer";
-DEF_URL PATIENT_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=patient";
-DEF_URL REPAIRDOCTOR_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=repairdoctor";
-DEF_URL RESERVERECORD_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=reserverecord";
-DEF_URL CTLIB_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=ctlib";
-DEF_URL MEDICAL_CASE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalcase";
-DEF_URL MEDICAL_EXPENSE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalexpense";
-DEF_URL MEDICAL_RECORD_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalrecord";
-DEF_URL MEDICAL_RESEV_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalreserve";
-DEF_URL PATIENT_INTRODUCER_MAP_GET_URL = @"http://122.114.62.57/his.crm/ashx/PatientIntroducerMapHandler.ashx?action=getdoctor";
-DEF_URL PATIENTCONSULTATION_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=patientconsultation";
+//DEF_URL DOC_GET_URL = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx?action=getdoctor";
+#define DOC_GET_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx?action=getdoctor",DomainName,Method_His_Crm]
 
-DEF_URL ImageDown = @"http://122.114.62.57/his.crm/UploadFiles/";
+//DEF_URL MATERIAL_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=material";
+#define MATERIAL_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=material",DomainName,Method_His_Crm]
+
+//DEF_URL INTRODUCE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=introducer";
+#define INTRODUCE_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=introducer",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENT_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=patient";
+#define PATIENT_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=patient",DomainName,Method_His_Crm]
+
+//DEF_URL REPAIRDOCTOR_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=repairdoctor";
+#define REPAIRDOCTOR_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=repairdoctor",DomainName,Method_His_Crm]
+
+//DEF_URL RESERVERECORD_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=reserverecord";
+#define RESERVERECORD_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=reserverecord",DomainName,Method_His_Crm]
+
+//DEF_URL CTLIB_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=ctlib";
+#define CTLIB_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=ctlib",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_CASE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalcase";
+#define MEDICAL_CASE_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalcase",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_EXPENSE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalexpense";
+#define MEDICAL_EXPENSE_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalexpense",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_RECORD_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalrecord";
+#define MEDICAL_RECORD_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalrecord",DomainName,Method_His_Crm]
+
+//DEF_URL MEDICAL_RESEV_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalreserve";
+#define MEDICAL_RESEV_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalreserve",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENT_INTRODUCER_MAP_GET_URL = @"http://122.114.62.57/his.crm/ashx/PatientIntroducerMapHandler.ashx?action=getdoctor";
+#define PATIENT_INTRODUCER_MAP_GET_URL [NSString stringWithFormat:@"%@%@/ashx/PatientIntroducerMapHandler.ashx?action=getdoctor",DomainName,Method_His_Crm]
+
+//DEF_URL PATIENTCONSULTATION_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=patientconsultation";
+#define PATIENTCONSULTATION_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=patientconsultation",DomainName,Method_His_Crm]
+
+//DEF_URL ImageDown = @"http://122.114.62.57/his.crm/UploadFiles/";
+#define ImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 
 @protocol dataSyncResult <NSObject>
 

@@ -20,7 +20,8 @@
 + (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
     
     
-    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/PatientInfoHandler.ashx";
+//    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/PatientInfoHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientInfoHandler.ashx",DomainName,Method_Weixin];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[ActionParam] = @"weixinBind";
 //    NSString *encodingPatientName = [patientName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -70,7 +71,9 @@
     NSString *jsonString = [dataEntity JSONString];
     [paramDic setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:@"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint" parameters:paramDic success:^(id responseObject) {
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx?action=appoint",DomainName,Method_His_Crm];
+    
+    [CRMHttpTool POST:urlStr parameters:paramDic success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {

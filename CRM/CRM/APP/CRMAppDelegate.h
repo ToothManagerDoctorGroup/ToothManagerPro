@@ -10,6 +10,7 @@
 #import "WXApi.h"
 #import "MMDrawerController.h"
 #import "BaiduMapHeader.h"
+#import "TimTabBarViewController.h"
 
 
 @interface CRMAppDelegate : UIResponder <UIApplicationDelegate,WXApiDelegate>{
@@ -21,6 +22,6 @@
 
 - (NSURL *)applicationDocumentsDirectory;
 
-@property (strong,nonatomic) UITabBarController *tabBarController;
+@property (strong,nonatomic) TimTabBarViewController *tabBarController;
 
 @end

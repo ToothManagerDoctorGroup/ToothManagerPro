@@ -10,7 +10,8 @@
 #import "DBTableMode.h"
 
 DEF_STATIC_CONST_STRING(Patient_Prefix,Patient);
-DEF_URL Patient_Add_URL =  @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=add";
+//DEF_URL Patient_Add_URL =  @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patient&action=add";
+#define Patient_Add_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patient&action=add",DomainName,Method_His_Crm]
 
 @interface CRMHttpRequest (Patients)
 
