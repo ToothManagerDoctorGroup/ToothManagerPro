@@ -34,7 +34,7 @@
 #import "MenuView.h"
 #import "IntroducerViewController.h"
 #import "PatientSegumentController.h"
-
+#import "EaseMob.h"
 
 @implementation CRMAppDelegate{
     UIButton *menuButton;
@@ -46,6 +46,36 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+#warning SDK注册 APNS文件的名字, 需要与后台上传证书时的名字一一对应
+    NSString *apnsCertName = nil;
+#if DEBUG
+    apnsCertName = @"toothManagerDoctor_dev";
+#else
+    apnsCertName = @"toothManagerDoctor_dis";
+#endif
+    
+    [[EaseMob sharedInstance] registerSDKWithAppKey:@"1222223232#toothmanagerdoctor" apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
+    
+    [[EaseMob sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+    
+    //ios9
+    if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        [application registerForRemoteNotifications];
+        UIUserNotificationType notificationTypes = UIUserNotificationTypeBadge |
+        UIUserNotificationTypeSound |
+        UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+    //ios8以下
+    else{
+        UIRemoteNotificationType notificationTypes = UIRemoteNotificationTypeBadge |
+        UIRemoteNotificationTypeSound |
+        UIRemoteNotificationTypeAlert;
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notificationTypes];
+    }
+    
     //百度地图启动类
     _mapManager = [[BMKMapManager alloc]init];
     // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
@@ -173,15 +203,21 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     
-//    NSLog(@"deviceToken:%@",[[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding]);
     NSLog(@"deviceToken:%@",deviceToken);
-    //b851a4cc2fb0f898a47ee2136bb023e73d0b9c85605143729a9ed10a55056a43
     [UMessage registerDeviceToken:deviceToken];
     NSString *pushToken = [[[[deviceToken description]
                              stringByReplacingOccurrencesOfString:@"<" withString:@""]
                             stringByReplacingOccurrencesOfString:@">" withString:@""]
                            stringByReplacingOccurrencesOfString:@" " withString:@""] ;
     [CRMUserDefalut setObject:pushToken forKey:DeviceToken];
+    
+    [[EaseMob sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+// 注册deviceToken失败
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
+    NSLog(@"注册失败");
+    [[EaseMob sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -206,11 +242,13 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [[DBManager shareInstance] closeDB];
+    [[EaseMob sharedInstance] applicationDidEnterBackground:application];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     [[DBManager shareInstance] opendDB];
+    [[EaseMob sharedInstance] applicationWillEnterForeground:application];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -220,7 +258,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    
+    [[EaseMob sharedInstance] applicationWillTerminate:application];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
