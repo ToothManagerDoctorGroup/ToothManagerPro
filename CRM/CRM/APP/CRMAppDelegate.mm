@@ -34,7 +34,6 @@
 #import "MenuView.h"
 #import "IntroducerViewController.h"
 #import "PatientSegumentController.h"
-#import "EaseMob.h"
 
 @implementation CRMAppDelegate{
     UIButton *menuButton;
@@ -46,8 +45,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    
-#warning SDK注册 APNS文件的名字, 需要与后台上传证书时的名字一一对应
+/******************************环信集成Start*************************************/
     NSString *apnsCertName = nil;
 #if DEBUG
     apnsCertName = @"toothManagerDoctor_dev";
@@ -75,7 +73,10 @@
         UIRemoteNotificationTypeAlert;
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notificationTypes];
     }
+    //注册通知，可以接收环信消息
+    [self registerEaseMobNotification];
     
+/******************************环信集成End*************************************/
     //百度地图启动类
     _mapManager = [[BMKMapManager alloc]init];
     // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
@@ -125,7 +126,6 @@
     } else {
         [self makeLogin];
     }
-
     
     return YES;
 }
@@ -193,8 +193,9 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-  //  UIAlertView *alertview = [[UIAlertView alloc]initWithTitle:notification.alertAction message:notification.alertBody delegate:nil cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-  //  [alertview show];
+    if (self.tabBarController) {
+        [self.tabBarController didReceiveLocalNotification:notification];
+    }
 }
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
@@ -226,15 +227,11 @@
     if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
     {
         [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
-        
+        if (self.tabBarController) {
+            [self.tabBarController jumpToChatList];
+        }
     }
-    /*
     
-    if([[userInfo objectForKey:@""]isEqualToString:@"abc"]){
-
-       self.window.rootViewController presentViewController:<#(UIViewController *)#> animated:<#(BOOL)#> completion:<#^(void)completion#>
-    }
-    */
     
     
 }
@@ -322,6 +319,7 @@
     }
      */
 }
+
 
 #pragma mark - Application's Documents directory
 // Returns the URL to the application's Documents directory.

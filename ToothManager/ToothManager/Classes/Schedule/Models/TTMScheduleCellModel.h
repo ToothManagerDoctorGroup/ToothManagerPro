@@ -75,6 +75,10 @@ typedef NS_ENUM(NSUInteger, TTMScheduleQueryTimeType){
  *  患者姓名
  */
 @property (nonatomic, copy)   NSString *patient_name;
+/**
+ *  患者id
+ */
+@property (nonatomic, copy)   NSString *patient_id;
 
 
 // 预约详情页面需要的数据

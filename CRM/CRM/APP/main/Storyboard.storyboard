@@ -2283,6 +2283,110 @@
             </objects>
             <point key="canvasLocation" x="-1016" y="5081"/>
         </scene>
+        <!--Group Patient Display Controller-->
+        <scene sceneID="vYO-1y-aky">
+            <objects>
+                <tableViewController storyboardIdentifier="GroupPatientDisplayController" id="cE0-Bc-b2h" customClass="GroupPatientDisplayController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ak9-ls-EVQ">
+                        <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" id="0hn-Bh-M1X">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <textInputTraits key="textInputTraits"/>
+                            <connections>
+                                <outlet property="delegate" destination="cE0-Bc-b2h" id="XzN-AC-2RN"/>
+                            </connections>
+                        </searchBar>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="jdI-FG-6Q7">
+                                <rect key="frame" x="0.0" y="72" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jdI-FG-6Q7" id="bGm-Zy-bmy">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <animations/>
+                                </tableViewCellContentView>
+                                <animations/>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="cE0-Bc-b2h" id="kog-Hc-gQd"/>
+                            <outlet property="delegate" destination="cE0-Bc-b2h" id="JKG-0W-Ybc"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <outlet property="searchDisplayController" destination="80N-uv-1La" id="rqD-jI-kGJ"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NGe-IY-eeB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="80N-uv-1La">
+                    <connections>
+                        <outlet property="delegate" destination="cE0-Bc-b2h" id="1nn-Ph-7Zu"/>
+                        <outlet property="searchBar" destination="0hn-Bh-M1X" id="yBl-XY-yGL"/>
+                        <outlet property="searchContentsController" destination="cE0-Bc-b2h" id="e7e-s6-KHp"/>
+                        <outlet property="searchResultsDataSource" destination="cE0-Bc-b2h" id="rfQ-w4-Cbx"/>
+                        <outlet property="searchResultsDelegate" destination="cE0-Bc-b2h" id="8BD-gP-kBm"/>
+                    </connections>
+                </searchDisplayController>
+            </objects>
+            <point key="canvasLocation" x="-637" y="5074"/>
+        </scene>
+        <!--Group Manage View Controller-->
+        <scene sceneID="xkU-iA-wa4">
+            <objects>
+                <tableViewController storyboardIdentifier="GroupManageViewController" id="59i-19-VkX" customClass="GroupManageViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="cHF-5B-2u9">
+                        <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" id="FNB-43-Lp7">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <textInputTraits key="textInputTraits"/>
+                            <connections>
+                                <outlet property="delegate" destination="59i-19-VkX" id="dhX-eA-F2j"/>
+                            </connections>
+                        </searchBar>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="vAN-uN-QfE">
+                                <rect key="frame" x="0.0" y="72" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vAN-uN-QfE" id="GMH-Ju-QLf">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <animations/>
+                                </tableViewCellContentView>
+                                <animations/>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="59i-19-VkX" id="VFl-gK-Xaj"/>
+                            <outlet property="delegate" destination="59i-19-VkX" id="kIc-z8-Wgf"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <outlet property="searchDisplayController" destination="M16-Lt-AsQ" id="5X8-O0-KF8"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2so-6b-n4F" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="M16-Lt-AsQ">
+                    <connections>
+                        <outlet property="delegate" destination="59i-19-VkX" id="uXo-6N-o53"/>
+                        <outlet property="searchBar" destination="FNB-43-Lp7" id="yYg-eo-mg2"/>
+                        <outlet property="searchContentsController" destination="59i-19-VkX" id="9cs-HY-jWg"/>
+                        <outlet property="searchResultsDataSource" destination="59i-19-VkX" id="UxO-jd-B7e"/>
+                        <outlet property="searchResultsDelegate" destination="59i-19-VkX" id="71R-lJ-idY"/>
+                    </connections>
+                </searchDisplayController>
+            </objects>
+            <point key="canvasLocation" x="-265" y="5074"/>
+        </scene>
         <!--AddressBookViewController-->
         <scene sceneID="iWW-5V-qwX">
             <objects>

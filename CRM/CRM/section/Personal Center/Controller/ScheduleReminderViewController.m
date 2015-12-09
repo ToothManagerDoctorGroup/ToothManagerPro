@@ -24,7 +24,7 @@
 #import "SchedulePopMenu.h"
 #import <MessageUI/MFMessageComposeViewController.h>
 #import "AppointDetailViewController.h"
-#import "EaseMob.h"
+
 
 @interface ScheduleReminderViewController ()<MudDatePickerViewDelegate,PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate>
 {
@@ -47,12 +47,7 @@
     // Do any additional setup after loading the view from its nib.
     
     self.title = @"日程提醒";
-    
-    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:@"xuxiaolong" password:@"123456" completion:^(NSDictionary *loginInfo, EMError *error) {
-        if (!error && loginInfo) {
-            NSLog(@"登陆成功");
-        }
-    } onQueue:nil];
+
     
     self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     

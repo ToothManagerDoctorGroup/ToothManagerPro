@@ -8,6 +8,12 @@
 
 #import "TimViewController.h"
 
-@interface PatientSegumentController : TimViewController
+@interface PatientSegumentController : TimViewController{
+    EMConnectionState _connectionState;
+}
+
+- (void)refreshDataSource;
+- (void)isConnect:(BOOL)isConnect;
+- (void)networkChanged:(EMConnectionState)connectionState;
 
 @end

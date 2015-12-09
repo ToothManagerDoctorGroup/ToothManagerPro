@@ -232,6 +232,11 @@
     [self.navigationItem setRightBarButtonItem:rightItem];
 }
 
+- (void)setRightBarButtonWithTitle:(NSString *)title {
+    UIBarButtonItem *rightItem = [UIBarButtonItem itemWithTitle:title target:self action:@selector(onRightButtonAction:)];
+    [self.navigationItem setRightBarButtonItem:rightItem];
+}
+
 - (void)onLeftButtonAction:(id)sender {
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
 }

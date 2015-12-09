@@ -63,10 +63,10 @@
         UIImageView *menuPointerView = [[UIImageView alloc] initWithFrame:MENU_POINTER_RECT];
         menuPointerView.image = [UIImage imageNamed:@"options_pointer"];
         menuPointerView.tag = MENU_POINTER_TAG;
-        [self.containerButton addSubview:menuPointerView];
+//        [self.containerButton addSubview:menuPointerView];
         
         // Adding menu Items table
-        UITableView *menuItemsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 11, frame.size.width, frame.size.height)];
+        UITableView *menuItemsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
         
         menuItemsTableView.dataSource = self;
         menuItemsTableView.delegate = self;
@@ -75,7 +75,7 @@
         menuItemsTableView.backgroundColor = [UIColor clearColor];
         menuItemsTableView.tag = MENU_TABLE_VIEW_TAG;
         
-        UIImageView *bgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Menu_PopOver_BG"]];
+        UIImageView *bgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"menu_background_arrow"]];
         menuItemsTableView.backgroundView = bgView;
         
         [self addSubview:menuItemsTableView];
@@ -109,7 +109,8 @@
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         [cell.textLabel setFont:[UIFont boldSystemFontOfSize:FONT_SIZE]];
-        [cell.textLabel setTextColor:[UIColor whiteColor]];
+        [cell.textLabel setTextColor:MyColor(26, 155, 236)];
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
         [cell setSelectionStyle:UITableViewCellSelectionStyleGray];
         [cell setBackgroundColor:[UIColor clearColor]];
     }
@@ -173,7 +174,7 @@
 - (void)addSeparatorImageToCell:(UITableViewCell *)cell
 {
     UIImageView *separatorImageView = [[UIImageView alloc] initWithFrame:SEPERATOR_LINE_RECT];
-    [separatorImageView setImage:[UIImage imageNamed:@"DefaultLine"]];
+    [separatorImageView setImage:[UIImage imageNamed:@"menu_line"]];
     separatorImageView.opaque = YES;
     [cell.contentView addSubview:separatorImageView];
 }

@@ -55,6 +55,7 @@
 - (void)setLeftBarButtonWithImage:(UIImage *)image searchButton:(UIButton *)searchButton;
 - (void)setRightBarButtonWithImage:(UIImage *)image;
 - (void)setLeftBarButtonWithImage:(UIImage *)image;
+- (void)setRightBarButtonWithTitle:(NSString *)title;
 - (void)onBackButtonAction:(id)sender;
 - (void)onRightButtonAction:(id)sender;
 - (void)onLeftButtonAction:(id)sender;

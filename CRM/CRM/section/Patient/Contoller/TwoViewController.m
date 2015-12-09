@@ -7,6 +7,8 @@
 //
 
 #import "TwoViewController.h"
+#import "DoctorGroupViewController.h"
+#import "CustomAlertView.h"
 
 @interface TwoViewController ()
 
@@ -17,21 +19,29 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"消息";
+    
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [button setTitle:@"我的分组" forState:UIControlStateNormal];
+    button.frame = CGRectMake(100, 100, 100, 50);
+    [self.view addSubview:button];
+    [button addTarget:self action:@selector(buttonAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    
 }
+
+- (void)buttonAction{
+    DoctorGroupViewController *dVc = [[DoctorGroupViewController alloc] initWithStyle:UITableViewStylePlain];
+    dVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:dVc animated:YES];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

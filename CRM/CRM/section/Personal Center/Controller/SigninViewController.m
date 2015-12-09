@@ -117,6 +117,69 @@
     } failedBlock:^(NSError *error) {
         [SVProgressHUD showTextWithStatus:[error localizedDescription]];
     }];
+    
+    //环信账号登录
+    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:@"xuxiaolong" password:@"123456" completion:^(NSDictionary *loginInfo, EMError *error) {
+        
+        if (loginInfo && !error) {
+            //设置是否自动登录
+            [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+            
+            //获取数据库中数据
+            [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+            
+            //发送自动登陆状态通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+            
+            //保存最近一次登录用户名
+            [self saveLastLoginUsername];
+        }
+        else
+        {
+            switch (error.errorCode)
+            {
+                case EMErrorNotFound:
+                    TTAlertNoTitle(error.description);
+                    break;
+                case EMErrorNetworkNotConnected:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                    break;
+                case EMErrorServerNotReachable:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                    break;
+                case EMErrorServerAuthenticationFailure:
+                    TTAlertNoTitle(error.description);
+                    break;
+                case EMErrorServerTimeout:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                    break;
+                default:
+                    TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
+                    break;
+            }
+        }
+        
+    } onQueue:nil];
+}
+#pragma  mark - private
+- (void)saveLastLoginUsername
+{
+    NSString *username = [[[EaseMob sharedInstance].chatManager loginInfo] objectForKey:kSDKUsername];
+    if (username && username.length > 0) {
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        [ud setObject:username forKey:[NSString stringWithFormat:@"em_lastLogin_%@",kSDKUsername]];
+        [ud synchronize];
+    }
+}
+
+- (NSString*)lastLoginUsername
+{
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    NSString *username = [ud objectForKey:[NSString stringWithFormat:@"em_lastLogin_%@",kSDKUsername]];
+    if (username && username.length > 0) {
+        return username;
+    }
+    return nil;
 }
 
 - (IBAction)misspasswdAction:(id)sender {

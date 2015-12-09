@@ -62,7 +62,6 @@
     NSDateFormatter *dateFormatter1 = [[NSDateFormatter alloc] init];
     [dateFormatter1 setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSString *string1 =  [dateFormatter stringFromDate:date1];
-    NSLog(@"延后时间=%@,当前时间=%@",string1,string);
 }
 
 

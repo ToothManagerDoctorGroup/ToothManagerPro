@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TimTabBarViewController : UITabBarController
+@interface TimTabBarViewController : UITabBarController{
+    EMConnectionState _connectionState;
+}
+
+- (void)networkChanged:(EMConnectionState)connectionState;
+- (void)jumpToChatList;
+- (void)didReceiveLocalNotification:(UILocalNotification *)notification;
 
 @end

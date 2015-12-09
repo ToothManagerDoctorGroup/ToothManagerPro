@@ -27,6 +27,7 @@
 #import "SVProgressHUD.h"
 #import "SyncManager.h"
 #import "PatientDetailViewController.h"
+#import "SuccessViewController.h"
 
 @interface PatientSegumentController ()<MudItemsBarDelegate>
 
@@ -62,8 +63,9 @@
     self.currentViewController = patientVC;
     
     //消息视图
-    TwoViewController *twoVc = [[TwoViewController alloc] init];
-    [self addChildViewController:twoVc];
+    SuccessViewController *successVc = [[SuccessViewController alloc] init];
+    [successVc networkChanged:_connectionState];
+    [self addChildViewController:successVc];
     
     [self.view addSubview:patientVC.view];
     
@@ -94,25 +96,27 @@
 //点击切换选项卡
 - (void)segmentSelected {
     PatientsDisplayViewController *patientVC = self.childViewControllers[0];
-    TwoViewController *twoVc = self.childViewControllers[1];
+    SuccessViewController *successVc = self.childViewControllers[1];
     
     if (self.segmentedControl.selectedSegmentIndex == 0) {
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+        self.navigationItem.rightBarButtonItem.enabled = YES;
           [self transitionFromViewController:self.currentViewController toViewController:patientVC duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
               
           } completion:^(BOOL finished) {
               if (finished) {
                   self.currentViewController = patientVC;
               }else{
-                  self.currentViewController = twoVc;
+                  self.currentViewController = successVc;
               }
           }];
     }else{
         [self setRightBarButtonWithImage:nil];
-        [self transitionFromViewController:self.currentViewController toViewController:twoVc duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
+        self.navigationItem.rightBarButtonItem.enabled = NO;
+        [self transitionFromViewController:self.currentViewController toViewController:successVc duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
         } completion:^(BOOL finished) {
             if (finished) {
-                self.currentViewController = twoVc;
+                self.currentViewController = successVc;
             }else{
                 self.currentViewController = patientVC;
             }
@@ -208,6 +212,32 @@
 
 - (void)itemsBarWillDisAppear {
     self.isBarHidden = YES;
+}
+
+-(void)refreshDataSource
+{
+    if ([self.currentViewController isKindOfClass:[SuccessViewController class]]) {
+        SuccessViewController *successVc = (SuccessViewController *)self.currentViewController;
+        [successVc refreshDataSource];
+    }
+    
+}
+
+- (void)isConnect:(BOOL)isConnect{
+    if ([self.currentViewController isKindOfClass:[SuccessViewController class]]) {
+        SuccessViewController *successVc = (SuccessViewController *)self.currentViewController;
+        [successVc isConnect:isConnect];
+    }
+    
+}
+
+- (void)networkChanged:(EMConnectionState)connectionState
+{
+    _connectionState = connectionState;
+    if ([self.currentViewController isKindOfClass:[SuccessViewController class]]) {
+        SuccessViewController *successVc = (SuccessViewController *)self.currentViewController;
+        [successVc networkChanged:connectionState];
+    }
 }
 
 

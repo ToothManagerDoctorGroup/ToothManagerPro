@@ -82,7 +82,7 @@
 
 - (MLKMenuPopover *)menuPopover{
     if (!_menuPopover) {
-        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 140 - 8, 64, 140, self.menuList.count * 44) menuItems:self.menuList];
+        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 120 - 8, 64, 120, self.menuList.count * 44) menuItems:self.menuList];
         menuPopover.menuPopoverDelegate = self;
         _menuPopover = menuPopover;
     }
