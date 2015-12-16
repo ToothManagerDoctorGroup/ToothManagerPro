@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+/**
+ *  环信EaseUI
+ */
 @interface SuccessViewController : EaseConversationListViewController
 
 

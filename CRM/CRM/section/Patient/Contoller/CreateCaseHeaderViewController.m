@@ -14,6 +14,7 @@
 #import "DBManager+Materials.h"
 #import "NSString+Conversion.h"
 #import "DBManager+RepairDoctor.h"
+#import "CRMHttpRequest+Sync.h"
 
 @interface CreateCaseHeaderViewController () <TimImagesScrollViewDelegate>
 
@@ -103,6 +104,7 @@
         image.url = lib.ct_image;
         image.title = lib.ct_desc;
         [muarray addObject:image];
+        
     }
     [self.imageScrollView setImageViewWidth:60];
     [self.imageScrollView setImageArray:muarray];

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+
 extern CGFloat const EaseMessageCellPadding;
 
 extern NSString *const EaseMessageCellIdentifierSendText;

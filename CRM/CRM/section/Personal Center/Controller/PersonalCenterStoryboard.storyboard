@@ -25,13 +25,37 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <segments>
                                         <segment title="转入患者"/>
-                                        <segment title="转出患者"/>
+                                        <segment title="新增患者"/>
                                         <segment title="好友消息"/>
                                     </segments>
                                     <connections>
                                         <action selector="segmentValueChanged:" destination="SYf-Pp-zEh" eventType="valueChanged" id="hlh-NV-TPj"/>
                                     </connections>
                                 </segmentedControl>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kha-CO-5AQ">
+                                    <rect key="frame" x="95" y="2" width="16" height="16"/>
+                                    <animations/>
+                                    <color key="backgroundColor" red="1" green="0.10572394273769936" blue="0.086010751460460555" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cku-Op-RZt">
+                                    <rect key="frame" x="190" y="2" width="16" height="16"/>
+                                    <animations/>
+                                    <color key="backgroundColor" red="1" green="0.1057239427" blue="0.086010751460000007" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SIi-RV-yES">
+                                    <rect key="frame" x="280" y="2" width="16" height="16"/>
+                                    <animations/>
+                                    <color key="backgroundColor" red="1" green="0.1057239427" blue="0.086010751460000007" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                             </subviews>
                             <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -55,6 +79,10 @@
                     </tableView>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
+                        <outlet property="friendMsgCount" destination="SIi-RV-yES" id="aVM-Qk-js3"/>
+                        <outlet property="messageCountLabel" destination="Kha-CO-5AQ" id="vA2-2l-fSj"/>
+                        <outlet property="newPatientMsgCount" destination="cku-Op-RZt" id="hSC-oU-E5g"/>
+                        <outlet property="patientMsgCount" destination="cku-Op-RZt" id="t7H-Nf-hu8"/>
                         <outlet property="segmentView" destination="H51-3l-EFT" id="68W-n8-1s8"/>
                     </connections>
                 </tableViewController>

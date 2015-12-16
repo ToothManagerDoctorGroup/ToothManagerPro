@@ -34,6 +34,7 @@
 #import "MenuView.h"
 #import "IntroducerViewController.h"
 #import "PatientSegumentController.h"
+#import "TTMUserGuideController.h"
 
 @implementation CRMAppDelegate{
     UIButton *menuButton;
@@ -122,7 +123,19 @@
         if (self.tabBarController == nil) {
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
-        self.window.rootViewController = self.tabBarController;
+        NSString *newVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
+        NSString *oldVersion = [CRMUserDefalut getAppVersion];
+        if ([newVersion isEqualToString:oldVersion]) {
+            self.window.rootViewController = self.tabBarController;
+        }else{
+            TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
+            guideController.images = @[@"nav1", @"nav2", @"nav3"];
+            guideController.showIndicator = NO;
+            guideController.forwardController = self.tabBarController;
+            self.window.rootViewController = guideController;
+            //保存当前版本号
+            [CRMUserDefalut obtainAppVersion];
+        }
     } else {
         [self makeLogin];
     }
@@ -169,10 +182,26 @@
 }
 - (void)makeLogin {
     self.tabBarController = nil;
+    //获取版本号
+    NSString *newVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
+    NSString *oldVersion = [CRMUserDefalut getAppVersion];
+    //获取登录页面
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     SigninViewController *signinVC = [storyBoard instantiateViewControllerWithIdentifier:@"SigninViewController"];
     TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:signinVC];
-    self.window.rootViewController = nav;
+    //比较版本号
+    if ([newVersion isEqualToString:oldVersion]) {
+        self.window.rootViewController = nav;
+    }else{
+        TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
+        guideController.images = @[@"nav1", @"nav2", @"nav3"];
+        guideController.showIndicator = NO;
+        guideController.forwardController = nav;
+        self.window.rootViewController = guideController;
+        //保存当前版本号
+        [CRMUserDefalut obtainAppVersion];
+    }
+    
 }
 
 - (void)handNotification:(NSNotification *)notification {
@@ -193,9 +222,9 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    if (self.tabBarController) {
-        [self.tabBarController didReceiveLocalNotification:notification];
-    }
+//    if (self.tabBarController) {
+//        [self.tabBarController didReceiveLocalNotification:notification];
+//    }
 }
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
@@ -222,14 +251,13 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-     [UMessage didReceiveRemoteNotification:userInfo];
+    [UMessage didReceiveRemoteNotification:userInfo];
     //定制自定的的弹出框
     if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
     {
+//        [UMessage sendClickReportForRemoteNotification:userInfo];
         [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
-        if (self.tabBarController) {
-            [self.tabBarController jumpToChatList];
-        }
+        
     }
     
     

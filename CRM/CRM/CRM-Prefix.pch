@@ -19,12 +19,13 @@
 #import "ChatDemoUIDefine.h"
 #import "EMAlertView.h"
 #import "TTGlobalUICommon.h"
-//    #import "UIViewController+HUD.h"
 #import "UIViewController+DismissKeyboard.h"
 #import "NSString+Valid.h"
 #import "EaseUI.h"
 
 #import "EaseMob.h"
+//基本接口url
+#import "BaseUrl.h"
 
 
 #endif
@@ -32,15 +33,19 @@
 #import "UIViewExt.h"
 //预约成功后的通知
 #define DoctorApplyForClinicSuccessNotification @"DoctorApplyForClinicSuccessNotification"
+//医生添加组成员成功后的通知
+#define DoctorAddGroupMemberSuccessNotification @"DoctorAddGroupMemberSuccessNotification"
+//医生修改组名后通知
+#define DoctorUpdateGroupNameSuccessNotification @"DoctorUpdateGroupNameSuccessNotification"
+//医生删除分组后的通知
+#define DoctorDeleteGroupSuccessNotification @"DoctorUpdateGroupNameSuccessNotification"
+//医生删除组员成功后的通知
+#define DoctorDeleteGroupMemberSuccessNotification @"DoctorDeleteGroupMemberSuccessNotification"
 //医生付款成功后的通知
 #define DoctorPaySuccessNotification @"DoctorPaySuccessNotification"
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 #define MyColor(r,g,b) [UIColor colorWithRed:(r) / 255.0 green:(g) / 255.0 blue:(b) / 255.0 alpha:1]
-
-//基本接口url
-#import "BaseUrl.h"
-
 
 #if DEBUG
 #define NSLog(format, ...) do {                                                                          \

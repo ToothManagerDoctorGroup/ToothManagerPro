@@ -96,7 +96,7 @@ Realize_ShareInstance(DBManager);
     
     [self createDBTableWithTableName:IntroducerTableName andParams:@"intr_name text, intr_phone text,intr_level integer,user_id text, intr_id text,creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
     
-    [self createDBTableWithTableName:PatientTableName andParams:@"patient_name text, patient_phone text,patient_avatar text,patient_gender text,patient_age text, introducer_id text , patient_status integer , ori_user_id text, user_id text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
+    [self createDBTableWithTableName:PatientTableName andParams:@"patient_name text, patient_phone text,patient_avatar text,patient_gender text,patient_age text, introducer_id text , patient_status integer , ori_user_id text, user_id text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text,patient_allergy text,patient_remark text,idCardNum text,patient_address text,anamnesis text,nickName text"];
     
     [self createDBTableWithTableName:CTLibTableName andParams:@"patient_id text, case_id text, ct_image text, ct_desc text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
 

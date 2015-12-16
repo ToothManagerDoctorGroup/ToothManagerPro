@@ -12,6 +12,7 @@
 
 
 #import "UIImageView+HeadImage.h"
+#import "UIImageView+WebCache.h"
 
 #import "UserProfileManager.h"
 

@@ -349,7 +349,11 @@
             dicM[@"time"] = self.actionSheetTime;
             dicM[@"duration"] = @"30分钟";
             dicM[@"durationFloat"] = @"0.5";
-            dicM[@"seatId"] = self.currentSeatId;
+            if (([self.currentSeatId isEmpty] || self.currentSeatId == nil) && self.seatIdArray.count > 0) {
+                dicM[@"seatId"] = self.seatIdArray[0];
+            }else{
+                dicM[@"seatId"] = self.currentSeatId;
+            }
             dicM[@"clinicName"] = self.clinicTitleView.title;
             dicM[@"seatName"] = self.seatTitleView.title;
             dicM[@"seatPrice"] = self.currentSeatPrice;
@@ -372,7 +376,11 @@
             dicM[@"time"] = self.actionSheetTime;
             dicM[@"duration"] = @"1小时";
             dicM[@"durationFloat"] = @"1.0";
-            dicM[@"seatId"] = self.currentSeatId;
+            if (([self.currentSeatId isEmpty] || self.currentSeatId == nil) && self.seatIdArray.count > 0) {
+                dicM[@"seatId"] = self.seatIdArray[0];
+            }else{
+                dicM[@"seatId"] = self.currentSeatId;
+            }
             dicM[@"clinicName"] = self.clinicTitleView.title;
             dicM[@"seatName"] = self.seatTitleView.title;
             dicM[@"seatPrice"] = self.currentSeatPrice;
@@ -394,7 +402,12 @@
             dicM[@"time"] = self.actionSheetTime;
             dicM[@"duration"] = @"90分钟";
             dicM[@"durationFloat"] = @"1.5";
-            dicM[@"seatId"] = self.currentSeatId;
+            if (([self.currentSeatId isEmpty] || self.currentSeatId == nil) && self.seatIdArray.count > 0) {
+                dicM[@"seatId"] = self.seatIdArray[0];
+            }else{
+                dicM[@"seatId"] = self.currentSeatId;
+            }
+            
             dicM[@"clinicName"] = self.clinicTitleView.title;
             dicM[@"seatName"] = self.seatTitleView.title;
             dicM[@"seatPrice"] = self.currentSeatPrice;
@@ -416,7 +429,11 @@
             dicM[@"time"] = self.actionSheetTime;
             dicM[@"duration"] = @"2小时";
             dicM[@"durationFloat"] = @"2.0";
-            dicM[@"seatId"] = self.currentSeatId;
+            if (([self.currentSeatId isEmpty] || self.currentSeatId == nil) && self.seatIdArray.count > 0) {
+                dicM[@"seatId"] = self.seatIdArray[0];
+            }else{
+                dicM[@"seatId"] = self.currentSeatId;
+            }
             dicM[@"clinicName"] = self.clinicTitleView.title;
             dicM[@"seatName"] = self.seatTitleView.title;
             dicM[@"seatPrice"] = self.currentSeatPrice;

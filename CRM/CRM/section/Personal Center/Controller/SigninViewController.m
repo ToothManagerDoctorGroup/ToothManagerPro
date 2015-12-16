@@ -118,6 +118,7 @@
         [SVProgressHUD showTextWithStatus:[error localizedDescription]];
     }];
     
+    
     //环信账号登录
     [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:@"xuxiaolong" password:@"123456" completion:^(NSDictionary *loginInfo, EMError *error) {
         

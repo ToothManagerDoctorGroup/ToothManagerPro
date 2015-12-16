@@ -7,7 +7,6 @@
 //
 
 #import "SuccessViewController.h"
-#import "EaseMob.h"
 #import "ChatViewController.h"
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"
@@ -119,6 +118,7 @@
             ChatViewController *chatController;
             
             chatController = [[ChatViewController alloc] initWithConversationChatter:conversation.chatter conversationType:conversation.conversationType];
+            chatController.hidesBottomBarWhenPushed = YES;
             chatController.title = [conversation showName];
             
             

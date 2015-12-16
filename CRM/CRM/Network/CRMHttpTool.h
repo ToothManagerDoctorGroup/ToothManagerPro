@@ -36,11 +36,37 @@
      success:(void (^)(id responseObject))success
      failure:(void (^)(NSError *error))failure;
 
+
 + (void)Upload:(NSString *)URLString
     parameters:(id)parameters
    uploadParam:(MyUploadParam *)uploadParam
        success:(void (^)())success
        failure:(void (^)(NSError *error))failure;
 
+/**
+ *  同步POST请求
+ *
+ *  @param URLString  URL
+ *  @param parameters 参数
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (id)SyncPOST:(NSString *)URLString
+  parameters:(id)parameters
+     success:(void (^)(id responseObject))success
+     failure:(void (^)(NSError *error))failure;
+
+/**
+ *  同步GET请求
+ *
+ *  @param URLString  URL
+ *  @param parameters 参数
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (id)SyncGET:(NSString *)URLString
+ parameters:(id)parameters
+    success:(void (^)(id responseObject))success
+    failure:(void (^)(NSError *error))failure;
 
 @end

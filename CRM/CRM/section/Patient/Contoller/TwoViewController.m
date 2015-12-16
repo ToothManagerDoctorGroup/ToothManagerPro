@@ -10,8 +10,10 @@
 #import "DoctorGroupViewController.h"
 #import "CustomAlertView.h"
 
-@interface TwoViewController ()
+#import "UIImageView+WebCache.h"
 
+@interface TwoViewController ()
+@property (nonatomic, weak)UIImageView *imageView;
 @end
 
 @implementation TwoViewController
@@ -19,23 +21,27 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"消息";
+    self.view.backgroundColor = [UIColor whiteColor];
     
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(50, 100, 200, 200)];
+    imageView.backgroundColor = [UIColor grayColor];
+    self.imageView = imageView;
+//    [self.view addSubview:imageView];
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setTitle:@"我的分组" forState:UIControlStateNormal];
-    button.frame = CGRectMake(100, 100, 100, 50);
-    [self.view addSubview:button];
+    button.frame = CGRectMake(10, 10, 50, 30);
+    [button setTitle:@"加载图片" forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [button addTarget:self action:@selector(buttonAction) forControlEvents:UIControlEventTouchUpInside];
-    
+//    [self.view addSubview:button];
     
 }
 
 - (void)buttonAction{
-    DoctorGroupViewController *dVc = [[DoctorGroupViewController alloc] initWithStyle:UITableViewStylePlain];
-    dVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:dVc animated:YES];
+    NSURL *url = [NSURL URLWithString:@"970_1449904818804.jpg"];
+    [self.imageView sd_setImageWithURL:url];
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -24,6 +24,8 @@
 #import "SVProgressHUD.h"
 #import "SyncManager.h"
 #import "PatientDetailViewController.h"
+#import "GroupManageViewController.h"
+#import "DoctorGroupViewController.h"
 
 @interface PatientsDisplayViewController () <MudItemsBarDelegate>{
     BOOL ifNameBtnSelected;
@@ -43,29 +45,11 @@
 - (void)initView {
     [super initView];
 
-    if(self.isTabbarVc == YES){
-//        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
-//        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-    }else{
+    if(self.isTabbarVc == NO){
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     }
     [self setupView];
-    
-    NSDate* curDate = [NSDate date];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSString *string =  [dateFormatter stringFromDate:curDate];
-    
-
-    NSDate* date1 = [[NSDate alloc] init];
-    date1 = [curDate dateByAddingTimeInterval:-600];
-    NSDateFormatter *dateFormatter1 = [[NSDateFormatter alloc] init];
-    [dateFormatter1 setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSString *string1 =  [dateFormatter stringFromDate:date1];
 }
-
-
-
 
 -(void)viewWillAppear:(BOOL)animated{
    [self initData];
@@ -109,6 +93,11 @@
 - (void)initData {
     [super initData];
     
+    //设置tableView的内填充
+    if (self.isTabbarVc) {
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0);
+    }
+    
     self.isBarHidden = YES;
     _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
@@ -117,7 +106,11 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        cellMode.name = patientTmp.patient_name;
+        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+            cellMode.name = patientTmp.nickName;
+        }else{
+            cellMode.name = patientTmp.patient_name;
+        }
         cellMode.phone = patientTmp.patient_phone;
        // cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
         cellMode.introducerName = patientTmp.intr_name;
@@ -139,7 +132,12 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        cellMode.name = patientTmp.patient_name;
+        
+        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+            cellMode.name = patientTmp.nickName;
+        }else{
+            cellMode.name = patientTmp.patient_name;
+        }
         cellMode.phone = patientTmp.patient_phone;
       //  cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
         cellMode.introducerName = patientTmp.intr_name;
@@ -243,18 +241,62 @@
 //增加的表头
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 40;
+    if (self.isTabbarVc && ![self isSearchResultsTableView:tableView]) {
+        return 80;
+    }else {
+        return 40;
+    }
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
+    
+    UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 80)];
+    superView.backgroundColor = [UIColor whiteColor];
+    
+    UIView *groupView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
+    groupView.backgroundColor = [UIColor whiteColor];
+    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [groupView addGestureRecognizer:tapAction];
+    [superView addSubview:groupView];
+    
+    UIView *toplineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 1)];
+    toplineView.backgroundColor = MyColor(158, 158, 158);
+    [groupView addSubview:toplineView];
+    
+    UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"group_gray"]];
+    iconView.frame = CGRectMake(20, 13, 21, 14);
+    [groupView addSubview:iconView];
+    
+    UILabel *groupNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 200, 40)];
+    groupNameLabel.textColor = MyColor(35, 35, 35);
+    groupNameLabel.font = [UIFont systemFontOfSize:15];
+    groupNameLabel.text = @"我的分组";
+    [groupView addSubview:groupNameLabel];
+    
+    UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
+    arrowView.frame = CGRectMake(kScreenWidth - 10 - 15, 12.5, 15, 15);
+    [groupView addSubview:arrowView];
+    
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39, kScreenWidth, 1)];
+    lineView.backgroundColor = MyColor(158, 158, 158);
+    [groupView addSubview:lineView];
+    
+    
+    UIView *bgView = [[UIView alloc]init];
+    if (self.isTabbarVc && ![self isSearchResultsTableView:tableView]) {
+        bgView.frame = CGRectMake(0, 40, kScreenWidth, 40);
+        [superView addSubview:bgView];
+    }else{
+        bgView.frame = CGRectMake(0, 0, kScreenWidth, 40);
+    }
+    
     bgView.backgroundColor = [UIColor whiteColor];
     UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
     label.backgroundColor = [UIColor lightGrayColor];
     [bgView addSubview:label];
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [nameButton setTitle:@"姓名" forState:UIControlStateNormal];
+    [nameButton setTitle:@"患者" forState:UIControlStateNormal];
     [nameButton setFrame:CGRectMake(20, 0, 40, 40)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [nameButton addTarget:self action:@selector(nameButtonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -286,13 +328,20 @@
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:numberButton];
     
-    
-//    [self.searchDisplayController.searchBar setFrame:CGRectMake(0, 0, self.searchDisplayController.searchBar.frame.size.width, 44)];
-//    [self.view addSubview:self.searchDisplayController.searchBar];
-    
-    
-    return bgView;
+    if (self.isTabbarVc && ![self isSearchResultsTableView:tableView]) {
+        return superView;
+    }else{
+        return bgView;
+    }
 }
+
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+
+    DoctorGroupViewController *manageVc = [[DoctorGroupViewController alloc] initWithStyle:UITableViewStylePlain];
+    manageVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:manageVc animated:YES];
+}
+
 -(void)numberButtonClick:(UIButton *)button{
     ifNumberBtnSelected = !ifNumberBtnSelected;
     if(ifNumberBtnSelected == YES){

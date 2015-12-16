@@ -59,7 +59,7 @@
     self.title = @"医生库";
     self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
 }
 
 - (void)initData {
@@ -121,26 +121,40 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     DoctorTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DoctorTableViewCell"];
     if (cell == nil) {
         cell = [[[NSBundle mainBundle] loadNibNamed:@"DoctorTableViewCell" owner:nil options:nil] objectAtIndex:0];
         [tableView registerNib:[UINib nibWithNibName:@"DoctorTableViewCell" bundle:nil] forCellReuseIdentifier:@"DoctorTableViewCell"];
     }
-    [cell.avatarButton addTarget:cell action:@selector(avatarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+//    [cell.avatarButton addTarget:cell action:@selector(avatarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     cell.delegate = self;
     cell.addButton.backgroundColor = [UIColor clearColor];
     [cell.addButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
 //    cell.addButton.hidden = YES;
     cell.tag = indexPath.row+100;
-    Doctor *doctor = nil;
+    
     if ([self isSearchResultsTableView:tableView]) {
-        doctor = [self.modeArray objectAtIndex:indexPath.row];
-    } else {
-        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
+        
+        Doctor *doctor = [self.modeArray objectAtIndex:indexPath.row];
+        [cell setCellWithSquareMode:doctor];
+        
+    }else{
+        Doctor *doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
+        [cell setCellWithMode:doctor];
+        NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
+        [cell.addButton setTitle:[NSString stringWithFormat:@"%ld",(long)count] forState:UIControlStateNormal];
     }
-    [cell setCellWithMode:doctor];
-    NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
-    [cell.addButton setTitle:[NSString stringWithFormat:@"%d",count] forState:UIControlStateNormal];
+//    Doctor *doctor = nil;
+//    if ([self isSearchResultsTableView:tableView]) {
+//        doctor = [self.modeArray objectAtIndex:indexPath.row];
+//    } else {
+//        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
+//    }
+//    [cell setCellWithMode:doctor];
+//    NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
+//    [cell.addButton setTitle:[NSString stringWithFormat:@"%d",count] forState:UIControlStateNormal];
+    
     return cell;
 }
 
@@ -229,8 +243,13 @@
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-     self.modeArray = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
-    [self.searchDisplayController.searchResultsTableView reloadData];
+//     self.modeArray = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
+//    [self.searchDisplayController.searchResultsTableView reloadData];
+    [[DoctorManager shareInstance] searchDoctorWithName:searchBar.text successBlock:^{
+        [SVProgressHUD showWithStatus:@"搜索中..."];
+    } failedBlock:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+    }];
 }
 
 #pragma Doctor request Delegate
@@ -353,6 +372,19 @@
 
 #pragma mark - Cell Delegate
 - (void)addButtonDidSelected:(id)sender {
+//    DoctorTableViewCell *cell = (DoctorTableViewCell *)sender;
+//    Doctor *doctor = nil;
+//    if ([self.searchDisplayController isActive]) {
+//        doctor = [self.modeArray objectAtIndex:cell.tag-100];
+//    } else {
+//        doctor = [self.searchHistoryArray objectAtIndex:cell.tag-100];
+//    }
+//    [[IntroducerManager shareInstance] applyToBecomeIntroducerWithDoctorId:doctor.ckeyid successBlock:^{
+//        [SVProgressHUD showImage:nil status:@"请求中..."];
+//    } failedBlock:^(NSError *error) {
+//        [SVProgressHUD showImage:nil status:error.localizedDescription];
+//    }];
+    
     DoctorTableViewCell *cell = (DoctorTableViewCell *)sender;
     Doctor *doctor = nil;
     if ([self.searchDisplayController isActive]) {
@@ -362,9 +394,22 @@
     }
     [[IntroducerManager shareInstance] applyToBecomeIntroducerWithDoctorId:doctor.ckeyid successBlock:^{
         [SVProgressHUD showImage:nil status:@"请求中..."];
+        [cell.addButton setTitle:@"正在验证" forState:UIControlStateNormal];
+        [cell.addButton setBackgroundColor:[UIColor lightGrayColor]];
+        cell.addButton.enabled = NO;
     } failedBlock:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
+}
+
+#pragma mark -
+- (void)applyToBecomeIntroducerSuccess:(NSDictionary *)result {
+    NSString *message = [result objectForKey:@"Result"];
+    [SVProgressHUD showImage:nil status:message];
+}
+
+- (void)applyToBecomeIntroducerFailed:(NSError *)error {
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 - (void)headerDidSelected:(id)sender {

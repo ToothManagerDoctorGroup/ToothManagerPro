@@ -47,4 +47,17 @@
     return [userdefaults objectForKey:akey];
 }
 
++ (NSString *)getAppVersion{
+     NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
+     return [userdefaults objectForKey:KVersion];
+}
+
++ (void)obtainAppVersion{
+    NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
+    [userdefaults setObject:[NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"] forKey:KVersion];
+    [userdefaults synchronize];
+}
+
+
+
 @end

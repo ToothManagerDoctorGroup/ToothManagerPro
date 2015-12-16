@@ -15,8 +15,9 @@
 #import "DBManager+RepairDoctor.h"
 #import "CRMHttpRequest+Sync.h"
 #import "DBManager+sync.h"
+#import "AddressBookCell.h"
 
-@interface AddressBookViewController () <UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource>
+@interface AddressBookViewController () <UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,AddressBookCellDelegate>
 
 @property (nonatomic,retain) NSMutableArray *tableViewDataSource;
 @property (nonatomic) NSArray *searchResults;
@@ -30,7 +31,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+
     }
     return self;
 }
@@ -53,6 +54,8 @@
         self.title = @"通讯录导入修复医生";
     }
     self.tableView.allowsSelection = NO;
+    
+    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)initData {
@@ -122,7 +125,6 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Button Action
@@ -246,6 +248,9 @@
 }
 
 #pragma mark - TalbeVeiw Delegate
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 50;
+}
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ([self isSearchResultsTableView:tableView]) {
         _useSearchResult = YES;
@@ -256,38 +261,97 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath  {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-        UIView *viewBG = [[UIView alloc]initWithFrame:CGRectMake(0, 0,tableView.bounds.size.width, 44)];
-        viewBG.backgroundColor = [UIColor whiteColor];
-        cell.backgroundView = viewBG;
-        //cell选中时的背景颜色要与圆圈的背景颜色一致
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        [button setTintColor:[UIColor blueColor]];
-        button.frame = CGRectMake(0, 0, 50, 35);
-        [button setTitle:@"添加" forState:UIControlStateNormal];
-        [button setBackgroundImage:[UIImage imageNamed:@"addManBtn"] forState:UIControlStateNormal];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [button setTitle:@"已添加" forState:UIControlStateDisabled];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
-        [button addTarget:self action:@selector(onAddButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-        cell.accessoryView = button;
-    }
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+//    if (cell == nil) {
+//        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
+//        UIView *viewBG = [[UIView alloc]initWithFrame:CGRectMake(0, 0,tableView.bounds.size.width, 44)];
+//        viewBG.backgroundColor = [UIColor whiteColor];
+//        cell.backgroundView = viewBG;
+//        //cell选中时的背景颜色要与圆圈的背景颜色一致
+//        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+//        [button setTintColor:[UIColor blueColor]];
+//        button.frame = CGRectMake(0, 0, 50, 35);
+//        [button setTitle:@"添加" forState:UIControlStateNormal];
+//        [button setBackgroundImage:[UIImage imageNamed:@"addManBtn"] forState:UIControlStateNormal];
+//        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//        [button setTitle:@"已添加" forState:UIControlStateDisabled];
+//        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
+//        [button addTarget:self action:@selector(onAddButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+//        cell.accessoryView = button;
+//    }
+    AddressBookCell *cell = [AddressBookCell cellWithTableView:tableView];
+    cell.delegate = self;
+    
     AddressBookCellMode *mode = nil;
     if ([self isSearchResultsTableView:tableView]) {
         mode = [self.searchResults objectAtIndex:indexPath.row];
     } else {
         mode  = [self.tableViewDataSource objectAtIndex:indexPath.row];
     }
-    UIButton *button = (UIButton *)cell.accessoryView;
-    button.tag = 100+indexPath.row;
-    button.enabled = !mode.hasAdded;
-    cell.textLabel.text = mode.name;
-    cell.detailTextLabel.text = mode.phone;
-    cell.imageView.image = mode.image;
+    cell.model = mode;
+//    UIButton *button = (UIButton *)cell.accessoryView;
+//    button.tag = 100+indexPath.row;
+//    button.enabled = !mode.hasAdded;
+//    cell.textLabel.text = mode.name;
+//    cell.detailTextLabel.text = mode.phone;
+//    cell.imageView.image = mode.image;
     return cell;
 }
+
+#pragma mark - AddressBookCellDelegate
+- (void)addressBookCell:(AddressBookCell *)cell didclickAddButton:(UIButton *)button{
+    AddressBookCellMode *mode = nil;
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    
+    if (_useSearchResult) {
+        mode = [self.searchResults objectAtIndex:indexPath.row];
+    } else {
+        mode = [self.tableViewDataSource objectAtIndex:indexPath.row];
+    }
+    BOOL ret = NO;
+    if (self.type == ImportTypePatients) {
+        Patient *patient = [[Patient alloc]init];
+        patient.patient_name = mode.name;
+        patient.patient_phone = mode.phone;
+        ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
+        if (ret) {
+            [[DBManager shareInstance]updateUpdateDate:patient.ckeyid];
+            [self postNotificationName:PatientCreatedNotification object:nil];
+            [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:patient, nil]];
+            
+        }
+    } else  if (self.type == ImportTypeIntroducer){
+        Introducer *introducer = [[Introducer alloc]init];
+        introducer.intr_name = mode.name;
+        introducer.intr_phone = mode.phone;
+        introducer.intr_level = 1;
+        introducer.intr_id = @"0";
+        ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
+        if (ret) {
+            [self postNotificationName:IntroducerCreatedNotification object:nil];
+            
+            NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
+            if (0 != [recordArray count])
+            {
+                [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+            }
+        }
+    } else if (self.type == ImportTypeRepairDoctor) {
+        RepairDoctor *repairdoctor = [[RepairDoctor alloc] init];
+        repairdoctor.doctor_name = mode.name;
+        repairdoctor.doctor_phone = mode.phone;
+        repairdoctor.data_flag = @"0";
+        ret = [[DBManager shareInstance] insertRepairDoctor:repairdoctor];
+        if (ret) {
+            [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+        }
+    }
+    if (ret) {
+        mode.hasAdded = YES;
+        button.enabled = NO;
+    }
+}
+
 #pragma makr - UISearchBar Delegates
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString {
     if ([searchString isNotEmpty]) {

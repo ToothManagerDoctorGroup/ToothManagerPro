@@ -7,7 +7,9 @@
 //
 
 #import "TimViewController.h"
-
+/**
+ *  首页患者页面，包含：患者和消息页面
+ */
 @interface PatientSegumentController : TimViewController{
     EMConnectionState _connectionState;
 }

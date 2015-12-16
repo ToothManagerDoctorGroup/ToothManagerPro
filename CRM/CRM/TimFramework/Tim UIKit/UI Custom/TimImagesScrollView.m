@@ -28,6 +28,7 @@
             UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(i*self.imageViewWidth, 0, self.imageViewWidth, self.bounds.size.height)];
             imageView.contentMode = UIViewContentModeScaleAspectFill;
             [imageView sd_setImageLoadingWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url]];
+            imageView.backgroundColor = [UIColor redColor];
             imageView.userInteractionEnabled = YES;
             imageView.clipsToBounds = YES;
             UITapGestureRecognizer *tapgesture = [[UITapGestureRecognizer alloc]init];
@@ -51,6 +52,10 @@
 }
 
 - (void)imageTouchAction:(UITapGestureRecognizer *)sender {
+    
+    UIImageView *imageView = (UIImageView *)sender.view;
+    NSLog(@"%@",imageView.image);
+    
     if (self.sdelegate && [self.sdelegate respondsToSelector:@selector(imagesScrollView:didTouchImage:)]) {
         [self.sdelegate imagesScrollView:self didTouchImage:sender.view.tag-100];
     }

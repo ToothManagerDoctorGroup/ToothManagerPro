@@ -103,12 +103,12 @@
 - (void)initView
 {
     
-    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 70)];
-    imageView.image = [UIImage imageNamed:@"ad_top"];
-    [self.view addSubview:imageView];
+//    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 70)];
+//    imageView.image = [UIImage imageNamed:@"ad_top"];
+//    [self.view addSubview:imageView];
     
     UIButton *beforeDayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    beforeDayButton.frame = CGRectMake(0, 0+70, 100, 40);
+    beforeDayButton.frame = CGRectMake(0, 0, 100, 40);
     [beforeDayButton setTitle:@"前一天" forState:UIControlStateNormal];
     beforeDayButton.tag = 0;
     beforeDayButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
@@ -116,12 +116,12 @@
     [beforeDayButton addTarget:self action:@selector(daySelected:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:beforeDayButton];
     
-    UIImageView *leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(13, 10+70, 10, 20)];
+    UIImageView *leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(13, 10, 10, 20)];
     leftImageView.image = [UIImage imageNamed:@"leftArrow.png"];
     [self.view addSubview:leftImageView];
     
     UIButton *selectDayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    selectDayButton.frame = CGRectMake(110, 0+70, 100, 40);
+    selectDayButton.frame = CGRectMake(110, 0, 100, 40);
     selectDayButton.tag = 2;
     [selectDayButton addTarget:self action:@selector(daySelected:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:selectDayButton];
@@ -143,7 +143,7 @@
     [selectDayButton addSubview:weekLabel];
     
     UIButton *afterDayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    afterDayButton.frame = CGRectMake(220, 0+70, 100, 40);
+    afterDayButton.frame = CGRectMake(220, 0, 100, 40);
     [afterDayButton setTitle:@"后一天" forState:UIControlStateNormal];
     afterDayButton.tag = 1;
     afterDayButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
@@ -151,11 +151,11 @@
     [afterDayButton addTarget:self action:@selector(daySelected:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:afterDayButton];
     
-    UIImageView *rightImageView = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width-23, 10+70, 10, 20)];
+    UIImageView *rightImageView = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width-23, 10, 10, 20)];
     rightImageView.image = [UIImage imageNamed:@"rightArrow.png"];
     [self.view addSubview:rightImageView];
     
-    m_tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 40+70, self.view.frame.size.width, self.view.frame.size.height-40-70) style:UITableViewStylePlain];
+    m_tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, self.view.frame.size.height-40-70) style:UITableViewStylePlain];
     m_tableView.delegate = self;
     m_tableView.dataSource = self;
     [self.view addSubview:m_tableView];

@@ -11,7 +11,6 @@
 #import "EMGifImage.h"
 #import "UIImageView+HeadImage.h"
 
-#import "EaseMob.h"
 
 @interface CustomMessageCell ()
 

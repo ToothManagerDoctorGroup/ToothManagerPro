@@ -39,6 +39,13 @@
     [subParamDic setObject:pat.introducer_id forKey:@"introducer_id"];
     [subParamDic setObject:pat.doctor_id forKey:@"doctor_id"];
     
+    [subParamDic setObject:pat.patient_allergy forKey:@"patient_allergy"];
+    [subParamDic setObject:pat.patient_remark forKey:@"patient_remark"];
+    [subParamDic setObject:pat.idCardNum forKey:@"IdCardNum"];
+    [subParamDic setObject:pat.patient_address forKey:@"patient_address"];
+    [subParamDic setObject:pat.anamnesis forKey:@"Anamnesis"];
+    [subParamDic setObject:pat.nickName forKey:@"NickName"];
+    
     /*
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
     [paramDic setObject:jsonString forKey:@"DataEntity"];

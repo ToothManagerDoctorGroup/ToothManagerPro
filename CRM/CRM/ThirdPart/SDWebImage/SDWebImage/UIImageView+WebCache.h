@@ -191,7 +191,7 @@
 @end
 
 
-@interface UIImageView (WebCacheDeprecated)
+@interface UIImageView (WebCacheDeprecated1)
 
 - (NSURL *)imageURL __deprecated_msg("Use `sd_imageURL`");
 

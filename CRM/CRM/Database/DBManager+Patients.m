@@ -60,6 +60,13 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
+        [columeArray addObject:@"patient_allergy"];
+        [columeArray addObject:@"patient_remark"];
+        [columeArray addObject:@"idCardNum"];
+        [columeArray addObject:@"patient_address"];
+        [columeArray addObject:@"anamnesis"];
+        [columeArray addObject:@"nickName"];
+        
         [valueArray addObject:patient.ckeyid];
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
@@ -77,6 +84,17 @@
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
+        
+        [valueArray addObject:patient.patient_allergy];
+        if (patient.patient_remark == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_remark];
+        }
+        [valueArray addObject:patient.idCardNum];
+        [valueArray addObject:patient.patient_address];
+        [valueArray addObject:patient.anamnesis];
+        [valueArray addObject:patient.nickName];
 
        
 
@@ -93,6 +111,14 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
+        
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+
 
         
         // 3. 写入数据库
@@ -138,6 +164,7 @@
         [columeArray addObject:@"patient_name"]; //姓名
         [columeArray addObject:@"patient_phone"]; //电话
         [columeArray addObject:@"patient_avatar"];
+        [columeArray addObject:@"patient_gender"];
         [columeArray addObject:@"patient_age"];
         [columeArray addObject:@"patient_status"];
         [columeArray addObject:@"ori_user_id"];
@@ -148,11 +175,19 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
+        [columeArray addObject:@"patient_allergy"];
+        [columeArray addObject:@"patient_remark"];
+        [columeArray addObject:@"idCardNum"];
+        [columeArray addObject:@"patient_address"];
+        [columeArray addObject:@"anamnesis"];
+        [columeArray addObject:@"nickName"];
+        
         
         [valueArray addObject:patient.ckeyid];
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
         [valueArray addObject:patient.patient_avatar];
+        [valueArray addObject:patient.patient_gender];
         [valueArray addObject:patient.patient_age];
         [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
         [valueArray addObject:patient.ori_user_id];
@@ -167,6 +202,17 @@
         }
         [valueArray addObject:patient.doctor_id];
         
+        [valueArray addObject:patient.patient_allergy];
+        if (patient.patient_remark == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_remark];
+        }
+        [valueArray addObject:patient.idCardNum];
+        [valueArray addObject:patient.patient_address];
+        [valueArray addObject:patient.anamnesis];
+        [valueArray addObject:patient.nickName];
+        
         
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -174,6 +220,14 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -271,6 +325,13 @@
     [columeArray addObject:@"sync_time"];
     [columeArray addObject:@"doctor_id"];
     
+    [columeArray addObject:@"patient_allergy"];
+    [columeArray addObject:@"patient_remark"];
+    [columeArray addObject:@"idCardNum"];
+    [columeArray addObject:@"patient_address"];
+    [columeArray addObject:@"anamnesis"];
+    [columeArray addObject:@"nickName"];
+    
     [valueArray addObject:patient.ckeyid];
     [valueArray addObject:patient.patient_name];
     [valueArray addObject:patient.patient_phone];
@@ -289,6 +350,17 @@
     }
     [valueArray addObject:patient.doctor_id];
     
+    [valueArray addObject:patient.patient_allergy];
+    if (patient.patient_remark == nil) {
+        [valueArray addObject:@""];
+    }else{
+        [valueArray addObject:patient.patient_remark];
+    }
+    [valueArray addObject:patient.idCardNum];
+    [valueArray addObject:patient.patient_address];
+    [valueArray addObject:patient.anamnesis];
+    [valueArray addObject:patient.nickName];
+    
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
@@ -296,6 +368,13 @@
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
+    [titleArray addObject:@"?"];
+    [titleArray addObject:@"?"];
+    [titleArray addObject:@"?"];
+    [titleArray addObject:@"?"];
+    [titleArray addObject:@"?"];
+    [titleArray addObject:@"?"];
+    
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
@@ -344,6 +423,13 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
+        [columeArray addObject:@"patient_allergy"];
+        [columeArray addObject:@"patient_remark"];
+        [columeArray addObject:@"idCardNum"];
+        [columeArray addObject:@"patient_address"];
+        [columeArray addObject:@"anamnesis"];
+        [columeArray addObject:@"nickName"];
+        
         
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
@@ -368,6 +454,13 @@
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
+        
+        [valueArray addObject:patient.patient_allergy];
+        [valueArray addObject:patient.patient_remark];
+        [valueArray addObject:patient.idCardNum];
+        [valueArray addObject:patient.patient_address];
+        [valueArray addObject:patient.anamnesis];
+        [valueArray addObject:patient.nickName];
         
         
         
@@ -406,6 +499,13 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
+        [columeArray addObject:@"patient_allergy"];
+        [columeArray addObject:@"patient_remark"];
+        [columeArray addObject:@"idCardNum"];
+        [columeArray addObject:@"patient_address"];
+        [columeArray addObject:@"anamnesis"];
+        [columeArray addObject:@"nickName"];
+        
         
         
         [valueArray addObject:patient.patient_name];
@@ -426,6 +526,17 @@
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
+        
+        [valueArray addObject:patient.patient_allergy];
+        if (patient.patient_remark == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_remark];
+        }
+        [valueArray addObject:patient.idCardNum];
+        [valueArray addObject:patient.patient_address];
+        [valueArray addObject:patient.anamnesis];
+        [valueArray addObject:patient.nickName];
         
         
         // 3. 写入数据库
@@ -560,7 +671,7 @@
          
         // NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where doctor_id=\"%@\" union select * from patient_version2 where ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[intr_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
          
-  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[intr_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
+  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[intr_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
       
          //PatientTableName,PatientTableName,PatIntrMapTableName,IntroducerTableName,PatIntrMapTableName,IntroducerTableName,PatIntrMapTableName,MedicalExpenseTableName
          
@@ -634,7 +745,7 @@
          if (status == PatientStatuspeAll) {
              sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,[AccountManager currentUserid], [NSString defaultDateString]];
          } else if (status == PatientStatusUntreatUnPlanted) {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status <= %d and patient_status >= %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,PatientStatusUnplanted,PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString]];
+             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status <= %ld and patient_status >= %ld and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,(long)PatientStatusUnplanted,(long)PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString]];
          } else {
              sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString]];
          }

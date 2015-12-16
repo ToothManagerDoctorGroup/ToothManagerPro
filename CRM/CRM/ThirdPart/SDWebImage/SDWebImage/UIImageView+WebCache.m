@@ -144,7 +144,7 @@ static char imageURLKey;
 @end
 
 
-@implementation UIImageView (WebCacheDeprecated)
+@implementation UIImageView (WebCacheDeprecated1)
 
 - (NSURL *)imageURL {
     return [self sd_imageURL];

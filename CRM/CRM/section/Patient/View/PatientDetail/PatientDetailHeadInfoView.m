@@ -9,25 +9,37 @@
 #import "PatientDetailHeadInfoView.h"
 #import "QrCodeViewController.h"
 #import "UIView+WXViewController.h"
+#import "AddReminderViewController.h"
+#import "EditPatientDetailViewController.h"
+#import "DBManager+Patients.h"
+#import "DBTableMode.h"
+#import "EditAllergyViewController.h"
 
-#define Margin 8
-#define CommenTitleFont [UIFont systemFontOfSize:16]
+#define Margin 10
+#define CommenTitleFont [UIFont systemFontOfSize:14]
 #define CommenTitleColor MyColor(142, 143, 144)
 #define CommenTextColor MyColor(47, 47, 48)
 #define LineViewH 1
+#define RowHeight 36
+#define AllergyW 16
+#define DividerH 16
+#define arrowW 13
+#define arrowH 18
 
-@interface PatientDetailHeadInfoView ()
+@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate>
 
-@property (nonatomic, weak)UILabel *patientNameTitle; //患者姓名标题
+@property (nonatomic, weak)UIView *nameAndPhoneSuperView;//姓名和电话父视图
 @property (nonatomic, weak)UILabel *patientNameLabel; //患者姓名
-@property (nonatomic, weak)UILabel *patientPhoneTitle; //联系电话标题
 @property (nonatomic, weak)UILabel *patientPhoneLabel; //联系电话
+@property (nonatomic, weak)UILabel *remarkLabel;//备注
+@property (nonatomic, weak)UILabel *introducerNameLabel; //介绍人姓名
+@property (nonatomic, weak)UILabel *transferToLabel; //转诊到
 @property (nonatomic, weak)UIButton *phoneButton; //联系电话按钮
 @property (nonatomic, weak)UIButton *weixinButton; //微信的按钮
-@property (nonatomic, weak)UILabel *introducerNameTitle; //介绍人姓名标题
-@property (nonatomic, weak)UILabel *introducerNameLabel; //介绍人姓名
-@property (nonatomic, weak)UILabel *transferToTitle; //转诊到标题å
-@property (nonatomic, weak)UILabel *transferToLabel; //转诊到
+@property (nonatomic, weak)UIView *messageSuperView;//短信父视图
+@property (nonatomic, weak)UIButton *messageButton;//短信按钮
+@property (nonatomic, weak)UIButton *addReserveButton;//添加预约
+@property (nonatomic, weak)UIImageView *allergyView;//是否过敏
 
 @end
 
@@ -54,40 +66,53 @@
 }
 #pragma mark -初始化子视图
 - (void)setUp{
-    //患者姓名标题
-    NSString *patientName = @"患者姓名:";
-    CGSize pNameTitleSize = [patientName sizeWithFont:CommenTitleFont];
-    CGFloat commentW = pNameTitleSize.width; //公共宽
-    CGFloat commentH = pNameTitleSize.height; //公共高
     
-    UILabel *patientNameTitle = [[UILabel alloc] initWithFrame:CGRectMake(Margin * 2, Margin, pNameTitleSize.width, pNameTitleSize.height)];
-    patientNameTitle.textColor = CommenTitleColor;
-    patientNameTitle.font = CommenTitleFont;
-    patientNameTitle.text = patientName;
-    self.patientNameTitle = patientNameTitle;
-    [self addSubview:patientNameTitle];
+    UIView *nameAndPhoneSuperView = [[UIView alloc] init];
+    self.nameAndPhoneSuperView = nameAndPhoneSuperView;
+    //添加单击手势
+    UITapGestureRecognizer *patientDetailTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(patientDetailTapAction:)];
+    [nameAndPhoneSuperView addGestureRecognizer:patientDetailTap];
     
+    [self addSubview:nameAndPhoneSuperView];
     //患者姓名内容视图
     UILabel *patientNameLabel = [[UILabel alloc] init];
     patientNameLabel.textColor = CommenTextColor;
     patientNameLabel.font = CommenTitleFont;
-    [self addSubview:patientNameLabel];
+    [nameAndPhoneSuperView addSubview:patientNameLabel];
     self.patientNameLabel = patientNameLabel;
-    
-    //联系电话标题
-    UILabel *patientPhoneTitle = [[UILabel alloc] initWithFrame:CGRectMake(Margin * 2, Margin * 3 + commentH + LineViewH, commentW, commentH)];
-    patientPhoneTitle.textColor = CommenTitleColor;
-    patientPhoneTitle.font = CommenTitleFont;
-    patientPhoneTitle.text = @"联系电话:";
-    self.patientPhoneTitle = patientPhoneTitle;
-    [self addSubview:patientPhoneTitle];
     
     //联系电话内容视图
     UILabel *patientPhoneLabel = [[UILabel alloc] init];
     patientPhoneLabel.textColor = CommenTextColor;
     patientPhoneLabel.font = CommenTitleFont;
-    [self addSubview:patientPhoneLabel];
+    [nameAndPhoneSuperView addSubview:patientPhoneLabel];
     self.patientPhoneLabel = patientPhoneLabel;
+    
+    //备注
+    UILabel *remarkLabel = [[UILabel alloc] init];
+    remarkLabel.userInteractionEnabled = YES;
+    remarkLabel.textColor = CommenTextColor;
+    remarkLabel.font = CommenTitleFont;
+    UITapGestureRecognizer *remarkTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(remarkTapAction:)];
+    [remarkLabel addGestureRecognizer:remarkTap];
+    [self addSubview:remarkLabel];
+    self.remarkLabel = remarkLabel;
+    
+    //介绍人内容视图
+    UILabel *introducerNameLabel = [[UILabel alloc] init];
+    introducerNameLabel.textColor = CommenTextColor;
+    introducerNameLabel.font = CommenTitleFont;
+    introducerNameLabel.textAlignment = NSTextAlignmentCenter;
+    [self addSubview:introducerNameLabel];
+    self.introducerNameLabel = introducerNameLabel;
+    
+    //转诊到内容视图
+    UILabel *transferToLabel = [[UILabel alloc] init];
+    transferToLabel.textColor = CommenTextColor;
+    transferToLabel.font = CommenTitleFont;
+    transferToLabel.textAlignment = NSTextAlignmentCenter;
+    [self addSubview:transferToLabel];
+    self.transferToLabel = transferToLabel;
     
     //联系电话按钮
     UIButton *phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -99,95 +124,150 @@
     
     //微信按钮
     UIButton *weixinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//    [weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
+    [self.weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
     self.weixinButton = weixinButton;
     [self addSubview:weixinButton];
     
-    //介绍人标题
-    UILabel *introducerNameTitle = [[UILabel alloc] initWithFrame:CGRectMake(Margin * 2, Margin * 5 + commentH * 2 + LineViewH * 2, commentW, commentH)];
-    introducerNameTitle.textColor = CommenTitleColor;
-    introducerNameTitle.font = CommenTitleFont;
-    introducerNameTitle.text = @"介绍人:";
-    self.introducerNameTitle = introducerNameTitle;
-    [self addSubview:introducerNameTitle];
+    //短信按钮父视图
+    UIView *messageSuperView = [[UIView alloc] init];
+    messageSuperView.backgroundColor = [UIColor whiteColor];
+    self.messageSuperView = messageSuperView;
+    [self addSubview:messageSuperView];
+    //短信按钮
+    UIButton *messageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [messageButton setImage:[UIImage imageNamed:@"patient_message_blue"] forState:UIControlStateNormal];
+    [messageButton setImage:[UIImage imageNamed:@"patient_message_gray"] forState:UIControlStateHighlighted];
+    [messageButton addTarget:self action:@selector(messageButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    self.messageButton = messageButton;
+    [messageSuperView addSubview:messageButton];
     
-    //介绍人内容视图
-    UILabel *introducerNameLabel = [[UILabel alloc] init];
-    introducerNameLabel.textColor = CommenTextColor;
-    introducerNameLabel.font = CommenTitleFont;
-    [self addSubview:introducerNameLabel];
-    self.introducerNameLabel = introducerNameLabel;
+    //添加预约
+    UIButton *addReserveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [addReserveButton setTitle:@"添加预约" forState:UIControlStateNormal];
+    addReserveButton.titleLabel.font = CommenTitleFont;
+    [addReserveButton setTitleColor:MyColor(19, 150, 233) forState:UIControlStateNormal];
+    [addReserveButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [addReserveButton addTarget:self action:@selector(addReserveButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    self.addReserveButton = addReserveButton;
+    [self addSubview:addReserveButton];
     
-    //转诊到标题
-    UILabel *transferToTitle = [[UILabel alloc] initWithFrame:CGRectMake(Margin * 2, Margin * 7 + commentH * 3 + LineViewH * 3, commentW, commentH)];
-    transferToTitle.textColor = CommenTitleColor;
-    transferToTitle.font = CommenTitleFont;
-    transferToTitle.text = @"转诊到:";
-    self.transferToTitle = transferToTitle;
-    [self addSubview:transferToTitle];
-    
-    //转诊到内容视图
-    UILabel *transferToLabel = [[UILabel alloc] init];
-    transferToLabel.textColor = CommenTextColor;
-    transferToLabel.font = CommenTitleFont;
-    [self addSubview:transferToLabel];
-    self.transferToLabel = transferToLabel;
-    
-    //创建分割线
-    for (int i = 0; i < 5; i++) {
-        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, i * (Margin * 2 + commentH), kScreenWidth, LineViewH)];
-        lineView.backgroundColor = MyColor(232, 234, 235);
-        [self addSubview:lineView];
-    }
+    //过敏
+    UIImageView *allergyView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"patient_min"]];
+    self.allergyView = allergyView;
+    [self.nameAndPhoneSuperView addSubview:allergyView];
 }
 
 - (void)setDetailPatient:(Patient *)detailPatient{
     _detailPatient = detailPatient;
     
+    self.nameAndPhoneSuperView.frame = CGRectMake(0, 0, kScreenWidth, RowHeight * 2);
+    
     //患者姓名
-    if (self.detailPatient.patient_name) {
-        NSString *name = self.detailPatient.patient_name;
-        CGSize nameSize = [name sizeWithFont:CommenTitleFont];
-        self.patientNameLabel.frame = CGRectMake(self.patientNameTitle.right + Margin * 4, self.patientNameTitle.top, nameSize.width, nameSize.height);
-        self.patientNameLabel.text = name;
+    NSString *name;
+    if (self.detailPatient.patient_name && [self.detailPatient.patient_name isNotEmpty]) {
+        NSString *agender = [self.detailPatient.patient_gender isEqualToString:@"0"] ? @"女" : @"男";
+        name = [NSString stringWithFormat:@"患者姓名：%@(%@) %@岁",self.detailPatient.patient_name,agender,self.detailPatient.patient_age];
+    }else{
+        name = @"患者姓名：无";
     }
+    CGSize nameSize = [name sizeWithFont:CommenTitleFont];
+    self.patientNameLabel.frame = CGRectMake(Margin, 0, nameSize.width, RowHeight);
+    self.patientNameLabel.text = name;
+    
+    
+    //过敏史
+    if (self.detailPatient.patient_allergy && [self.detailPatient.patient_allergy isNotEmpty]) {
+        self.allergyView.hidden = NO;
+        self.allergyView.frame = CGRectMake(self.patientNameLabel.right + Margin, (RowHeight - AllergyW) * .5, AllergyW, AllergyW);
+    }else{
+        self.allergyView.hidden = YES;
+    }
+    
     
     //联系方式
-    if (self.detailPatient.patient_phone) {
-        NSString *phone = self.detailPatient.patient_phone;
-        CGSize phoneSize = [phone sizeWithFont:CommenTitleFont];
-        self.patientPhoneLabel.frame = CGRectMake(self.patientPhoneTitle.right + Margin * 4, self.patientPhoneTitle.top, phoneSize.width, phoneSize.height);
-        self.patientPhoneLabel.text= phone;
-        
-        //电话按钮
-        CGFloat commentH = phoneSize.height + Margin * 2;
-        self.phoneButton.frame = CGRectMake(self.patientPhoneLabel.right + Margin * 2, commentH + 2, commentH - 4, commentH - 4);
-        
+    NSString *phone;
+    if (self.detailPatient.patient_phone && [self.detailPatient.patient_phone isNotEmpty]) {
+        phone = [NSString stringWithFormat:@"电话：%@",self.detailPatient.patient_phone];
+    }else{
+        phone = @"电话：无";
     }
+    CGSize phoneSize = [phone sizeWithFont:CommenTitleFont];
+    self.patientPhoneLabel.frame = CGRectMake(Margin, self.patientNameLabel.bottom, phoneSize.width, RowHeight);
+    self.patientPhoneLabel.text = phone;
     
+    //箭头视图
+    UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
+    arrowView.frame = CGRectMake(kScreenWidth - arrowW - Margin, (RowHeight * 2 - arrowH) / 2, arrowW, arrowH);
+    [self.nameAndPhoneSuperView addSubview:arrowView];
+    
+    //备注
+    NSString *remark;
+    if (self.detailPatient.nickName && [self.detailPatient.nickName isNotEmpty]) {
+        remark = [NSString stringWithFormat:@"备注：%@",self.detailPatient.nickName];
+    }else{
+        remark = @"备注：未编辑";
+    }
+    self.remarkLabel.frame = CGRectMake(Margin, self.patientPhoneLabel.bottom, kScreenWidth - Margin * 2 - arrowW, RowHeight);
+    self.remarkLabel.text = remark;
+    
+    UIImageView *remarkArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
+    remarkArrow.frame = CGRectMake(kScreenWidth - arrowW - Margin, (RowHeight - arrowH) / 2 + RowHeight * 2, arrowW, arrowH);
+    [self addSubview:remarkArrow];
+    
+//    self.remarkField.frame = CGRectMake(self.remarkLabel.right, self.patientPhoneLabel.bottom, kScreenWidth - remarkSize.width - Margin * 3 - arrowW, RowHeight);
+    
+
     //介绍人
+    NSString *introducer;
     if (self.introducerName) {
-        NSString *introducer = self.introducerName;
-        CGSize introducerSize = [introducer sizeWithFont:CommenTitleFont];
-        self.introducerNameLabel.frame = CGRectMake(self.introducerNameTitle.right + Margin * 2, self.introducerNameTitle.top, introducerSize.width, introducerSize.height);
-        self.introducerNameLabel.text = introducer;
+        introducer = [NSString stringWithFormat:@"介绍人：%@",self.introducerName];
+    }else{
+        introducer = @"介绍人：无";
     }
+    self.introducerNameLabel.frame = CGRectMake(0, self.remarkLabel.bottom, kScreenWidth / 2, RowHeight);
+    self.introducerNameLabel.text = introducer;
     
+    //分割线
+    [self dividerViewWithFrame:CGRectMake((kScreenWidth - 1) *.5, (RowHeight - DividerH) * .5 + self.remarkLabel.bottom, 1, DividerH)];
     
     //转诊到
+    NSString *transfer;
     if (self.transferStr) {
-        NSString *transfer = self.transferStr;
-        CGSize transferSize = [transfer sizeWithFont:CommenTitleFont];
-        self.transferToLabel.frame = CGRectMake(self.transferToTitle.right + Margin * 2, self.transferToTitle.top, transferSize.width, transferSize.height);
-        self.transferToLabel.text = transfer;
+        transfer = [NSString stringWithFormat:@"转诊到:%@",self.transferStr];
+    }else{
+        transfer = @"转诊到：无";
     }
+    self.transferToLabel.frame = CGRectMake(self.introducerNameLabel.right, self.remarkLabel.bottom, kScreenWidth / 2, RowHeight);
+    self.transferToLabel.text = transfer;
+    
+    //4个按钮
+    CGFloat buttonW = (kScreenWidth - 3) / 4;
+    self.messageSuperView.frame = CGRectMake(0, self.transferToLabel.bottom, buttonW, RowHeight);
+    self.messageButton.frame = CGRectMake((buttonW - 20) / 2, (RowHeight - 20) / 2, 20, 20);
+    self.phoneButton.frame = CGRectMake(self.messageSuperView.right, self.transferToLabel.bottom, buttonW, RowHeight);
+    self.weixinButton.frame = CGRectMake(self.phoneButton.right, self.transferToLabel.bottom, buttonW, RowHeight);
+    self.addReserveButton.frame = CGRectMake(self.weixinButton.right, self.transferToLabel.bottom, buttonW, RowHeight);
+    
+    //按钮之间分割线
+    for (int i = 1; i <= 3; i++) {
+        [self dividerViewWithFrame:CGRectMake(i * buttonW, (RowHeight - DividerH) / 2 + self.transferToLabel.bottom, 1, DividerH)];
+    }
+    
+    
+    //添加各行之间的分割线
+    for (int i = 0; i < 4; i++) {
+        [self dividerViewWithFrame:CGRectMake(0, (i + 2) * RowHeight, kScreenWidth, 1)];
+    }
+}
+//添加分割线
+- (void)dividerViewWithFrame:(CGRect)frame{
+    UIView *divider = [[UIView alloc] initWithFrame:frame];
+    divider.backgroundColor = MyColor(235, 235, 235);
+    [self addSubview:divider];
 }
 
 - (void)setIsWeixin:(BOOL)isWeixin{
     _isWeixin = isWeixin;
-    
-    CGFloat commentH = self.phoneButton.height + 4;
-    self.weixinButton.frame = CGRectMake(self.phoneButton.right, commentH + 2, commentH - 4, commentH - 4);
     
     if (self.isWeixin) {
         [self.weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
@@ -212,13 +292,13 @@
 }
 
 - (CGFloat)getTotalHeight{
-    return self.patientNameTitle.height * 4 + Margin * 8 + LineViewH * 4;
+    return RowHeight * 5;
 }
 
 #pragma mark -打电话
 - (void)phoneButtonClick{
     if(![NSString isEmptyString:self.patientPhoneLabel.text]){
-        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"是否拨打该电话" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:[NSString stringWithFormat:@"是否拨打%@",self.patientPhoneLabel.text] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
         alertView.tag = 101;
         [alertView show];
     }else{
@@ -243,4 +323,67 @@
         }
     }
 }
+
+#pragma mark -发信息
+- (void)messageButtonClick{
+    if (self.detailPatient.patient_phone) {
+        if( [MFMessageComposeViewController canSendText] ){
+            MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
+            controller.recipients = @[self.detailPatient.patient_phone];
+            controller.body = @"";
+            controller.messageComposeDelegate = self;
+            //跳转到发送短信的页面
+            [self.viewController presentViewController:controller animated:YES completion:nil];
+            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
+        }
+        else{
+            [SVProgressHUD showErrorWithStatus:@"设备没有短信功能"];
+        }
+    }else{
+        [SVProgressHUD showImage:nil status:@"患者未留电话"];
+    }
+}
+//短信是否发送成功
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
+    [controller dismissViewControllerAnimated:NO completion:nil];//关键的一句   不能为YES
+    switch ( result ) {
+        case MessageComposeResultCancelled:
+            [SVProgressHUD showImage:nil status:@"取消发送信息"];
+            break;
+        case MessageComposeResultFailed:
+            [SVProgressHUD showImage:nil status:@"发送信息失败"];
+            break;
+        case MessageComposeResultSent:
+            [SVProgressHUD showImage:nil status:@"发送信息成功"];
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - 添加预约
+- (void)addReserveButtonClick{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
+    addReminderVC.isAddLocationToPatient = YES;
+    addReminderVC.patient = self.detailPatient;
+    [self.viewController.navigationController pushViewController:addReminderVC animated:YES];
+}
+#pragma mark - 患者详情
+- (void)patientDetailTapAction:(UITapGestureRecognizer *)tap{
+    EditPatientDetailViewController *editDetail = [[EditPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    editDetail.patient = self.detailPatient;
+    [self.viewController.navigationController pushViewController:editDetail animated:YES];
+}
+
+#pragma mark - remarkTapAction
+- (void)remarkTapAction:(UITapGestureRecognizer *)tap{
+    EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
+    allergyVc.title = @"备注";
+    allergyVc.content = self.detailPatient.nickName;
+    allergyVc.type = EditAllergyViewControllerNickName;
+    allergyVc.patient = self.detailPatient;
+    [self.viewController.navigationController pushViewController:allergyVc animated:YES];
+}
+
 @end

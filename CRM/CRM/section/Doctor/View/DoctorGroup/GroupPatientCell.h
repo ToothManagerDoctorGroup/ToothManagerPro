@@ -7,15 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+@class GroupPatientModel,GroupPatientCell;
+@protocol GroupPatientCellDelegate <NSObject>
+
+@optional
+- (void)didChooseCell:(GroupPatientCell *)cell withChooseStatus:(BOOL)status;
+
+@end
 
 @interface GroupPatientCell : UITableViewCell
 
-
-@property (nonatomic, strong)PatientsCellMode *model;
-
-@property (nonatomic, assign)BOOL isChoose;
+@property (nonatomic, strong)GroupPatientModel *model;
 
 @property (nonatomic, assign)BOOL isManage;//是管理分组
+
+@property (nonatomic, weak)id<GroupPatientCellDelegate> delegate;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

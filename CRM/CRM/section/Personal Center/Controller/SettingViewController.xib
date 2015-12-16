@@ -47,7 +47,7 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="wiA-I4-nDX">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="wiA-I4-nDX">
                         <rect key="frame" x="285" y="14" width="15" height="15"/>
                         <animations/>
                     </imageView>
@@ -111,7 +111,7 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="JqK-Nc-bVM">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="JqK-Nc-bVM">
                         <rect key="frame" x="285" y="14" width="15" height="15"/>
                         <animations/>
                     </imageView>
@@ -170,7 +170,7 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="foi-zN-hrP">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="foi-zN-hrP">
                         <rect key="frame" x="285" y="14" width="15" height="15"/>
                         <animations/>
                     </imageView>
@@ -202,7 +202,7 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="iPM-gE-OvG">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="iPM-gE-OvG">
                         <rect key="frame" x="285" y="14" width="15" height="15"/>
                         <animations/>
                     </imageView>
@@ -214,6 +214,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="arrow.png" width="13" height="18"/>
+        <image name="arrow.png" width="15" height="40"/>
+        <image name="arrow_crm.png" width="13" height="18"/>
     </resources>
 </document>

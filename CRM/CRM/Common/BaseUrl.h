@@ -7,7 +7,9 @@
 //
 
 // 域名
-#define DomainName @"http://122.114.62.57/"
+//#define DomainName @"http://122.114.62.57/"
+
+#define DomainName @"http://118.244.234.207/"
 
 #define Method_His_Crm @"his.crm"
 #define Method_Weixin @"NewWeixin"

@@ -41,12 +41,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    //设置提示框
+    //设置segument
     [self.segmentView setSelectedSegmentIndex:0];
     self.segmentView.tintColor = [UIColor colorWithHex:0x00a0ea];
-//    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0,43.5, self.view.bounds.size.width, 0.5)];
-//    view.backgroundColor = self.tableView.separatorColor;
-//    [self.tableView.tableHeaderView addSubview:view];
     
     
     UIImage *image1 = [[UIImage imageNamed:@"ic_tabbar_message"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -190,7 +188,7 @@
         [cell setCellWithFrienNotifi:friNotiItem];
         return cell;
     } else if (self.segmentView.selectedSegmentIndex == 1) {
-        //转出患者
+        //新增患者消息
         PatientInfoCellTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PatientInfoCellTableViewCell"];
         if (cell == nil) {
             cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientInfoCellTableViewCell" owner:nil options:nil] objectAtIndex:0];

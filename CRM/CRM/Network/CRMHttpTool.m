@@ -8,6 +8,7 @@
 
 #import "CRMHttpTool.h"
 #import "AFHTTPRequestOperationManager.h"
+#import "AFHTTPRequestOperationManager+Synchronous.h"
 
 @implementation CRMHttpTool
 
@@ -58,6 +59,26 @@
             failure(error);
         }
     }];
+}
+
++ (id)SyncPOST:(NSString *)URLString
+      parameters:(id)parameters
+         success:(void (^)(id responseObject))success
+         failure:(void (^)(NSError *error))failure{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer.timeoutInterval = 30.f; //设置请求超时时间
+    NSError *error = nil;
+    return [manager syncPOST:URLString parameters:parameters operation:NULL error:&error];
+}
+
++ (id)SyncGET:(NSString *)URLString
+   parameters:(id)parameters
+      success:(void (^)(id responseObject))success
+      failure:(void (^)(NSError *error))failure{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer.timeoutInterval = 30.f; //设置请求超时时间
+    NSError *error = nil;
+    return [manager syncGET:URLString parameters:parameters operation:NULL error:&error];
 }
 
 @end

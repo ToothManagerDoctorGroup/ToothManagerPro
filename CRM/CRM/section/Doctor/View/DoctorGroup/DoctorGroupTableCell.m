@@ -61,20 +61,19 @@
     [self.contentView addSubview:_divider];
 }
 
-- (void)layoutSubviews{
-    [super layoutSubviews];
+- (void)setModel:(DoctorGroupModel *)model{
+
+    _model = model;
     
-    CGSize groupSize = [self.name sizeWithFont:commenFont];
+    CGSize groupSize = [self.model.group_name sizeWithFont:commenFont];
     _groupName.frame = CGRectMake(Margin, 0, groupSize.width, RowHeight);
-    _groupName.text = self.name;
+    _groupName.text = self.model.group_name;
     
-    NSString *num = @"(44)";
-    CGSize numSize = [num sizeWithFont:commenFont];
+    NSString *numStr = [NSString stringWithFormat:@"(%d)",self.model.patient_count] ;
+    CGSize numSize = [numStr sizeWithFont:commenFont];
     _groupNum.frame = CGRectMake(kScreenWidth - Margin - numSize.width, 0, numSize.width, RowHeight);
-    _groupNum.text = num;
+    _groupNum.text = numStr;
     
     _divider.frame = CGRectMake(0, RowHeight - 1, kScreenWidth, 1);
-    
 }
-
 @end

@@ -12,6 +12,8 @@
 #define LatestUserName (@"LatestUserName")
 #define DeviceToken  (@"DeviceToken")
 
+#define KVersion (@"KVersion")
+
 @interface CRMUserDefalut : NSObject
 
 /**
@@ -33,5 +35,18 @@
 + (void)setObject:(id)object forKey:(NSString *)akey;
 
 + (id)objectForKey:(NSString *)akey;
+
+/**
+ *  获取当前的版本号
+ *
+ *  @return 版本号
+ */
++ (NSString *)getAppVersion;
+/**
+ *  保存版本号
+ *
+ *  @param version 版本号
+ */
++ (void)obtainAppVersion;
 
 @end

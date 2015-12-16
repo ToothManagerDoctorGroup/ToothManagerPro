@@ -11,5 +11,9 @@
 @interface SysMsgViewController : TimTableViewController
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentView;
 - (IBAction)segmentValueChanged:(id)sender;
+@property (weak, nonatomic) IBOutlet UILabel *messageCountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *patientMsgCount;
+
+@property (weak, nonatomic) IBOutlet UILabel *friendMsgCount;
 
 @end

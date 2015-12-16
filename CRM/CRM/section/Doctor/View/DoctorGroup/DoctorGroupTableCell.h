@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DoctorGroupModel.h"
 
 @interface DoctorGroupTableCell : UITableViewCell
 
-@property (nonatomic, copy)NSString *name;
+@property (nonatomic, strong)DoctorGroupModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

@@ -8,8 +8,9 @@
 
 #import "GroupPatientCell.h"
 #import "UIColor+Extension.h"
-#import "DBManager.h"
 #import "CRMMacro.h"
+#import "GroupPatientModel.h"
+#import "DBTableMode.h"
 
 #define CommenFont [UIFont systemFontOfSize:14]
 #define CommenColor [UIColor blackColor]
@@ -82,20 +83,19 @@
     _chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
     [_chooseButton setImage:[UIImage imageNamed:@"choose-blue"] forState:UIControlStateSelected];
-    _chooseButton.selected = self.isChoose;
     [_chooseButton addTarget:self action:@selector(chooseAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:_chooseButton];
 }
 
-- (void)setModel:(PatientsCellMode *)model{
+- (void)setModel:(GroupPatientModel *)model{
     _model = model;
     
-    _nameLabel.text = model.name;
+    _nameLabel.text = model.patient_name;
     _statusLabel.text = model.statusStr;
     _numLabel.text = [NSString stringWithFormat:@"%ld颗",(long)model.countMaterial];
-    _introducerLabel.text = model.introducerName;
+    _introducerLabel.text = model.intr_name;
 
-    switch (model.status) {
+    switch (model.patient_status) {
         case PatientStatusUntreatment:
             [_statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_YELLOW]];
             break;
@@ -110,6 +110,21 @@
             break;
         default:
             break;
+    }
+    //如果已经是组员，默认不可选
+    if (model.isMember) {
+        [_chooseButton setImage:[UIImage imageNamed:@"choose-grey"] forState:UIControlStateNormal];
+        _chooseButton.enabled = NO;
+    }else {
+        [_chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
+        _chooseButton.enabled = YES;
+        
+        //判断是否选中
+        if (model.isChoose) {
+            _chooseButton.selected = YES;
+        }else{
+            _chooseButton.selected = NO;
+        }
     }
 }
 
@@ -134,21 +149,12 @@
     
 }
 
-
-- (void)setIsChoose:(BOOL)isChoose{
-    _isChoose = isChoose;
-    
-    _chooseButton.selected = isChoose;
-}
 #pragma mark - 按钮选中事件
 - (void)chooseAction:(UIButton *)button{
-    if (self.isChoose == YES) {
-        self.isChoose = NO;
-        
-    }else{
-        self.isChoose = YES;
+    button.selected = !button.isSelected;
+    if ([self.delegate respondsToSelector:@selector(didChooseCell:withChooseStatus:)]) {
+        [self.delegate didChooseCell:self withChooseStatus:button.isSelected];
     }
-    button.selected = self.isChoose;
 }
 
 

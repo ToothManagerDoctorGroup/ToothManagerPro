@@ -17,6 +17,7 @@
 #import "SigninViewController.h"
 #import "SignUpViewController.h"
 #import "ChatViewController.h"
+#import "MyScheduleReminderViewController.h"
 
 
 //两次提示的默认间隔
@@ -30,7 +31,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     MenuButtonPushManager *manager;
     UIView *clearView;
     
-    ScheduleReminderViewController *_scheduleReminderVC;
+    MyScheduleReminderViewController *_scheduleReminderVC;
     IntroducerViewController *_introducerVC;
     PatientSegumentController *_patientVc;
     AccountViewController *_account;
@@ -72,7 +73,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 - (void)makeMainView
 {
     //日程提醒
-    _scheduleReminderVC = [[ScheduleReminderViewController alloc]init];
+    _scheduleReminderVC = [[MyScheduleReminderViewController alloc] init];
     TimNavigationViewController *viewController1=[[TimNavigationViewController alloc]initWithRootViewController:_scheduleReminderVC];
     
     //介绍人

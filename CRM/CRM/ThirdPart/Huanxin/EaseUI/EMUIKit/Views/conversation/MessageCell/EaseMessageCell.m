@@ -14,7 +14,7 @@
 #import "EaseBubbleView+Voice.h"
 #import "EaseBubbleView+Video.h"
 #import "EaseBubbleView+File.h"
-#import "UIImageView+EMWebCache.h"
+#import "UIImageView+WebCache.h"
 
 CGFloat const EaseMessageCellPadding = 10;
 

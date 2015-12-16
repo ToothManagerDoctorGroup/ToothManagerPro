@@ -10,7 +10,6 @@
 
 #import "CRMAppDelegate.h"
 
-//尹五民
 
 int main(int argc, char * argv[])
 {

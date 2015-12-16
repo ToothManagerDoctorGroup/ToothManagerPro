@@ -119,6 +119,15 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *case_update_time;
 @property (nonatomic,copy) NSString *intr_name;
 
+//新增患者字段
+@property (nonatomic, copy)NSString *patient_allergy;//患者过敏史
+@property (nonatomic, copy)NSString *patient_remark;//医生给患者的备注信息
+@property (nonatomic, copy)NSString *idCardNum;//身份证号（原有字段是IdCardNum）
+@property (nonatomic, copy)NSString *patient_address;//患者家庭地址
+@property (nonatomic, copy)NSString *anamnesis;//既往病史（原有字段是Anamnesis）
+@property (nonatomic, copy)NSString *nickName;//昵称(原有字段NickName)
+
+
 + (Patient *)patientlWithResult:(FMResultSet *)result;
 + (NSString *)statusStrWithIntegerStatus:(PatientStatus)status;
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat;

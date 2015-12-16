@@ -49,7 +49,7 @@
     //输入框背景视图
     UIView *_editView;
     UIImageView *_searchImage; //搜索图片
-    CommentTextField *_commentTextField; //搜索框
+    CommentTextField *_commentTextField; //会诊信息输入框
 }
 /**
  *  评论
@@ -91,7 +91,7 @@
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"转诊患者",@"新增预约",@"转为介绍人", nil];
+        _menuList = [NSArray arrayWithObjects:@"转诊患者",@"转为介绍人", nil];
     }
     return _menuList;
 }
@@ -122,23 +122,26 @@
     return _comments;
 }
 
-- (void)dealloc{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:YES];
+    [super viewWillAppear:animated];
+    
+    //添加键盘状态监听
+    [self addNotification];
+    
     [self initData];
     [self refreshView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     //添加编辑状态监听
     [self addNotificationObserver];
-    
-    //添加键盘状态监听
-    [self addNotification];
     
     //初始化导航栏
     [self initView];
@@ -164,19 +167,25 @@
 }
 //键盘将要出现
 - (void)keyboardWasShown:(NSNotification *)note{
-    //获取当前键盘的高度
-    CGFloat duration = [note.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
-     CGFloat keyBoardH = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
-    [UIView animateWithDuration:duration animations:^{
-        self.view.transform = CGAffineTransformMakeTranslation(0, -keyBoardH);
-    }];
+    _headerMedicalView.userInteractionEnabled = NO;
+    if ([_commentTextField isFirstResponder]) {
+        //获取当前键盘的高度
+        CGFloat duration = [note.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
+        CGFloat keyBoardH = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+        [UIView animateWithDuration:duration animations:^{
+            self.view.transform = CGAffineTransformMakeTranslation(0, -keyBoardH);
+        }];
+    }
 }
 //键盘将要隐藏
 - (void)keyboardWillBeHidden:(NSNotification *)note{
-    CGFloat duration = [note.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
-    [UIView animateWithDuration:duration animations:^{
-        self.view.transform = CGAffineTransformIdentity;
-    }];
+    _headerMedicalView.userInteractionEnabled = YES;
+    if ([_commentTextField isFirstResponder]) {
+        CGFloat duration = [note.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
+        [UIView animateWithDuration:duration animations:^{
+            self.view.transform = CGAffineTransformIdentity;
+        }];
+    }
 }
 
 
@@ -259,6 +268,8 @@
 
 #pragma mark -加载子视图
 - (void)setUpSubView{
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [self.view addGestureRecognizer:tap];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64 - 44) style:UITableViewStylePlain];
     _tableView.backgroundColor = CommenBgColor;
@@ -419,16 +430,11 @@
 {
     [self.menuPopover dismissMenuPopover];
     if(selectedIndex == 0){
-        PatientEditViewController *edit = [[PatientEditViewController alloc]initWithNibName:@"PatientEditViewController" bundle:nil];
-        edit.patientsCellMode = self.patientsCellMode;
-        [self pushViewController:edit animated:YES];
-    }else if(selectedIndex == 1){
+//        PatientEditViewController *edit = [[PatientEditViewController alloc]initWithNibName:@"PatientEditViewController" bundle:nil];
+//        edit.patientsCellMode = self.patientsCellMode;
+//        [self pushViewController:edit animated:YES];
         [self referralAction:nil];
-    }else if (selectedIndex == 2){
-        [self createNotificationAction:nil];
-    }else if (selectedIndex == 3){
-        NSLog(@"%@---%@",_detailPatient.ckeyid,self.patientsCellMode.patientId);
-        
+    }else if(selectedIndex == 1){
         [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:_detailPatient, nil]];
         [NSThread sleepForTimeInterval: 0.5];
         
@@ -470,6 +476,8 @@
         introducer.intr_phone = _detailPatient.patient_phone;
         introducer.intr_id = @"0";
         [[DBManager shareInstance] insertIntroducer:introducer];
+        
+        
         
         NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
         if (0 != [recordArray count])
@@ -531,4 +539,9 @@
     }
     
 }
+
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [self.view endEditing:YES];
+}
+
 @end

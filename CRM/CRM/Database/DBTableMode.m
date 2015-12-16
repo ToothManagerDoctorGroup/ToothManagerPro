@@ -253,6 +253,14 @@ NSString * const Repaired = @"已修复";
         self.patient_status = PatientStatusUntreatment;
         self.ori_user_id = @"";
         self.intr_name = @"";
+        
+        self.patient_allergy = @"";
+        self.patient_remark = @"";
+        self.idCardNum = @"";
+        self.patient_address = @"";
+        self.anamnesis = @"";
+        self.nickName = @"";
+        
     }
     return self;
 }
@@ -272,6 +280,14 @@ NSString * const Repaired = @"已修复";
     patient.sync_time = [result stringForColumn:@"sync_time"];
     patient.doctor_id = [result stringForColumn:@"doctor_id"];
     patient.intr_name = [result stringForColumn:@"intr_name"];
+    
+    patient.patient_allergy = [result stringForColumn:@"patient_allergy"];
+    patient.patient_remark = [result stringForColumn:@"patient_remark"];
+    patient.idCardNum = [result stringForColumn:@"IdCardNum"];
+    patient.patient_address = [result stringForColumn:@"patient_address"];
+    patient.anamnesis = [result stringForColumn:@"Anamnesis"];
+    patient.nickName = [result stringForColumn:@"NickName"];
+    
     return patient;
 }
 
@@ -313,6 +329,13 @@ NSString * const Repaired = @"已修复";
     tmpPatient.user_id = [AccountManager currentUserid];
     tmpPatient.intr_name = [pat stringForKey:@"intr_name"];
     //tmpPatient.update_date = [pat stringForKey:@"update_time"];
+    
+    tmpPatient.patient_allergy = [pat stringForKey:@"patient_allergy"];
+    tmpPatient.patient_remark = [pat stringForKey:@"patient_remark"];
+    tmpPatient.idCardNum = [pat stringForKey:@"IdCardNum"];
+    tmpPatient.patient_address = [pat stringForKey:@"patient_address"];
+    tmpPatient.anamnesis = [pat stringForKey:@"Anamnesis"];
+    tmpPatient.nickName = [pat stringForKey:@"NickName"];
     
     return tmpPatient;
     

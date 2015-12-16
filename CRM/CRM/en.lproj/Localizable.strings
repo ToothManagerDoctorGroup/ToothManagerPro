@@ -10,6 +10,7 @@
  * from EaseMob Technologies.
  */
 
+"Notification" = "notification";
 //general
 "register" = "Register";
 "login" = "Login";

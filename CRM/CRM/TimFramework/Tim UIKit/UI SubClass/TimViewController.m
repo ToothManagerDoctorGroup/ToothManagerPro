@@ -41,13 +41,13 @@
 #endif
     if (IOS_7_OR_LATER) {
         if (!self.navigationController || [self.navigationController isNavigationBarHidden]) {
-            self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height-20);
+            self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 20);
         } else {
-            self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height-64);
+            self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 64);
         }
     } else if (IOS_5_OR_LATER) {
         if (!self.navigationController || ![self.navigationController isNavigationBarHidden]) {
-            self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height-44);
+            self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 44);
         }
     }
     self.view.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];

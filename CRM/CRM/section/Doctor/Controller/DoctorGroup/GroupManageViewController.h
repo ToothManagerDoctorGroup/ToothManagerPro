@@ -9,8 +9,9 @@
 #import "TimDisplayViewController.h"
 #import "DBManager.h"
 
+@class DoctorGroupModel;
 @interface GroupManageViewController : TimDisplayViewController
 
-@property (nonatomic,readwrite) PatientStatus patientStatus;
+@property (nonatomic, strong)DoctorGroupModel *group;
 
 @end

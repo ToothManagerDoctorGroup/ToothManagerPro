@@ -12,6 +12,8 @@
 
 + (NSArray *)resultArraySearchIntroducerOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText;
 + (NSArray *)resultArraySearchPatientsOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText;
++ (NSArray *)resultArraySearchGroupPatientsOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText;
+
 + (NSArray *)resultArraySearchMaterialOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText;
 + (NSArray *)resultArraySearchAddressBookOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText;
 + (NSArray *)resultArraySearchDoctorOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText;

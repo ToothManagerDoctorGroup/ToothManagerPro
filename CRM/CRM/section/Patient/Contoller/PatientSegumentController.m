@@ -67,6 +67,9 @@
     [successVc networkChanged:_connectionState];
     [self addChildViewController:successVc];
     
+//    TwoViewController *twoVc = [[TwoViewController alloc] init];
+//    [self addChildViewController:twoVc];
+    
     [self.view addSubview:patientVC.view];
     
     
@@ -81,10 +84,7 @@
     self.segmentedControl.selectedTitleTextColor = MyColor(95, 169, 236);
     self.segmentedControl.borderWidth = 1.0f;
     self.segmentedControl.borderColor = [UIColor whiteColor];
-    self.segmentedControl.drawsGradientBackground = YES;
-    self.segmentedControl.gradientTopColor = MyColor(95, 169, 236);
-    self.segmentedControl.gradientBottomColor = MyColor(95, 169, 236);
-    self.segmentedControl.segmentIndicatorInset = 2.0f;
+    self.segmentedControl.segmentIndicatorInset = 0;
     self.segmentedControl.segmentIndicatorGradientTopColor = [UIColor whiteColor];
     self.segmentedControl.segmentIndicatorGradientBottomColor = [UIColor whiteColor];
     self.segmentedControl.drawsSegmentIndicatorGradientBackground = YES;
@@ -97,6 +97,7 @@
 - (void)segmentSelected {
     PatientsDisplayViewController *patientVC = self.childViewControllers[0];
     SuccessViewController *successVc = self.childViewControllers[1];
+//    TwoViewController *twoVc = self.childViewControllers[1];
     
     if (self.segmentedControl.selectedSegmentIndex == 0) {
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];

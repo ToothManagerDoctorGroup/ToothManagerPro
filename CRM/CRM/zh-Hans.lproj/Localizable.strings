@@ -10,6 +10,8 @@
  * from EaseMob Technologies.
  */
 
+"Notification" = "通知";
+"OK" = "确定";
 //general
 "register" = "注册";
 "login" = "登录";

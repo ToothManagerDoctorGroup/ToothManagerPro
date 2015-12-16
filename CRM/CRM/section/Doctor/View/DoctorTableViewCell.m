@@ -77,6 +77,11 @@
 
 
 -(void)setCellWithSquareMode:(Doctor *)doctor{
+    self.addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
+    self.addButton.layer.cornerRadius = 5.0f;
+    [self.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+
+    
     self.doctorNameLable.text = doctor.doctor_name;
     //self.professionalLable.text = doctor.doctor_position;
     //self.departmentLable.text = doctor.doctor_hospital;
@@ -94,6 +99,8 @@
     
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
+//    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]]];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
 }
 
 - (void)setCellWithMode:(Doctor *)doctor {
@@ -104,9 +111,8 @@
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
 
-    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]]];
-    
-    
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
+//    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]]];
 }
 
 - (void)setCellWithFrienNotifi:(FriendNotificationItem *)notifiItem {
