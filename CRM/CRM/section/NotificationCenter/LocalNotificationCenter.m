@@ -16,6 +16,7 @@
 #import "NSDictionary+Extension.h"
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
+#import "MyDateTool.h"
 
 NSString * const RepeatIntervalDay = @"每天";
 NSString * const RepeatIntervalWeek = @"每周";
@@ -79,6 +80,14 @@ NSString * const RepeatIntervalNone = @"不重复";
         _selected = NO;
     }
     return self;
+}
+
+- (NSString *)reserve_time_end{
+    //获取开始时间
+    NSDate *startTime = [MyDateTool dateWithStringNoSec:self.reserve_time];
+    NSDate *endTime = [startTime dateByAddingTimeInterval:(int)60 * 60 * [self.duration floatValue]];
+    
+    return [MyDateTool stringWithDateNoSec:endTime];
 }
 
 @end

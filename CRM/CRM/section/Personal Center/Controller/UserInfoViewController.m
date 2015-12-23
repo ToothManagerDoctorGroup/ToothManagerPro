@@ -78,6 +78,7 @@
         self.authTextView.editable = NO;
         self.nicknameTextField.text = self.doctor.doctor_name;
         if (self.needGet || [NSString isEmptyString:self.doctor.doctor_dept]) {
+            self.view.userInteractionEnabled = NO;
             [[DoctorManager shareInstance] getDoctorListWithUserId:self.doctor.ckeyid successBlock:^{
                 [SVProgressHUD showWithStatus:@"加载中..."];
             } failedBlock:^(NSError *error) {

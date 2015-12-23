@@ -78,7 +78,10 @@ Realize_ShareInstance(SyncManager);
 
 
 - (void)startSync {
-
+    self.syncGetCount = 0;
+    self.syncGetFailCount = 0;
+    self.syncGetSuccessCount = 0;
+    
     //目前的设计是手工同步不需要检查网络状态
 #if 0
      if(![self networkAvailable])
@@ -390,45 +393,46 @@ Realize_ShareInstance(SyncManager);
 #pragma mark - **************************GCD实现多线程的下载操作*****************
     //开启一个全局队列
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+//    dispatch_queue_t queue = dispatch_queue_create("serialQueue", DISPATCH_QUEUE_SERIAL);//创建串行队列
     dispatch_async(queue, ^{
         //添加多线程进行下载操作
         // 创建一个组
         dispatch_group_t group = dispatch_group_create();
         // 关联一个任务到group
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             [[CRMHttpRequest shareInstance] getMaterialTable];
-            
         });
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             
             [[CRMHttpRequest shareInstance] getIntroducerTable];
         });
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             [[CRMHttpRequest shareInstance] getReserverecordTable];
         });
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             [[CRMHttpRequest shareInstance] getPatIntrMapTable];
             
         });
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             
             [[CRMHttpRequest shareInstance] getRepairDoctorTable];
         });
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             [[CRMHttpRequest shareInstance] getDoctorTable];
         });
+        
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.5];
+//            [[CRMHttpRequest shareInstance] getPatientConsulationTable];
+//        });
         dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
-            [[CRMHttpRequest shareInstance]getPatientConsulationTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.5];
+            [NSThread sleepForTimeInterval: 0.2];
             [[CRMHttpRequest shareInstance] getPatientTable];
             
         });
@@ -494,51 +498,39 @@ Realize_ShareInstance(SyncManager);
     
     if ([TableId isEqualToString:DoctorTableName]) {
 //        [SVProgressHUD showWithStatus:@"医生信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:MaterialTableName]){
 //        [SVProgressHUD showWithStatus:@"材料信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
     
     }else if ([TableId isEqualToString:IntroducerTableName]){
 //        [SVProgressHUD showWithStatus:@"介绍人信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:PatientTableName]){
 //        [SVProgressHUD showWithStatus:@"患者信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:LocalNotificationTableName]){
 //        [SVProgressHUD showWithStatus:@"预约信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:PatIntrMapTableName]){
 //        [SVProgressHUD showWithStatus:@"患者介绍人同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:RepairDocTableName]){
 //        [SVProgressHUD showWithStatus:@"修复医生信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:CTLibTableName]){
 //        [SVProgressHUD showWithStatus:@"CT信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:MedicalCaseTableName]){
 //        [SVProgressHUD showWithStatus:@"病历信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:MedicalExpenseTableName]){
 //        [SVProgressHUD showWithStatus:@"费用信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:MedicalRecordableName]){
 //        [SVProgressHUD showWithStatus:@"病历记录信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
         
     }else if ([TableId isEqualToString:PatientConsultationTableName]){
 //        [SVProgressHUD showWithStatus:@"会诊信息同步成功..."];
-        [NSThread sleepForTimeInterval: 0.5];
     }
     
     /**
@@ -565,7 +557,9 @@ Realize_ShareInstance(SyncManager);
     
     NSLog(@"同步成功数据:%lu",(unsigned long)self.tableNameArr.count);
     NSLog(@"同步成功的表:%@",self.tableNameArr);
-
+    NSLog(@"下载数据请求的次数:%ld",(long)self.syncGetCount);
+    NSLog(@"请求成功的次数%ld",(long)self.syncGetSuccessCount);
+    NSLog(@"请求失败的次数%ld",(long)self.syncGetFailCount);
     
     /*
     if ([TableId isEqualToString:DoctorTableName]) {

@@ -27,6 +27,10 @@
 @property (nonatomic, copy)NSString *clinic_reserve_id;
 @property (nonatomic, copy)NSString *duration;
 
+
+@property (nonatomic, copy)NSString *reserve_time_end;//预约结束时间
+
+
 + (LocalNotification *)notificaitonWithResult:(FMResultSet *)result;
 + (LocalNotification *)LNFromLNFResult:(NSDictionary *)lnRe;
 

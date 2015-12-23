@@ -118,6 +118,9 @@ Realize_ShareInstance(DBManager);
     
     [self createDBTableWithTableName:RepairDocTableName andParams:@"doctor_name text, doctor_phone text, creation_time text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, user_id text,creation_date text, update_date text"];
     
+    //创建自动同步的表
+    [self createDBTableWithTableName:InfoAutoSyncTableName andParams:@"id INTEGER PRIMARY KEY AUTOINCREMENT,data_type text,post_type text,dataEntity text,sync_status text,autoSync_CreateDate text"];
+    
     return YES;
 }
 

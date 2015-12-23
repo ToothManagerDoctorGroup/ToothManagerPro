@@ -112,7 +112,7 @@
             cellMode.name = patientTmp.patient_name;
         }
         cellMode.phone = patientTmp.patient_phone;
-       // cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
+//        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
         cellMode.status = patientTmp.patient_status;

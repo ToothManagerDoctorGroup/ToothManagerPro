@@ -327,3 +327,32 @@ typedef CGFloat Money;
 @end
 
 #endif
+
+@interface InfoAutoSync : NSObject
+/**
+ *  主键id
+ */
+@property (nonatomic, assign)NSInteger info_id;
+/**
+ *  数据的类型
+ */
+@property (nonatomic, copy)NSString *data_type;
+/**
+ *  上传的类型：insert,update,delete
+ */
+@property (nonatomic, copy)NSString *post_type;
+/**
+ *  具体的数据
+ */
+@property (nonatomic, copy)NSString *dataEntity;
+/**
+ *  同步的状态：0:未上传  1:上传中 2:上传成功 3:上传失败
+ */
+@property (nonatomic, copy)NSString *sync_status;
+/**
+ *  创建时间  yyyyMMddHHmmss
+ */
+@property (nonatomic, copy)NSString *autoSync_CreateDate;
+
++ (InfoAutoSync *)InfoAutoSyncWithResult:(FMResultSet *)result;
+@end

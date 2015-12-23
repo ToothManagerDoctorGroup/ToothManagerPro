@@ -50,6 +50,7 @@
         [columeArray addObject:@"patient_name"]; //姓名
         [columeArray addObject:@"patient_phone"]; //电话
         [columeArray addObject:@"patient_avatar"];
+        [columeArray addObject:@"patient_gender"];
         [columeArray addObject:@"patient_age"];
         [columeArray addObject:@"patient_status"];
         [columeArray addObject:@"ori_user_id"];
@@ -71,6 +72,7 @@
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
         [valueArray addObject:patient.patient_avatar];
+        [valueArray addObject:patient.patient_gender];
         [valueArray addObject:patient.patient_age];
         [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
         [valueArray addObject:patient.ori_user_id];
@@ -98,6 +100,7 @@
 
        
 
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -315,6 +318,7 @@
     [columeArray addObject:@"patient_name"]; //姓名
     [columeArray addObject:@"patient_phone"]; //电话
     [columeArray addObject:@"patient_avatar"];
+    [columeArray addObject:@"patient_gender"];
     [columeArray addObject:@"patient_age"];
     [columeArray addObject:@"patient_status"];
     [columeArray addObject:@"ori_user_id"];
@@ -336,6 +340,7 @@
     [valueArray addObject:patient.patient_name];
     [valueArray addObject:patient.patient_phone];
     [valueArray addObject:patient.patient_avatar];
+    [valueArray addObject:patient.patient_gender];
     [valueArray addObject:patient.patient_age];
     [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
     [valueArray addObject:patient.ori_user_id];
@@ -361,6 +366,7 @@
     [valueArray addObject:patient.anamnesis];
     [valueArray addObject:patient.nickName];
     
+    [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
@@ -414,6 +420,7 @@
         [columeArray addObject:@"patient_name"]; //姓名
         [columeArray addObject:@"patient_phone"]; //电话
         [columeArray addObject:@"patient_avatar"];
+        [columeArray addObject:@"patient_gender"];
         [columeArray addObject:@"patient_age"];
         [columeArray addObject:@"patient_status"];
         [columeArray addObject:@"ori_user_id"];
@@ -434,6 +441,7 @@
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
         [valueArray addObject:patient.patient_avatar];
+        [valueArray addObject:patient.patient_gender];
         [valueArray addObject:patient.patient_age];
         [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
         [valueArray addObject:patient.ori_user_id];
@@ -490,6 +498,7 @@
         [columeArray addObject:@"patient_name"]; //姓名
         [columeArray addObject:@"patient_phone"]; //电话
         [columeArray addObject:@"patient_avatar"];
+        [columeArray addObject:@"patient_gender"];
         [columeArray addObject:@"patient_age"];
         [columeArray addObject:@"patient_status"];
         [columeArray addObject:@"ori_user_id"];
@@ -511,6 +520,7 @@
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
         [valueArray addObject:patient.patient_avatar];
+        [valueArray addObject:patient.patient_gender];
         [valueArray addObject:patient.patient_age];
         [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
         [valueArray addObject:patient.ori_user_id];

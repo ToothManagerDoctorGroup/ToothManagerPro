@@ -31,6 +31,9 @@
 #import "WMPageController.h"
 #import "ReadMessageViewController.h"
 #import "UnReadMessageViewController.h"
+#import "AFNetworkReachabilityManager.h"
+#import "AutoSyncManager.h"
+#import "SysMessageTool.h"
 
 @interface MyScheduleReminderViewController ()<PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -48,13 +51,21 @@
 @property (nonatomic, weak)ScheduleDateButton *buttonView;
 @property (nonatomic, weak)UILabel *messageCountLabel;//消息提示框
 
+@property (nonatomic, strong)NSTimer *timer;
+
 @end
 
 @implementation MyScheduleReminderViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+    //创建一个定时器
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+    //将定时器添加到主队列中
+    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    
+    
     
     self.title = @"日程提醒";
     
@@ -78,6 +89,31 @@
                                              nil] forState:UIControlStateNormal];
     
 }
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    //请求未读消息数
+    [SysMessageTool getUnReadMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
+        if (result.count > 0) {
+            self.messageCountLabel.hidden = NO;
+            self.messageCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)result.count];
+        }else{
+            self.messageCountLabel.hidden = YES;
+        }
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+    
+}
+
+#pragma mark - 定时器
+- (void)autoSyncAction:(NSTimer *)timer{
+    //开始同步数据
+//    [[AutoSyncManager shareInstance] startAutoSync];
+    
+}
 #pragma mark - 设置消息按钮
 - (void)setUpMessageItem{
     UIButton *messageButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -92,9 +128,9 @@
     messageCountLabel.layer.masksToBounds = YES;
     messageCountLabel.backgroundColor = [UIColor redColor];
     messageCountLabel.textColor = [UIColor whiteColor];
-    messageCountLabel.text = @"10";
     messageCountLabel.textAlignment = NSTextAlignmentCenter;
     messageCountLabel.font = [UIFont systemFontOfSize:10];
+    messageCountLabel.hidden = YES;
     self.messageCountLabel = messageCountLabel;
     [messageButton addSubview:messageCountLabel];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:messageButton];

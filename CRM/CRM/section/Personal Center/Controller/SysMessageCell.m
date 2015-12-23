@@ -7,6 +7,7 @@
 //
 
 #import "SysMessageCell.h"
+#import "SysMessageModel.h"
 
 #define TitleFont [UIFont systemFontOfSize:15]
 #define TitleColor [UIColor blackColor]
@@ -72,23 +73,32 @@
     [self.contentView addSubview:divider];
 }
 
+- (void)setModel:(SysMessageModel *)model{
+    _model = model;
+    
+    if ([model.message_type isEqualToString:AttainNewFriend]) {
+        self.titleLabel.text = @"新增好友";
+    }else{
+        self.titleLabel.text = @"新增患者";
+    }
+    
+    self.timeLabel.text = self.model.create_time;
+    
+    self.contentLabel.text = self.model.message_content;
+}
+
 - (void)layoutSubviews{
     [super layoutSubviews];
     
     CGFloat margin = 10;
-    NSString *title = @"新增患者";
-    CGSize titleSize = [title sizeWithFont:TitleFont];
+    CGSize titleSize = [self.titleLabel.text sizeWithFont:TitleFont];
     self.titleLabel.frame = CGRectMake(margin, margin / 2, titleSize.width, 20);
-    self.titleLabel.text = title;
     
-    NSString *time = @"11-02 12:30";
-    CGSize timeSize = [time sizeWithFont:CommenFont];
+    
+    CGSize timeSize = [self.model.create_time sizeWithFont:CommenFont];
     self.timeLabel.frame = CGRectMake(kScreenWidth - timeSize.width - margin, margin / 2, timeSize.width, 20);
-    self.timeLabel.text = time;
     
-    NSString *content = @"张医生给你转诊了患者：李浩";
     self.contentLabel.frame = CGRectMake(margin, self.titleLabel.bottom + margin, kScreenWidth - margin * 2, 20);
-    self.contentLabel.text = content;
     
     self.divider.frame = CGRectMake(0, self.height - 1, kScreenWidth, 1);
 }

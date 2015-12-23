@@ -26,6 +26,7 @@
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [SVProgressHUD dismiss];
 }
 
 - (void)viewDidLoad {
@@ -70,12 +71,6 @@
         if (error) {
             NSLog(@"error:%@",error);
         }
-    }];
-    
-    [DoctorGroupTool getPatientsWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-        
-    } failure:^(NSError *error) {
-        
     }];
 }
 - (void)onRightButtonAction:(id)sender{

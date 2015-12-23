@@ -29,6 +29,8 @@
 #import "DoctorTool.h"
 #import "CRMHttpRespondModel.h"
 #import "DBManager+Introducer.h"
+#import "NewFriendsViewController.h"
+#import "CacheFactory.h"
 
 @interface DoctorLibraryViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate,RequestIntroducerDelegate,UIAlertViewDelegate>
 @property (nonatomic,retain) NSArray *modeArray;
@@ -36,6 +38,8 @@
 @property (nonatomic,retain) Doctor *selectDoctor;
 
 @property (nonatomic, strong)Doctor *deleteDoctor;//当前要删除的医生好友
+
+@property (nonatomic, weak)UILabel *messageCountLabel;//新的信息数
 @end
 
 @implementation DoctorLibraryViewController
@@ -46,29 +50,76 @@
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [SVProgressHUD dismiss];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tongbuAction:) name:@"tongbu" object:nil];
+    
+    [[AccountManager shareInstance] getFriendsNotificationListWithUserid:[AccountManager currentUserid] successBlock:^{
+    } failedBlock:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+    }];
+    
 }
 
 - (void)initView {
     [super initView];
-    self.title = @"医生库";
+    self.title = @"医生好友";
     self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
 //    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
 }
 
 - (void)initData {
-    [super initData];
-    self.searchHistoryArray = [[DBManager shareInstance] getAllDoctor];
-    [self orderedByNumber];
+//    [super initData];
+//    self.searchHistoryArray = [[DBManager shareInstance] getAllDoctor];
+//    [self orderedByNumber];
     if (self.searchHistoryArray == nil) {
         self.searchHistoryArray = @[];
     }
+    
+    //请求网络数据
+    [SVProgressHUD showWithStatus:@"正在加载"];
+    [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] success:^(NSArray *array) {
+        
+        [SVProgressHUD dismiss];
+        
+        self.searchHistoryArray = array;
+        //排序
+        [self orderedByNumber];
+        
+        [self.tableView reloadData];
+        //获取数据库中所有的医生信息
+        NSArray *dbDoctors = [[DBManager shareInstance] getAllDoctor];
+        NSMutableArray *missDoctors = [NSMutableArray array];
+        for (Doctor *inDoctor in array) {
+            BOOL isExists = NO;
+            for (Doctor *doctor in dbDoctors) {
+                if ([inDoctor.ckeyid isEqualToString:doctor.ckeyid]) {
+                    isExists = YES;
+                }
+            }
+            if (!isExists) {
+                [missDoctors addObject:inDoctor];
+            }
+        }
+        //将所有本地不存在的医生存入本地数据库
+        if (missDoctors.count > 0) {
+            for (Doctor *doc in missDoctors) {
+                if([[DBManager shareInstance] insertDoctorWithDoctor:doc]){
+                    [self.tableView reloadData];
+                }
+            }
+        }
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 -(void)orderedByNumber{
     NSArray *lastArray = [NSArray arrayWithArray:self.searchHistoryArray];
@@ -119,6 +170,50 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 68.f;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 44;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 44)];
+    if (![self isSearchResultsTableView:tableView]) {
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(newFriendAction:)];
+        [headerView addGestureRecognizer:tap];
+    }
+    
+    headerView.backgroundColor = [UIColor whiteColor];
+    
+    NSString *title = @"新的好友";
+    CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:15]];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, titleSize.width, 44)];
+    titleLabel.text = title;
+    titleLabel.textColor = [UIColor blackColor];
+    titleLabel.font = [UIFont systemFontOfSize:15];
+    [headerView addSubview:titleLabel];
+    
+    UILabel *messageCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleLabel.right + 2, 5, 16, 16)];
+    messageCountLabel.hidden = YES;
+    messageCountLabel.layer.cornerRadius = 8;
+    messageCountLabel.layer.masksToBounds = YES;
+    messageCountLabel.textColor = [UIColor whiteColor];
+    messageCountLabel.backgroundColor = [UIColor redColor];
+    messageCountLabel.font = [UIFont systemFontOfSize:10];
+    messageCountLabel.textAlignment = NSTextAlignmentCenter;
+    self.messageCountLabel = messageCountLabel;
+    [headerView addSubview:messageCountLabel];
+    
+    UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(0, 43, kScreenWidth, 1)];
+    divider.backgroundColor = MyColor(243, 243, 243);
+    [headerView addSubview:divider];
+    
+    UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
+    arrowView.frame = CGRectMake(kScreenWidth - 13 - 10, (44 - 18) / 2, 13, 18);
+    [headerView addSubview:arrowView];
+    
+    return headerView;
+}
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -199,6 +294,12 @@
         alertView.tag = 111;
         [alertView show];
     }
+}
+#pragma mark - newFriendAction
+- (void)newFriendAction:(UITapGestureRecognizer *)tap{
+    NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+    newFriendVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:newFriendVc animated:YES];
 }
 
 #pragma mark -UIAlertViewDelegate
@@ -332,7 +433,7 @@
     [[SyncManager shareInstance] startSync];
 }
 
-#pragma mark -同步监听
+#pragma mark - 同步监听
 - (void)tongbuAction:(NSNotification *)notif{
     [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
     [self popViewControllerAnimated:YES];
@@ -426,6 +527,33 @@
     [self pushViewController:userInfoVC animated:YES];
 }
 
+
+#pragma mark - 获取好友数据
+- (void)getFriendsNotificationListSuccessWithResult:(NSDictionary *)result {
+    NSArray *resultArray = [result objectForKey:@"Result"];
+    NSString *path = [[CacheFactory sharedCacheFactory] saveToPathAsFileName:@"FriendNotification"];
+    NSData *_data = [[NSData alloc] initWithContentsOfFile:path];
+    //解档辅助类
+    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:_data];
+    //解码并解档出model
+    FriendNotification *friendNotifiObj = [unarchiver decodeObjectForKey:@"FriendNotification"];
+    //关闭解档
+    [unarchiver finishDecoding];
+    
+    if (resultArray.count > 0) {
+        NSInteger index = resultArray.count - friendNotifiObj.result.count;
+        if (index > 0) {
+            self.messageCountLabel.hidden = NO;
+            self.messageCountLabel.text = [NSString stringWithFormat:@"%ld",(long)index];
+            
+        }else{
+            self.messageCountLabel.hidden = YES;
+        }
+    }
+}
+
+- (void)getFriendsNotificationListFailedWithError:(NSError *)error {
+}
 
 @end
 

@@ -11,6 +11,7 @@
 #import "CRMMacro.h"
 #import "GroupPatientModel.h"
 #import "DBTableMode.h"
+#import "GroupMemberModel.h"
 
 #define CommenFont [UIFont systemFontOfSize:14]
 #define CommenColor [UIColor blackColor]
@@ -53,6 +54,7 @@
 - (void)setUp{
     //是否是转诊患者标识
     _signImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"zhuan"]];
+    _signImageView.hidden = YES;
     [self.contentView addSubview:_signImageView];
     
     //患者姓名
@@ -87,13 +89,22 @@
     [self.contentView addSubview:_chooseButton];
 }
 
-- (void)setModel:(GroupPatientModel *)model{
+- (void)setModel:(GroupMemberModel *)model{
     _model = model;
     
-    _nameLabel.text = model.patient_name;
+    if (model.nickName && [model.nickName isNotEmpty]) {
+        _nameLabel.text = model.nickName;
+    }else{
+        _nameLabel.text = model.patient_name;
+    }
     _statusLabel.text = model.statusStr;
-    _numLabel.text = [NSString stringWithFormat:@"%ld颗",(long)model.countMaterial];
+    _numLabel.text = [NSString stringWithFormat:@"%ld颗",(long)model.expense_num];
     _introducerLabel.text = model.intr_name;
+    if (model.is_transfer == 0) {
+        _signImageView.hidden = YES;
+    }else{
+        _signImageView.hidden = NO;
+    }
 
     switch (model.patient_status) {
         case PatientStatusUntreatment:

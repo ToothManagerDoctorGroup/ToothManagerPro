@@ -8,7 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+#define AttainNewPatient @"AttainNewPatient"
+#define AttainNewFriend @"AttainNewFriend"
+
+@class SysMessageModel;
 @interface SysMessageCell : UITableViewCell
+
+@property (nonatomic, strong)SysMessageModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

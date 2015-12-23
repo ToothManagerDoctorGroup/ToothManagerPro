@@ -75,15 +75,21 @@
 - (void)setExpenseArray:(NSArray *)expenseArray {
     NSString *textStr = @"";
     NSInteger num = 0;
+    NSMutableString *expenseStr = [NSMutableString stringWithString:@""];
     for (MedicalExpense *expense in expenseArray) {
         Material *mater = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
         if (nil != mater) {
             textStr = [textStr stringByAppendingString:@"+"];
             textStr = [textStr stringByAppendingString:mater.mat_name];
             num += expense.expense_num;
+            
+            [expenseStr appendFormat:@"%@:%ld  ",mater.mat_name,(long)expense.expense_num];
         }
     }
-    self.expenseNumTextField.text = [NSString stringWithFormat:@"%ld",(long)num];
+    if (expenseArray.count > 0) {
+        [expenseStr appendFormat:@"总数:%ld",(long)num];
+    }
+    self.expenseNumTextField.text = expenseStr;
     self.expenseTextField.text = textStr;
 }
 

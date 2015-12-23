@@ -48,4 +48,6 @@
 
 @property (nonatomic, weak)id<AddReminderViewControllerDelegate> delegate;
 
+@property (nonatomic, assign)BOOL isHome;//判断是否从首页跳转
+
 @end

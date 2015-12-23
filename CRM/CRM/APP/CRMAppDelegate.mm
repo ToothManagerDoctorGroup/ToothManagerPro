@@ -35,14 +35,10 @@
 #import "IntroducerViewController.h"
 #import "PatientSegumentController.h"
 #import "TTMUserGuideController.h"
+#import "XLSignInViewController.h"
+#import "XLPersonalStepOneViewController.h"
 
-@implementation CRMAppDelegate{
-    UIButton *menuButton;
-    MenuView *menuView;
-    MenuButtonPushManager *manager;
-    UIView *clearView;
-}
-
+@implementation CRMAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -123,15 +119,29 @@
         if (self.tabBarController == nil) {
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
+        //个人信息完善界面
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+        XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+        TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:oneVC];
+        
         NSString *newVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
         NSString *oldVersion = [CRMUserDefalut getAppVersion];
         if ([newVersion isEqualToString:oldVersion]) {
-            self.window.rootViewController = self.tabBarController;
+            if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
+                self.window.rootViewController = self.tabBarController;
+            }else{
+                
+                self.window.rootViewController = nav;
+            }
         }else{
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
             guideController.images = @[@"nav1", @"nav2", @"nav3"];
             guideController.showIndicator = NO;
-            guideController.forwardController = self.tabBarController;
+            if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
+                guideController.forwardController = self.tabBarController;
+            }else{
+                guideController.forwardController = nav;
+            }
             self.window.rootViewController = guideController;
             //保存当前版本号
             [CRMUserDefalut obtainAppVersion];
@@ -186,8 +196,10 @@
     NSString *newVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
     NSString *oldVersion = [CRMUserDefalut getAppVersion];
     //获取登录页面
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    SigninViewController *signinVC = [storyBoard instantiateViewControllerWithIdentifier:@"SigninViewController"];
+//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+//    SigninViewController *signinVC = [storyBoard instantiateViewControllerWithIdentifier:@"SigninViewController"];
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    XLSignInViewController *signinVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLSignInViewController"];
     TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:signinVC];
     //比较版本号
     if ([newVersion isEqualToString:oldVersion]) {
@@ -257,11 +269,7 @@
     {
 //        [UMessage sendClickReportForRemoteNotification:userInfo];
         [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
-        
     }
-    
-    
-    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

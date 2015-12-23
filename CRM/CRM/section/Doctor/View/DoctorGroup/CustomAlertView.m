@@ -8,6 +8,8 @@
 
 #import "CustomAlertView.h"
 
+#import "YYKeyboardManager.h"
+
 #define CommenFont [UIFont systemFontOfSize:16]
 #define ContentFont [UIFont systemFontOfSize:15]
 #define TipFont [UIFont systemFontOfSize:14]
@@ -15,7 +17,7 @@
 
 #define Margin 10
 
-@interface CustomAlertView (){
+@interface CustomAlertView ()<YYKeyboardObserver>{
     UIView *_topView; //标题栏视图
     UIView *_bottomView; //内容栏视图
     
@@ -35,6 +37,9 @@
 
 @implementation CustomAlertView
 
+- (void)dealloc{
+    [[YYKeyboardManager defaultManager] removeObserver:self];
+}
 
 - (instancetype)initWithAlertTitle:(NSString *)alertTitle cancleTitle:(NSString *)cancleTitle certainTitle:(NSString *)certainTitle{
     if (self = [super init]) {
@@ -42,6 +47,8 @@
         self.alertTitle = alertTitle;
         self.cancleTitle = cancleTitle;
         self.certainTitle = certainTitle;
+        
+        [[YYKeyboardManager defaultManager] addObserver:self];
     }
     return self;
 }
@@ -214,6 +221,18 @@
     if ([self.delegate respondsToSelector:@selector(alertView:didClickCertainButtonWithContent:)]) {
         [self.delegate alertView:self didClickCertainButtonWithContent:_contentField.text];
     }
+}
+
+- (void)keyboardChangedWithTransition:(YYKeyboardTransition)transition{
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    [UIView animateWithDuration:transition.animationCurve delay:0 options:transition.animationOption animations:^{
+        CGRect kbFrame = [[YYKeyboardManager defaultManager] convertRect:transition.toFrame toView:keyWindow];
+        CGRect textframe = self.frame;
+        textframe.origin.y = kbFrame.origin.y - textframe.size.height;
+        self.frame = textframe;
+    } completion:^(BOOL finished) {
+        
+    }];
 }
 
 @end

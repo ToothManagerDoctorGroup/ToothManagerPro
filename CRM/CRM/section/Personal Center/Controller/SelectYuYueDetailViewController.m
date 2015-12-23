@@ -173,7 +173,7 @@
     }
 }
 
-#pragma tableView delegate&dataSource - mark
+#pragma mark - tableView delegate&dataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 2;

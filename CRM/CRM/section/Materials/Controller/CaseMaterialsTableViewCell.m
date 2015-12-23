@@ -17,7 +17,6 @@
 @implementation CaseMaterialsTableViewCell
 
 - (void)dealloc{
-//    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setCell:(NSArray *)array {
@@ -26,15 +25,12 @@
 //    self.materialName.borderStyle = UITextBorderStyleNone;
 //    self.materialName.delegate = self;
     
-    //添加通知
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChangedAction:) name:UITextFieldTextDidChangeNotification object:nil];
-    
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.materialName addGestureRecognizer:tap];
     
-    self.materialNum.keyboardType = UIKeyboardTypeNumberPad;
-    self.materialNum.borderStyle = UITextBorderStyleNone;
-    self.materialNum.actiondelegate = self;
+//    self.materialNum.keyboardType = UIKeyboardTypeNumberPad;
+//    self.materialNum.borderStyle = UITextBorderStyleNone;
+//    self.materialNum.actiondelegate = self;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -45,7 +41,6 @@
 - (void)tapAction:(UITapGestureRecognizer *)tap{
     [self.delegate didBeginEdit:self];
 }
-
 //完成按钮点击的回调
 - (void)pickerViewFinish:(UIPickerView *)pickerView {
     [self.delegate tableViewCell:self materialNum:[self.materialNum.text integerValue]];
@@ -59,6 +54,11 @@
 //完成按钮点击回调
 - (void)pickerView:(UIPickerView *)pickerView finishSelectWithRow:(NSInteger)row inComponent:(NSInteger)component {
     [self.delegate tableViewCell:self materialNum:[self.materialNum.text integerValue]];
+}
+- (IBAction)deleteAction:(id)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didDeleteCell:)]) {
+        [self.delegate didDeleteCell:self];
+    }
 }
 
 @end

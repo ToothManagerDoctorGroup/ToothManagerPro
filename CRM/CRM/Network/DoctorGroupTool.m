@@ -20,7 +20,7 @@
 + (void)getPatientsWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"table"] = @"Patient";
+    params[@"table"] = @"patient";
     params[@"sync_time"] = @"1970-01-01 00:00:00";
     params[@"doctor_id"] = doctorId;
     
@@ -101,7 +101,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"GroupListByDoctorId";
     params[@"doctor_id"] = doctorId;
-//    params[@"ckeyid"] = ckId;
+    params[@"ckeyid"] = ckId;
     
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -233,11 +233,11 @@
     }];
 }
 
-+ (void)addGroupMemberWithGroupMemberEntity:(GroupMemberEntity *)dataEntity success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure{
++ (void)addGroupMemberWithGroupMemberEntity:(NSArray *)dataEntitys success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure{
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/GroupPatientMapHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"add";
-    params[@"DataEntity"] = [dataEntity.keyValues JSONString];
+    params[@"DataEntity"] = [dataEntitys JSONString];
     
     [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
         

@@ -40,7 +40,7 @@
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
 
-@interface PatientDetailViewController ()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate,MLKMenuPopoverDelegate,PatientHeadMedicalRecordViewDelegate>{
+@interface PatientDetailViewController ()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate,MLKMenuPopoverDelegate,PatientHeadMedicalRecordViewDelegate,PatientDetailHeadInfoViewDelegate,IntroducePersonViewControllerDelegate>{
     UITableView *_tableView;//表示图
     UIView *_headerView; //头视图的背景视图
     PatientDetailHeadInfoView *_headerInfoView; //具体信息
@@ -50,6 +50,8 @@
     UIView *_editView;
     UIImageView *_searchImage; //搜索图片
     CommentTextField *_commentTextField; //会诊信息输入框
+    
+    Introducer *selectIntroducer;
 }
 /**
  *  评论
@@ -134,6 +136,8 @@
 
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
+    
+    selectIntroducer = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -245,14 +249,19 @@
     }
     
     PatientIntroducerMap *map = [[DBManager shareInstance]getPatientIntroducerMapByPatientId:self.detailPatient.ckeyid];
-    if([map.intr_source rangeOfString:@"B"].location != NSNotFound){
-        Introducer *introducer = [[DBManager shareInstance]getIntroducerByCkeyId:map.intr_id];
-        NSLog(@"介绍人姓名=%@",introducer.intr_name);
-        _headerInfoView.introducerName = introducer.intr_name;
+    if (selectIntroducer != nil) {
+        _headerInfoView.introducerName = selectIntroducer.intr_name;
     }else{
-        Introducer *introducer = [[DBManager shareInstance]getIntroducerByIntrid:map.intr_id];
-        NSLog(@"介绍人=%@",introducer.intr_name);
-        _headerInfoView.introducerName = introducer.intr_name;
+        if([map.intr_source rangeOfString:@"B"].location != NSNotFound){
+            Introducer *introducer = [[DBManager shareInstance]getIntroducerByCkeyId:map.intr_id];
+            NSLog(@"介绍人姓名=%@",introducer.intr_name);
+            _headerInfoView.introducerName = introducer.intr_name;
+        }else{
+            Introducer *introducer = [[DBManager shareInstance]getIntroducerByIntrid:map.intr_id];
+            NSLog(@"介绍人=%@",introducer.intr_name);
+            _headerInfoView.introducerName = introducer.intr_name;
+        }
+
     }
     
     Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:self.detailPatient.ckeyid withIntrId:[AccountManager shareInstance].currentUser.userid];
@@ -280,6 +289,7 @@
     if (_headerInfoView == nil) {
         _headerInfoView = [[PatientDetailHeadInfoView alloc] init];
         _headerInfoView.frame = CGRectMake(0, 0, kScreenWidth, [_headerInfoView getTotalHeight]);
+        _headerInfoView.delegate = self;
         _headerInfoView.backgroundColor = [UIColor whiteColor];
     }
     
@@ -430,9 +440,6 @@
 {
     [self.menuPopover dismissMenuPopover];
     if(selectedIndex == 0){
-//        PatientEditViewController *edit = [[PatientEditViewController alloc]initWithNibName:@"PatientEditViewController" bundle:nil];
-//        edit.patientsCellMode = self.patientsCellMode;
-//        [self pushViewController:edit animated:YES];
         [self referralAction:nil];
     }else if(selectedIndex == 1){
         [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:_detailPatient, nil]];
@@ -539,6 +546,60 @@
     }
     
 }
+
+#pragma mark - PatientDetailHeadInfoViewDelegate
+- (void)didSelectIntroducer{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+    introducerVC.delegate = self;
+    introducerVC.Mode = IntroducePersonViewSelect;
+    [self.navigationController pushViewController:introducerVC animated:YES];
+}
+
+#pragma mark - IntroducePersonViewControllerDelegate
+- (void)didSelectedIntroducer:(Introducer *)intro{
+    
+    if ([self.detailPatient.patient_name isEqualToString:intro.intr_name] && [self.detailPatient.patient_phone isEqualToString:intro.intr_phone]) {
+        [SVProgressHUD showErrorWithStatus:@"不能选择自己为介绍人"];
+        return;
+    }
+    
+    selectIntroducer = nil;
+    selectIntroducer = [Introducer intoducerFromIntro:intro];
+    
+    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
+    patient.introducer_id = selectIntroducer.ckeyid;//表明是网络介绍人
+    
+    [SVProgressHUD showWithStatus:@"正在修改..."];
+    if ([[DBManager shareInstance] updatePatient:patient]) {
+        [self insertPatientIntroducerMapWithPatient:patient];
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:patient, nil]];
+    }
+}
+
+- (void)insertPatientIntroducerMapWithPatient:(Patient *)patient{
+    if ([selectIntroducer.intr_id isEqualToString:@"0"]) {
+        [[CRMHttpRequest shareInstance] postPatientIntroducerMap:patient.ckeyid withDoctorId:[AccountManager shareInstance].currentUser.userid withIntrId:selectIntroducer.ckeyid];
+    }
+}
+
+-(void)postPatientIntroducerMapSuccess:(NSDictionary *)result{
+    [SVProgressHUD showImage:nil status:@"修改完成"];
+    
+    PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
+    map.intr_id = selectIntroducer.ckeyid;
+    map.intr_source = @"B";
+    map.patient_id = self.patientsCellMode.patientId;
+    map.doctor_id = [AccountManager shareInstance].currentUser.userid;
+    map.intr_time = [NSString currentDateString];
+    
+    [[DBManager shareInstance]insertPatientIntroducerMap:map];
+}
+-(void)postPatientIntroducerMapFailed:(NSError *)error{
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
     [self.view endEditing:YES];

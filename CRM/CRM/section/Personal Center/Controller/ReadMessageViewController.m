@@ -9,27 +9,86 @@
 #import "ReadMessageViewController.h"
 #import "UIScrollView+MJRefresh.h"
 #import "MJRefresh.h"
+#import "SysMessageTool.h"
+#import "SysMessageModel.h"
+#import "SysMessageCell.h"
+#import "AccountManager.h"
+#import "NewFriendsViewController.h"
+#import "PatientDetailViewController.h"
 
 @interface ReadMessageViewController ()
+@property (nonatomic, strong)NSMutableArray *dataList;
+
+@property (nonatomic, assign)int pageIndex;
 
 @end
 
 @implementation ReadMessageViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    //添加头部刷新控件
-    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefresh)];
-    
-    [self.tableView.legendHeader beginRefreshing];
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)headerRefresh{
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.tableView.legendHeader endRefreshing];
-    });
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    //添加通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requstData) name:ReadUnReadMessageSuccessNotification object:nil];
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.rowHeight = 60;
+    
+    self.pageIndex = 1;
+    
+    [self requstData];
+//    //添加头部刷新控件
+//    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefresh)];
+//    
+//    [self.tableView.legendHeader beginRefreshing];
+    
+    //添加上拉加载的控件
+    [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefresh)];
+}
+
+- (void)requstData{
+    [SVProgressHUD showWithStatus:@"正在加载"];
+    [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:10 success:^(NSArray *result) {
+        [SVProgressHUD dismiss];
+        self.dataList = [NSMutableArray arrayWithArray:result];
+        
+        [self.tableView reloadData];
+        
+        if (result.count < 10) {
+            [self.tableView removeFooter];
+        }
+        self.pageIndex++;
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+- (void)footerRefresh{
+    [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:10 success:^(NSArray *result) {
+        
+        if (result.count > 0) {
+            [self.dataList addObjectsFromArray:result];
+        }
+        [self.tableView.legendFooter endRefreshing];
+        
+        [self.tableView reloadData];
+        
+        self.pageIndex++;
+        
+    } failure:^(NSError *error) {
+        [self.tableView.legendFooter endRefreshing];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 
@@ -39,69 +98,46 @@
 }
 
 #pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
-    return 0;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return 0;
+    return self.dataList.count;
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    // Configure the cell...
+    SysMessageModel *model = self.dataList[indexPath.row];
+    
+    SysMessageCell *cell = [SysMessageCell cellWithTableView:tableView];
+    
+    cell.model = model;
     
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    SysMessageModel *model = self.dataList[indexPath.row];
+    
+    //点击消息
+    [self clickMessageActionWithModel:model];
 }
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+- (void)clickMessageActionWithModel:(SysMessageModel *)model{
+    //判断消息的类型
+    if ([model.message_type isEqualToString:AttainNewPatient]) {
+        //跳转到新的患者详情页面
+        PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+        cellModel.patientId = model.message_id;
+        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+        detailVc.patientsCellMode = cellModel;
+        detailVc.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:detailVc animated:YES];
+        
+    }else if([model.message_type isEqualToString:AttainNewFriend]){
+        //新增好友
+        NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+        [self.navigationController pushViewController:newFriendVc animated:YES];
+    }
 }
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

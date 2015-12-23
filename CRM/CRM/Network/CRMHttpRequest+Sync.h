@@ -275,7 +275,7 @@ DEF_STATIC_CONST_STRING(DataSyncGet_Prefix, DataSyncGet);
 - (void)getMedicalRecordTable; //需要重复下载
 //miss reserve record
 
-- (void)getPatientConsulationTable;//同步会诊信息
+- (void)getPatientConsulationTable;
 @end
 
 

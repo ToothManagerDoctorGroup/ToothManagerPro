@@ -11,12 +11,21 @@
 /**
  *  患者详情页头视图上的详情数据
  */
+@protocol  PatientDetailHeadInfoViewDelegate <NSObject>
+
+@optional
+- (void)didSelectIntroducer;
+
+@end
+
 @interface PatientDetailHeadInfoView : UIView
 
 
 @property (nonatomic,retain)Patient *detailPatient;
 @property (nonatomic, copy)NSString *introducerName;
 @property (nonatomic, copy)NSString *transferStr;
+
+@property (nonatomic, weak)id<PatientDetailHeadInfoViewDelegate> delegate;
 
 @property (nonatomic, assign)BOOL isWeixin;
 

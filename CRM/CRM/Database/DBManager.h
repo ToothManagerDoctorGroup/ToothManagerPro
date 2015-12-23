@@ -28,6 +28,7 @@ DEF_STATIC_CONST_STRING(SysMsgTableName, sys_msg_version2);
 DEF_STATIC_CONST_STRING(PatIntrMapTableName, patient_introducer_map_version2);
 DEF_STATIC_CONST_STRING(RepairDocTableName, repair_doctor_version2)
 DEF_STATIC_CONST_STRING(PatientConsultationTableName, patient_consultation_version2);
+DEF_STATIC_CONST_STRING(InfoAutoSyncTableName, info_auto_sync_version2);
 
 @interface DBManager : NSObject
 

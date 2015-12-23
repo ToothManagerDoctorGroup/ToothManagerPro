@@ -36,8 +36,9 @@
 #import "NSDate+Conversion.h"
 #import "DoctorTool.h"
 #import "CRMHttpRespondModel.h"
+#import "UserInfoViewController.h"
 
-@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate>{
+@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate,UIAlertViewDelegate>{
     
     __weak IBOutlet UISwitch *weiXinSwitch;
     __weak IBOutlet UISwitch *duanXinSwitch;
@@ -88,11 +89,15 @@
     self.huanzheTextField.text = @"";
     //移除所有通知
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    NSLog(@"我被销毁了*********************");
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    if (self.isHome) {
+        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+        UIView *view = keyWindow.subviews[1];
+        [view removeFromSuperview];
+    }
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
@@ -563,9 +568,11 @@
         patientVC.hidesBottomBarWhenPushed = YES;
         [self pushViewController:patientVC animated:YES];
     }else if ([self.medicalChairTextField isFirstResponder] || [self.medicalPlaceTextField isFirstResponder] || [self.timeTextField isFirstResponder]){
+        
         [self.medicalChairTextField resignFirstResponder];
         [self.medicalPlaceTextField resignFirstResponder];
         [self.timeTextField resignFirstResponder];
+        
         SelectYuYueDetailViewController  *selectDateView = [[SelectYuYueDetailViewController alloc]init];
         selectDateView.clinicNameArray = self.clinicArray;
         selectDateView.clinicIdArray = self.clinicIdArray;
@@ -659,7 +666,5 @@
     }else{
         self.assistCountLabel.text = @"";
     }
-    
-    
 }
 @end

@@ -96,8 +96,6 @@
     _friendNotifiObj = [[FriendNotification alloc]init];
     _inPatientNotifiObj = [[InPatientNotification alloc]init];
     _outPatientNotifiObj = [[InPatientNotification alloc]init];
-    
-
 
 }
 - (void)viewWillAppear:(BOOL)animated{
@@ -322,10 +320,6 @@
 
 - (void)getInpatientNotificationListSuccessWithResult:(NSDictionary *)result {
     [SVProgressHUD dismiss];
-    NSLog(@"Inpatient = %@",result);
-//    //测试数据
-//    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:@"162_1429458124058",@"patient_id",@"abc",@"patient_name",@"156",@"doctor_info_id",@"亮",@"doctor_info_name",@"2015-04-19 23:45:32",@"intro_time",@"http://122.114.62.57/avatar/156_201534.jpg",@"doctor_info_image",@"3",@"patients",nil];
-//    NSArray *resultArray = [NSArray arrayWithObjects:dic,dic, nil];
     
     [self.inPatientNotifiObj.result removeAllObjects];
 

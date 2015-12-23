@@ -141,6 +141,8 @@
         Patient *patient = [[Patient alloc]init];
         patient.patient_name = mode.name;
         patient.patient_phone = mode.phone;
+        patient.patient_age = @"0";
+        patient.patient_gender = @"2";//表示没有设置性别
         ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
         if (ret) {
              [[DBManager shareInstance]updateUpdateDate:patient.ckeyid];

@@ -13,6 +13,7 @@
 #import "AccountManager.h"
 #import "DBManager+Doctor.h"
 #import "UIImageView+WebCache.h"
+#import "DoctorInfoModel.h"
 
 @implementation DoctorTableViewCell
 @synthesize professionalLable,doctorNameLable,departmentLable;
@@ -99,20 +100,16 @@
     
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
-//    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]]];
-    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
 }
 
 - (void)setCellWithMode:(Doctor *)doctor {
     self.doctorNameLable.text = doctor.doctor_name;
-   //self.professionalLable.text = doctor.doctor_position;
-   //self.departmentLable.text = doctor.doctor_hospital;
     self.addButton.enabled = doctor.isopen;
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
 
-    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
-//    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,doctor.ckeyid]]];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
 }
 
 - (void)setCellWithFrienNotifi:(FriendNotificationItem *)notifiItem {

@@ -91,11 +91,11 @@
 /**
  *  分组下新增患者
  *
- *  @param dataEntity 参数模型
+ *  @param dataEntitys 参数模型数组
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (void)addGroupMemberWithGroupMemberEntity:(GroupMemberEntity *)dataEntity success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure;
++ (void)addGroupMemberWithGroupMemberEntity:(NSArray *)dataEntitys success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure;
 /**
  *  分组下删除患者
  *

@@ -47,6 +47,14 @@
  *  @param failure      失败回调
  */
 + (void)yuYueMessagePatient:(NSString *)patientId fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure;
+/**
+ *  获取医生的好友列表
+ *
+ *  @param doctor  医生id
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getDoctorFriendListWithDoctorId:(NSString *)doctorId success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
 
 
 @end

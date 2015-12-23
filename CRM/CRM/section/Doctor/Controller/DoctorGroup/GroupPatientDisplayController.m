@@ -29,6 +29,7 @@
 #import "GroupPatientModel.h"
 #import "GroupIntroducerModel.h"
 #import "GroupMemberEntity.h"
+#import "GroupMemberModel.h"
 
 @interface GroupPatientDisplayController ()<GroupPatientCellDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
@@ -60,6 +61,10 @@
 
 @implementation GroupPatientDisplayController
 
+- (void)dealloc{
+    [SVProgressHUD dismiss];
+}
+
 - (void)viewDidLoad {
     [super initView];
     [super viewDidLoad];
@@ -69,8 +74,6 @@
     
     //请求数据
     [self requestData];
-    //获取介绍人信息
-    [self requestIntroduerData];
 }
 
 - (void)setupView {
@@ -87,75 +90,37 @@
 }
 
 - (void)requestData {
-    [SVProgressHUD showWithStatus:@"正在加载"];
-    //获取当前医生的所有患者信息
-    [DoctorGroupTool getPatientsWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-        for (GroupPatientModel *model in result) {
-            model.countMaterial = 0;
-            model.intr_name = @"";
-            
-            for (GroupPatientModel *member in self.GroupMembers) {
-                if ([member.ckeyid isEqualToString:model.ckeyid]) {
-                    model.isMember = YES;
-                }
-            }
-            [_patientCellModeArray addObject:model];
-        }
-        [self requestIntroduerData];
-    } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
-        if (error) {
-            NSLog(@"errro:%@",error);
-        }
-    }];
-}
-
-- (void)requestIntroduerData{
-    [DoctorGroupTool getIntroducersWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-        
-        if (_patientCellModeArray.count > 0) {
-            for (GroupPatientModel *patientM in _patientCellModeArray) {
-                for (GroupIntroducerModel *introducer in result) {
-                    //判断介绍人是否存在
-                    if ([patientM.introducer_id isEqualToString:introducer.intr_id]) {
-                        patientM.intr_name = introducer.intr_name;
-                    }
-                }
-            }
-        }
-        [self.tableView reloadData];
-        [SVProgressHUD dismiss];
-    } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
-        if (error) {
-            NSLog(@"errro:%@",error);
-        }
-    }];
+    
 }
 
 - (void)onRightButtonAction:(id)sender{
     int index = 0;
+    NSMutableArray *selectMemberArr = [NSMutableArray array];
     for (GroupPatientModel *model in self.patientCellModeArray) {
         if (model.isChoose && !model.isMember) {
             index++;
-            [SVProgressHUD showWithStatus:@"正在添加..."];
-                //新增患者
-                GroupMemberEntity *member = [[GroupMemberEntity alloc] initWithGroupName:self.group.group_name groupId:self.group.ckeyid doctorId:self.group.doctor_id patientId:model.ckeyid patientName:model.patient_name ckeyId:self.group.ckeyid];
-                [DoctorGroupTool addGroupMemberWithGroupMemberEntity:member success:^(CRMHttpRespondModel *respondModel) {
-                    [SVProgressHUD dismiss];
-                    if ([respondModel.code integerValue] == 200) {
-                        NSLog(@"添加成功");
-                        //发送一个通知
-                        [[NSNotificationCenter defaultCenter] postNotificationName:DoctorAddGroupMemberSuccessNotification object:nil];
-                        [self popViewControllerAnimated:YES];
-                    }
-                } failure:^(NSError *error) {
-                    [SVProgressHUD showErrorWithStatus:@"添加失败"];
-                    if (error) {
-                        NSLog(@"error:%@",error);
-                    }
-                }];
+            //新增患者
+            GroupMemberEntity *member = [[GroupMemberEntity alloc] initWithGroupName:self.group.group_name groupId:self.group.ckeyid doctorId:self.group.doctor_id patientId:model.ckeyid patientName:model.patient_name ckeyId:self.group.ckeyid];
+            
+            [selectMemberArr addObject:member.keyValues];
         }
+    }
+    if (selectMemberArr.count > 0) {
+        
+        [DoctorGroupTool addGroupMemberWithGroupMemberEntity:selectMemberArr success:^(CRMHttpRespondModel *respondModel) {
+            [SVProgressHUD dismiss];
+            if ([respondModel.code integerValue] == 200) {
+                NSLog(@"添加成功");
+                //发送一个通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:DoctorAddGroupMemberSuccessNotification object:nil];
+                [self popViewControllerAnimated:YES];
+            }
+        } failure:^(NSError *error) {
+            [SVProgressHUD showErrorWithStatus:@"添加失败"];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
     }
     
     if (index == 0) {

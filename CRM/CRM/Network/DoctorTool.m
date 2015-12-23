@@ -12,6 +12,7 @@
 #import "MyUploadParam.h"
 #import "JSONKit.h"
 #import "CRMHttpRespondModel.h"
+#import "DBTableMode.h"
 
 
 #define userIdParam @"userid"
@@ -121,6 +122,37 @@
             failure(error);
         }
     }];
+}
+
++ (void)getDoctorFriendListWithDoctorId:(NSString *)doctorId success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure{
+
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"getintroducer";
+    params[@"uid"] = doctorId;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSLog(@"我的类型:%@",[responseObject class]);
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        NSArray *array = responseObject[@"Result"];
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            
+            for (NSDictionary *dic in array) {
+                Doctor *doctor = [Doctor DoctorFromDoctorResult:dic];
+                [arrayM addObject:doctor];
+            }
+        }
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+
 }
 
 @end

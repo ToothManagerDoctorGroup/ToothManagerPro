@@ -246,9 +246,9 @@ NSString * const Repaired = @"已修复";
     if (self) {
         self.patient_name = @"";
         self.patient_phone = @"";
-        self.patient_age = @"20";
+        self.patient_age = @"0";
         self.patient_avatar = @"";
-        self.patient_gender = @"1";
+        self.patient_gender = @"2";
         self.introducer_id = @"";
         self.patient_status = PatientStatusUntreatment;
         self.ori_user_id = @"";
@@ -900,6 +900,21 @@ NSString * const Repaired = @"已修复";
 //    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
 //    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
     return tmpDoctor;
+}
+
+@end
+
+@implementation InfoAutoSync
+
++ (InfoAutoSync *)InfoAutoSyncWithResult:(FMResultSet *)result{
+    InfoAutoSync *info = [[InfoAutoSync alloc]init];
+    info.info_id = [result intForColumn:@"id"];
+    info.data_type = [result stringForColumn:@"data_type"];
+    info.post_type = [result stringForColumn:@"post_type"];
+    info.dataEntity = [result stringForColumn:@"dataEntity"];
+    info.sync_status = [result stringForColumn:@"sync_status"];
+    info.autoSync_CreateDate = [result stringForColumn:@"autoSync_CreateDate"];
+    return info;
 }
 
 @end

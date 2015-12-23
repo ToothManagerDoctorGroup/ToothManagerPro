@@ -120,6 +120,9 @@
     
     patient.patient_name = self.nameTextField.text;
     patient.patient_phone = self.phoneTextField.text;
+    patient.patient_age = @"0";
+    patient.patient_gender = @"2";
+    
     if (selectIntroducer && selectIntroducer.ckeyid) {
         patient.introducer_id = selectIntroducer.ckeyid;
     }
@@ -145,7 +148,6 @@
                 
                 [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:patient, nil]];
                 
-              
                 
                 UIAlertView * alertview;
                 alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病例", nil];

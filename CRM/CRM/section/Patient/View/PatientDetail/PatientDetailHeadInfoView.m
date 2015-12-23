@@ -14,6 +14,9 @@
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"
 #import "EditAllergyViewController.h"
+#import "IntroducerViewController.h"
+#import "UserInfoViewController.h"
+#import "XLSelectYuyueViewController.h"
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]
@@ -26,7 +29,9 @@
 #define arrowW 13
 #define arrowH 18
 
-@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate>
+@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate,IntroducePersonViewControllerDelegate,UIAlertViewDelegate>{
+    Introducer *selectIntroducer;
+}
 
 @property (nonatomic, weak)UIView *nameAndPhoneSuperView;//姓名和电话父视图
 @property (nonatomic, weak)UILabel *patientNameLabel; //患者姓名
@@ -104,7 +109,11 @@
     introducerNameLabel.font = CommenTitleFont;
     introducerNameLabel.textAlignment = NSTextAlignmentCenter;
     [self addSubview:introducerNameLabel];
+    introducerNameLabel.userInteractionEnabled = YES;
     self.introducerNameLabel = introducerNameLabel;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(introduceAction:)];
+    self.transferToLabel.text = @"转诊到：无";
+    [introducerNameLabel addGestureRecognizer:tap];
     
     //转诊到内容视图
     UILabel *transferToLabel = [[UILabel alloc] init];
@@ -165,8 +174,14 @@
     //患者姓名
     NSString *name;
     if (self.detailPatient.patient_name && [self.detailPatient.patient_name isNotEmpty]) {
-        NSString *agender = [self.detailPatient.patient_gender isEqualToString:@"0"] ? @"女" : @"男";
-        name = [NSString stringWithFormat:@"患者姓名：%@(%@) %@岁",self.detailPatient.patient_name,agender,self.detailPatient.patient_age];
+        NSString *agender;
+        if (![self.detailPatient.patient_gender isEqualToString:@"2"]) {
+            agender = [self.detailPatient.patient_gender isEqualToString:@"0"] ? @"女" : @"男";
+            name = [NSString stringWithFormat:@"患者姓名：%@(%@) %@岁",self.detailPatient.patient_name,agender,self.detailPatient.patient_age];
+        }else{
+            name = [NSString stringWithFormat:@"患者姓名：%@(未知) %@岁",self.detailPatient.patient_name,self.detailPatient.patient_age];
+        }
+        
     }else{
         name = @"患者姓名：无";
     }
@@ -218,27 +233,14 @@
     
 
     //介绍人
-    NSString *introducer;
-    if (self.introducerName) {
-        introducer = [NSString stringWithFormat:@"介绍人：%@",self.introducerName];
-    }else{
-        introducer = @"介绍人：无";
-    }
     self.introducerNameLabel.frame = CGRectMake(0, self.remarkLabel.bottom, kScreenWidth / 2, RowHeight);
-    self.introducerNameLabel.text = introducer;
+    self.introducerNameLabel.text = @"介绍人：无";
     
     //分割线
     [self dividerViewWithFrame:CGRectMake((kScreenWidth - 1) *.5, (RowHeight - DividerH) * .5 + self.remarkLabel.bottom, 1, DividerH)];
     
     //转诊到
-    NSString *transfer;
-    if (self.transferStr) {
-        transfer = [NSString stringWithFormat:@"转诊到:%@",self.transferStr];
-    }else{
-        transfer = @"转诊到：无";
-    }
     self.transferToLabel.frame = CGRectMake(self.introducerNameLabel.right, self.remarkLabel.bottom, kScreenWidth / 2, RowHeight);
-    self.transferToLabel.text = transfer;
     
     //4个按钮
     CGFloat buttonW = (kScreenWidth - 3) / 4;
@@ -281,14 +283,27 @@
     _introducerName = introducerName;
     
     //重新计算frame
-    [self setDetailPatient:self.detailPatient];
+    NSString *introducer;
+    if (self.introducerName && [self.introducerName isNotEmpty]) {
+        introducer = [NSString stringWithFormat:@"介绍人：%@",introducerName];
+    }else{
+        introducer = @"介绍人：无";
+    }
+   
+    self.introducerNameLabel.text = introducer;
 }
 
 - (void)setTransferStr:(NSString *)transferStr{
     _transferStr = transferStr;
     
     //重新计算frame
-    [self setDetailPatient:self.detailPatient];
+    NSString *transfer;
+    if (self.transferStr) {
+        transfer = [NSString stringWithFormat:@"转诊到:%@",self.transferStr];
+    }else{
+        transfer = @"转诊到：无";
+    }
+    self.transferToLabel.text = transfer;
 }
 
 - (CGFloat)getTotalHeight{
@@ -321,7 +336,18 @@
             NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
         }
+    }else if (alertView.tag == 200){
+        if (buttonIndex == 0) {
+            //取消
+        }else{
+            //编辑个人信息
+            UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+            UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
+            userInfoVC.hidesBottomBarWhenPushed = YES;
+            [self.viewController.navigationController pushViewController:userInfoVC animated:YES];
+        }
     }
+    
 }
 
 #pragma mark -发信息
@@ -363,15 +389,28 @@
 
 #pragma mark - 添加预约
 - (void)addReserveButtonClick{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
-    addReminderVC.isAddLocationToPatient = YES;
-    addReminderVC.patient = self.detailPatient;
-    [self.viewController.navigationController pushViewController:addReminderVC animated:YES];
+    
+    if ([[AccountManager shareInstance] currentUser].hospitalName == NULL || ![[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"你没有设置所在医院，是否前往设置？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"前往", nil];
+        alertView.tag = 200;
+        [alertView show];
+        return;
+    }
+    
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+//    AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
+//    addReminderVC.isAddLocationToPatient = YES;
+//    addReminderVC.patient = self.detailPatient;
+//    [self.viewController.navigationController pushViewController:addReminderVC animated:YES];
+    
+        XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
+        selectYuyeVc.hidesBottomBarWhenPushed = YES;
+        [self.viewController.navigationController pushViewController:selectYuyeVc animated:YES];
 }
 #pragma mark - 患者详情
 - (void)patientDetailTapAction:(UITapGestureRecognizer *)tap{
-    EditPatientDetailViewController *editDetail = [[EditPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    EditPatientDetailViewController *editDetail = [storyboard instantiateViewControllerWithIdentifier:@"EditPatientDetailViewController"];
     editDetail.patient = self.detailPatient;
     [self.viewController.navigationController pushViewController:editDetail animated:YES];
 }
@@ -385,5 +424,33 @@
     allergyVc.patient = self.detailPatient;
     [self.viewController.navigationController pushViewController:allergyVc animated:YES];
 }
+
+#pragma mark - 选择介绍人
+- (void)introduceAction:(UITapGestureRecognizer *)tap{
+    if (!self.introducerName || ![self.introducerName isNotEmpty]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didSelectIntroducer)]) {
+            [self.delegate didSelectIntroducer];
+        }
+    }
+}
+
+//#pragma mark - PatientDetailHeadInfoViewDelegate
+//- (void)selectIntroducer{
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+//    IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+//    introducerVC.delegate = self;
+//    introducerVC.Mode = IntroducePersonViewSelect;
+//    
+//    [self.viewController.navigationController pushViewController:introducerVC animated:YES];
+//}
+//
+//#pragma mark - IntroducePersonViewControllerDelegate
+//- (void)didSelectedIntroducer:(Introducer *)intro{
+//    selectIntroducer = nil;
+//    selectIntroducer = [Introducer intoducerFromIntro:intro];
+////    self.introducerNameLabel.text = selectIntroducer.intr_name;
+//    [self setIntroducerName:selectIntroducer.intr_name];
+//    NSLog(@"选择了:%@",selectIntroducer.intr_name);
+//}
 
 @end

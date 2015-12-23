@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@class GroupPatientModel,GroupPatientCell;
+@class GroupPatientModel,GroupPatientCell,GroupMemberModel;
 @protocol GroupPatientCellDelegate <NSObject>
 
 @optional
@@ -17,7 +17,7 @@
 
 @interface GroupPatientCell : UITableViewCell
 
-@property (nonatomic, strong)GroupPatientModel *model;
+@property (nonatomic, strong)GroupMemberModel *model;
 
 @property (nonatomic, assign)BOOL isManage;//是管理分组
 

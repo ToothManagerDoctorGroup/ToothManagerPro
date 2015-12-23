@@ -31,6 +31,9 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     self.view.backgroundColor = [UIColor whiteColor];
     self.tableView.allowsSelection = NO;
+    
+    //默认添加一个种植体
+    [self addLineAction:nil];
 }
 
 - (void)initData{
@@ -80,7 +83,7 @@
 
 - (void)addLineAction:(id)sender {
     MedicalExpense *expense = [[MedicalExpense alloc]init];
-    expense.expense_num = 1;
+    expense.expense_num = 0;
     [self.materialsArray addObject:expense];
     [self.tableView reloadData];
 }
@@ -103,7 +106,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44;
+    return 50;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -123,10 +126,16 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
+    UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 60, 40)];
     [button addTarget:self action:@selector(addLineAction:) forControlEvents:UIControlEventTouchUpInside];
-    [button setTitle:@"添加种植体" forState:UIControlStateNormal];
-    button.backgroundColor = [UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR];
+    [button setImage:[UIImage imageNamed:@"material_add"] forState:UIControlStateNormal];
+    [button setTitle:@"添加条目" forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR] forState:UIControlStateNormal];
+    
+//    button.backgroundColor = [UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR];
+    
+    
+    
     return button;
 }
 
@@ -137,6 +146,12 @@
         cell = [[[NSBundle mainBundle] loadNibNamed:@"CaseMaterialsTableViewCell" owner:nil options:nil] objectAtIndex:0];
         [tableView registerNib:[UINib nibWithNibName:@"CaseMaterialsTableViewCell" bundle:nil] forCellReuseIdentifier:cellString];
     }
+    if (indexPath.row == 0) {
+        cell.deleteButton.hidden = YES;
+    }else{
+        cell.deleteButton.hidden = NO;
+    }
+    
     cell.delegate = self;
     cell.tag = 100+indexPath.row;
     [cell setCell:@[@"AAAAAA",@"sljdaldjsf",@"Olljaldjf"]];
@@ -145,7 +160,7 @@
         Material *material = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
         cell.materialName.text = material.mat_name;
     } else {
-        cell.materialName.text = @"名称";
+        cell.materialName.text = @"选择种植体类型";
     }
     cell.materialNum.text = [NSString stringWithFormat:@"%ld",(long)expense.expense_num];
     return cell;
@@ -167,10 +182,20 @@
     expense.expense_num = num;
 }
 
+- (void)didDeleteCell:(CaseMaterialsTableViewCell *)cell{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    [self.materialsArray removeObjectAtIndex:indexPath.row];
+    [self.tableView reloadData];
+}
+
 - (void)didSelectedMaterial:(Material *)material {
    MedicalExpense *expense = [self.materialsArray objectAtIndex:self.selectIndex];
     expense.mat_id = material.ckeyid;
     [self.tableView reloadData];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    [self.view endEditing:YES];
 }
 
 

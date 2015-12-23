@@ -72,7 +72,7 @@
     [super refreshView];
     _tbheaderView.phoneTextField.text = _doctor.doctor_phone;
     _tbheaderView.nameTextField.text = _doctor.doctor_name;
-    [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,_doctor.ckeyid]]];
+    [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:_doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
     [myTableView reloadData];
 }
 
@@ -96,7 +96,8 @@
     _tbheaderView.view.frame = CGRectMake(0, 0, self.view.bounds.size.width,88);
     _tbheaderView.phoneTextField.text = _doctor.doctor_phone;
     _tbheaderView.nameTextField.text = _doctor.doctor_name;
-    [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,_doctor.ckeyid]]];
+    [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:_doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+//    [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,_doctor.ckeyid]]];
     _tbheaderView.phoneTextField.enabled = NO;
     _tbheaderView.nameTextField.enabled = NO;
     myTableView.tableHeaderView = _tbheaderView.view;
