@@ -22,6 +22,8 @@
 #import "AddressBookViewController.h"
 #import "CreatRepairDoctorViewController.h"
 #import "RepairDoctorDetailViewController.h"
+#import "UISearchBar+XLMoveBgView.h"
+
 
 @interface RepairDoctorViewController ()<MudItemsBarDelegate>
 @property (nonatomic,retain) MudItemsBar *menubar;
@@ -29,6 +31,7 @@
 @property (nonatomic,retain) NSArray *repairDoctorArray;
 @property (nonatomic,retain) NSMutableArray *repairDoctorModeArray;
 @property (nonatomic, strong) NSArray *searchResults;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @end
 
 @implementation RepairDoctorViewController
@@ -38,6 +41,8 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     [self setupView];
+    
+    [self.searchBar moveBackgroundView];
 }
 
 - (void)setupView {
@@ -171,10 +176,10 @@
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
-    bgView.backgroundColor = [UIColor whiteColor];
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
-    label.backgroundColor = [UIColor lightGrayColor];
-    [bgView addSubview:label];
+    bgView.backgroundColor = MyColor(238, 238, 238);
+//    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
+//    label.backgroundColor = [UIColor lightGrayColor];
+//    [bgView addSubview:label];
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"姓名" forState:UIControlStateNormal];

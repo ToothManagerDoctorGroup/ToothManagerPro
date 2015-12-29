@@ -14,7 +14,7 @@
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mbc-uG-t6f">
                     <rect key="frame" x="20" y="7" width="120" height="30"/>
                     <animations/>
-                    <state key="normal" title="新建病程">
+                    <state key="normal" title="新建病历">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>

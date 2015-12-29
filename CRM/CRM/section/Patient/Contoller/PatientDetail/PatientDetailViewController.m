@@ -250,12 +250,16 @@
     
     PatientIntroducerMap *map = [[DBManager shareInstance]getPatientIntroducerMapByPatientId:self.detailPatient.ckeyid];
     if (selectIntroducer != nil) {
+        //表明当前是手动选择介绍人
         _headerInfoView.introducerName = selectIntroducer.intr_name;
+        _headerInfoView.introduceCanEdit = YES;
     }else{
+        //表明是本地介绍人
         if([map.intr_source rangeOfString:@"B"].location != NSNotFound){
             Introducer *introducer = [[DBManager shareInstance]getIntroducerByCkeyId:map.intr_id];
             NSLog(@"介绍人姓名=%@",introducer.intr_name);
             _headerInfoView.introducerName = introducer.intr_name;
+            _headerInfoView.introduceCanEdit = YES;
         }else{
             Introducer *introducer = [[DBManager shareInstance]getIntroducerByIntrid:map.intr_id];
             NSLog(@"介绍人=%@",introducer.intr_name);
@@ -506,7 +510,7 @@
 - (void)didClickAddMedicalButton{
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-    caseVC.title = @"新建病程";
+    caseVC.title = @"新建病历";
     caseVC.patiendId = self.detailPatient.ckeyid;
     [self pushViewController:caseVC animated:YES];
 }
@@ -515,7 +519,7 @@
     _selectCase = mcase;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-    caseVC.title = @"病程详情";
+    caseVC.title = @"病历详情";
     caseVC.edit = YES;
     caseVC.medicalCaseId = mcase.ckeyid;
     [self pushViewController:caseVC animated:YES];
@@ -568,7 +572,7 @@
     selectIntroducer = [Introducer intoducerFromIntro:intro];
     
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
-    patient.introducer_id = selectIntroducer.ckeyid;//表明是网络介绍人
+    patient.introducer_id = selectIntroducer.ckeyid;//表明是本地介绍人
     
     [SVProgressHUD showWithStatus:@"正在修改..."];
     if ([[DBManager shareInstance] updatePatient:patient]) {

@@ -17,6 +17,7 @@
 #import "IntroducerViewController.h"
 #import "UserInfoViewController.h"
 #import "XLSelectYuyueViewController.h"
+#import "NSString+MyString.h"
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]
@@ -29,7 +30,7 @@
 #define arrowW 13
 #define arrowH 18
 
-@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate,IntroducePersonViewControllerDelegate,UIAlertViewDelegate>{
+@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate,UIAlertViewDelegate>{
     Introducer *selectIntroducer;
 }
 
@@ -38,6 +39,8 @@
 @property (nonatomic, weak)UILabel *patientPhoneLabel; //联系电话
 @property (nonatomic, weak)UILabel *remarkLabel;//备注
 @property (nonatomic, weak)UILabel *introducerNameLabel; //介绍人姓名
+@property (nonatomic, weak)UIImageView *introducerImage;//介绍人编辑图片
+
 @property (nonatomic, weak)UILabel *transferToLabel; //转诊到
 @property (nonatomic, weak)UIButton *phoneButton; //联系电话按钮
 @property (nonatomic, weak)UIButton *weixinButton; //微信的按钮
@@ -115,6 +118,12 @@
     self.transferToLabel.text = @"转诊到：无";
     [introducerNameLabel addGestureRecognizer:tap];
     
+    //介绍人编辑按钮
+    UIImageView *introducerImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"patient_bianji"]];
+    self.introducerImage = introducerImage;
+    introducerImage.hidden = YES;
+    [introducerNameLabel addSubview:introducerImage];
+    
     //转诊到内容视图
     UILabel *transferToLabel = [[UILabel alloc] init];
     transferToLabel.textColor = CommenTextColor;
@@ -177,17 +186,17 @@
         NSString *agender;
         if (![self.detailPatient.patient_gender isEqualToString:@"2"]) {
             agender = [self.detailPatient.patient_gender isEqualToString:@"0"] ? @"女" : @"男";
-            name = [NSString stringWithFormat:@"患者姓名：%@(%@) %@岁",self.detailPatient.patient_name,agender,self.detailPatient.patient_age];
+            name = [NSString stringWithFormat:@"姓名：   %@(%@) %@岁",self.detailPatient.patient_name,agender,self.detailPatient.patient_age];
         }else{
-            name = [NSString stringWithFormat:@"患者姓名：%@(未知) %@岁",self.detailPatient.patient_name,self.detailPatient.patient_age];
+            name = [NSString stringWithFormat:@"姓名：   %@(未知) %@岁",self.detailPatient.patient_name,self.detailPatient.patient_age];
         }
         
     }else{
-        name = @"患者姓名：无";
+        name = @"姓名：   ";
     }
     CGSize nameSize = [name sizeWithFont:CommenTitleFont];
     self.patientNameLabel.frame = CGRectMake(Margin, 0, nameSize.width, RowHeight);
-    self.patientNameLabel.text = name;
+    self.patientNameLabel.attributedText = [name changeStrColorWithIndex:3];
     
     
     //过敏史
@@ -202,13 +211,13 @@
     //联系方式
     NSString *phone;
     if (self.detailPatient.patient_phone && [self.detailPatient.patient_phone isNotEmpty]) {
-        phone = [NSString stringWithFormat:@"电话：%@",self.detailPatient.patient_phone];
+        phone = [NSString stringWithFormat:@"电话：   %@",self.detailPatient.patient_phone];
     }else{
-        phone = @"电话：无";
+        phone = @"电话：   无";
     }
     CGSize phoneSize = [phone sizeWithFont:CommenTitleFont];
     self.patientPhoneLabel.frame = CGRectMake(Margin, self.patientNameLabel.bottom, phoneSize.width, RowHeight);
-    self.patientPhoneLabel.text = phone;
+    self.patientPhoneLabel.attributedText = [phone changeStrColorWithIndex:3];
     
     //箭头视图
     UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
@@ -218,12 +227,12 @@
     //备注
     NSString *remark;
     if (self.detailPatient.nickName && [self.detailPatient.nickName isNotEmpty]) {
-        remark = [NSString stringWithFormat:@"备注：%@",self.detailPatient.nickName];
+        remark = [NSString stringWithFormat:@"备注名：%@",self.detailPatient.nickName];
     }else{
-        remark = @"备注：未编辑";
+        remark = @"备注名：";
     }
     self.remarkLabel.frame = CGRectMake(Margin, self.patientPhoneLabel.bottom, kScreenWidth - Margin * 2 - arrowW, RowHeight);
-    self.remarkLabel.text = remark;
+    self.remarkLabel.attributedText = [remark changeStrColorWithIndex:3];
     
     UIImageView *remarkArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
     remarkArrow.frame = CGRectMake(kScreenWidth - arrowW - Margin, (RowHeight - arrowH) / 2 + RowHeight * 2, arrowW, arrowH);
@@ -235,6 +244,10 @@
     //介绍人
     self.introducerNameLabel.frame = CGRectMake(0, self.remarkLabel.bottom, kScreenWidth / 2, RowHeight);
     self.introducerNameLabel.text = @"介绍人：无";
+    
+    //介绍人编辑图片
+    self.introducerImage.frame = CGRectMake(self.introducerNameLabel.width - 14 - 5, (RowHeight - 14) / 2, 14, 14);
+    
     
     //分割线
     [self dividerViewWithFrame:CGRectMake((kScreenWidth - 1) *.5, (RowHeight - DividerH) * .5 + self.remarkLabel.bottom, 1, DividerH)];
@@ -290,7 +303,7 @@
         introducer = @"介绍人：无";
     }
    
-    self.introducerNameLabel.text = introducer;
+    self.introducerNameLabel.attributedText = [introducer changeStrColorWithIndex:4];
 }
 
 - (void)setTransferStr:(NSString *)transferStr{
@@ -299,11 +312,26 @@
     //重新计算frame
     NSString *transfer;
     if (self.transferStr) {
-        transfer = [NSString stringWithFormat:@"转诊到:%@",self.transferStr];
+        transfer = [NSString stringWithFormat:@"转诊到：%@",self.transferStr];
     }else{
         transfer = @"转诊到：无";
     }
-    self.transferToLabel.text = transfer;
+    self.transferToLabel.attributedText = [transfer changeStrColorWithIndex:4];
+}
+
+- (void)setIntroduceCanEdit:(BOOL)introduceCanEdit{
+    _introduceCanEdit = introduceCanEdit;
+    
+    if (introduceCanEdit) {
+        if (self.introducerName == nil) {
+            self.introducerImage.hidden = NO;
+        }else{
+            self.introducerImage.hidden = YES;
+        }
+    }else{
+        self.introducerImage.hidden = YES;
+    }
+    
 }
 
 - (CGFloat)getTotalHeight{
@@ -403,9 +431,11 @@
 //    addReminderVC.patient = self.detailPatient;
 //    [self.viewController.navigationController pushViewController:addReminderVC animated:YES];
     
-        XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
-        selectYuyeVc.hidesBottomBarWhenPushed = YES;
-        [self.viewController.navigationController pushViewController:selectYuyeVc animated:YES];
+    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
+    selectYuyeVc.hidesBottomBarWhenPushed = YES;
+    selectYuyeVc.isAddLocationToPatient = YES;
+    selectYuyeVc.patient = self.detailPatient;
+    [self.viewController.navigationController pushViewController:selectYuyeVc animated:YES];
 }
 #pragma mark - 患者详情
 - (void)patientDetailTapAction:(UITapGestureRecognizer *)tap{
@@ -427,30 +457,13 @@
 
 #pragma mark - 选择介绍人
 - (void)introduceAction:(UITapGestureRecognizer *)tap{
-    if (!self.introducerName || ![self.introducerName isNotEmpty]) {
+    if (self.introduceCanEdit && !self.introducerName) {
         if (self.delegate && [self.delegate respondsToSelector:@selector(didSelectIntroducer)]) {
             [self.delegate didSelectIntroducer];
         }
     }
 }
 
-//#pragma mark - PatientDetailHeadInfoViewDelegate
-//- (void)selectIntroducer{
-//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-//    IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
-//    introducerVC.delegate = self;
-//    introducerVC.Mode = IntroducePersonViewSelect;
-//    
-//    [self.viewController.navigationController pushViewController:introducerVC animated:YES];
-//}
-//
-//#pragma mark - IntroducePersonViewControllerDelegate
-//- (void)didSelectedIntroducer:(Introducer *)intro{
-//    selectIntroducer = nil;
-//    selectIntroducer = [Introducer intoducerFromIntro:intro];
-////    self.introducerNameLabel.text = selectIntroducer.intr_name;
-//    [self setIntroducerName:selectIntroducer.intr_name];
-//    NSLog(@"选择了:%@",selectIntroducer.intr_name);
-//}
+
 
 @end

@@ -155,7 +155,7 @@
     _numLabel.frame = CGRectMake(_introducerLabel.right + Margin , 0, 40, RowHeight);
     
     if (!self.isManage) {
-        _chooseButton.frame = CGRectMake(self.width - Margin * .5 - 20, (RowHeight - 20) / 2, 20, 20);
+        _chooseButton.frame = CGRectMake(self.width - Margin * .5 - 30, (RowHeight - 30) / 2, 30, 30);
     }
     
 }

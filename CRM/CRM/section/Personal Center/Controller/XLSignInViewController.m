@@ -207,7 +207,7 @@
     check = !check;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self.userNameField resignFirstResponder];
     [self.passwordField resignFirstResponder];
 }

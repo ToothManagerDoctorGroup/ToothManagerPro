@@ -14,6 +14,7 @@
 #import "DBManager+Doctor.h"
 #import "UIImageView+WebCache.h"
 #import "DoctorInfoModel.h"
+#import "XLAvatarBrowser.h"
 
 @implementation DoctorTableViewCell
 @synthesize professionalLable,doctorNameLable,departmentLable;
@@ -40,10 +41,19 @@
     self.approveButton.hidden = YES;
     self.refuseButton.hidden = YES;
     
+    self.iconImageView.layer.cornerRadius = 25;
+    self.iconImageView.layer.masksToBounds = YES;
+    self.iconImageView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [self.iconImageView addGestureRecognizer:tap];
+    
 //    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] init];
 //    gesture.numberOfTapsRequired = 1;
 //    [gesture addTarget:self action:@selector(avatarButtonAction:)];
 //    [self.avatarButton addGestureRecognizer:gesture];
+}
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [XLAvatarBrowser showImage:self.iconImageView];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

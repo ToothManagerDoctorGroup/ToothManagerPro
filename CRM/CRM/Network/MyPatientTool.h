@@ -8,8 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
-@class CRMHttpRespondModel;
+@class CRMHttpRespondModel,XLPatientTotalInfoModel;
 @interface MyPatientTool : NSObject
+/**
+ *  获取患者下所有的信息包括ct片，会诊信息等数据
+ *
+ *  @param patientId 患者id
+ *  @param doctorId  医生id
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(XLPatientTotalInfoModel *model))success failure:(void(^)(NSError *error))failure;
+
 /**
  *  获取患者是否绑定微信
  *

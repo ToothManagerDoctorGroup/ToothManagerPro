@@ -19,6 +19,7 @@
 #import "TitleMenuViewController.h"
 #import "ClinicMapViewController.h"
 #import "AccountManager.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 
 @interface SearchClinicViewController ()<UISearchBarDelegate,BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate,ClinicCoverDelegate,TitleMenuViewControllerDelegate>{
@@ -160,6 +161,7 @@
     searchBar.delegate = self;
     self.tableView.tableHeaderView = searchBar;
     _searchBar = searchBar;
+    [_searchBar moveBackgroundView];
 }
 
 #pragma mark -百度地图定位功能实现

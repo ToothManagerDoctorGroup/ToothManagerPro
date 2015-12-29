@@ -88,7 +88,7 @@
         Patient *patient = (Patient *)notifacation.object;
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
         CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-        caseVC.title = @"新建病程";
+        caseVC.title = @"新建病历";
         caseVC.patiendId = patient.ckeyid;
         [self pushViewController:caseVC animated:YES];
     }

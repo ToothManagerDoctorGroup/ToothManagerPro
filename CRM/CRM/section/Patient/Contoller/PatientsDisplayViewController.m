@@ -26,6 +26,7 @@
 #import "PatientDetailViewController.h"
 #import "GroupManageViewController.h"
 #import "DoctorGroupViewController.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface PatientsDisplayViewController () <MudItemsBarDelegate>{
     BOOL ifNameBtnSelected;
@@ -38,6 +39,7 @@
 @property (nonatomic,retain) NSArray *patientInfoArray;
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
 @property (nonatomic,retain) NSMutableArray *searchResults;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @end
 
 @implementation PatientsDisplayViewController
@@ -83,6 +85,8 @@
     self.title = @"患者";
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索患者"];
     self.view.backgroundColor = [UIColor whiteColor];
+    [self.searchBar moveBackgroundView];
+    self.searchBar.backgroundColor = MyColor(238, 238, 238);
     
 }
 
@@ -260,7 +264,7 @@
     [superView addSubview:groupView];
     
     UIView *toplineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 1)];
-    toplineView.backgroundColor = MyColor(158, 158, 158);
+    toplineView.backgroundColor = MyColor(188, 186, 193);
     [groupView addSubview:toplineView];
     
     UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"group_gray"]];
@@ -277,8 +281,8 @@
     arrowView.frame = CGRectMake(kScreenWidth - 10 - 15, 12.5, 15, 15);
     [groupView addSubview:arrowView];
     
-    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39, kScreenWidth, 1)];
-    lineView.backgroundColor = MyColor(158, 158, 158);
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39, kScreenWidth, 10)];
+    lineView.backgroundColor = MyColor(188, 186, 193);
     [groupView addSubview:lineView];
     
     
@@ -290,10 +294,10 @@
         bgView.frame = CGRectMake(0, 0, kScreenWidth, 40);
     }
     
-    bgView.backgroundColor = [UIColor whiteColor];
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
-    label.backgroundColor = [UIColor lightGrayColor];
-    [bgView addSubview:label];
+    bgView.backgroundColor = MyColor(238, 238, 238);
+//    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
+//    label.backgroundColor = MyColor(188, 186, 193);
+//    [bgView addSubview:label];
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"患者" forState:UIControlStateNormal];
@@ -340,6 +344,7 @@
     DoctorGroupViewController *manageVc = [[DoctorGroupViewController alloc] initWithStyle:UITableViewStylePlain];
     manageVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:manageVc animated:YES];
+    
 }
 
 -(void)numberButtonClick:(UIButton *)button{

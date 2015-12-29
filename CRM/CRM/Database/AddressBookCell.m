@@ -41,6 +41,8 @@
 
 - (void)setUp{
     _iconView = [[UIImageView alloc] init];
+    _iconView.layer.cornerRadius = 20;
+    _iconView.layer.masksToBounds = YES;
     [self.contentView addSubview:_iconView];
     
     _nameLabel = [[UILabel alloc] init];

@@ -8,8 +8,10 @@
 
 #import "DoctorsViewController.h"
 #import "DoctorTableViewCell.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface DoctorsViewController ()
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @end
 
@@ -18,6 +20,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [self.searchBar moveBackgroundView];
 }
 
 - (void)initView {

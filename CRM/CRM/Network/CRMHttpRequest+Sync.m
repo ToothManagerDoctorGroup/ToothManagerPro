@@ -2018,10 +2018,8 @@ NSMutableArray *autoSync_Update_Patients = nil;
         NSLog(@"value %@", [result valueForKey:aKey]);
         
     }
-    for (int i = 0; i < counterOfPatientEdit; i++) {
-        //查询数据库，将同步数据设置为上传成功
-        
-    }
+    //删除同步成功的数据
+//     autoSync_Update_Patients[counterOfPatientEdit];
     
     counterOfPatientEdit--;
     

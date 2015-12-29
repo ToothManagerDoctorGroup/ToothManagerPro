@@ -31,6 +31,7 @@
 #import "DBManager+Introducer.h"
 #import "NewFriendsViewController.h"
 #import "CacheFactory.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface DoctorLibraryViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate,RequestIntroducerDelegate,UIAlertViewDelegate>
 @property (nonatomic,retain) NSArray *modeArray;
@@ -38,6 +39,7 @@
 @property (nonatomic,retain) Doctor *selectDoctor;
 
 @property (nonatomic, strong)Doctor *deleteDoctor;//当前要删除的医生好友
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @property (nonatomic, weak)UILabel *messageCountLabel;//新的信息数
 @end
@@ -63,6 +65,7 @@
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
     
+    [self.searchBar moveBackgroundView];
 }
 
 - (void)initView {
@@ -233,22 +236,15 @@
         
         Doctor *doctor = [self.modeArray objectAtIndex:indexPath.row];
         [cell setCellWithSquareMode:doctor];
+        cell.addButton.enabled = YES;
         
     }else{
         Doctor *doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
         [cell setCellWithMode:doctor];
         NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
         [cell.addButton setTitle:[NSString stringWithFormat:@"%ld",(long)count] forState:UIControlStateNormal];
+        cell.addButton.enabled = NO;
     }
-//    Doctor *doctor = nil;
-//    if ([self isSearchResultsTableView:tableView]) {
-//        doctor = [self.modeArray objectAtIndex:indexPath.row];
-//    } else {
-//        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
-//    }
-//    [cell setCellWithMode:doctor];
-//    NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
-//    [cell.addButton setTitle:[NSString stringWithFormat:@"%d",count] forState:UIControlStateNormal];
     
     return cell;
 }

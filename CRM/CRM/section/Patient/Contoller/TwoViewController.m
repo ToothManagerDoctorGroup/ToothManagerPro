@@ -9,6 +9,7 @@
 #import "TwoViewController.h"
 #import "DoctorGroupViewController.h"
 #import "CustomAlertView.h"
+#import "XLTestViewController.h"
 
 #import "UIImageView+WebCache.h"
 
@@ -23,25 +24,26 @@
     self.title = @"消息";
     self.view.backgroundColor = [UIColor whiteColor];
     
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, (self.view.height - 30) / 2, kScreenWidth, 30)];
+    label.text = @"该功能正在开发中,敬请期待!";
+    label.textColor = MyColor(136, 136, 136);
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont systemFontOfSize:15];
+    [self.view addSubview:label];
     
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(50, 100, 200, 200)];
-    imageView.backgroundColor = [UIColor grayColor];
-    self.imageView = imageView;
-//    [self.view addSubview:imageView];
     
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(10, 10, 50, 30);
-    [button setTitle:@"加载图片" forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(buttonAction) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:button];
-    
+    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+    addButton.frame = CGRectMake(100, 100, 40, 40);
+    [addButton addTarget:self action:@selector(addClick) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:addButton];
 }
 
-- (void)buttonAction{
-    NSURL *url = [NSURL URLWithString:@"970_1449904818804.jpg"];
-    [self.imageView sd_setImageWithURL:url];
+- (void)addClick{
+    XLTestViewController *testVc = [[XLTestViewController alloc] init];
+    testVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:testVc animated:YES];
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

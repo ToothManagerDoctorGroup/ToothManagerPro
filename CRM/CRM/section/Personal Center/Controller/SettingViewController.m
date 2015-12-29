@@ -13,6 +13,7 @@
 #import "ChangePasswdViewController.h"
 #import "AccountManager.h"
 #import "TimNavigationViewController.h"
+#import "CRMUserDefalut.h"
 
 @interface SettingViewController (){
     
@@ -23,7 +24,11 @@
     __weak IBOutlet UILabel *_versionLabel;
     IBOutlet UITableViewCell *_genggaimimaCell;
     IBOutlet UITableViewCell *_tuichuCell;
+    IBOutlet UITableViewCell *_tingxingCell;
 }
+@property (weak, nonatomic) IBOutlet UISwitch *tixingSwitch;
+
+@property (nonatomic, assign)BOOL isOpen;//提醒是否打开
 
 @end
 
@@ -31,6 +36,9 @@
 
 - (void)initView{
     
+}
+- (IBAction)switchAction:(id)sender {
+    [CRMUserDefalut setObject:self.tixingSwitch.isOn?@"open":@"close" forKey:[NSString stringWithFormat:@"%@RemindOpening",[AccountManager currentUserid]]];
 }
 
 - (void)initData{
@@ -45,12 +53,19 @@
     
     _versionLabel.text = [NSString stringWithFormat:@"v%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
     
-  
-    
     _tableView.delegate=self;
     _tableView.dataSource=self;
     _tableView.backgroundColor=[UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     
+    //获取偏好设置中保存的提醒设置
+    NSString *userId = [AccountManager currentUserid];
+    NSString *isOpen = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"%@RemindOpening",userId]];
+    if (isOpen == nil) {
+        isOpen = @"open";
+        [CRMUserDefalut setObject:isOpen forKey:[NSString stringWithFormat:@"%@RemindOpening",userId]];
+    }
+    
+    self.tixingSwitch.on = [isOpen isEqualToString:@"open"] ? YES : NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -67,7 +82,7 @@
     if(section==0){
         return 3;
     }else{
-        return 2;
+        return 3;
     }
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -95,6 +110,8 @@
         if(indexPath.row == 0){
             return _genggaimimaCell;
         }else if (indexPath.row == 1){
+            return _tingxingCell;
+        }else{
             return _tuichuCell;
         }
     }
@@ -140,8 +157,9 @@
             
          [self.navigationController pushViewController:changepasswdVC animated:YES];
         }else if (indexPath.row == 1){
-            [[AccountManager shareInstance] logout];
             
+        }else{
+            [[AccountManager shareInstance] logout];
         }
     }
 }

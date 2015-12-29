@@ -58,7 +58,7 @@
     
     //下拉菜单
     NSDictionary *bianji = [[NSDictionary alloc] initWithObjectsAndKeys:@"编辑患者", @"name",[NSNumber numberWithInt:0],@"row", nil];
-    NSDictionary *xinjian = [[NSDictionary alloc] initWithObjectsAndKeys:@"新建病程", @"name",[NSNumber numberWithInt:1],@"row", nil];
+    NSDictionary *xinjian = [[NSDictionary alloc] initWithObjectsAndKeys:@"新建病历", @"name",[NSNumber numberWithInt:1],@"row", nil];
     NSDictionary *zhuanzhen = [[NSDictionary alloc] initWithObjectsAndKeys:@"转诊患者", @"name",[NSNumber numberWithInt:2],@"row", nil];
     NSDictionary *tixing = [[NSDictionary alloc] initWithObjectsAndKeys:@"增加提醒", @"name",[NSNumber numberWithInt:3],@"row", nil];
     NSDictionary *zhuanhuan = [[NSDictionary alloc] initWithObjectsAndKeys:@"转为介绍人", @"name",[NSNumber numberWithInt:4],@"row", nil];
@@ -348,7 +348,7 @@
 - (IBAction)createCaseAction:(id)sender {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-    caseVC.title = @"新建病程";
+    caseVC.title = @"新建病历";
     caseVC.patiendId = self.detailPatient.ckeyid;
     [self pushViewController:caseVC animated:YES];
     
@@ -546,7 +546,7 @@
     MedicalCase *mcase = [self.caseArray objectAtIndex:cell.tag-100];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
-    caseVC.title = @"病程详情";
+    caseVC.title = @"病历详情";
     caseVC.edit = YES;
     caseVC.medicalCaseId = mcase.ckeyid;
     [self pushViewController:caseVC animated:YES];

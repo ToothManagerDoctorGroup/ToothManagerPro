@@ -355,4 +355,5 @@ typedef CGFloat Money;
 @property (nonatomic, copy)NSString *autoSync_CreateDate;
 
 + (InfoAutoSync *)InfoAutoSyncWithResult:(FMResultSet *)result;
+- (instancetype)initWithDataType:(NSString *)dataType postType:(NSString *)postType dataEntity:(NSString *)dataEntity syncStatus:(NSString *)syncStatus;
 @end

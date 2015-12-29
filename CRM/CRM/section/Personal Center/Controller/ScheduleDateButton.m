@@ -73,6 +73,12 @@
     
 }
 
+- (void)setIsSelected:(BOOL)isSelected{
+    _isSelected = isSelected;
+    
+    _arrowButton.selected = isSelected;
+}
+
 
 
 @end

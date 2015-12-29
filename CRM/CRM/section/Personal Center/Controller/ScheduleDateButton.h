@@ -19,6 +19,8 @@
 
 @property (nonatomic, copy)NSString *title;
 
+@property (nonatomic, assign)BOOL isSelected;
+
 @property (nonatomic, weak)id<ScheduleDateButtonDelegate> delegate;
 
 @end

@@ -135,7 +135,7 @@
             }
         }else{
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
-            guideController.images = @[@"nav1", @"nav2", @"nav3"];
+            guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
             guideController.showIndicator = NO;
             if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
                 guideController.forwardController = self.tabBarController;
@@ -196,8 +196,6 @@
     NSString *newVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
     NSString *oldVersion = [CRMUserDefalut getAppVersion];
     //获取登录页面
-//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-//    SigninViewController *signinVC = [storyBoard instantiateViewControllerWithIdentifier:@"SigninViewController"];
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
     XLSignInViewController *signinVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLSignInViewController"];
     TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:signinVC];
@@ -206,7 +204,7 @@
         self.window.rootViewController = nav;
     }else{
         TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
-        guideController.images = @[@"nav1", @"nav2", @"nav3"];
+        guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
         guideController.showIndicator = NO;
         guideController.forwardController = nav;
         self.window.rootViewController = guideController;

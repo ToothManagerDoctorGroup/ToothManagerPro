@@ -16,6 +16,7 @@
 #import "DBTableMode.h"
 #import "RepairDoctorCellMode.h"
 #import "GroupPatientModel.h"
+#import "GroupMemberModel.h"
 
 @implementation ChineseSearchEngine
 
@@ -151,7 +152,7 @@
     NSMutableArray *searchResults = [NSMutableArray arrayWithCapacity:0];
     if (searchText.length>0&&![ChineseInclude isIncludeChineseInString:searchText]) {
         for (int i=0; i<dataArray.count; i++) {
-            GroupPatientModel *patient = [dataArray objectAtIndex:i];
+            GroupMemberModel *patient = [dataArray objectAtIndex:i];
             if ([ChineseInclude isIncludeChineseInString:patient.patient_name]) {
                 if(searchText.length == 1){
                     NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.patient_name];
@@ -180,7 +181,7 @@
             }
         }
     } else if (searchText.length>0&&[ChineseInclude isIncludeChineseInString:searchText]) {
-        for (GroupPatientModel *tmpPatient in dataArray) {
+        for (GroupMemberModel *tmpPatient in dataArray) {
             NSRange titleResult=[tmpPatient.patient_name rangeOfString:searchText options:NSCaseInsensitiveSearch];
             if (titleResult.length>0) {
                 [searchResults addObject:tmpPatient];

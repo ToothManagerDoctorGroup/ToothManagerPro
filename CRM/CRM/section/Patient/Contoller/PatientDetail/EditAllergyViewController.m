@@ -10,6 +10,10 @@
 
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"
+#import "DBManager+AutoSync.h"
+#import "DBManager+sync.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
@@ -71,7 +75,8 @@
         if (self.type == EditAllergyViewControllerRemark) {
             placeHolderLabel.text = @"请输入备注";
         }else{
-            placeHolderLabel.text = @"请输入昵称";
+            placeHolderLabel.text = @"请输入备注名";
+            self.title = @"备注名";
         }
     }else{
         NSArray *tempArray;
@@ -148,30 +153,48 @@
     }
     
     Patient *currentPatient = self.patient;
+    EditAllergyViewControllerType type;
     if (self.type == EditAllergyViewControllerAllergy) {
         //保存过敏史
         currentPatient.patient_allergy = self.textView.text;
+        type = EditAllergyViewControllerAllergy;
         
     }else if (self.type == EditAllergyViewControllerAnamnesis){
         //保存既往病史
         currentPatient.anamnesis = self.textView.text;
+        type = EditAllergyViewControllerAnamnesis;
     }else if(self.type == EditAllergyViewControllerRemark){
         //保存备注
         currentPatient.patient_remark = self.textView.text;
+        type = EditAllergyViewControllerRemark;
     }else{
         //保存昵称
         currentPatient.nickName = self.textView.text;
+        type = EditAllergyViewControllerNickName;
     }
     
     BOOL res = [[DBManager shareInstance] updatePatient:currentPatient];
     if (res) {
         [[DBManager shareInstance] updateUpdateDate:currentPatient.ckeyid];
         [SVProgressHUD showSuccessWithStatus:@"更新成功"];
+        
+        //将修改过的患者信息保存到数据库
+        NSArray *array = [[DBManager shareInstance] getAllEditNeedSyncPatient];
+        for (Patient *patient in array) {
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(editViewController:didEditWithContent:type:)]) {
+            [self.delegate editViewController:self didEditWithContent:self.textView.text type:type];
+        }
     }else{
         [SVProgressHUD showErrorWithStatus:@"更新失败"];
     }
     [self popViewControllerAnimated:YES];
+    
 }
+
 
 
 @end

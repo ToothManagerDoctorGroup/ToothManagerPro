@@ -15,8 +15,13 @@
 #import "XLReserveTypesViewController.h"
 #import "TimNavigationViewController.h"
 #import "DoctorManager.h"
+#import "CRMUserDefalut.h"
+#import "CustomAlertView.h"
+#import "DoctorTool.h"
+#import "CRMHttpRespondModel.h"
+#import "DBManager+Patients.h"
 
-@interface XLAddReminderViewController ()<HengYaDeleate,RuYaDelegate,XLReserveTypesViewControllerDelegate>
+@interface XLAddReminderViewController ()<HengYaDeleate,RuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *patientNameLabel;//患者名称
 @property (weak, nonatomic) IBOutlet UILabel *yaweiNameLabel;//牙位
 @property (weak, nonatomic) IBOutlet UILabel *reserveTypeLabel;//预约类型
@@ -28,6 +33,8 @@
 
 @property (nonatomic,retain) HengYaViewController *hengYaVC;//恒牙
 @property (nonatomic,retain) RuYaViewController *ruYaVC;//乳牙
+
+@property (nonatomic, strong)LocalNotification *currentNoti;//当前需要添加的预约信息
 @end
 
 @implementation XLAddReminderViewController
@@ -48,14 +55,15 @@
 }
 #pragma mark - 保存按钮点击
 - (void)onRightButtonAction:(id)sender{
+    
     if(self.patientNameLabel.text.length == 0){
         [SVProgressHUD showImage:nil status:@"预约患者不能为空"];
         return;
     }
-    if(self.yaweiNameLabel.text.length == 0){
-        [SVProgressHUD showImage:nil status:@"患者牙位不能为空"];
-        return;
-    }
+//    if(self.yaweiNameLabel.text.length == 0){
+//        [SVProgressHUD showImage:nil status:@"患者牙位不能为空"];
+//        return;
+//    }
     if (self.reserveTypeLabel.text.length == 0) {
         [SVProgressHUD showImage:nil status:@"治疗项目不能为空"];
         return;
@@ -72,28 +80,93 @@
     notification.tooth_position = self.yaweiNameLabel.text;
     notification.clinic_reserve_id = @"0";
     notification.duration = [NSString stringWithFormat:@"%.1f",[self.infoDic[@"durationFloat"] floatValue]];
-    NSString *patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
-    notification.patient_id = patient_id;
     
-    BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
+    //判断是否是下一次预约
+    NSString *patient_id;
+    if (self.isNextReserve) {
+        patient_id = self.medicalCase.patient_id;
+    }else if(self.isAddLocationToPatient){
+        patient_id = self.patient.ckeyid;
+    }else{
+        patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    }
+    notification.patient_id = patient_id;
+    self.currentNoti = notification;
     
     //微信消息推送打开
     if([self.weixinSendSwitch isOn]){
-        [[DoctorManager shareInstance] weiXinMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.visitTimeLabel.text successBlock:^{
+        //获取偏好设置中保存的提醒设置
+        NSString *userId = [AccountManager currentUserid];
+        NSString *isOpen = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"%@RemindOpening",userId]];
+        if (isOpen == nil) {
+            isOpen = @"open";
+            [CRMUserDefalut setObject:isOpen forKey:[NSString stringWithFormat:@"%@RemindOpening",userId]];
+        }
+        //开启提示框功能
+        if ([isOpen isEqualToString:@"open"]) {
+            [SVProgressHUD showWithStatus:@"正在加载..."];
+            [DoctorTool yuYueMessagePatient:patient_id fromDoctor:[AccountManager currentUserid] withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.visitTimeLabel.text success:^(CRMHttpRespondModel *result) {
+                [SVProgressHUD dismiss];
+                //显示提示框
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提醒内容" message:result.result delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"发送", nil];
+                [alertView show];
+                
+            } failure:^(NSError *error) {
+                [SVProgressHUD dismiss];
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }else{
+            [self saveNotificationWithNoti:notification];
+        }
+    }else{
+        BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
+        if (ret) {
+            [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
+        }else{
+            [SVProgressHUD showErrorWithStatus:@"本地预约保存失败"];
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (self.isNextReserve) {
+                if (self.delegate && [self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+                    [self.delegate addReminderViewController:self didSelectDateTime:self.visitTimeLabel.text];
+                }
+            }
+            [self.navigationController popViewControllerAnimated:YES];
+        });
+    }
+}
+#pragma mark - 保存本地预约
+- (void)saveNotificationWithNoti:(LocalNotification *)noti{
+    BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:noti];
+    //关闭
+    if (ret) {
+        [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
+        [[DoctorManager shareInstance] weiXinMessagePatient:noti.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.visitTimeLabel.text successBlock:^{
             
         } failedBlock:^(NSError *error){
             [SVProgressHUD showImage:nil status:error.localizedDescription];
         }];
-    }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.navigationController popViewControllerAnimated:YES];
-    });
-    
-    if (ret) {
-        [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
     }else{
         [SVProgressHUD showErrorWithStatus:@"本地预约保存失败"];
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.isNextReserve) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(addReminderViewController:didSelectDateTime:)]) {
+                [self.delegate addReminderViewController:self didSelectDateTime:self.visitTimeLabel.text];
+            }
+        }
+        [self.navigationController popViewControllerAnimated:YES];
+    });
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) {
+        
+    }else{
+        //点击了发送按钮
+        [self saveNotificationWithNoti:self.currentNoti];
     }
 }
 
@@ -105,16 +178,36 @@
     self.visitDurationLabel.text = self.infoDic[@"duration"];
     self.visitAddressLabel.text = [[AccountManager shareInstance] currentUser].hospitalName;
     
+    //如果是下次预约，设置患者的姓名
+    if (self.isNextReserve) {
+        //查询数据库
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.medicalCase.patient_id];
+        if (patient) {
+            //设置当前文本框内的值
+            self.patientNameLabel.text = patient.patient_name;
+        }
+        self.yaweiNameLabel.text = self.medicalCase.case_name;
+    }else if (self.isAddLocationToPatient){
+        if (self.patient) {
+            self.patientNameLabel.text = self.patient.patient_name;
+        }
+    }
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    self.patientNameLabel.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
+    if (!self.isNextReserve && !self.isAddLocationToPatient) {
+        self.patientNameLabel.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
+    }
 }
 
 #pragma mark - UITableView  Delegate/DataSource
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if (section == 0) {
+        return 0;
+    }
     return 40;
 }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -129,10 +222,10 @@
     
     switch (section) {
         case 0:
-            headerLabel.text = @"患者信息";
+            headerLabel.text = @"";
             break;
         case 1:
-            headerLabel.text = @"就诊信息";
+            headerLabel.text = @"";
             break;
         case 2:
             headerLabel.text = @"提醒方式";
@@ -145,6 +238,9 @@
             break;
     }
     
+    if (section == 0) {
+        return nil;
+    }
     return headerView;
 }
 

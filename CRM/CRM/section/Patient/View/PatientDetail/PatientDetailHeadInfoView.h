@@ -23,6 +23,7 @@
 
 @property (nonatomic,retain)Patient *detailPatient;
 @property (nonatomic, copy)NSString *introducerName;
+@property (nonatomic, assign)BOOL introduceCanEdit;//判断介绍人是否可以进行修改
 @property (nonatomic, copy)NSString *transferStr;
 
 @property (nonatomic, weak)id<PatientDetailHeadInfoViewDelegate> delegate;

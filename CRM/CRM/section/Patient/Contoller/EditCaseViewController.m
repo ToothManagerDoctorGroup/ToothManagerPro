@@ -26,7 +26,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = @"编辑单条病程";
+        self.title = @"编辑单条病历";
     }
     return self;
 }
@@ -44,7 +44,7 @@
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
-    UIAlertView * alertView = [[UIAlertView alloc]initWithTitle:@"保存病程" message:@"保存病程成功!" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+    UIAlertView * alertView = [[UIAlertView alloc]initWithTitle:@"保存病历" message:@"保存病历成功!" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
     [alertView show];
 }
 

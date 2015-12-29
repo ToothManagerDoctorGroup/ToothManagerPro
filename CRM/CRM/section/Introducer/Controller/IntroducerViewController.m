@@ -23,6 +23,7 @@
 #import "MudItemsBar.h"
 #import "CreateIntroducerViewController.h"
 #import "SyncManager.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface IntroducerViewController () <MudItemsBarDelegate>
 @property (nonatomic,retain) MudItemsBar *menubar;
@@ -31,6 +32,7 @@
 @property (nonatomic,retain) NSArray * introducerInfoArray;
 @property (nonatomic,readwrite) BOOL useSearchResult;
 @property (nonatomic,retain) NSArray *searchResults;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @end
 
 @implementation IntroducerViewController
@@ -38,7 +40,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    [self.searchBar moveBackgroundView];
+    
 }
 
 - (void)initView {

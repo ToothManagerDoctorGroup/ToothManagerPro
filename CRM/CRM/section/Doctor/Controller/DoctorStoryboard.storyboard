@@ -42,6 +42,7 @@
                     </tableView>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
+                        <outlet property="searchBar" destination="Yfy-Ot-9t0" id="eeW-U4-Yos"/>
                         <outlet property="searchDisplayController" destination="r1n-DT-KzY" id="Xpr-ln-HLd"/>
                     </connections>
                 </tableViewController>

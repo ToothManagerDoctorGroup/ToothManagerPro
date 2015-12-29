@@ -86,11 +86,42 @@
             [expenseStr appendFormat:@"%@:%ld  ",mater.mat_name,(long)expense.expense_num];
         }
     }
-    if (expenseArray.count > 0) {
-        [expenseStr appendFormat:@"总数:%ld",(long)num];
+    
+    for (int i = 0; i < expenseArray.count; i++) {
+        UIView *view = [self.view viewWithTag:150 + i];
+        [view removeFromSuperview];
     }
-    self.expenseNumTextField.text = expenseStr;
-    self.expenseTextField.text = textStr;
+    
+    CGFloat commenH = 40;
+    CGFloat commenW = 240;
+    for (int i = 0; i < expenseArray.count; i++) {
+        
+        MedicalExpense *expense = expenseArray[i];
+        Material *mater = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
+        
+        UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 350 + i * commenH, kScreenWidth, commenH)];
+        superView.tag = 150 + i;
+        superView.backgroundColor = MyColor(248, 248, 248);
+        [self.view addSubview:superView];
+        
+        UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - 240, 0, 180, commenH)];
+        nameLabel.textColor = MyColor(51, 51, 51);
+        nameLabel.font = [UIFont systemFontOfSize:14];
+        nameLabel.text = mater.mat_name;
+        [superView addSubview:nameLabel];
+        
+        UILabel *numLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - 240 + 180, 0, 50, commenH)];
+        numLabel.textColor = MyColor(51, 51, 51);
+        numLabel.font = [UIFont systemFontOfSize:14];
+        numLabel.textAlignment = NSTextAlignmentRight;
+        numLabel.text = [NSString stringWithFormat:@"%ld",(long)expense.expense_num];
+        [superView addSubview:numLabel];
+        if (i != expenseArray.count - 1) {
+            UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(kScreenWidth - 240, commenH - 1, commenW, 1)];
+            lineView.backgroundColor = MyColor(221, 221, 221);
+            [superView addSubview:lineView];
+        }
+    }
 }
 
 - (void)setImages:(NSArray *)images {
@@ -106,7 +137,7 @@
      */
     for(NSInteger i = images.count;i>0;i--){
         CTLib *lib = images[i-1];
-        TimImage *image = [[TimImage alloc]init];
+        TimImage *image = [[TimImage alloc] init];
         image.url = lib.ct_image;
         image.title = lib.ct_desc;
         [muarray addObject:image];

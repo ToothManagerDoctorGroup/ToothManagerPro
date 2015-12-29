@@ -37,12 +37,13 @@
     [super viewDidLoad];
     self.title = @"信息完善";
     self.view.backgroundColor = [UIColor whiteColor];
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setBackBarButtonWithImage:nil];
     
     //设置控件属性
     [self setViewAttr];
     
 }
+- (void)onBackButtonAction:(id)sender{}
 
 #pragma mark - 设置控件属性
 - (void)setViewAttr{
@@ -57,6 +58,9 @@
     self.preStepButton.layer.masksToBounds = YES;
     self.finishButton.layer.cornerRadius = 5;
     self.finishButton.layer.masksToBounds = YES;
+    
+    self.headImageView.layer.cornerRadius = 43;
+    self.headImageView.layer.masksToBounds = YES;
     
     //设置默认的性别
     self.sexCount = 1;
@@ -181,11 +185,10 @@
         [SVProgressHUD showImage:nil status:@"个人消息更新成功"];
         
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        Doctor *doctor = [Doctor DoctorFromDoctorResult:result];
         
         [userobj setName:self.userName];
         [userobj setDepartment:self.departMentName];
-        [userobj setPhone:doctor.doctor_phone];
+        [userobj setPhone:userobj.phone];
         [userobj setHospitalName:self.hospitalName];
         [userobj setTitle:self.professionalName];
         [userobj setDegree:self.academicField.text];

@@ -93,7 +93,7 @@
     
     //修复时间
     NSString *repairTime;
-    if (self.medicalCase.repair_time) {
+    if (self.medicalCase.repair_time && [self.medicalCase.repair_time isNotEmpty]) {
         repairTime = [NSString stringWithFormat:@"修复时间:%@",[self dateStrFromatter:self.medicalCase.repair_time]];
     }else{
         repairTime = @"修复时间:";
@@ -107,7 +107,7 @@
     
     //预约时间
     NSString *orderTime;
-    if (self.medicalCase.next_reserve_time) {
+    if (self.medicalCase.next_reserve_time && [self.medicalCase.next_reserve_time isNotEmpty]) {
         orderTime = [NSString stringWithFormat:@"预约时间:%@",[self dateStrFromatter:self.medicalCase.next_reserve_time]];
     }else{
         orderTime = @"预约时间:";
@@ -120,7 +120,7 @@
     
     //修复医生
     NSString *doctorTitle;
-    if (self.medicalCase.repair_doctor) {
+    if (self.medicalCase.repair_doctor && [self.medicalCase.repair_doctor isNotEmpty]) {
         RepairDoctor *rDoctor = [[DBManager shareInstance] getRepairDoctorWithCkeyId:self.medicalCase.repair_doctor];
         doctorTitle = [NSString stringWithFormat:@"修复医生:%@",rDoctor.doctor_name];
     }else{
@@ -134,7 +134,7 @@
     
     //种植时间
     NSString *plantTime;
-    if (self.medicalCase.implant_time) {
+    if (self.medicalCase.implant_time && [self.medicalCase.implant_time isNotEmpty]) {
         plantTime = [NSString stringWithFormat:@"种植时间:%@",[self dateStrFromatter:self.medicalCase.implant_time]];
     }else{
         plantTime = @"种植时间:";

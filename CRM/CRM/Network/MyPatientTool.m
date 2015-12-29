@@ -10,6 +10,7 @@
 #import "CRMHttpTool.h"
 #import "CRMHttpRespondModel.h"
 #import "JSONKit.h"
+#import "XLPatientTotalInfoModel.h"
 
 #define ActionParam @"action"
 #define Patient_NameParam @"patient_name"
@@ -17,10 +18,30 @@
 
 @implementation MyPatientTool
 
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(XLPatientTotalInfoModel *model))success failure:(void(^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = @"GetPatientAllInfo";
+    params[@"patient_id"] = patientId;
+    params[@"doctor_id"] = doctorId;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:responseObject[@"Result"]];
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+    
+}
+
 + (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
     
-    
-//    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/PatientInfoHandler.ashx";
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientInfoHandler.ashx",DomainName,Method_Weixin];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[ActionParam] = @"weixinBind";

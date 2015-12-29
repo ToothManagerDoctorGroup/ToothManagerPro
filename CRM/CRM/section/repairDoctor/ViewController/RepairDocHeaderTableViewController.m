@@ -8,6 +8,7 @@
 
 #import "RepairDocHeaderTableViewController.h"
 #import "AvatarView.h"
+#import "XLAvatarBrowser.h"
 
 @interface RepairDocHeaderTableViewController ()
 @property (nonatomic,retain) AvatarView *avatar;
@@ -39,7 +40,16 @@
 //    [self.view addSubview:_avatar];
     
     self.iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, 14, 60, 60)];
+    self.iconImageView.layer.cornerRadius = 30;
+    self.iconImageView.layer.masksToBounds = YES;
+    self.iconImageView.userInteractionEnabled = YES;
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [self.iconImageView addGestureRecognizer:tap];
     [self.view addSubview:self.iconImageView];
+}
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [XLAvatarBrowser showImage:self.iconImageView];
 }
 
 - (IBAction)tel:(id)sender {

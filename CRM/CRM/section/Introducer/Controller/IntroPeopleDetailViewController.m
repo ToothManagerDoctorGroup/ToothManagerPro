@@ -20,6 +20,7 @@
 #import "SVProgressHUD.h"
 #import "PatientInfoViewController.h"
 #import "DBManager+Doctor.h"
+#import "PatientDetailViewController.h"
 
 @interface IntroPeopleDetailViewController ()
 
@@ -232,10 +233,10 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     PatientsCellMode *cellMode = [_patientCellModeArray objectAtIndex:indexPath.row];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-    patientDetailCtl.patientsCellMode = cellMode;
-    [self pushViewController:patientDetailCtl animated:YES];
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellMode;
+    [self pushViewController:detailVc animated:YES];
 }
 
 - (void)didReceiveMemoryWarning

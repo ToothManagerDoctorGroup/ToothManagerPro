@@ -39,6 +39,7 @@
 + (TimRequestParam *)paramWithURLSting:(NSString *)requestUrl andParams:(NSDictionary *)params
                             withPrefix:(NSString *)prefix {
     TimRequestParam *reqParam = [TimRequestParam paramWithURLSting:requestUrl andParams:params];
+    
     reqParam.callbackPrefix = prefix;
     return reqParam;
 }

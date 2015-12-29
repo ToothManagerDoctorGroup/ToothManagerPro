@@ -18,6 +18,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *materialNum;
 @property (weak, nonatomic) IBOutlet UIButton *deleteButton;
 
+@property (nonatomic, copy)NSString *materialCount;
+
 - (void)setCell:(NSArray *)array;
 
 @end

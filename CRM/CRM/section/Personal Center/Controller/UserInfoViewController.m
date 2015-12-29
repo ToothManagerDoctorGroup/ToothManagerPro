@@ -22,8 +22,10 @@
 #import "CRMMacro.h"
 #import "UserInfoEditViewController.h"
 #import "DoctorTool.h"
+#import "XLAvatarBrowser.h"
+#import "XLDataSelectViewController.h"
 
-@interface UserInfoViewController () <CRMHttpRequestDoctorDelegate,UIActionSheetDelegate,UserInfoEditViewControllerDelegate>{
+@interface UserInfoViewController () <CRMHttpRequestDoctorDelegate,UIActionSheetDelegate,UserInfoEditViewControllerDelegate,XLDataSelectViewControllerDelegate>{
     __weak IBOutlet UITableViewCell *_jiangeCell;
     
 }
@@ -62,9 +64,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    
     _jiangeCell.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.iconImageView.layer.cornerRadius = 25;
+    self.iconImageView.layer.masksToBounds = YES;
     self.authTextView.placeholder = @"---";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     if (self.doctor) {
@@ -103,21 +108,25 @@
     self.birthDayTextField.isBirthDay = YES;
     
     
-    NSMutableArray *selectSexArray = [NSMutableArray arrayWithObjects:@"男",@"女" ,nil];
-    self.sexTextField.mode = TextFieldInputModePicker;
-    self.sexTextField.pickerDataSource = selectSexArray;
-    
-   NSMutableArray  *selectRepeatArray = [NSMutableArray arrayWithObjects:@"大专",@"本科",@"硕士",@"博士", nil];
-    self.degreeTextField.mode = TextFieldInputModePicker;
-    self.degreeTextField.pickerDataSource = selectRepeatArray;
-    
-    NSMutableArray *selectRepeatArray1 = [NSMutableArray arrayWithObjects:@"医师",@"主治医师",@"副主任医师",@"主任医师", nil];
-    self.titleTextField.mode = TextFieldInputModePicker;
-    self.titleTextField.pickerDataSource = selectRepeatArray1;
-    
-    NSMutableArray *selectRepeatArray2 = [NSMutableArray arrayWithObjects:@"口腔综合科",@"口腔科",@"正畸科",@"儿童口腔科",@"颌面外科",@"牙周科",@"牙体牙髓科",@"口腔黏膜科",@"种植科",@"口腔预防科",@"其他", nil];
-    self.departmentTextField.mode = TextFieldInputModePicker;
-    self.departmentTextField.pickerDataSource = selectRepeatArray2;
+//    NSMutableArray *selectSexArray = [NSMutableArray arrayWithObjects:@"男",@"女" ,nil];
+//    self.sexTextField.mode = TextFieldInputModePicker;
+//    self.sexTextField.pickerDataSource = selectSexArray;
+    self.sexTextField.clearButtonMode = UITextFieldViewModeNever;
+    self.degreeTextField.clearButtonMode = UITextFieldViewModeNever;
+    self.titleTextField.clearButtonMode = UITextFieldViewModeNever;
+    self.departmentTextField.clearButtonMode = UITextFieldViewModeNever;
+//    
+//   NSMutableArray  *selectRepeatArray = [NSMutableArray arrayWithObjects:@"大专",@"本科",@"硕士",@"博士", nil];
+//    self.degreeTextField.mode = TextFieldInputModePicker;
+//    self.degreeTextField.pickerDataSource = selectRepeatArray;
+//    
+//    NSMutableArray *selectRepeatArray1 = [NSMutableArray arrayWithObjects:@"医师",@"主治医师",@"副主任医师",@"主任医师", nil];
+//    self.titleTextField.mode = TextFieldInputModePicker;
+//    self.titleTextField.pickerDataSource = selectRepeatArray1;
+//    
+//    NSMutableArray *selectRepeatArray2 = [NSMutableArray arrayWithObjects:@"口腔综合科",@"口腔科",@"正畸科",@"儿童口腔科",@"颌面外科",@"牙周科",@"牙体牙髓科",@"口腔黏膜科",@"种植科",@"口腔预防科",@"其他", nil];
+//    self.departmentTextField.mode = TextFieldInputModePicker;
+//    self.departmentTextField.pickerDataSource = selectRepeatArray2;
     
     //职业资格证手势【暂时】
     UITapGestureRecognizer *choseImgGesture = [[UITapGestureRecognizer alloc]init];
@@ -129,6 +138,7 @@
     tapGr.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGr];
 }
+
 -(void)viewTapped:(UITapGestureRecognizer*)tapGr
 {
     [self.nicknameTextField resignFirstResponder];
@@ -174,20 +184,17 @@
         }else{
             self.sexTextField.text = @"女";
         }
-        self.birthDayTextField.text = self.currentDoctor.doctor_birthday;
-        
-//        UserObject *userobj = [[AccountManager shareInstance] currentUser];
-//        self.nicknameTextField.text = userobj.name;
-//        self.departmentTextField.text = userobj.department;
-//        self.phoneTextField.text = userobj.phone;
-//        self.hospitalTextField.text = userobj.hospitalName;
-//        self.titleTextField.text = userobj.title;
-//        self.degreeTextField.text = userobj.degree;
-//        self.authstatusTextField.text = [UserObject authStringWithStatus:userobj.authStatus];
-//        self.authTextView.text = userobj.authText;
-//
-//        [self.authImageView sd_setImageWithURL:[NSURL URLWithString:userobj.authPic]];
+        self.birthDayTextField.text = [self.currentDoctor.doctor_birthday substringToIndex:10];
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    //添加监听
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -418,17 +425,53 @@
     [self.sexTextField resignFirstResponder];
 }
 
+- (void)keyboardWillShow:(CGFloat)keyboardHeight {
+    static BOOL flag = NO;
+    if (flag == YES || self.navigationController.topViewController != self) {
+        return;
+    }
+    flag = YES;
+    
+    if ([self.sexTextField isFirstResponder]) {
+        [self.sexTextField resignFirstResponder];
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerSex;
+        dataSelectVc.currentContent = self.sexTextField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+    }else if ([self.degreeTextField isFirstResponder]){
+        [self.degreeTextField resignFirstResponder];
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerDegree;
+        dataSelectVc.currentContent = self.degreeTextField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+    }else if ([self.departmentTextField isFirstResponder]){
+        [self.departmentTextField resignFirstResponder];
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerDepartment;
+        dataSelectVc.currentContent = self.departmentTextField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+    }else if ([self.titleTextField isFirstResponder]){
+        [self.titleTextField resignFirstResponder];
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerProfressional;
+        dataSelectVc.currentContent = self.titleTextField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+    }
+    flag = NO;
+}
+
 #pragma mark -
 #pragma mark CRMHttpRequestPersonalCenterDelegate
 - (void)updateUserInfoSuccessWithResult:(NSDictionary *)result
 {
-//    [SVProgressHUD dismiss];
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showImage:nil status:@"个人消息更新成功"];
         
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        Doctor *doctor = [Doctor DoctorFromDoctorResult:result];
-
         [userobj setName:self.nicknameTextField.text];
         [userobj setDepartment:self.departmentTextField.text];
         [userobj setPhone:self.phoneTextField.text];
@@ -498,6 +541,19 @@
     }else {
         NSLog(@"个人描述修改成功");
         self.doctor_cv = str;
+    }
+}
+
+#pragma mark - XLDataSelectViewControllerDelegate
+- (void)dataSelectViewController:(XLDataSelectViewController *)dataVc didSelectContent:(NSString *)content type:(XLDataSelectViewControllerType)type{
+    if (type == XLDataSelectViewControllerSex) {
+        self.sexTextField.text = content;
+    }else if (type == XLDataSelectViewControllerDegree){
+        self.degreeTextField.text = content;
+    }else if (type == XLDataSelectViewControllerDepartment){
+        self.departmentTextField.text = content;
+    }else if (type == XLDataSelectViewControllerProfressional){
+        self.titleTextField.text = content;
     }
 }
 

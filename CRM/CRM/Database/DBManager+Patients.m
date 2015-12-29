@@ -464,7 +464,12 @@
         [valueArray addObject:patient.doctor_id];
         
         [valueArray addObject:patient.patient_allergy];
-        [valueArray addObject:patient.patient_remark];
+        if (patient.patient_remark == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_remark];
+        }
+        
         [valueArray addObject:patient.idCardNum];
         [valueArray addObject:patient.patient_address];
         [valueArray addObject:patient.anamnesis];

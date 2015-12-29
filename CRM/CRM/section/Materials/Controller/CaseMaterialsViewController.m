@@ -82,8 +82,17 @@
 }
 
 - (void)addLineAction:(id)sender {
+    
+    for (int i = 0; i < self.materialsArray.count; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        MedicalExpense *expense = self.materialsArray[i];
+        if ([cell.materialCount integerValue] != 0) {
+            expense.expense_num = [cell.materialNum.text integerValue];
+        }
+    }
+    
     MedicalExpense *expense = [[MedicalExpense alloc]init];
-    expense.expense_num = 0;
     [self.materialsArray addObject:expense];
     [self.tableView reloadData];
 }
@@ -115,7 +124,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
+    return NO;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -131,10 +140,6 @@
     [button setImage:[UIImage imageNamed:@"material_add"] forState:UIControlStateNormal];
     [button setTitle:@"添加条目" forState:UIControlStateNormal];
     [button setTitleColor:[UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR] forState:UIControlStateNormal];
-    
-//    button.backgroundColor = [UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR];
-    
-    
     
     return button;
 }
@@ -162,12 +167,26 @@
     } else {
         cell.materialName.text = @"选择种植体类型";
     }
-    cell.materialNum.text = [NSString stringWithFormat:@"%ld",(long)expense.expense_num];
+    if (expense.expense_num == 0) {
+        cell.materialNum.text = @"";
+    }else{
+        cell.materialNum.text = [NSString stringWithFormat:@"%ld",(long)expense.expense_num];
+    }
+    
     return cell;
 }
 
 #pragma mark - cell Delegate
 - (void)didBeginEdit:(CaseMaterialsTableViewCell *)cell {
+    
+    for (int i = 0; i < self.materialsArray.count; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        MedicalExpense *expense = self.materialsArray[i];
+        if ([cell.materialCount integerValue] != 0) {
+            expense.expense_num = [cell.materialNum.text integerValue];
+        }
+    }
     
     self.selectIndex = cell.tag - 100;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];

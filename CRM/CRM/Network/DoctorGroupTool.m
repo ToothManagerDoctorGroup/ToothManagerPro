@@ -17,6 +17,31 @@
 
 @implementation DoctorGroupTool
 
++ (void)getGroupPatientsWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"listpatientbydoctorid";
+    params[@"doctor_id"] = doctorId;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        if ([responseObject[@"Code"] intValue] == 200) {
+            for (NSDictionary *dic in responseObject[@"Result"]) {
+                GroupMemberModel *model = [GroupMemberModel objectWithKeyValues:dic];
+                [arrayM addObject:model];
+            }
+        }
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 + (void)getPatientsWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];

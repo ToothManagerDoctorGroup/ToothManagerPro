@@ -58,27 +58,29 @@
     _timeLabel.frame = CGRectMake(margin, 0, timeSize.width, self.height);
     _timeLabel.text = self.time;
     
-    _contentView.frame = CGRectMake(_timeLabel.right + margin, 0, kScreenWidth - margin * 2 - _timeLabel.width, self.height);
+    _contentView.frame = CGRectMake(_timeLabel.right + margin, 0, kScreenWidth - margin * 2 - _timeLabel.width, 40);
     
     if (models.count > 0) {
         _contentView.hidden = NO;
+        [self.contentView addSubview:_contentView];
         CGFloat contentW = (self.width - _timeLabel.width - 20) / models.count;
         for (int i = 0; i < models.count; i++) {
             LocalNotification *model = models[i];
-            UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(i * contentW, 0, contentW, self.height)];
+            UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(i * contentW + 2, 0, contentW, 40)];
             contentLabel.textColor = [UIColor blackColor];
-            contentLabel.backgroundColor = [UIColor redColor];
+            contentLabel.backgroundColor = MyColor(186, 232, 255);
             contentLabel.font = [UIFont systemFontOfSize:15];
             contentLabel.text = model.reserve_type;
             [_contentView addSubview:contentLabel];
             
             UIView *dividerView = [[UIView alloc] init];
-            dividerView.backgroundColor = [UIColor blueColor];
-            dividerView.frame = CGRectMake(i * contentW, 0, 2, self.height);
+            dividerView.backgroundColor = MyColor(0, 160, 234);
+            dividerView.frame = CGRectMake(i * contentW, 0, 2, 40);
             [_contentView addSubview:dividerView];
         }
     }else{
         _contentView.hidden = YES;
+        [_contentView removeFromSuperview];
     }
 }
 

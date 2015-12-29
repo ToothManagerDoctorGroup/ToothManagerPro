@@ -14,6 +14,7 @@
 #import "NSDate+Conversion.h"
 #import "NSString+Conversion.h"
 #import "AccountManager.h"
+#import "MyDateTool.h"
 
 //NSString * const ITI = @"ITI";
 //NSString * const DENTIS = @"DENTIS"; //诺贝尔，ITI，奥齿泰，费亚丹
@@ -914,6 +915,17 @@ NSString * const Repaired = @"已修复";
     info.dataEntity = [result stringForColumn:@"dataEntity"];
     info.sync_status = [result stringForColumn:@"sync_status"];
     info.autoSync_CreateDate = [result stringForColumn:@"autoSync_CreateDate"];
+    return info;
+}
+
+
+- (instancetype)initWithDataType:(NSString *)dataType postType:(NSString *)postType dataEntity:(NSString *)dataEntity syncStatus:(NSString *)syncStatus{
+    InfoAutoSync *info = [[InfoAutoSync alloc] init];
+    info.data_type = dataType;
+    info.post_type = postType;
+    info.dataEntity = dataEntity;
+    info.sync_status = syncStatus;
+    info.autoSync_CreateDate = [MyDateTool stringWithDateyyyyMMddHHmmss:[NSDate date]];
     return info;
 }
 

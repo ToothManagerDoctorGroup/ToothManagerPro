@@ -23,7 +23,7 @@
 #import "FSCalendar.h"
 #import "XLAddReminderViewController.h"
 
-@interface XLSelectYuyueViewController ()<ClinicCoverDelegate,MenuTitleViewControllerDelegate,FSCalendarDelegate,FSCalendarDataSource>
+@interface XLSelectYuyueViewController ()<ClinicCoverDelegate,MenuTitleViewControllerDelegate,FSCalendarDelegate,FSCalendarDataSource,XLAddReminderViewControllerDelegate>
 @property (nonatomic,retain) NSArray *remindArray; //被预约的时间数组
 @property (nonatomic,retain) NSMutableArray *remindTwoArray; //被占用的时间数组
 
@@ -81,6 +81,7 @@
     self.title = @"选择时间";
     self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back.png"]];
+    [self setRightBarButtonWithTitle:@"今天"];
     
     timeArray = [[NSMutableArray alloc]initWithCapacity:0];
     for (int i = 0; i < 31; i++) {
@@ -117,9 +118,22 @@
     [self.view addSubview:m_tableView];
     
 }
+//今天按钮点击
+- (void)onRightButtonAction:(id)sender{
+//    [self.calendar selectDate:[NSDate date] scrollToDate:NO];
+//    [self.calendar setCurrentPage:[NSDate date]];
+    [self.calendar selectDate:[NSDate date]];
+    
+    [self requestDataWithDate:[NSDate date]];
+}
+
 #pragma mark - FSCalendar Delegate/DataSource
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date
 {
+    [self requestDataWithDate:date];
+}
+
+- (void)requestDataWithDate:(NSDate *)date{
     NSString *dateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateStr];
     dateString = dateStr;
@@ -237,6 +251,14 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
         XLAddReminderViewController *addreminderVc = [storyboard instantiateViewControllerWithIdentifier:@"XLAddReminderViewController"];
         addreminderVc.infoDic = dicM;
+        if (self.isNextReserve) {
+            addreminderVc.isNextReserve = self.isNextReserve;
+            addreminderVc.medicalCase = self.medicalCase;
+            addreminderVc.delegate = self;
+        }else if (self.isAddLocationToPatient){
+            addreminderVc.isAddLocationToPatient = self.isAddLocationToPatient;
+            addreminderVc.patient = self.patient;
+        }
         [self pushViewController:addreminderVc animated:YES];
     }
 }
@@ -266,5 +288,13 @@
     return compareResult;
 }
 
+#pragma mark - XLAddReminderViewControllerDelegate
+- (void)addReminderViewController:(XLAddReminderViewController *)vc didSelectDateTime:(NSString *)dateStr{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(selectYuyueViewController:didSelectDateTime:)]) {
+        [self.delegate selectYuyueViewController:self didSelectDateTime:dateStr];
+    }
+    //关闭当前视图
+    [self popViewControllerAnimated:YES];
+}
 
 @end

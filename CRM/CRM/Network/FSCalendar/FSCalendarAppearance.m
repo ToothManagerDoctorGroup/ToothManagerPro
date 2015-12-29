@@ -79,7 +79,7 @@
         _headerTitleFontName = [UIFont systemFontOfSize:1].fontName;
         
         _headerTitleColor = FSCalendarStandardTitleTextColor;
-        _headerDateFormat = @"MMMM yyyy";
+        _headerDateFormat = @"yyyy年 MM月";
         _headerMinimumDissolvedAlpha = 0.2;
         _weekdayTextColor = FSCalendarStandardTitleTextColor;
         _caseOptions = FSCalendarCaseOptionsHeaderUsesDefaultCase|FSCalendarCaseOptionsWeekdayUsesDefaultCase;

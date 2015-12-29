@@ -29,8 +29,13 @@
 #import "HengYaViewController.h"
 #import "RuYaViewController.h"
 #import "AddReminderViewController.h"
+#import "XLSelectYuyueViewController.h"
+#import "XLSelectCalendarViewController.h"
+#import "MyDateTool.h"
+#import "XLRecordCell.h"
+#import "MyDateTool.h"
 
-@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,AddReminderViewControllerDelegate>
+@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
 @property (nonatomic,retain) MedicalCase *medicalCase;
 @property (nonatomic,retain) MedicalReserve *medicalRes;
@@ -54,27 +59,33 @@
     implant_time = _medicalCase.implant_time;
     repair_doctor = _medicalCase.repair_doctor;
     repair_time = _medicalCase.repair_time;
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    
 }
 - (void)initView {
     [super initView];
-    self.tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height-44);
+    self.tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 44);
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 10, 0);
     self.tooBar.frame = CGRectMake(0, SCREEN_HEIGHT-64-44, self.view.bounds.size.width, 44);
     self.addRecordButton.layer.cornerRadius = 5.0f;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     _tableHeaderView = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseHeaderViewController"];
-    [_tableHeaderView.view setFrame:CGRectMake(0, 0, self.view.bounds.size.width, 375-41)];
+    [_tableHeaderView.view setFrame:CGRectMake(0, 0, self.view.bounds.size.width, 350)];
     _tableHeaderView.delegate = self;
     _tableHeaderView.tableView.scrollEnabled = NO;
     [_tableHeaderView setviewWith:_medicalCase andRes:_medicalRes];
     [_tableHeaderView setImages:_ctblibArray];
     [_tableHeaderView setExpenseArray:_expenseArray];
+    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 350 + _expenseArray.count * 40);
+    
     self.tableView.tableHeaderView = _tableHeaderView.view;
-    self.tableView.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    self.tableView.backgroundColor = [UIColor colorWithHex:0xe5e5e5];
+//    self.tableView.backgroundColor = [UIColor colorWithHex:0xe5e5e5];
+    self.tableView.backgroundColor = MyColor(248, 248, 248);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     UITapGestureRecognizer *tapges = [[UITapGestureRecognizer alloc]init];
@@ -92,7 +103,7 @@
     [super initData];
     //初始化table 每段的数据容器
     if (self.edit == YES) {
-        self.title = @"编辑病程";
+        self.title = @"编辑病历";
         _medicalCase = [[DBManager shareInstance] getMedicalCaseWithCaseId:self.medicalCaseId];
         _medicalRes  = [[DBManager shareInstance] getMedicalReserveWithCaseId:self.medicalCaseId];
         if (_medicalRes == nil) {
@@ -115,7 +126,7 @@
         }
         self.patiendId = _medicalCase.patient_id;
     } else {
-        self.title = @"新建病程";
+        self.title = @"新建病历";
         _medicalCase = [[MedicalCase alloc]init];
         _medicalCase.patient_id = self.patiendId;
         _medicalCase.case_status = 1;
@@ -316,40 +327,46 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-        MedicalRecord *record = [self.recordArray objectAtIndex:indexPath.row];
-    CGFloat height = [PatientManager getSizeWithString:record.record_content].height+18;
-    if (height < 48) {
-        return 48;
+    MedicalRecord *record = [self.recordArray objectAtIndex:indexPath.row];
+    CGSize contentSize = [record.record_content sizeWithFont:[UIFont systemFontOfSize:14] constrainedToSize:CGSizeMake(kScreenWidth - 15 * 2 - 10 - 40 - 35, MAXFLOAT) lineBreakMode:NSLineBreakByCharWrapping];
+    CGFloat height = 0;
+    if (contentSize.height + 20 + 10 + 5 + 30 > 60) {
+        height = contentSize.height + 20 + 10 + 5 + 30;
+    }else{
+        height = 60;
     }
     return height;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 40;
+    return 50;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
-    headerView.backgroundColor = [UIColor colorWithHex:0xe5e5e5];
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(8, 10, 320, 20)];
-    label.font = [UIFont boldSystemFontOfSize:12.0f];
+    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+    headerView.backgroundColor = [UIColor whiteColor];
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(8, 0, 320, 50)];
+    label.font = [UIFont boldSystemFontOfSize:14.0f];
     label.backgroundColor = [UIColor clearColor];
-    label.textColor = [UIColor viewFlipsideBackgroundColor];
-    label.text = @"病程描述";
+    label.textColor = MyColor(136, 136, 136);
+    label.text = @"病历描述";
     [headerView addSubview:label];
+    
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 49, kScreenWidth, 1)];
+    lineView.backgroundColor = MyColor(221, 221, 221);
+    [headerView addSubview:lineView];
+    
+    UIView *lineView1 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 1)];
+    lineView1.backgroundColor = MyColor(221, 221, 221);
+    [headerView addSubview:lineView1];
     return headerView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static  NSString *cellIdentifier = @"cellIdentifier";
-    RecordTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (cell == nil) {
-        cell = [[RecordTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-        cell.backgroundColor = [UIColor clearColor];
-        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-    }
+
+    XLRecordCell *cell = [XLRecordCell cellWithTableView:tableView];
     MedicalRecord *record = [self.recordArray objectAtIndex:indexPath.row];
-    [cell setCellWithRecord:record size:[PatientManager getSizeWithString:record.record_content]];
+    cell.record = record;
     return cell;
 }
 
@@ -475,13 +492,13 @@
         [self presentViewController:nav animated:YES completion:^{}];
     } else if ([self.tableHeaderView.nextReserveTextField isFirstResponder]) {
         [self.tableHeaderView.nextReserveTextField resignFirstResponder];
-#warning 跳转到添加预约的页面
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-         AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
-        addReminderVC.isNextReserve = YES;
-        addReminderVC.delegate = self;
-        addReminderVC.medicalCase = _medicalCase;
-        [self.navigationController pushViewController:addReminderVC animated:YES];
+        
+        XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
+        selectYuyeVc.hidesBottomBarWhenPushed = YES;
+        selectYuyeVc.isNextReserve = YES;
+        selectYuyeVc.medicalCase = _medicalCase;
+        selectYuyeVc.delegate = self;
+        [self pushViewController:selectYuyeVc animated:YES];
         
         
     } else if ([self.tableHeaderView.casenameTextField isFirstResponder]){
@@ -493,6 +510,7 @@
         [self.navigationController addChildViewController:self.hengYaVC];
         [self.navigationController.view addSubview:self.hengYaVC.view];
     }
+    
     flag = NO;
 }
 -(void)removeHengYaVC{
@@ -565,12 +583,18 @@
             [self.expenseArray addObject:expense];
     }
     [_tableHeaderView setExpenseArray:_expenseArray];
+    
+    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 350 + _expenseArray.count * 40);
+    _tableHeaderView.view.backgroundColor = MyColor(248, 248, 248);
+    self.tableView.tableHeaderView = _tableHeaderView.view;
+    [self.tableView reloadData];
 }
 
-#pragma mark - AddReminderViewControllerDelegate
-- (void)addReminderViewController:(AddReminderViewController *)vc didSelectDateTime:(NSString *)dateStr{
+#pragma mark - XLSelectYuyueViewControllerDelegate
+- (void)selectYuyueViewController:(XLSelectYuyueViewController *)vc didSelectDateTime:(NSString *)dateStr{
     self.tableHeaderView.nextReserveTextField.text = dateStr;
 }
+
 
 - (void)didSelectedRepairDoctor:(RepairDoctor *)doctor {
     _medicalCase.repair_doctor = doctor.ckeyid;
@@ -583,11 +607,23 @@
         record.patient_id = self.medicalCase.patient_id;
         record.case_id = self.medicalCase.ckeyid;
         record.record_content = self.recordTextField.text;
+        record.creation_date = [MyDateTool stringWithDateWithSec:[NSDate date]];
         [self.recordArray addObject:record];
         self.recordTextField.text = @"";
         [self refreshData];
     }
 }
 
+
+
+//#pragma mark - XLSelectCalendarViewControllerDelegate
+//- (void)selectCalendarViewController:(XLSelectCalendarViewController *)calendarVc didSelectDateStr:(NSString *)dateStr type:(XLSelectCalendarViewControllerType)type{
+//    if (type == XLSelectCalendarViewControllerTypeRepair) {
+//        self.tableHeaderView.repairTextField.text = dateStr;
+//    }else{
+//        self.tableHeaderView.implantTextField.text = dateStr;
+//    }
+//    
+//}
 
 @end

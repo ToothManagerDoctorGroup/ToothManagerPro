@@ -26,10 +26,11 @@
 #import "GroupPatientCell.h"
 #import "GroupManageViewController.h"
 #import "DoctorGroupTool.h"
-#import "GroupPatientModel.h"
 #import "GroupIntroducerModel.h"
 #import "GroupMemberEntity.h"
 #import "GroupMemberModel.h"
+#import "UISearchBar+XLMoveBgView.h"
+#import "EditPatientDetailViewController.h"
 
 @interface GroupPatientDisplayController ()<GroupPatientCellDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
@@ -55,6 +56,7 @@
  *  保存UISearchDisplayController的tableView
  */
 @property (nonatomic, weak)UITableView *searchResultTableView;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @property (nonatomic, assign)int postNum;//上传总数
 @end
@@ -83,20 +85,42 @@
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"添加"];
-
+    
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
     _searchResults = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.searchBar moveBackgroundView];
     
 }
 
 - (void)requestData {
-    
+    [SVProgressHUD showWithStatus:@"正在加载..."];
+    [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
+        [SVProgressHUD dismiss];
+        
+        _patientCellModeArray = [NSMutableArray arrayWithArray:result];
+        
+        if (self.GroupMembers.count > 0) {
+            for (GroupMemberModel *member in self.GroupMembers) {
+                for (GroupMemberModel *patient in _patientCellModeArray) {
+                    if ([member.ckeyid isEqualToString:patient.ckeyid]) {
+                        patient.isMember = YES;
+                    }
+                }
+            }
+        }
+        
+        [self.tableView reloadData];
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
+    }];
 }
 
 - (void)onRightButtonAction:(id)sender{
     int index = 0;
     NSMutableArray *selectMemberArr = [NSMutableArray array];
-    for (GroupPatientModel *model in self.patientCellModeArray) {
+    for (GroupMemberModel *model in self.patientCellModeArray) {
         if (model.isChoose && !model.isMember) {
             index++;
             //新增患者
@@ -124,7 +148,7 @@
     }
     
     if (index == 0) {
-        [SVProgressHUD showErrorWithStatus:@"请选择要添加的成员"];
+        [SVProgressHUD showErrorWithStatus:@"请选择患者"];
         return;
     }
 }
@@ -154,7 +178,7 @@
     cell.delegate = self;
     //赋值,获取患者信息
     NSInteger row = [indexPath row];
-    GroupPatientModel *cellMode;
+    GroupMemberModel *cellMode;
     if ([self isSearchResultsTableView:tableView]) {
         cellMode = [self.searchResults objectAtIndex:row];
     } else {
@@ -168,7 +192,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+    GroupMemberModel *cellMode = self.patientCellModeArray[indexPath.row];
+    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:cellMode.ckeyid];
+    if (patient != nil) {
+        //跳转到患者详细信息页面
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        EditPatientDetailViewController *editDetail = [storyboard instantiateViewControllerWithIdentifier:@"EditPatientDetailViewController"];
+        editDetail.patient = patient;
+        editDetail.isGroup = YES;
+        [self.navigationController pushViewController:editDetail animated:YES];
+    }
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -213,7 +246,7 @@
     
     
     UIButton *chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    chooseButton.frame = CGRectMake(295, 10, 20, 20);
+    chooseButton.frame = CGRectMake(285, 5, 30, 30);
     chooseButton.selected = self.isChooseAll;
     [chooseButton setImage:[UIImage imageNamed:@"remove-grey"] forState:UIControlStateNormal];
     [chooseButton setImage:[UIImage imageNamed:@"remove-blue"] forState:UIControlStateSelected];
@@ -234,7 +267,7 @@
         self.isChooseAll = YES;
     }
     
-    for (GroupPatientModel *model in self.patientCellModeArray) {
+    for (GroupMemberModel *model in self.patientCellModeArray) {
         if (!model.isMember) {
             model.isChoose = self.isChooseAll;
         }
@@ -248,12 +281,12 @@
     if(ifNumberBtnSelected == YES){
         NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
         lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            GroupPatientModel *object1 = (GroupPatientModel *)obj1;
-            GroupPatientModel *object2 = (GroupPatientModel *)obj2;
-            if(object1.countMaterial < object2.countMaterial){
+            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
+            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
+            if(object1.expense_num < object2.expense_num){
                 return  NSOrderedAscending;
             }
-            if (object1.countMaterial > object2.countMaterial){
+            if (object1.expense_num > object2.expense_num){
                 return NSOrderedDescending;
             }
             return NSOrderedSame;
@@ -275,8 +308,8 @@
         NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
         lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             NSComparisonResult result;
-            GroupPatientModel *object1 = (GroupPatientModel *)obj1;
-            GroupPatientModel *object2 = (GroupPatientModel *)obj2;
+            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
+            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
             result = [object1.patient_name localizedCompare:object2.patient_name];
             return result == NSOrderedDescending;
         }];
@@ -286,8 +319,8 @@
         NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
         lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             NSComparisonResult result;
-            GroupPatientModel *object1 = (GroupPatientModel *)obj1;
-            GroupPatientModel *object2 = (GroupPatientModel *)obj2;
+            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
+            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
             result = [object1.patient_name localizedCompare:object2.patient_name];
             return result == NSOrderedAscending;
         }];
@@ -301,8 +334,8 @@
         NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
         lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             NSComparisonResult result;
-            GroupPatientModel *object1 = (GroupPatientModel *)obj1;
-            GroupPatientModel *object2 = (GroupPatientModel *)obj2;
+            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
+            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
             result = [object1.intr_name localizedCompare:object2.intr_name];
             return result == NSOrderedDescending;
         }];
@@ -312,8 +345,8 @@
         NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
         lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             NSComparisonResult result;
-            GroupPatientModel *object1 = (GroupPatientModel *)obj1;
-            GroupPatientModel *object2 = (GroupPatientModel *)obj2;
+            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
+            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
             result = [object1.intr_name localizedCompare:object2.intr_name];
             return result == NSOrderedDescending;
         }];
@@ -331,28 +364,28 @@
     if(ifStatusBtnSelected == YES){
         NSMutableArray *lastArray = [NSMutableArray arrayWithCapacity:0];
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"未就诊"]){
                 [lastArray addObject:cellMode];
             }
         }
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"未种植"]){
                 [lastArray addObject:cellMode];
             }
         }
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"已种未修"]){
                 [lastArray addObject:cellMode];
             }
         }
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"已修复"]){
                 [lastArray addObject:cellMode];
@@ -364,28 +397,28 @@
     }else{
         NSMutableArray *lastArray = [NSMutableArray arrayWithCapacity:0];
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"已修复"]){
                 [lastArray addObject:cellMode];
             }
         }
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"已种未修"]){
                 [lastArray addObject:cellMode];
             }
         }
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"未种植"]){
                 [lastArray addObject:cellMode];
             }
         }
         for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupPatientModel *cellMode;
+            GroupMemberModel *cellMode;
             cellMode = [self.patientCellModeArray objectAtIndex:i];
             if([cellMode.statusStr isEqualToString:@"未就诊"]){
                 [lastArray addObject:cellMode];
@@ -434,27 +467,27 @@
 
 #pragma mark - GroupPatientCellDelegate
 - (void)didChooseCell:(GroupPatientCell *)cell withChooseStatus:(BOOL)status{
-
+    
     //获取当前对应的数据模型
     if (self.isSearchDisplayController) {
         NSIndexPath *indexPath = [self.searchResultTableView indexPathForCell:cell];
-        GroupPatientModel *model = self.searchResults[indexPath.row];
+        GroupMemberModel *model = self.searchResults[indexPath.row];
         model.isChoose = status;
         
-        for (GroupPatientModel *temp in self.patientCellModeArray) {
+        for (GroupMemberModel *temp in self.patientCellModeArray) {
             if ([model.ckeyid isEqualToString:temp.ckeyid]) {
                 temp.isChoose = model.isChoose;
             }
         }
     }else{
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        GroupPatientModel *model = self.patientCellModeArray[indexPath.row];
+        GroupMemberModel *model = self.patientCellModeArray[indexPath.row];
         model.isChoose = status;
     }
     
     //获取所有的模型的点击状态
     int index = 0;
-    for (GroupPatientModel *model in self.patientCellModeArray) {
+    for (GroupMemberModel *model in self.patientCellModeArray) {
         if (model.isChoose && !model.isMember) {
             index++;
         }

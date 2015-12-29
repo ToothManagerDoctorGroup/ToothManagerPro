@@ -53,9 +53,29 @@
 
 @property (nonatomic, strong)NSTimer *timer;
 
+@property (nonatomic, weak)UIView *noResultView;//无查询结果的提示页面
+
 @end
 
 @implementation MyScheduleReminderViewController
+
+- (UIView *)noResultView{
+    if (!_noResultView) {
+        UIView *noResultView = [[UIView alloc] initWithFrame:CGRectMake(0, 0,m_tableView.width, m_tableView.height)];
+        self.noResultView = noResultView;
+        noResultView.backgroundColor = [UIColor whiteColor];
+        
+        UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, kScreenWidth, 40)];
+        textLabel.text = @"没有日程安排";
+        textLabel.font = [UIFont systemFontOfSize:15];
+        textLabel.textColor = MyColor(136, 136, 136);
+        textLabel.textAlignment = NSTextAlignmentCenter;
+        [noResultView addSubview:textLabel];
+        
+        [m_tableView addSubview:noResultView];
+    }
+    return _noResultView;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -65,11 +85,8 @@
     //将定时器添加到主队列中
     [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     
-    
-    
+
     self.title = @"日程提醒";
-    
-    
     self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
@@ -90,6 +107,21 @@
     
 }
 
+#pragma mark - 轻扫手势
+- (void)swipUpAction:(UISwipeGestureRecognizer *)swip{
+    if (!self.calendar.calendarAppearance.isWeekMode) {
+        self.buttonView.isSelected = NO;
+        [self didClickDateButton];
+    }
+}
+
+- (void)swipDownAction:(UISwipeGestureRecognizer *)swip{
+    if (self.calendar.calendarAppearance.isWeekMode) {
+        self.buttonView.isSelected = YES;
+        [self didClickDateButton];
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     //请求未读消息数
@@ -105,6 +137,13 @@
             NSLog(@"error:%@",error);
         }
     }];
+    
+    if (self.remindArray.count == 0) {
+        self.noResultView.hidden = NO;
+    }else{
+        
+        self.noResultView.hidden = YES;
+    }
     
 }
 
@@ -143,6 +182,7 @@
         [self didClickDateButton];
         self.isHide = YES;
     }
+    
 }
 
 -(void)onLeftButtonAction:(id)sender{
@@ -228,6 +268,12 @@
     [dateSuperView addSubview:todayButton];
     //日期显示
     JTCalendarContentView *contentView = [[JTCalendarContentView alloc] initWithFrame:CGRectMake(0, 40, kScreenWidth, 250)];
+    UISwipeGestureRecognizer *swipUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipUpAction:)];
+    swipUp.direction = UISwipeGestureRecognizerDirectionUp;
+    [contentView addGestureRecognizer:swipUp];
+    UISwipeGestureRecognizer *swipDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipDownAction:)];
+    swipDown.direction = UISwipeGestureRecognizerDirectionDown;
+    [contentView addGestureRecognizer:swipDown];
     self.contentView = contentView;
     [self.view addSubview:contentView];
     //日历
@@ -253,8 +299,9 @@
 }
 
 - (void)todayAction:(UIButton *)button{
+     self.calendar.currentDateSelected = [NSDate date];
+    [self calendarDidDateSelected:self.calendar date:[NSDate date]];
     [self.calendar setCurrentDate:[NSDate date]];
-    
     self.buttonView.title = [self stringFromDate:[NSDate date]];
 }
 
@@ -273,33 +320,11 @@
 //按照时间排序  08:00  09:00 09:30
 - (NSArray *)updateListTimeArray:(NSArray *)remindArray1{
     
-    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSArray *remindArray = remindArray1;
-    NSMutableArray *dataArray = [NSMutableArray arrayWithCapacity:0];
-    for(NSInteger i =0;i<remindArray.count;i++){
-        LocalNotification *notifi = [remindArray objectAtIndex:i];
-        NSMutableDictionary *dir=[[NSMutableDictionary alloc]init];
-        [dir setObject:[notifi.reserve_time substringWithRange:NSMakeRange(11, 5)] forKey:@"time"];
-        [dataArray addObject:dir];
-    }
+    NSSortDescriptor *sorter=[[NSSortDescriptor alloc] initWithKey:@"reserve_time" ascending:YES];
+    NSMutableArray *sortDescriptors=[[NSMutableArray alloc] initWithObjects:&sorter count:1];
+    NSArray *sortArray=[remindArray1 sortedArrayUsingDescriptors:sortDescriptors];
     
-    NSMutableArray *myArray=[[NSMutableArray alloc]initWithCapacity:0];
-    [myArray addObjectsFromArray:dataArray];
-    NSSortDescriptor *sorter=[[NSSortDescriptor alloc]initWithKey:@"time" ascending:YES];
-    NSMutableArray *sortDescriptors=[[NSMutableArray alloc]initWithObjects:&sorter count:1];
-    NSArray *sortArray=[myArray sortedArrayUsingDescriptors:sortDescriptors];
-    
-    for (int i=0; i<[sortArray count]; i++) {
-        NSString *sortString = [[sortArray objectAtIndex:i] objectForKey:@"time"];
-        for(NSInteger i =0;i<remindArray.count;i++){
-            LocalNotification *notifi = [remindArray objectAtIndex:i];
-            NSString *string = [notifi.reserve_time substringWithRange:NSMakeRange(11, 5)];
-            if([string isEqualToString:sortString]){
-                [resultArray addObject:notifi];
-            }
-        }
-    }
-    return resultArray;
+    return sortArray;
 }
 
 
@@ -317,21 +342,21 @@
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
-    if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated]) {
+    if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:@"tongbu"]) {
         
         NSString *destDateString = [dateFormatter stringFromDate:self.selectDate];
         self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:destDateString];
         self.remindArray = [self updateListTimeArray:self.remindArray];
-        [m_tableView reloadData];
-    }
-    
-    if ([notifacation.name isEqualToString:@"tongbu"]) {
         
-        //同步之后，重新请求本地数据进行显示
-        self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[dateFormatter stringFromDate:self.selectDate]];
-        self.remindArray = [self updateListTimeArray:self.remindArray];
-        
+        if (self.remindArray.count == 0) {
+            self.noResultView.hidden = NO;
+        }else{
+            
+            self.noResultView.hidden = YES;
+        }
         [m_tableView reloadData];
+        //刷新日历，显示红点
+        [self.calendar reloadAppearance];
     }
 }
 
@@ -568,6 +593,11 @@
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr];
     self.remindArray = [self updateListTimeArray:self.remindArray];
     
+    if (self.remindArray.count == 0) {
+        self.noResultView.hidden = NO;
+    }else{
+        self.noResultView.hidden = YES;
+    }
     [m_tableView reloadData];
 }
 

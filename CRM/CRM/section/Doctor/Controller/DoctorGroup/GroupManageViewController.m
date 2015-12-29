@@ -31,8 +31,9 @@
 #import "DoctorGroupModel.h"
 #import "GroupMemberModel.h"
 #import "DBTableMode.h"
+#import "UISearchBar+XLMoveBgView.h"
 
-@interface GroupManageViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate>{
+@interface GroupManageViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -42,6 +43,7 @@
 @property (nonatomic,strong) NSMutableArray *patientCellModeArray;
 @property (nonatomic,strong) NSMutableArray *searchResults;
 @property (nonatomic, strong)NSMutableArray *totalPatients;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 /**
  *  菜单选项
@@ -87,6 +89,7 @@
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [SVProgressHUD dismiss];
+    NSLog(@"我被销毁了");
 }
 
 - (void)viewDidLoad {
@@ -110,49 +113,14 @@
     
     self.title = self.group.group_name;
     
+    [self.searchBar moveBackgroundView];
+    
+    
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
     _searchResults = [NSMutableArray arrayWithCapacity:0];
 }
 
-- (void)requestData {
-    [SVProgressHUD showWithStatus:@"正在加载"];
-    //获取当前医生的所有患者信息
-//    [DoctorGroupTool getPatientsWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-//        for (GroupPatientModel *model in result) {
-//            model.countMaterial = 0;
-//            model.intr_name = @"";
-//            [self.totalPatients addObject:model];
-//        }
-//        [self requestIntroduerData];
-//    } failure:^(NSError *error) {
-//        [SVProgressHUD dismiss];
-//        if (error) {
-//            NSLog(@"error:%@",error);
-//        }
-//    }];
-    
-}
-- (void)requestIntroduerData{
-//        [DoctorGroupTool getIntroducersWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-//            if (self.totalPatients.count > 0) {
-//                for (GroupPatientModel *patientM in self.totalPatients) {
-//                    for (GroupIntroducerModel *introducer in result) {
-//                        //判断介绍人是否存在
-//                        if ([patientM.introducer_id isEqualToString:introducer.intr_id]) {
-//                            patientM.intr_name = introducer.intr_name;
-//                        }
-//                    }
-//                }
-//            }
-//            //获取分组下的所有成员数据
-//            [self requestGroupMemberData];
-//            
-//        } failure:^(NSError *error) {
-//            if (error) {
-//                NSLog(@"errro:%@",error);
-//            }
-//        }];
-}
+
 //添加组员成功
 - (void)addGroupMemberAction:(NSNotification *)note{
     [self.patientCellModeArray removeAllObjects];
@@ -247,12 +215,8 @@
     GroupMemberModel *model = self.patientCellModeArray[indexPath.row];
     self.selectModel = model;
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        CustomAlertView *alertView = [[CustomAlertView alloc] initWithAlertTitle:@"移除患者" cancleTitle:@"取消" certainTitle:@"移除"];
-        alertView.type = CustomAlertViewLabel;
-        alertView.certainColor = [UIColor redColor];
-        alertView.tipContent = @"移除患者并不会删除患者信息，确认移除患者？";
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"移除患者" message:@"移除患者并不会删除患者信息，确认移除患者？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"移除", nil];
         alertView.tag = 130;
-        alertView.delegate = self;
         [alertView show];
     }
 }
@@ -511,45 +475,45 @@
     CustomAlertView *alertView = [[CustomAlertView alloc] initWithAlertTitle:@"编辑组名" cancleTitle:@"取消" certainTitle:@"保存"];
     alertView.type = CustomAlertViewTextField;
     alertView.tipContent = self.group.group_name;
-    alertView.tag = 110;
     alertView.delegate = self;
     [alertView show];
 }
 
 - (void)deleteGroup{
-    CustomAlertView *alertView = [[CustomAlertView alloc] initWithAlertTitle:@"删除分组" cancleTitle:@"取消" certainTitle:@"删除"];
-    alertView.type = CustomAlertViewLabel;
-    alertView.certainColor = [UIColor redColor];
-    alertView.tipContent = @"删除分组并不会删除患者信息，确认删除分组？";
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"删除分组" message:@"删除分组并不会删除患者信息，确认删除分组？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"删除", nil];
     alertView.tag = 120;
-    alertView.delegate = self;
     [alertView show];
 }
 
 #pragma mark CustomAlertViewDelegate
 - (void)alertView:(CustomAlertView *)alertView didClickCertainButtonWithContent:(NSString *)content{
-    if (alertView.tag == 110) {
-        if ([content isEqualToString:self.group.group_name]) {
-            [SVProgressHUD showErrorWithStatus:@"分组名称不能相同"];
-            return;
+    if ([content isEqualToString:self.group.group_name]) {
+        [SVProgressHUD showErrorWithStatus:@"分组名称不能相同"];
+        return;
+    }
+    //编辑组名
+    GroupEntity *entity = [[GroupEntity alloc] initWithName:content originGroup:self.group];
+    [DoctorGroupTool updateGroupWithGroupEntity:entity success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.code integerValue] == 200) {
+            //修改当前的组名
+            self.title = content;
+            //发送通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:DoctorUpdateGroupNameSuccessNotification object:nil];
         }
-        //编辑组名
-        GroupEntity *entity = [[GroupEntity alloc] initWithName:content originGroup:self.group];
-        [DoctorGroupTool updateGroupWithGroupEntity:entity success:^(CRMHttpRespondModel *respondModel) {
-            if ([respondModel.code integerValue] == 200) {
-                //修改当前的组名
-                self.title = content;
-                //发送通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:DoctorUpdateGroupNameSuccessNotification object:nil];
-            }
-            
-        } failure:^(NSError *error) {
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];
-    }else if(alertView.tag == 120){
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+#pragma mark - UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (alertView.tag == 120) {
+        if (buttonIndex == 0) return;
         //删除分组
+        [SVProgressHUD showWithStatus:@"正在删除"];
         [DoctorGroupTool deleteGroupWithCkId:self.group.ckeyid success:^(CRMHttpRespondModel *respondModel) {
             if ([respondModel.code integerValue] == 200) {
                 //发送通知
@@ -557,14 +521,18 @@
                 //删除成功
                 [self popViewControllerAnimated:YES];
                 
+            }else{
+                [SVProgressHUD showErrorWithStatus:@"删除失败"];
             }
+            [SVProgressHUD dismiss];
         } failure:^(NSError *error) {
             if (error) {
                 NSLog(@"error:%@",error);
             }
+            [SVProgressHUD showErrorWithStatus:@"删除失败"];
         }];
-        
-    }else if (alertView.tag == 130){
+    }else{
+        if (buttonIndex == 0) return;
         //删除组员
         [SVProgressHUD showWithStatus:@"正在删除"];
         [DoctorGroupTool deleteGroupMemberWithCkId:self.selectModel.ckeyid success:^(CRMHttpRespondModel *respondModel) {

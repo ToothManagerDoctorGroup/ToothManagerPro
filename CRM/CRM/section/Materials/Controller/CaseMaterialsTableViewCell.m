@@ -16,9 +16,6 @@
 
 @implementation CaseMaterialsTableViewCell
 
-- (void)dealloc{
-}
-
 - (void)setCell:(NSArray *)array {
     // Initialization code
 //    self.materialName.mode = TextFieldInputModeExternal;
@@ -30,12 +27,12 @@
     
 //    self.materialNum.keyboardType = UIKeyboardTypeNumberPad;
 //    self.materialNum.borderStyle = UITextBorderStyleNone;
-//    self.materialNum.actiondelegate = self;
+//    self.materialNum.backgroundColor = [UIColor redColor];
+
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-    // Configure the view for the selected state
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -56,9 +53,15 @@
     [self.delegate tableViewCell:self materialNum:[self.materialNum.text integerValue]];
 }
 - (IBAction)deleteAction:(id)sender {
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(didDeleteCell:)]) {
         [self.delegate didDeleteCell:self];
     }
+}
+
+
+- (NSString *)materialCount{
+    return self.materialNum.text;
 }
 
 @end

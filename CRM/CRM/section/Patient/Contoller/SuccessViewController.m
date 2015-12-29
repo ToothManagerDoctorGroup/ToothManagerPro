@@ -12,6 +12,10 @@
 #import "EMSearchDisplayController.h"
 #import "UserProfileManager.h"
 #import "RealtimeSearchUtil.h"
+#import "UISearchBar+XLMoveBgView.h"
+#import "UIColor+Extension.h"
+#import "CommonMacro.h"
+
 
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
@@ -73,7 +77,9 @@
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width, 44)];
         _searchBar.delegate = self;
         _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
+        _searchBar.backgroundColor = MyColor(238, 238, 238);
+
+        [_searchBar moveBackgroundView];
     }
     
     return _searchBar;

@@ -39,6 +39,8 @@
 
 - (void)dealloc{
     [[YYKeyboardManager defaultManager] removeObserver:self];
+    
+    NSLog(@"弹出框被销毁了");
 }
 
 - (instancetype)initWithAlertTitle:(NSString *)alertTitle cancleTitle:(NSString *)cancleTitle certainTitle:(NSString *)certainTitle{
@@ -215,12 +217,13 @@
 }
 
 - (void)certainAction{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(alertView:didClickCertainButtonWithContent:)]) {
+        [self.delegate alertView:self didClickCertainButtonWithContent:_contentField.text];
+    }
     [self.cover removeFromSuperview];
     [self removeFromSuperview];
     
-    if ([self.delegate respondsToSelector:@selector(alertView:didClickCertainButtonWithContent:)]) {
-        [self.delegate alertView:self didClickCertainButtonWithContent:_contentField.text];
-    }
+    
 }
 
 - (void)keyboardChangedWithTransition:(YYKeyboardTransition)transition{

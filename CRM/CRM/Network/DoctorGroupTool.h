@@ -13,6 +13,14 @@
 
 @interface DoctorGroupTool : NSObject
 /**
+ *  获取分组中每个医生的所有患者列表信息
+ *
+ *  @param doctorId 医生id
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)getGroupPatientsWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
  *  获取当前医生所有患者的基本信息
  *
  *  @param doctorId 医生id

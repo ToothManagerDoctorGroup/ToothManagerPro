@@ -16,12 +16,14 @@
 #import "CRMHttpRequest+Sync.h"
 #import "DBManager+sync.h"
 #import "AddressBookCell.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface AddressBookViewController () <UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,AddressBookCellDelegate>
 
 @property (nonatomic,retain) NSMutableArray *tableViewDataSource;
 @property (nonatomic) NSArray *searchResults;
 @property (nonatomic,readwrite) BOOL useSearchResult;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @end
 
@@ -39,6 +41,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.searchBar moveBackgroundView];
 }
 
 - (void)initView {

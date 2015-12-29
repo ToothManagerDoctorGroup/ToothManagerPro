@@ -36,6 +36,9 @@
 #import "WXApiObject.h"
 #import "Share.h"
 
+#import "XLAvatarBrowser.h"
+#import "XLMaterialsViewController.h"
+
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
     
@@ -99,8 +102,17 @@
                                              [UIColor lightGrayColor], NSForegroundColorAttributeName,
                                              nil] forState:UIControlStateNormal];
  
+    iconImageView.layer.cornerRadius = 25;
+    iconImageView.layer.masksToBounds = YES;
+    iconImageView.userInteractionEnabled = YES;
     //设置头像的默认图片
     [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [iconImageView addGestureRecognizer:tap];
+}
+
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [XLAvatarBrowser showImage:iconImageView];
 }
 
 //获取用户的医生列表
@@ -328,10 +340,16 @@
             repairDoctorVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:repairDoctorVC animated:YES];
         }else if (indexPath.row == 2){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            MaterialsViewController *materialsVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
+//            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+//            MaterialsViewController *materialsVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
+//            materialsVC.hidesBottomBarWhenPushed = YES;
+//            [self.navigationController pushViewController:materialsVC animated:YES];
+            
+            XLMaterialsViewController *materialsVC = [[XLMaterialsViewController alloc] init];
             materialsVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:materialsVC animated:YES];
+            
+            
         }
     }
     if (self.isSign == YES) {
@@ -414,8 +432,8 @@
     }else{
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
         ShareMode *mode = [[ShareMode alloc]init];
-        mode.title = @"邀请好友";
-        mode.message = [NSString stringWithFormat:@"亲，用我的邀请码注册种牙管家，可以快速通过审核呦！快戳我!下载app注册吧！"];
+        mode.title = @"牙医新生活倡导者：年种植上千颗不是梦";
+        mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
         mode.url = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/InviteFriends.aspx?doctorId=%@",userobj.userid];
         mode.image = [UIImage imageNamed:@"crm_logo"];
         [Share shareToPlatform:weixin WithMode:mode];

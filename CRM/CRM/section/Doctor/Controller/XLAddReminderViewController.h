@@ -8,8 +8,23 @@
 
 #import "TimDisplayViewController.h"
 
+@class MedicalCase,XLAddReminderViewController,Patient;
+@protocol XLAddReminderViewControllerDelegate <NSObject>
+
+@optional
+- (void)addReminderViewController:(XLAddReminderViewController *)vc didSelectDateTime:(NSString *)dateStr;
+
+@end
 @interface XLAddReminderViewController : TimDisplayViewController
 
 @property (nonatomic, strong)NSDictionary *infoDic;//时间选择页面传递过来的数据
+
+@property (nonatomic) BOOL isNextReserve; //从编辑病历跳转
+@property (nonatomic, strong)MedicalCase *medicalCase;//编辑病历时传递过来的病历模型
+
+@property (nonatomic, assign)BOOL isAddLocationToPatient;//给指定病人添加预约
+@property (nonatomic, strong)Patient *patient;//指定病人的病历
+
+@property (nonatomic, weak)id<XLAddReminderViewControllerDelegate> delegate;
 
 @end

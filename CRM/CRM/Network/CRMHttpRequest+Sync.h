@@ -175,9 +175,7 @@ DEF_STATIC_CONST_STRING(DataSyncGet_Prefix, DataSyncGet);
 
 -(void)postAllNeedSyncMedical_case:(NSArray *)medical_case;
 
-
 -(void)postAllNeedSyncCt_lib:(NSArray *)ct_lib;
-
 
 -(void)postAllNeedSyncMedical_expense:(NSArray *)medical_expense;
 

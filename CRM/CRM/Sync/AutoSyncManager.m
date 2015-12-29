@@ -14,6 +14,10 @@
 #import "CRMHttpRequest+Sync.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "XLAutoSyncTool.h"
+#import "XLAutoSyncTool+XLInsert.h"
+#import "XLAutoSyncTool+XLDelete.h"
+#import "CRMHttpRespondModel.h"
 
 @implementation AutoSyncManager
 Realize_ShareInstance(AutoSyncManager);
@@ -61,7 +65,7 @@ Realize_ShareInstance(AutoSyncManager);
     return dic;
 }
 
-//同步
+#pragma mark - 开始insert类型的数据上传
 - (void)autoSyncInsert{
     //上传状态（0：未上传 1：上传中 2：上传成功 3：上传失败）
     //查询所有insert类型和同步状态为0和3的数据
@@ -70,10 +74,30 @@ Realize_ShareInstance(AutoSyncManager);
         for (InfoAutoSync *info in syncArray) {
             [[DBManager shareInstance] updateInfoWithSyncStatus:@"1" byInfoId:info.info_id];
             
+            //上传患者信息
             if ([info.data_type isEqualToString:AutoSync_Patient]) {
                 //上传需要更新的患者信息
                 Patient *patient = [Patient objectWithKeyValues:[self dicFromJsonStr:info.dataEntity]];
-//                 [[CRMHttpRequest shareInstance] editAllNeedSyncPatient:@[patient]];
+                 [[XLAutoSyncTool shareInstance] editAllNeedSyncPatient:patient success:^(CRMHttpRespondModel *respond) {
+                     if ([respond.code integerValue] == 200) {
+                         NSLog(@"患者数据更新成功");
+                         //上传成功,删除当前的同步信息
+                         if([[DBManager shareInstance] updateInfoWithSyncStatus:@"2" byInfoId:info.info_id]){
+                             [[DBManager shareInstance] deleteInfoWithInfoAutoSync:info];
+                         };
+                         
+                     }else{
+                         NSLog(@"患者数据更新失败");
+                         //上传失败
+                         [[DBManager shareInstance] updateInfoWithSyncStatus:@"3" byInfoId:info.info_id];
+                     }
+                 } failure:^(NSError *error) {
+                     //上传失败
+                     [[DBManager shareInstance] updateInfoWithSyncStatus:@"3" byInfoId:info.info_id];
+                     if (error) {
+                         NSLog(@"error:%@",error);
+                     }
+                 }];
             }
         }
     }

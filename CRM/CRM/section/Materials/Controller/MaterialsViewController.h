@@ -7,6 +7,7 @@
 //
 
 #import "TimFramework.h"
+#import "TimViewController.h"
 
 @class Material;
 typedef NS_ENUM(NSInteger, MaterialViewMode) {

@@ -18,7 +18,7 @@
 @property (weak, nonatomic) IBOutlet TimPickerTextField *repairTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *repairDoctorTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *expenseTextField;
-@property (weak, nonatomic) IBOutlet UILabel *expenseNumTextField;
+//@property (weak, nonatomic) IBOutlet UILabel *expenseNumTextField;
 @property (weak, nonatomic) IBOutlet TimImagesScrollView *imageScrollView;
 
 - (void)setviewWith:(MedicalCase *)mCase andRes:(MedicalReserve *)mRes;

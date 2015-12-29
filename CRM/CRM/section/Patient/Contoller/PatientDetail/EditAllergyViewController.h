@@ -14,7 +14,13 @@ typedef NS_ENUM(NSInteger, EditAllergyViewControllerType) {
     EditAllergyViewControllerNickName = 4,
 };
 
-@class Patient;
+@class Patient,EditAllergyViewController;
+@protocol EditAllergyViewControllerDelegate <NSObject>
+
+@optional
+- (void)editViewController:(EditAllergyViewController *)editVc didEditWithContent:(NSString *)content type:(EditAllergyViewControllerType)type;
+
+@end
 @interface EditAllergyViewController : TimViewController
 
 @property (nonatomic, copy)NSString *content;
@@ -22,5 +28,7 @@ typedef NS_ENUM(NSInteger, EditAllergyViewControllerType) {
 @property (nonatomic, assign)EditAllergyViewControllerType type;
 
 @property (nonatomic, strong)Patient *patient;
+
+@property (nonatomic, weak)id<EditAllergyViewControllerDelegate> delegate;
 
 @end

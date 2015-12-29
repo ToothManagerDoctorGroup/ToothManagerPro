@@ -14,10 +14,13 @@
 #import "EditAllergyViewController.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
+#import "XLAddressMapViewController.h"
+#import "MyDateTool.h"
+#import "XLDataSelectViewController.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
-@interface EditPatientDetailViewController ()<UITextFieldDelegate>
+@interface EditPatientDetailViewController ()<UITextFieldDelegate,EditAllergyViewControllerDelegate,XLDataSelectViewControllerDelegate>
 
 @property (nonatomic, strong)NSArray *dataList;
 @property (nonatomic, strong)NSArray *contentList;
@@ -35,18 +38,6 @@
     //设置导航栏
     [self initNavBar];
     
-    //设置性别选择
-    NSMutableArray *selectSexArray = [NSMutableArray arrayWithObjects:@"男",@"女" ,nil];
-    self.patientGenderField.mode = TextFieldInputModePicker;
-    self.patientGenderField.pickerDataSource = selectSexArray;
-    self.patientGenderField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    
-}
-
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    [self initView];
 }
 
 - (void)initView{
@@ -63,32 +54,39 @@
     
     self.patientNameField.text = patient.patient_name;
     self.patientAgeField.text = patient.patient_age;
-    self.patientGenderField.text = genderStr;
+    self.patientGenderLabel.text = genderStr;
     self.patientAddressField.text = patient.patient_address;
     self.patientIdCardField.text = patient.idCardNum;
     self.patientPhoneField.text = patient.patient_phone;
     self.patientRemarkLabel.text = patient.patient_remark;
     self.allergyLabel.text = patient.patient_allergy;
     self.anamnesisLabel.text = patient.anamnesis;
-    
-    
 }
 
 - (void)initNavBar{
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"患者详情";
-    [self setRightBarButtonWithTitle:@"保存"];
     self.view.backgroundColor = CommenBgColor;
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    if (self.isGroup) {
+        self.patientNameField.enabled = NO;
+        self.patientAgeField.enabled = NO;
+        self.patientGenderLabel.enabled = NO;
+        self.patientAddressField.enabled = NO;
+        self.patientIdCardField.enabled = NO;
+        self.patientPhoneField.enabled = NO;
+    }else{
+        [self setRightBarButtonWithTitle:@"保存"];
+    }
 }
 
 - (void)onRightButtonAction:(id)sender{
     Patient *currentPatient = self.patient;
     currentPatient.patient_name = self.patientNameField.text;
     currentPatient.patient_age = self.patientAgeField.text;
-    currentPatient.patient_gender = [self.patientGenderField.text isEqualToString: @"女"] ? @"0" : @"1";
+    currentPatient.patient_gender = [self.patientGenderLabel.text isEqualToString: @"女"] ? @"0" : @"1";
     currentPatient.patient_address = self.patientAddressField.text;
     currentPatient.idCardNum = self.patientIdCardField.text;
     currentPatient.patient_phone = self.patientPhoneField.text;
@@ -99,15 +97,11 @@
         [SVProgressHUD showSuccessWithStatus:@"更新成功"];
         
         //将修改过的患者信息保存到数据库
-//        NSArray *array = [[DBManager shareInstance] getAllEditNeedSyncPatient];
-//        for (Patient *patient in array) {
-//            InfoAutoSync *info = [[InfoAutoSync alloc] init];
-//            info.data_type = AutoSync_Patient;
-//            info.post_type = Update;
-//            info.dataEntity = [patient.keyValues JSONString];
-//            info.sync_status = @"0";
-//            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-//        }
+        NSArray *array = [[DBManager shareInstance] getAllEditNeedSyncPatient];
+        for (Patient *patient in array) {
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
         
     }else{
         [SVProgressHUD showErrorWithStatus:@"更新失败"];
@@ -126,45 +120,27 @@
     }
     return 0;
 }
-//
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    
-//    static NSString *ID = @"cell_id";
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
-//    if (cell == nil) {
-//        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ID];
-//        UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(0, 43, kScreenWidth, 1)];
-//        divider.backgroundColor = MyColor(206, 206, 206);
-//        [cell.contentView addSubview:divider];
-//        
-//        cell.textLabel.font = [UIFont systemFontOfSize:13];
-//        cell.detailTextLabel.font = [UIFont systemFontOfSize:13];
-//        
-//        if (indexPath.section == 0) {
-//            cell.accessoryType = UITableViewCellAccessoryNone;
-//            cell.textLabel.textColor = [UIColor grayColor];
-//        }else{
-//            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//            cell.textLabel.textColor = [UIColor blackColor];
-//        }
-//    }
-//    cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
-//    cell.detailTextLabel.text = self.contentList[indexPath.section][indexPath.row];
-//    
-//    return cell;
-//    
-//}
-//
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (indexPath.section == 1) {
+    if (indexPath.section == 0) {
+        
+        if (indexPath.row == 2) {
+            XLDataSelectViewController *selectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            selectVc.type = XLDataSelectViewControllerSex;
+            selectVc.currentContent = self.patientGenderLabel.text;
+            selectVc.delegate = self;
+            [self pushViewController:selectVc animated:YES];
+        }
+        
+    }else if (indexPath.section == 1) {
         if (indexPath.row == 0) {
             EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
             allergyVc.title = @"过敏史";
             allergyVc.content = self.allergyLabel.text;
             allergyVc.type = EditAllergyViewControllerAllergy;
             allergyVc.patient = self.patient;
+            allergyVc.delegate = self;
             [self pushViewController:allergyVc animated:YES];
         }else if(indexPath.row == 1){
             EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
@@ -172,6 +148,7 @@
             allergyVc.content = self.anamnesisLabel.text;
             allergyVc.type = EditAllergyViewControllerAnamnesis;
             allergyVc.patient = self.patient;
+            allergyVc.delegate = self;
             [self pushViewController:allergyVc animated:YES];
         }else{
             EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
@@ -179,15 +156,51 @@
             allergyVc.content = self.patientRemarkLabel.text;
             allergyVc.type = EditAllergyViewControllerRemark;
             allergyVc.patient = self.patient;
+            allergyVc.delegate = self;
             [self pushViewController:allergyVc animated:YES];
         }
     }
     
 }
+- (NSIndexPath *)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath *)path
+{
+    if (self.isGroup)
+    {
+        return nil;
+    }
+    
+    return path;
+}
+
+#pragma mark - EditAllergyViewControllerDelegate
+- (void)editViewController:(EditAllergyViewController *)editVc didEditWithContent:(NSString *)content type:(EditAllergyViewControllerType)type{
+    if (type == EditAllergyViewControllerAllergy) {
+        self.allergyLabel.text = content;
+    }else if (type == EditAllergyViewControllerAnamnesis){
+        self.anamnesisLabel.text = content;
+    }else if (type == EditAllergyViewControllerRemark){
+        self.patientRemarkLabel.text = content;
+    }
+}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
     return YES;
+}
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    [self.view endEditing:YES];
+}
+- (IBAction)mapAction:(id)sender {
+    if (self.isGroup) return;
+    XLAddressMapViewController *addressVC = [[XLAddressMapViewController alloc] init];
+    [self pushViewController:addressVC animated:YES];
+}
+
+#pragma mark - XLDataSelectViewControllerDelegate
+- (void)dataSelectViewController:(XLDataSelectViewController *)dataVc didSelectContent:(NSString *)content type:(XLDataSelectViewControllerType)type{
+    if (type == XLDataSelectViewControllerSex) {
+        self.patientGenderLabel.text = content;
+    }
 }
 
 - (void)didReceiveMemoryWarning {

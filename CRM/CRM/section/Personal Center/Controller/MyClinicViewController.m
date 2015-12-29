@@ -14,11 +14,13 @@
 #import "ClinicCell.h"
 #import "SearchClinicViewController.h"
 #import "ClinicDetailViewController.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface MyClinicViewController ()<UISearchBarDelegate>
 
 //存放诊所对象：ClinicModel
 @property (nonatomic, strong)NSArray *dataList;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 
 @end
@@ -60,6 +62,7 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"pic_search"]];
     self.view.backgroundColor = [UIColor whiteColor];
+    [self.searchBar moveBackgroundView];
     
     //设置右侧按钮
     UILabel *right = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 44)];

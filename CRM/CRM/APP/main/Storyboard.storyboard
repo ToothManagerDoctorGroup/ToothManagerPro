@@ -1021,6 +1021,9 @@
                             <outlet property="delegate" destination="vf5-Fw-Dau" id="ns0-l6-8HP"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <outlet property="searchBar" destination="W7z-Cf-z39" id="flN-Fj-IZm"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="je6-02-5jz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1327,7 +1330,7 @@
                                     <constraint firstAttribute="height" constant="21" id="yC8-7B-XVu"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333333333333" green="0.53333333333333333" blue="0.53333333333333333" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxf-hT-2z7">
@@ -1344,7 +1347,7 @@
                                     <constraint firstAttribute="height" constant="21" id="kAH-VU-zre"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Hf-Pp-KOJ">
@@ -1361,7 +1364,7 @@
                                     <constraint firstAttribute="height" constant="21" id="O60-cq-ZS8"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3fy-xy-3rd">
@@ -1378,7 +1381,7 @@
                                     <constraint firstAttribute="height" constant="21" id="93S-HD-Xhy"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3pR-cW-MeD">
@@ -1395,7 +1398,7 @@
                                     <constraint firstAttribute="height" constant="21" id="36H-t2-OD2"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Szg-Nq-Iqf">
@@ -1412,7 +1415,7 @@
                                     <constraint firstAttribute="height" constant="21" id="gLE-t5-Dgr"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="医       院:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q6D-wt-CRS">
@@ -1422,7 +1425,7 @@
                                     <constraint firstAttribute="height" constant="21" id="QOH-gG-WMR"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IvD-OS-V4d">
@@ -1439,7 +1442,7 @@
                                     <constraint firstAttribute="height" constant="21" id="J0h-c0-gOm"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x7Y-DG-bcr">
@@ -1463,10 +1466,10 @@
                                     <constraint firstAttribute="height" constant="21" id="ML8-rP-DGw"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="助       理:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3U6-gN-eGN">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3U6-gN-eGN">
                                 <rect key="frame" x="20" y="281" width="61" height="21"/>
                                 <animations/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -1480,7 +1483,7 @@
                                     <constraint firstAttribute="height" constant="21" id="ovr-9C-Vmb"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="备       注:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oMq-VV-SQ0">
@@ -1491,11 +1494,11 @@
                                     <constraint firstAttribute="width" constant="61" id="jU4-gp-NQV"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CI5-qT-7Yd">
-                                <rect key="frame" x="96" y="310" width="204" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CI5-qT-7Yd">
+                                <rect key="frame" x="96" y="310" width="204" height="0.0"/>
                                 <animations/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="204" id="Jg2-Ir-hha"/>
@@ -1727,7 +1730,7 @@
                                 <rect key="frame" x="0.0" y="155" width="320" height="343"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <string key="text">鉴于：
+                                <mutableString key="text">鉴于：
     1、甲方因工作所需，有使用诊所手术室需求；
     2、乙方有诊所手术室闲置资源；
     3、乙方同意成为甲方签约多点执业场所之一；
@@ -1779,7 +1782,7 @@
 第五章  其他
 第十一条 鉴于本合同项下的交易金额由丙方代为转付，甲、乙双方在此约定，本合同的履行地为丙方所提供网络平台。
 第十二条 本合同项下的任何争议，应由双方友好协商解决，若协商不成，双方在合同履行地即丙方所在地的人民法院提起诉讼。
-第十三条 本合同经各方通过丙方网络平台电子合同签署系统签署后生效。</string>
+第十三条 本合同经各方通过丙方网络平台电子合同签署系统签署后生效。</mutableString>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -1970,12 +1973,16 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="未设置" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="cpa-fG-CTf" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="182" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="gVo-Li-ZHi">
+                                                    <rect key="frame" x="285" y="11" width="13" height="18"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -1996,7 +2003,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="未设置" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="FRv-GS-8Ue" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="182" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -2022,12 +2029,16 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="未设置" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="oda-HP-buz" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="182" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="P1E-1a-FNY">
+                                                    <rect key="frame" x="285" y="11" width="13" height="18"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -2100,12 +2111,16 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="未设置" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="0eJ-Tp-hHP" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="182" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="Yfd-7Q-wAI">
+                                                    <rect key="frame" x="285" y="11" width="13" height="18"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -2126,12 +2141,16 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="未设置" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="RPE-pn-Lyu" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="182" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="ct3-tP-Wm2">
+                                                    <rect key="frame" x="285" y="11" width="13" height="18"/>
+                                                    <animations/>
+                                                </imageView>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -2152,7 +2171,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s1l-jp-o4y">
-                                                    <rect key="frame" x="97" y="5" width="203" height="30"/>
+                                                    <rect key="frame" x="97" y="5" width="185" height="30"/>
                                                     <animations/>
                                                     <state key="normal">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -2162,7 +2181,7 @@
                                                     </connections>
                                                 </button>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="PTm-m5-WtX">
-                                                    <rect key="frame" x="285" y="12" width="15" height="15"/>
+                                                    <rect key="frame" x="285" y="11" width="13" height="18"/>
                                                     <animations/>
                                                 </imageView>
                                             </subviews>
@@ -2195,7 +2214,7 @@
                                                     </connections>
                                                 </button>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="zJV-MA-Sd8">
-                                                    <rect key="frame" x="285" y="12" width="15" height="15"/>
+                                                    <rect key="frame" x="285" y="11" width="13" height="18"/>
                                                     <animations/>
                                                 </imageView>
                                             </subviews>
@@ -2267,6 +2286,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="gTK-QG-4Xa"/>
                     <connections>
+                        <outlet property="searchBar" destination="FVc-48-iHu" id="afX-dh-eR8"/>
                         <outlet property="searchDisplayController" destination="nMn-JI-SOe" id="fCG-NC-qQQ"/>
                     </connections>
                 </tableViewController>
@@ -2319,6 +2339,7 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="searchBar" destination="0hn-Bh-M1X" id="E8p-As-FsW"/>
                         <outlet property="searchDisplayController" destination="80N-uv-1La" id="rqD-jI-kGJ"/>
                     </connections>
                 </tableViewController>
@@ -2371,6 +2392,7 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="searchBar" destination="FNB-43-Lp7" id="YAj-Yj-YEs"/>
                         <outlet property="searchDisplayController" destination="M16-Lt-AsQ" id="5X8-O0-KF8"/>
                     </connections>
                 </tableViewController>
@@ -2414,7 +2436,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="QHp-7y-dI1">
-                                                    <rect key="frame" x="68" y="7" width="228" height="30"/>
+                                                    <rect key="frame" x="68" y="7" width="220" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -2452,7 +2474,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="jyW-ps-NqL">
-                                                    <rect key="frame" x="68" y="7" width="228" height="30"/>
+                                                    <rect key="frame" x="68" y="7" width="220" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -2489,13 +2511,6 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dy3-M6-w16" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="68" y="7" width="228" height="30"/>
-                                                    <animations/>
-                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="kzV-di-po2">
                                                     <rect key="frame" x="297" y="13" width="13" height="18"/>
                                                     <animations/>
@@ -2505,6 +2520,13 @@
                                                     <animations/>
                                                     <color key="backgroundColor" red="0.85098039219999999" green="0.85098039219999999" blue="0.85098039219999999" alpha="1" colorSpace="calibratedRGB"/>
                                                 </view>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qxy-BO-33t">
+                                                    <rect key="frame" x="68" y="7" width="220" height="30"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -2524,16 +2546,6 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="phl-SB-EiZ">
-                                                    <rect key="frame" x="68" y="7" width="228" height="30"/>
-                                                    <animations/>
-                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done"/>
-                                                    <connections>
-                                                        <outlet property="delegate" destination="xJi-H3-vDO" id="OJU-PK-naj"/>
-                                                    </connections>
-                                                </textField>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="PHR-md-LjL">
                                                     <rect key="frame" x="297" y="13" width="13" height="18"/>
                                                     <animations/>
@@ -2543,6 +2555,13 @@
                                                     <animations/>
                                                     <color key="backgroundColor" red="0.85098039219999999" green="0.85098039219999999" blue="0.85098039219999999" alpha="1" colorSpace="calibratedRGB"/>
                                                 </view>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eGc-pu-xaN">
+                                                    <rect key="frame" x="68" y="7" width="220" height="30"/>
+                                                    <animations/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                                </textField>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -2556,7 +2575,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="YTA-pR-NAZ">
-                                                    <rect key="frame" x="76" y="7" width="220" height="30"/>
+                                                    <rect key="frame" x="76" y="7" width="210" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -2601,7 +2620,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="jX9-nk-7yT">
-                                                    <rect key="frame" x="78" y="7" width="218" height="30"/>
+                                                    <rect key="frame" x="78" y="7" width="197" height="30"/>
                                                     <animations/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -2610,10 +2629,14 @@
                                                         <outlet property="delegate" destination="xJi-H3-vDO" id="uIK-Uj-olI"/>
                                                     </connections>
                                                 </textField>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="7lv-qq-nIz">
-                                                    <rect key="frame" x="297" y="13" width="13" height="18"/>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f1H-ps-whm">
+                                                    <rect key="frame" x="292" y="12" width="20" height="20"/>
                                                     <animations/>
-                                                </imageView>
+                                                    <state key="normal" image="patient_address.png"/>
+                                                    <connections>
+                                                        <action selector="mapAction:" destination="xJi-H3-vDO" eventType="touchUpInside" id="4xK-Xv-gTw"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <animations/>
                                         </tableViewCellContentView>
@@ -2642,7 +2665,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Cf-xd-knn">
-                                                    <rect key="frame" x="68" y="0.0" width="227" height="44"/>
+                                                    <rect key="frame" x="68" y="0.0" width="220" height="44"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -2670,7 +2693,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eKF-J4-3dr">
-                                                    <rect key="frame" x="81" y="0.0" width="214" height="44"/>
+                                                    <rect key="frame" x="81" y="0.0" width="210" height="44"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -2712,7 +2735,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4S-xU-aQL">
-                                                    <rect key="frame" x="68" y="0.0" width="227" height="44"/>
+                                                    <rect key="frame" x="68" y="0.0" width="220" height="44"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -2735,8 +2758,8 @@
                         <outlet property="allergyLabel" destination="9Cf-xd-knn" id="T2Q-e7-CNy"/>
                         <outlet property="anamnesisLabel" destination="eKF-J4-3dr" id="Vv9-97-k9P"/>
                         <outlet property="patientAddressField" destination="jX9-nk-7yT" id="ZHd-YX-j6p"/>
-                        <outlet property="patientAgeField" destination="phl-SB-EiZ" id="fGk-AF-KZI"/>
-                        <outlet property="patientGenderField" destination="Dy3-M6-w16" id="X5B-4h-yKI"/>
+                        <outlet property="patientAgeField" destination="eGc-pu-xaN" id="JOH-zx-yiX"/>
+                        <outlet property="patientGenderLabel" destination="qxy-BO-33t" id="iUl-sE-FKc"/>
                         <outlet property="patientIdCardField" destination="YTA-pR-NAZ" id="Yrp-b8-5FJ"/>
                         <outlet property="patientNameField" destination="QHp-7y-dI1" id="FkS-JP-bxz"/>
                         <outlet property="patientPhoneField" destination="jyW-ps-NqL" id="wg9-tB-ljG"/>
@@ -2784,6 +2807,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="r9p-o4-55L"/>
                     <connections>
+                        <outlet property="searchBar" destination="gis-sF-puK" id="ZAo-s2-f3q"/>
                         <outlet property="searchDisplayController" destination="i5L-Ap-WjY" id="gBk-it-Iu6"/>
                     </connections>
                 </tableViewController>
@@ -2809,7 +2833,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="QN2-7t-INF">
+                        <searchBar key="tableHeaderView" contentMode="redraw" text="" id="QN2-7t-INF">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -2837,6 +2861,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="WBj-Vw-93B"/>
                     <connections>
+                        <outlet property="searchBar" destination="QN2-7t-INF" id="saa-qP-Lew"/>
                         <outlet property="searchDisplayController" destination="dCC-wT-Yrf" id="P1i-UL-46V"/>
                     </connections>
                 </tableViewController>
@@ -2892,6 +2917,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="u1L-Zq-e2e"/>
                     <connections>
+                        <outlet property="searchBar" destination="0zg-Ir-PwO" id="5VM-eL-qRx"/>
                         <outlet property="searchDisplayController" destination="k2z-Zt-8Gy" id="mu6-b2-c9Q"/>
                     </connections>
                 </tableViewController>
@@ -2944,6 +2970,7 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="searchBar" destination="l5L-Rw-FWo" id="JkD-Cz-rBU"/>
                         <outlet property="searchDisplayController" destination="UF0-57-OZK" id="NAD-Ha-axq"/>
                     </connections>
                 </tableViewController>
@@ -2996,6 +3023,7 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="searchBar" destination="hx5-zI-Toq" id="0Mi-0r-C9o"/>
                         <outlet property="searchDisplayController" destination="Lrq-TC-d3F" id="cPh-VL-lSV"/>
                     </connections>
                 </tableViewController>
@@ -4304,14 +4332,14 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="做完预约后以及预约时间的前一天都将给患者发送提醒" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BE6-Jj-Asq">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="预约完成后及就诊前一天提醒患者" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BE6-Jj-Asq">
                                                     <rect key="frame" x="15" y="1" width="290" height="48"/>
                                                     <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="48" id="RM0-d9-viJ"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -4361,11 +4389,12 @@
         <image name="login_button.png" width="279" height="45"/>
         <image name="login_liense.png" width="11" height="9"/>
         <image name="login_liense_bg.png" width="14" height="14"/>
+        <image name="patient_address.png" width="11" height="18"/>
         <image name="qrcode.png" width="35" height="35"/>
         <image name="register_bg.png" width="280" height="135"/>
         <image name="register_button.png" width="60" height="20"/>
         <image name="sq_bj.png" width="498" height="81"/>
-        <image name="user_icon.png" width="91" height="92"/>
+        <image name="user_icon.png" width="50" height="50"/>
         <image name="yaoqing.png" width="26" height="26"/>
     </resources>
 </document>
