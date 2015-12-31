@@ -32,6 +32,9 @@
 #import "NewFriendsViewController.h"
 #import "CacheFactory.h"
 #import "UISearchBar+XLMoveBgView.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
 
 @interface DoctorLibraryViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate,RequestIntroducerDelegate,UIAlertViewDelegate>
 @property (nonatomic,retain) NSArray *modeArray;
@@ -259,7 +262,7 @@
     }
     
     //转诊病人
-    if (isTransfer && self.selectDoctor == nil) {
+    if (isTransfer) {
         
         self.selectDoctor = doctor;
         
@@ -301,15 +304,16 @@
 #pragma mark -UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (alertView.tag == 110) {
+        if (buttonIndex == 0) return;
         if (buttonIndex == 1) {
             [[DoctorManager shareInstance] trasferPatient:patientId fromDoctor:[AccountManager shareInstance].currentUser.userid toReceiver:self.selectDoctor.doctor_id successBlock:^{
                 [SVProgressHUD showWithStatus:@"正在转诊患者..."];
-                [[DBManager shareInstance]updateUpdateDate:patientId];
             } failedBlock:^(NSError *error){
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }
     }else{
+        if (buttonIndex == 0) return;
         if (buttonIndex == 1) {
             [SVProgressHUD showWithStatus:@"删除中..."];
             [DoctorTool deleteFriendWithDoctorId:self.deleteDoctor.ckeyid introId:[[AccountManager shareInstance] currentUser].userid success:^(CRMHttpRespondModel *result) {
@@ -393,30 +397,15 @@
 - (void)transferPatientSuccessWithResult:(NSDictionary *)result
 {
     if ([result integerForKey:@"Code"] == 200) {
+        [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
         Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
         if (tmppatient != nil) {
-        //    tmppatient.doctor_id =  self.selectDoctor.doctor_id;
-        //    tmppatient.introducer_id = [AccountManager currentUserid];
-            
-        //   [[DBManager shareInstance] updatePatient:tmppatient];
-       //     [[DBManager shareInstance]updateUpdateDate:patientId];
-            
-           
-            
-          //  [[CRMHttpRequest shareInstance]postPatientIntroducerMap:tmppatient.ckeyid withDoctorId:self.selectDoctor.ckeyid withIntrId:[AccountManager shareInstance].currentUser.userid];
+            //添加患者自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[tmppatient.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             
             //插入患者介绍人
             [self insertPatientIntroducerMap];
-            
-            [SVProgressHUD showWithStatus:@"转诊中..."];
-            //调用同步方法
-            [NSTimer scheduledTimerWithTimeInterval:0.2
-                                             target:self
-                                           selector:@selector(callSync)
-                                           userInfo:nil
-                                            repeats:NO];
-            
-    
             self.selectDoctor = nil;
         }
         
@@ -425,29 +414,30 @@
     }
 }
 //同步
-- (void)callSync {
-    [[SyncManager shareInstance] startSync];
-}
+//- (void)callSync {
+//    [[SyncManager shareInstance] startSync];
+//}
 
 #pragma mark - 同步监听
-- (void)tongbuAction:(NSNotification *)notif{
-    [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
-    [self popViewControllerAnimated:YES];
-}
-
--(void)postPatientIntroducerMapSuccess:(NSDictionary *)result{
-    
-    PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
-    map.intr_id = [AccountManager shareInstance].currentUser.userid;
-    map.intr_source = @"I";
-    map.patient_id = patientId;
-    map.doctor_id = self.selectDoctor.ckeyid;
-    map.intr_time = [NSString currentDateString];
-    [[DBManager shareInstance]insertPatientIntroducerMap:map];
-}
--(void)postPatientIntroducerMapFailed:(NSError *)error{
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
+//- (void)tongbuAction:(NSNotification *)notif{
+//    [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
+//    [self popViewControllerAnimated:YES];
+//}
+//
+//-(void)postPatientIntroducerMapSuccess:(NSDictionary *)result{
+//    
+//    PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
+//    map.intr_id = [AccountManager shareInstance].currentUser.userid;
+//    map.intr_source = @"I";
+//    map.patient_id = patientId;
+//    map.doctor_id = self.selectDoctor.ckeyid;
+//    map.intr_time = [NSString currentDateString];
+//    [[DBManager shareInstance]insertPatientIntroducerMap:map];
+//}
+//
+//-(void)postPatientIntroducerMapFailed:(NSError *)error{
+//    [SVProgressHUD showImage:nil status:error.localizedDescription];
+//}
 
 -(void)insertPatientIntroducerMap{
     PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
@@ -457,6 +447,19 @@
     map.doctor_id = self.selectDoctor.doctor_id;
     map.intr_time = [NSString currentDateString];
     [[DBManager shareInstance]insertPatientIntroducerMap:map];
+    
+//    if(){
+//        //获取患者介绍人信息
+//        PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:map.patient_id doctorId:map.doctor_id intrId:map.intr_id];
+//        if (tempMap != nil) {
+//            //插入一条自动同步信息
+//            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
+//            if([[DBManager shareInstance] insertInfoWithInfoAutoSync:info]){
+//                [self popViewControllerAnimated:YES];
+//            }
+//        }
+//    }
+    
 }
 
 

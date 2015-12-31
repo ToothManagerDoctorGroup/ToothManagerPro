@@ -90,6 +90,7 @@ Realize_ShareInstance(SyncManager);
          return;
      }
 #endif
+    /*
 //    //upload patient
      NSArray *recordArray = [NSMutableArray arrayWithArray:[[DBManager shareInstance] getAllNeedSyncPatient]];
      if (0 != [recordArray count])
@@ -387,7 +388,7 @@ Realize_ShareInstance(SyncManager);
         [NSThread sleepForTimeInterval: 0.5];
     }
      
-
+*/
 //download
     
 #pragma mark - **************************GCD实现多线程的下载操作*****************

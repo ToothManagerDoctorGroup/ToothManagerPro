@@ -37,7 +37,7 @@
         self.zhuanZhenImageview.hidden = YES;
     }
     
-    self.countMaterial.text = [NSString stringWithFormat:@"%ld颗",mode.countMaterial];
+    self.countMaterial.text = [NSString stringWithFormat:@"%ld颗",(long)mode.countMaterial];
     switch (mode.status) {
         case PatientStatusUntreatment:
             [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_YELLOW]];

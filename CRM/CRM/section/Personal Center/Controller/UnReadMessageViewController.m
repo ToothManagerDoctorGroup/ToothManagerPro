@@ -176,6 +176,13 @@
 
 #pragma mark - 缓存患者信息
 - (void)savePatientDataWithModel:(XLPatientTotalInfoModel *)model messageModel:(SysMessageModel *)msgModel{
+    //"ckeyid": "1009_1451464419254",
+    if (model.baseInfo[@"ckeyid"] == nil) {
+        //如果患者为空
+        [SVProgressHUD showErrorWithStatus:@"患者信息获取失败!"];
+        return;
+    }
+    
     NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count;
     NSInteger current = 0;
     //保存患者消息

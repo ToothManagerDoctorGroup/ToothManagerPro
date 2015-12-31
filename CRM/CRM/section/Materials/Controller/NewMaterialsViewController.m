@@ -13,6 +13,11 @@
 #import "DBManager+Introducer.h"
 #import "DBManager+Patients.h"
 #import "PatientInfoViewController.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
+#import "DBManager+AutoSync.h"
+#import "PatientDetailViewController.h"
+
 
 //TIMUIKIT_EXTERN NSString * const ITI;
 //TIMUIKIT_EXTERN NSString * const DENTIS;
@@ -142,9 +147,22 @@ TIMUIKIT_EXTERN NSString * const OtherStr;
     } else {
         if ([[DBManager shareInstance] insertMaterial:_material]) {
             if (self.edit) {
+                //自动同步信息
+                Material *tempMaterial = [[DBManager shareInstance] getMaterialWithId:_material.ckeyid];
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Material postType:Update dataEntity:[tempMaterial.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
                 [self postNotificationName:MaterialEditedNotification object:nil];
             } else {
-                [self postNotificationName:MaterialCreatedNotification object:nil];
+                //获取材料信息
+                Material *tempMaterial = [[DBManager shareInstance] getMaterialWithId:_material.ckeyid];
+                if (tempMaterial != nil) {
+                    //自动同步信息
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Material postType:Insert dataEntity:[tempMaterial.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    [self postNotificationName:MaterialCreatedNotification object:nil];
+                }
+                
             }
             [self popViewControllerAnimated:YES];
         } else {
@@ -234,10 +252,10 @@ TIMUIKIT_EXTERN NSString * const OtherStr;
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     PatientsCellMode *cellMode = [patientCellModeArray objectAtIndex:indexPath.row];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-    patientDetailCtl.patientsCellMode = cellMode;
-    [self pushViewController:patientDetailCtl animated:YES];
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellMode;
+    [self pushViewController:detailVc animated:YES];
 }
 
 #pragma mark - Notification

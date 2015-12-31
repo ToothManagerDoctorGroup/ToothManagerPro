@@ -105,7 +105,7 @@ DEF_STATIC_CONST_STRING(PersonalCenter_Prefix,PersonalCenter);
  *  @param user_id 医生id
  *  @param AccessToken  医生AccessToken
  */
-- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken;
+- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor;
 
 /**
  *  获取忘记密码页面的验证码

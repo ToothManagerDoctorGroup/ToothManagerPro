@@ -246,4 +246,22 @@
     return ret;
 }
 
+- (LocalNotification *)getLocalNotificationWithCkeyId:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",LocalNotificationTableName,ckeyId];
+    __block LocalNotification *localNoti = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            localNoti = [LocalNotification notificaitonWithResult:result];
+        }
+        [result close];
+    }];
+    return localNoti;
+}
+
 @end

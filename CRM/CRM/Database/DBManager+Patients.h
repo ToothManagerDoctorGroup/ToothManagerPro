@@ -78,6 +78,14 @@
  *  @return 患者信息
  */
 - (Patient *)getPatientWithPatientCkeyid:(NSString *)ckeyid;
+/**
+ *  获取患者信息
+ *
+ *  @param ckeyid 患者id
+ *
+ *  @return 患者信息
+ */
+- (Patient *)getPatientCkeyid:(NSString *)ckeyid;
 
 /*
  *@brief 通过患者表的introducer_id 获取介绍人表的信息
@@ -190,6 +198,14 @@
  *  @return 会诊信息数组
  */
 - (NSArray *)getPatientConsultationWithPatientId:(NSString *)patientId;
+/**
+ *  获取会诊信息
+ *
+ *  @param ckeyid 会诊信息主键
+ *
+ *  @return 会诊信息
+ */
+- (PatientConsultation *)getPatientConsultationWithCkeyId:(NSString *)ckeyid;
 
 //删除会诊信息
 - (BOOL)deletePatientConsultationWithPatientId_sync:(NSString *)patientId;
@@ -237,6 +253,8 @@
  */
 - (NSArray *)getMedicalRecordWithCaseId:(NSString *)caseid;
 
+- (MedicalRecord *)getMedicalRecordWithCkeyId:(NSString *)ckeyId;
+
 /**
  *  插入一条CT记录
  *
@@ -260,6 +278,8 @@
 - (BOOL)deleteCTlibWithPatientId:(NSString *)patientId;
 
 - (BOOL)deleteCTlibWithLibId_sync:(NSString *)libid;
+
+- (CTLib *)getCTLibWithCKeyId:(NSString *)ckeyId;
 
 /**
  *  获取CTLib中所有数据，也就是照片合集

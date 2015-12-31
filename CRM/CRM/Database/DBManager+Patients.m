@@ -12,6 +12,9 @@
 #import "DBManager+Introducer.h"
 #import "LocalNotificationCenter.h"
 #import "CRMUserDefalut.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
 
 @implementation DBManager (Patients)
 
@@ -602,21 +605,25 @@
         if (ret == NO) {
             return NO;
         }
+        
         //删除预约记录
         ret = [self deleteMedicalReservesWithPatientId:patient_id];
         if (ret == NO) {
             return NO;
         }
+        
         //删除耗材记录
         ret = [self deleteMedicalExpenseWithPatientId:patient_id];
         if (ret == NO) {
             return NO;
         }
+        
         //删除病例记录
         ret = [self deleteMedicalRecordsWithPatientId:patient_id];
         if (ret == NO) {
             return NO;
         }
+        
         //删除CTlib
         ret = [self deleteCTlibWithPatientId:patient_id];
         if (ret == NO) {
@@ -686,7 +693,7 @@
          
         // NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where doctor_id=\"%@\" union select * from patient_version2 where ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[intr_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
          
-  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[intr_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
+  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
       
          //PatientTableName,PatientTableName,PatIntrMapTableName,IntroducerTableName,PatIntrMapTableName,IntroducerTableName,PatIntrMapTableName,MedicalExpenseTableName
          
@@ -802,6 +809,23 @@
     return retPatient;
 }
 
+- (Patient *)getPatientCkeyid:(NSString *)ckeyid{
+    if ([NSString isEmptyString:ckeyid]) {
+        return nil;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@'",PatientTableName,ckeyid];
+    __block Patient *retPatient = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        FMResultSet *set = nil;
+        set = [db executeQuery:sqlStr];
+        if (set && [set next]) {
+            retPatient = [Patient patientlWithResult:set];
+        }
+        [set close];
+    }];
+    return retPatient;
+}
+
 /*
  *@brief 通过患者表的introducer_id 获取介绍人表的信息
  *@return NSArray 返回患者数组，没有则为nil
@@ -838,7 +862,6 @@
     if (PatIntro == nil) {
         return NO;
     }
-    
     __block BOOL ret = NO;
     
     NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_id = \"%@\"",PatIntrMapTableName,PatIntro.patient_id,PatIntro.doctor_id,PatIntro.intr_id];
@@ -1224,8 +1247,9 @@
     
     NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and creation_date_sync > datetime('%@')",MedicalCaseTableName,caseid,[NSString defaultDateString]];
     __block MedicalCase *medicalCase = nil;
+    __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
-        FMResultSet *result = [db executeQuery:sqlStr];
+        result = [db executeQuery:sqlStr];
         if (result && [result next]) {
             medicalCase = [MedicalCase medicalCaseWithResult:result];
         }
@@ -1792,6 +1816,24 @@
     
 }
 
+- (PatientConsultation *)getPatientConsultationWithCkeyId:(NSString *)ckeyid{
+    if ([NSString isEmptyString:ckeyid]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",PatientConsultationTableName,ckeyid];
+    __block PatientConsultation *patientC = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            patientC = [PatientConsultation patientConsultationWithResult:result];
+        }
+        [result close];
+    }];
+    return patientC;
+}
+
 - (BOOL)deletePatientConsultationWithPatientId_sync:(NSString *)patientId {
     if ([NSString isEmptyString:patientId]) {
         return NO;
@@ -2091,6 +2133,25 @@
     return resultRecordArray;
 }
 
+- (MedicalRecord *)getMedicalRecordWithCkeyId:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",MedicalRecordableName,ckeyId];
+    __block MedicalRecord *medicalRecord = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            medicalRecord = [MedicalRecord medicalRecordWithResult:result];
+        }
+        [result close];
+    }];
+    return medicalRecord;
+
+}
+
 /**
  *  插入一条CT记录
  *
@@ -2327,6 +2388,24 @@
         
     }];
     return ret;
+}
+
+- (CTLib *)getCTLibWithCKeyId:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",CTLibTableName,ckeyId];
+    __block CTLib *ctLib = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            ctLib = [CTLib libWithResult:result];
+        }
+        [result close];
+    }];
+    return ctLib;
 }
 
 /**

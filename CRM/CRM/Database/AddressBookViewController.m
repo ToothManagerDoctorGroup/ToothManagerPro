@@ -17,6 +17,9 @@
 #import "DBManager+sync.h"
 #import "AddressBookCell.h"
 #import "UISearchBar+XLMoveBgView.h"
+#import "DBManager+AutoSync.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
 
 @interface AddressBookViewController () <UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,AddressBookCellDelegate>
 
@@ -151,8 +154,14 @@
         if (ret) {
              [[DBManager shareInstance]updateUpdateDate:patient.ckeyid];
             [self postNotificationName:PatientCreatedNotification object:nil];
-            [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:patient, nil]];
-            
+
+            //获取患者信息
+            Patient *tempPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patient.ckeyid];
+            if (tempPatient != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
         }
     } else  if (self.type == ImportTypeIntroducer){
         Introducer *introducer = [[Introducer alloc]init];
@@ -163,11 +172,12 @@
         ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
         if (ret) {
             [self postNotificationName:IntroducerCreatedNotification object:nil];
-            
-            NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
-            if (0 != [recordArray count])
-            {
-                [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+            //获取介绍人信息
+            Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
+            if (tempIntr != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
         }
     } else if (self.type == ImportTypeRepairDoctor) {
@@ -177,7 +187,15 @@
         repairdoctor.data_flag = @"0";
         ret = [[DBManager shareInstance] insertRepairDoctor:repairdoctor];
         if (ret) {
-             [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+            //查询修复医生信息
+            RepairDoctor *tempRepairDoc = [[DBManager shareInstance] getRepairDoctorWithCkeyId:repairdoctor.ckeyid];
+            if (tempRepairDoc != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_RepairDoctor postType:Insert dataEntity:[tempRepairDoc.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+            }
+            
         }
     }
     if (ret) {
@@ -267,24 +285,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath  {
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-//    if (cell == nil) {
-//        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-//        UIView *viewBG = [[UIView alloc]initWithFrame:CGRectMake(0, 0,tableView.bounds.size.width, 44)];
-//        viewBG.backgroundColor = [UIColor whiteColor];
-//        cell.backgroundView = viewBG;
-//        //cell选中时的背景颜色要与圆圈的背景颜色一致
-//        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-//        [button setTintColor:[UIColor blueColor]];
-//        button.frame = CGRectMake(0, 0, 50, 35);
-//        [button setTitle:@"添加" forState:UIControlStateNormal];
-//        [button setBackgroundImage:[UIImage imageNamed:@"addManBtn"] forState:UIControlStateNormal];
-//        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//        [button setTitle:@"已添加" forState:UIControlStateDisabled];
-//        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
-//        [button addTarget:self action:@selector(onAddButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-//        cell.accessoryView = button;
-//    }
+
     AddressBookCell *cell = [AddressBookCell cellWithTableView:tableView];
     cell.delegate = self;
     
@@ -295,12 +296,6 @@
         mode  = [self.tableViewDataSource objectAtIndex:indexPath.row];
     }
     cell.model = mode;
-//    UIButton *button = (UIButton *)cell.accessoryView;
-//    button.tag = 100+indexPath.row;
-//    button.enabled = !mode.hasAdded;
-//    cell.textLabel.text = mode.name;
-//    cell.detailTextLabel.text = mode.phone;
-//    cell.imageView.image = mode.image;
     return cell;
 }
 
@@ -321,9 +316,17 @@
         patient.patient_phone = mode.phone;
         ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
         if (ret) {
-            [[DBManager shareInstance]updateUpdateDate:patient.ckeyid];
-            [self postNotificationName:PatientCreatedNotification object:nil];
-            [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:patient, nil]];
+            [[DBManager shareInstance] updateUpdateDate:patient.ckeyid];
+            
+            //获取患者信息
+            Patient *tempPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patient.ckeyid];
+            if (tempPatient != nil) {
+                [self postNotificationName:PatientCreatedNotification object:nil];
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+            
             
         }
     } else  if (self.type == ImportTypeIntroducer){
@@ -335,11 +338,12 @@
         ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
         if (ret) {
             [self postNotificationName:IntroducerCreatedNotification object:nil];
-            
-            NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
-            if (0 != [recordArray count])
-            {
-                [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+            //获取介绍人信息
+            Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
+            if (tempIntr != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
         }
     } else if (self.type == ImportTypeRepairDoctor) {
@@ -349,7 +353,15 @@
         repairdoctor.data_flag = @"0";
         ret = [[DBManager shareInstance] insertRepairDoctor:repairdoctor];
         if (ret) {
-            [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+            //获取修复医生信息
+            RepairDoctor *tempRepairDoc = [[DBManager shareInstance] getRepairDoctorWithCkeyId:repairdoctor.ckeyid];
+            if (tempRepairDoc != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_RepairDoctor postType:Insert dataEntity:[tempRepairDoc.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+            }
         }
     }
     if (ret) {

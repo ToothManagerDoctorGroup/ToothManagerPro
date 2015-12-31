@@ -40,6 +40,7 @@
 //    [self.view addSubview:_avatar];
     
     self.iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, 14, 60, 60)];
+    self.iconImageView.image = [UIImage imageNamed:@"user_icon"];
     self.iconImageView.layer.cornerRadius = 30;
     self.iconImageView.layer.masksToBounds = YES;
     self.iconImageView.userInteractionEnabled = YES;

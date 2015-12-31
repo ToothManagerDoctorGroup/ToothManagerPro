@@ -24,6 +24,10 @@
 #import "RepairDoctorDetailViewController.h"
 #import "UISearchBar+XLMoveBgView.h"
 
+#import "JSONKit.h"
+#import "MJExtension.h"
+#import "DBManager+AutoSync.h"
+
 
 @interface RepairDoctorViewController ()<MudItemsBarDelegate>
 @property (nonatomic,retain) MudItemsBar *menubar;
@@ -273,6 +277,10 @@
             if (ret == NO) {
                 [SVProgressHUD showImage:nil status:@"删除失败"];
             } else {
+                //自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_RepairDoctor postType:Delete dataEntity:[cellMode.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance ] insertInfoWithInfoAutoSync:info];
+                
                 [self refreshData];
                 [self refreshView];
             }

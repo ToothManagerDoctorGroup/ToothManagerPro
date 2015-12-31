@@ -85,6 +85,8 @@
 
 
 - (PatientIntroducerMap *)getPatientIntroducerMapByPatientId:(NSString *)patientId;
+- (PatientIntroducerMap *)getPatientIntroducerMapByPatientId:(NSString *)patientId doctorId:(NSString *)doctorId intrId:(NSString *)intrId;
+
 - (Introducer *)getIntroducerByCkeyId:(NSString *)ckeyId;
 - (Introducer *)getIntroducerByIntrid:(NSString *)intrId;
 @end

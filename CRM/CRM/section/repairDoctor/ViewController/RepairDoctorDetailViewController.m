@@ -16,6 +16,11 @@
 #import "CRMMacro.h"
 #import "PatientInfoViewController.h"
 
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
+#import "PatientDetailViewController.h"
+
 @interface RepairDoctorDetailViewController ()
 
 @property (nonatomic,retain) RepairDocHeaderTableViewController *tbheaderView;
@@ -88,6 +93,10 @@
     BOOL ret = [[DBManager shareInstance] updateRepairDoctor:_doctor];
     if (ret) {
         [SVProgressHUD showImage:nil status:@"保存成功"];
+        //保存自动同步信息
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_RepairDoctor postType:Update dataEntity:[_doctor.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        
         [self postNotificationName:RepairDoctorEditedNotification object:nil];
     } else {
         [SVProgressHUD showImage:nil status:@"保存失败"];
@@ -149,11 +158,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     PatientsCellMode *cellMode = [self.patientCellModeArray objectAtIndex:indexPath.row];
-    PatientInfoViewController * patientDetailCtl = [storyboard instantiateViewControllerWithIdentifier:@"PatientInfoViewController"];
-    patientDetailCtl.patientsCellMode = cellMode;
-    [self pushViewController:patientDetailCtl animated:YES];
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellMode;
+    [self pushViewController:detailVc animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

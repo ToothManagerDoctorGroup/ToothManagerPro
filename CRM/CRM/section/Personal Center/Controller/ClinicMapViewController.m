@@ -188,7 +188,7 @@
     searchBar.placeholder = @"输入名称搜索";
     searchBar.frame = CGRectMake(0, 0, kScreenWidth, 44);
     searchBar.delegate = self;
-    searchBar.backgroundImage = [UIImage imageNamed:@"sq_bj"];
+//    searchBar.backgroundImage = [UIImage imageNamed:@"sq_bj"];
     [_searchBar moveBackgroundView];
     [self.view addSubview:searchBar];
     _searchBar = searchBar;

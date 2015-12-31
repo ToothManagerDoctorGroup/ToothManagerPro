@@ -66,7 +66,7 @@
 - (void)initNavBar{
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.title = @"患者详情";
+    self.title = @"患者信息";
     self.view.backgroundColor = CommenBgColor;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     

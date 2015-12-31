@@ -15,8 +15,29 @@
 #define ActionParam @"action"
 #define Patient_NameParam @"patient_name"
 #define Patient_PhoneParam @"patient_phone"
+#define Doctor_IdParam @"doctor_id"
+#define Patient_IdParam @"ckeyId"
 
 @implementation MyPatientTool
+
++ (void)getPateintKeyIdWithPatientCKeyId:(NSString *)ckeyid success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientInfoHandler.ashx",DomainName,Method_Weixin];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = @"getPatientKeyIdByCkeyId";
+    params[@"ckeyid"] = ckeyid;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+}
 
 + (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(XLPatientTotalInfoModel *model))success failure:(void(^)(NSError *error))failure{
     
@@ -40,14 +61,12 @@
     
 }
 
-+ (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
++ (void)getWeixinStatusWithPatientId:(NSString *)patientId success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientInfoHandler.ashx",DomainName,Method_Weixin];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[ActionParam] = @"weixinBind";
-//    NSString *encodingPatientName = [patientName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    params[Patient_NameParam] = patientName;
-    params[Patient_PhoneParam] = patientPhone;
+    params[Patient_IdParam] = patientId;
     
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];

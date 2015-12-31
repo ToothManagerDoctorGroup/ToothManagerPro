@@ -368,11 +368,11 @@ Realize_ShareInstance(AccountManager);
  *  @param user_id 医生id
  *  @param AccessToken  医生AccessToken
  */
-- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
+- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     if(user_id == nil){
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请登录" errorCode:400]);
     }
-    [[CRMHttpRequest shareInstance] getQrCode:user_id withAccessToken:AccessToken];
+    [[CRMHttpRequest shareInstance] getQrCode:user_id withAccessToken:AccessToken patientKeyId:patientKeyId isDoctor:isDoctor];
     
     successBlock();
 }

@@ -18,7 +18,9 @@
 #import "CreateCaseViewController.h"
 #import "PatientsDisplayViewController.h"
 #import "CRMHttpRequest+Introducer.h"
-
+#import "DBManager+AutoSync.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
 
 @interface CreatePatientViewController () <UITextFieldDelegate,IntroducePersonViewControllerDelegate,RequestIntroducerDelegate>
 {
@@ -130,6 +132,14 @@
     if (![patient.patient_name isEmpty] && ![patient.patient_phone isEmpty]){
         NSString * message = nil;
         if ([[DBManager shareInstance] insertPatient:patient]) {
+            
+            Patient *tempPatient = [[DBManager shareInstance] getPatientCkeyid:patient.ckeyid];
+            if (tempPatient != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+            
             if (self.edit) {  //如果是编辑患者界面
                 message = @"修改成功!";
                 //通知患者信息被修改
@@ -142,12 +152,24 @@
                 //周知各vc 创建了新患者
                [self postNotificationName:PatientCreatedNotification object:nil];
                 
-                [self insertPatientIntroducerMap];
-                
-                [NSThread sleepForTimeInterval: 0.5];
-                
-                [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:patient, nil]];
-                
+                if (selectIntroducer!= nil && self.introducerTextField.text.length > 0) {
+                    //新建介绍人，添加到本地数据库同时保存自动同步信息
+                    PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
+                    map.intr_id = selectIntroducer.ckeyid;
+                    map.intr_source = @"B";
+                    map.patient_id = patient.ckeyid;
+                    map.doctor_id = [AccountManager shareInstance].currentUser.userid;
+                    map.intr_time = [NSString currentDateString];
+                    if([[DBManager shareInstance]insertPatientIntroducerMap:map]){
+                        //获取患者介绍人信息
+                        PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:map.patient_id doctorId:map.doctor_id intrId:map.intr_id];
+                        if (tempMap != nil) {
+                            //添加自动同步信息
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                }
                 
                 UIAlertView * alertview;
                 alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病例", nil];
@@ -258,7 +280,7 @@
 - (void)insertPatientIntroducerMap{
     if(selectIntroducer!= nil && self.introducerTextField.text.length > 0){
         
-        [[CRMHttpRequest shareInstance]postPatientIntroducerMap:patient.ckeyid withDoctorId:[AccountManager shareInstance].currentUser.userid withIntrId:selectIntroducer.ckeyid];
+        [[CRMHttpRequest shareInstance] postPatientIntroducerMap:patient.ckeyid withDoctorId:[AccountManager shareInstance].currentUser.userid withIntrId:selectIntroducer.ckeyid];
     }
 }
 
@@ -271,6 +293,10 @@
     map.doctor_id = [AccountManager shareInstance].currentUser.userid;
     map.intr_time = [NSString currentDateString];
     [[DBManager shareInstance]insertPatientIntroducerMap:map];
+    //添加自动同步信息
+    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[map.keyValues JSONString] syncStatus:@"0"];
+    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    
 }
 -(void)postPatientIntroducerMapFailed:(NSError *)error{
         [SVProgressHUD showImage:nil status:error.localizedDescription];

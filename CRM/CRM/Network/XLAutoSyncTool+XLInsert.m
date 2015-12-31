@@ -21,7 +21,9 @@
 //introducer表
 #define POST_INTRODUCER_INSERT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=introducer&action=add",DomainName,Method_His_Crm])
 //patientIntroducerMap表（患者介绍人关系表）
-#define POST_PATIENT_INTRODUCERMAP_INSERT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientintroducermap&action=add",DomainName,Method_His_Crm])
+//#define POST_PATIENT_INTRODUCERMAP_INSERT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientintroducermap&action=add",DomainName,Method_His_Crm])
+#define POST_PATIENT_INTRODUCERMAP_INSERT [NSString stringWithFormat:@"%@%@/ashx/PatientIntroducerMapHandler.ashx?action=add",DomainName,Method_His_Crm]
+
 //medicalcase表
 #define POST_MEDICALCASE_INSERT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=add",DomainName,Method_His_Crm])
 //ctLib表
@@ -152,35 +154,18 @@
 }
 
 - (void)postAllNeedSyncPatientIntroducerMap:(PatientIntroducerMap *)patIntr success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
-    NSMutableDictionary *subParamDic = [NSMutableDictionary dictionaryWithCapacity:9];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:5];
+    [dataEntity setObject:patIntr.patient_id forKey:@"patient_id"];
+    [dataEntity setObject:patIntr.doctor_id forKey:@"doctor_id"];
+    [dataEntity setObject:patIntr.intr_id forKey:@"intr_id"];
+    [dataEntity setObject:patIntr.intr_source forKey:@"intr_source"];
+    [dataEntity setObject:[NSString currentDateString] forKey:@"intr_time"];
     
-    [subParamDic setObject:patIntr.ckeyid forKey:@"ckeyid"];
-    [subParamDic setObject:[NSString currentDateString] forKey:@"sync_time"];
-    [subParamDic setObject:patIntr.patient_id forKey:@"patient_id"];
-    [subParamDic setObject:patIntr.doctor_id forKey:@"doctor_id"];
-    [subParamDic setObject:patIntr.intr_id forKey:@"intr_id"];
-    [subParamDic setObject:patIntr.intr_time forKey:@"intr_time"];
-    [subParamDic setObject:patIntr.intr_source forKey:@"intr_source"];
-    [subParamDic setObject:patIntr.remark forKey:@"remark"];
-    [subParamDic setObject:patIntr.creation_date forKey:@"creation_time"];
+    NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
+    [paramDic setObject:jsonString forKey:@"DataEntity"];
     
-    NSError *error;
-    NSString *jsonString;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:subParamDic
-                                                       options: 0
-                                                         error:&error];
-    if (! jsonData) {
-        NSLog(@"Got an error: %@", error);
-    }
-    else {
-        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@", jsonString);
-    }
-    
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [CRMHttpTool POST:POST_PATIENT_INTRODUCERMAP_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [CRMHttpTool POST:POST_PATIENT_INTRODUCERMAP_INSERT parameters:[self addCommenParams:paramDic] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

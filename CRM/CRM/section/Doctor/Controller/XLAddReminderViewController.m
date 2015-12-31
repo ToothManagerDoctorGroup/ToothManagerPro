@@ -20,6 +20,12 @@
 #import "DoctorTool.h"
 #import "CRMHttpRespondModel.h"
 #import "DBManager+Patients.h"
+#import "DBManager+AutoSync.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+LocalNotification.h"
+
+#import "RBCustomDatePickerView.h"
 
 @interface XLAddReminderViewController ()<HengYaDeleate,RuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *patientNameLabel;//患者名称
@@ -123,7 +129,16 @@
     }else{
         BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
         if (ret) {
-            [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
+            //获取完整的预约信息
+            LocalNotification *tempNoti = [[DBManager shareInstance] getLocalNotificationWithCkeyId:notification.ckeyid];
+            if (tempNoti != nil) {
+                //添加自动同步数据
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Insert dataEntity:[tempNoti.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
+            }
+            
         }else{
             [SVProgressHUD showErrorWithStatus:@"本地预约保存失败"];
         }
@@ -142,6 +157,13 @@
     BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:noti];
     //关闭
     if (ret) {
+        LocalNotification *tempNoti = [[DBManager shareInstance] getLocalNotificationWithCkeyId:noti.ckeyid];
+        if (tempNoti != nil) {
+            //添加自动同步数据
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Insert dataEntity:[tempNoti.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+        
         [SVProgressHUD showSuccessWithStatus:@"本地预约保存成功"];
         [[DoctorManager shareInstance] weiXinMessagePatient:noti.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.visitTimeLabel.text successBlock:^{
             

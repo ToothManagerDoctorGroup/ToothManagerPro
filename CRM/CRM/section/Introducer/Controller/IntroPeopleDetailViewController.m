@@ -22,6 +22,10 @@
 #import "DBManager+Doctor.h"
 #import "PatientDetailViewController.h"
 
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
+
 @interface IntroPeopleDetailViewController ()
 
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
@@ -160,6 +164,10 @@
     BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
     if (ret) {
         [SVProgressHUD showImage:nil status:@"修改成功"];
+        //自动同步信息
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Update dataEntity:[self.introducer.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        
         [self postNotificationName:IntroducerEditedNotification object:nil];
     } else {
         [SVProgressHUD showImage:nil status:@"修改失败"];

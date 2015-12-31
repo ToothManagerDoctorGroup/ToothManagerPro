@@ -34,6 +34,8 @@
 
 @property (nonatomic, weak)FSCalendar *calendar;//日历
 
+@property (nonatomic, strong)NSDate *selectDate;//当前选中的日期
+
 @end
 
 @implementation XLSelectYuyueViewController
@@ -44,26 +46,42 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
     dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *startDateString = [dateFormatter stringFromDate:[NSDate date]];
-    dateString = startDateString;
-    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:startDateString];
-    
-    for (NSString *time in timeArray) {
-        NSMutableArray *subArr = [NSMutableArray array];
-        //拼接时间
-        NSString *targetDateStr = [NSString stringWithFormat:@"%@ %@",startDateString,time];
-        for (LocalNotification *noti in self.remindArray) {
-            if ([targetDateStr isEqualToString:noti.reserve_time] || [MyDateTool timeInStartTime:noti.reserve_time endTime:noti.reserve_time_end targetTime:targetDateStr]) {
-                //表名当前时间在时间跨度内
-                [subArr addObject:noti];
-            }
-        }
-        [self.dataSuperArray addObject:subArr];
+    NSString *startDateString;
+    if (self.selectDate) {
+        startDateString = [dateFormatter stringFromDate:self.selectDate];
+    }else{
+        startDateString = [dateFormatter stringFromDate:[NSDate date]];
     }
     
-    [m_tableView reloadData];
+//    dateString = startDateString;
+//    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:startDateString];
+//    
+//    for (NSString *time in timeArray) {
+//        NSMutableArray *subArr = [NSMutableArray array];
+//        //拼接时间
+//        NSString *targetDateStr = [NSString stringWithFormat:@"%@ %@",startDateString,time];
+//        for (LocalNotification *noti in self.remindArray) {
+//            if ([targetDateStr isEqualToString:noti.reserve_time] || [MyDateTool timeInStartTime:noti.reserve_time endTime:noti.reserve_time_end targetTime:targetDateStr]) {
+//                //表名当前时间在时间跨度内
+//                [subArr addObject:noti];
+//            }
+//        }
+//        [self.dataSuperArray addObject:subArr];
+//    }
+//    
+//    [m_tableView reloadData];
+//    [self.calendar reloadData];
+    
+    if (self.selectDate) {
+        [self requestDataWithDate:self.selectDate];
+    }else{
+        [self requestDataWithDate:[NSDate date]];
+    }
+    [self.calendar reloadData];
 }
 
 - (void)viewDidLoad {
@@ -130,6 +148,7 @@
 #pragma mark - FSCalendar Delegate/DataSource
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date
 {
+    self.selectDate = date;
     [self requestDataWithDate:date];
 }
 
@@ -184,7 +203,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return timeArray.count;
+    return self.dataSuperArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

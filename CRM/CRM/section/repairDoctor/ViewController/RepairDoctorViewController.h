@@ -9,8 +9,6 @@
 #import "TimDisplayViewController.h"
 /**
  @brief 修复医生页面.
- 
- @discussion <#some notes or alert with this class#>
  */
 @class RepairDoctor;
 @protocol RepairDoctorViewControllerDelegate;

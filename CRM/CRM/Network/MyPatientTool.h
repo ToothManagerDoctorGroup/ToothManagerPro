@@ -10,6 +10,17 @@
 
 @class CRMHttpRespondModel,XLPatientTotalInfoModel;
 @interface MyPatientTool : NSObject
+
+/**
+ *  获取患者的keyid(用于二维码页面)
+ *
+ *  @param ckeyid  患者的ckeyid
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ *
+ */
++ (void)getPateintKeyIdWithPatientCKeyId:(NSString *)ckeyid success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
+
 /**
  *  获取患者下所有的信息包括ct片，会诊信息等数据
  *
@@ -28,7 +39,7 @@
  *  @param success      成功回调
  *  @param failure      失败回调
  */
-+ (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
++ (void)getWeixinStatusWithPatientId:(NSString *)patientId success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
 /**
  *  发送预约信息到服务器

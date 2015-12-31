@@ -110,4 +110,13 @@
  */
 - (NSArray *)getMedicalExpenseArrayWithMedicalCaseId:(NSString *)caseId;
 
+/**
+ *  获取耗材信息
+ *
+ *  @param ckeyId 主键
+ *
+ *  @return 耗材信息
+ */
+- (MedicalExpense *)getMedicalExpenseWithCkeyId:(NSString *)ckeyId;
+
 @end

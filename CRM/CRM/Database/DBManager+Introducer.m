@@ -453,6 +453,21 @@
     }];
     return map;
 }
+- (PatientIntroducerMap *)getPatientIntroducerMapByPatientId:(NSString *)patientId doctorId:(NSString *)doctorId intrId:(NSString *)intrId{
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_id = \"%@\"",PatIntrMapTableName,patientId,doctorId,intrId];
+    
+    __block PatientIntroducerMap *map = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlString];
+        if (result && result.next) {
+            map = [PatientIntroducerMap patientIntroducerWithResult:result];
+        }
+        [result close];
+    }];
+    return map;
+}
+
 
 - (Introducer *)getIntroducerByCkeyId:(NSString *)ckeyId
 {

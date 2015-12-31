@@ -353,6 +353,7 @@
 - (void)weixinButtonClick{
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
+    qrVC.patient = self.detailPatient;
     [self.viewController.navigationController pushViewController:qrVC animated:YES];
 }
 

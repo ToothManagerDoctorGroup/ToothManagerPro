@@ -24,6 +24,9 @@
 #import "CreateIntroducerViewController.h"
 #import "SyncManager.h"
 #import "UISearchBar+XLMoveBgView.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
 
 @interface IntroducerViewController () <MudItemsBarDelegate>
 @property (nonatomic,retain) MudItemsBar *menubar;
@@ -344,6 +347,11 @@
             Introducer *intro = [introducerInfoArray objectAtIndex:indexPath.row];
             BOOL ret = [[DBManager shareInstance] deleteIntroducerWithId:intro.ckeyid];
             if (ret) {
+                //删除介绍人自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Delete dataEntity:[intro.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                
                 [self refreshData];
                 [self refreshView];
             }

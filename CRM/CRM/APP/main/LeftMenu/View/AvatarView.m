@@ -36,7 +36,7 @@
     if (self) {
         self.userInteractionEnabled = YES;
         _avatarButton = [CornerButton buttonWithType:UIButtonTypeCustom];
-        [_avatarButton setImage:[UIImage imageNamed:@"header_defult.png"] forState:UIControlStateNormal];
+        [_avatarButton setImage:[UIImage imageNamed:@"user_icon"] forState:UIControlStateNormal];
         [self addSubview:_avatarButton];
         _titleLabel = [[UILabel alloc]init];
         _titleLabel.backgroundColor = [UIColor clearColor];
@@ -80,7 +80,7 @@
     self = [super initWithFrame:CGRectZero];
     if (self) {
         _avatarButton = [CornerButton buttonWithType:UIButtonTypeCustom];
-        [_avatarButton setImage:[UIImage imageNamed:@"header_defult.png"] forState:UIControlStateNormal];
+        [_avatarButton setImage:[UIImage imageNamed:@"user_icon"] forState:UIControlStateNormal];
         [self addSubview:_avatarButton];
         self.urlStr = string;
         _titleLabel = [[UILabel alloc]init];
@@ -109,7 +109,7 @@
 
 - (void)setUrlStr:(NSString *)urlStr {
     _urlStr = urlStr;
-    [self.avatarButton sd_setImageWithURL:[NSURL URLWithString:urlStr] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"header_defult"] options:SDWebImageRefreshCached];
+    [self.avatarButton sd_setImageWithURL:[NSURL URLWithString:urlStr] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
 }
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents {

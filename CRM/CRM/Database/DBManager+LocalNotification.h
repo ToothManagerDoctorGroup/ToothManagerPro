@@ -21,4 +21,6 @@
 
 - (BOOL)deleteLocalNotification_Sync:(LocalNotification *)notification;
 
+- (LocalNotification *)getLocalNotificationWithCkeyId:(NSString *)ckeyId;
+
 @end

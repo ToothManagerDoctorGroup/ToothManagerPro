@@ -38,6 +38,7 @@
 
 #import "XLAvatarBrowser.h"
 #import "XLMaterialsViewController.h"
+#import "BaseUrl.h"
 
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
@@ -84,7 +85,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+    //如果是测试环境
+    if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
+        [self setRightBarButtonWithTitle:@"测试"];
+    }
+    
     self.title = @"我的空间";
     
     _tableView.delegate=self;

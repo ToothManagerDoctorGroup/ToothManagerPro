@@ -207,8 +207,9 @@
         if (result && result.next) {
             material = [Material materialWithResult:result];
         }
+        [result close];
     }];
-    [result close];
+    
     
     return material;
 }
@@ -633,5 +634,23 @@
     return resultArray;
 }
 
+
+- (MedicalExpense *)getMedicalExpenseWithCkeyId:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",MedicalExpenseTableName,ckeyId];
+    __block MedicalExpense *expense = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            expense = [MedicalExpense expenseWithResult:result];
+        }
+        [result close];
+    }];
+    return expense;
+}
 
 @end

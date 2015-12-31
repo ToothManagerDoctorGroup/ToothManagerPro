@@ -28,6 +28,11 @@
 #import "DoctorGroupViewController.h"
 #import "UISearchBar+XLMoveBgView.h"
 
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
+#import "DBManager+sync.h"
+
 @interface PatientsDisplayViewController () <MudItemsBarDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
@@ -86,8 +91,6 @@
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索患者"];
     self.view.backgroundColor = [UIColor whiteColor];
     [self.searchBar moveBackgroundView];
-    self.searchBar.backgroundColor = MyColor(238, 238, 238);
-    
 }
 
 - (void)refreshView {
@@ -595,6 +598,59 @@
                     [self.patientCellModeArray removeObjectAtIndex:indexPath.row];
                 }
                 [self refreshView];
+                
+                Patient *pateintTemp = [[DBManager shareInstance] getPatientCkeyid:cellMode.patientId];
+                //自动同步信息
+                if (pateintTemp != nil) {
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Delete dataEntity:[pateintTemp.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    
+                    
+                    //获取所有的病历进行删除
+                    NSArray *medicalcases = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_case];
+                    if (medicalcases.count > 0) {
+                        for (MedicalCase *mCase in medicalcases) {
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalCase postType:Delete dataEntity:[mCase.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                    
+                    //获取所有的耗材信息进行删除
+                    NSArray *medicalExpenses = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_expense];
+                    if (medicalcases.count > 0) {
+                        for (MedicalExpense *expense in medicalExpenses) {
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                    
+                    //获取所有的病历记录进行删除
+                    NSArray *medicalRecords = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_record];
+                    if (medicalRecords.count > 0) {
+                        for (MedicalRecord *record in medicalRecords) {
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Delete dataEntity:[record.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                    
+                    //获取所有的ct数据进行删除
+                    NSArray *ctLibs = [[DBManager shareInstance] getAllDeleteNeedSyncCt_lib];
+                    if (ctLibs.count > 0) {
+                        for (CTLib *ctLib in ctLibs) {
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                    
+                    //获取所有的会诊记录进行删除
+                    NSArray *patientCons = [[DBManager shareInstance] getPatientConsultationWithPatientId:cellMode.patientId];
+                    if (patientCons.count > 0) {
+                        for (PatientConsultation *patientC in patientCons) {
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientConsultation postType:Delete dataEntity:[patientC.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                }
             }
         }];
         [alertView show];

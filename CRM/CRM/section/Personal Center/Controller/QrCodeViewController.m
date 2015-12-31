@@ -15,6 +15,8 @@
 #import "Share.h"
 #import "DBManager+Doctor.h"
 #import "DBManager+User.h"
+#import "MyPatientTool.h"
+#import "CRMHttpRespondModel.h"
 
 @interface QrCodeViewController ()<WXApiDelegate>{
     NSString *weiXinPageUrl;
@@ -58,11 +60,32 @@
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
     
-    [[AccountManager shareInstance]getQrCode:[AccountManager shareInstance].currentUser.userid withAccessToken:[AccountManager shareInstance].currentUser.accesstoken successBlock:^{
+    
+    if (self.isDoctor) {
+        [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:@"" isDoctor:self.isDoctor successBlock:^{
+            
+        } failedBlock:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+
+    }else{
+        [MyPatientTool getPateintKeyIdWithPatientCKeyId:self.patient.ckeyid success:^(CRMHttpRespondModel *respondModel) {
+            if ([respondModel.code integerValue] == 200) {
+                [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:respondModel.result isDoctor:self.isDoctor successBlock:^{
+                    
+                } failedBlock:^(NSError *error) {
+                    [SVProgressHUD showImage:nil status:error.localizedDescription];
+                }];
+            }
+            
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
         
-    } failedBlock:^(NSError *error){
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }]; 
+    }
+    
 }
 
 

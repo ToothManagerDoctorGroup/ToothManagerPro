@@ -34,6 +34,10 @@
 #import "AFNetworkReachabilityManager.h"
 #import "AutoSyncManager.h"
 #import "SysMessageTool.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
+#import "DBManager+AutoSync.h"
+#import "AutoSyncGetManager.h"
 
 @interface MyScheduleReminderViewController ()<PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -151,6 +155,7 @@
 - (void)autoSyncAction:(NSTimer *)timer{
     //开始同步数据
 //    [[AutoSyncManager shareInstance] startAutoSync];
+    [[AutoSyncGetManager shareInstance] startSyncGet];
     
 }
 #pragma mark - 设置消息按钮
@@ -204,7 +209,8 @@
     }
 }
 - (void)callSync {
-    [[SyncManager shareInstance] startSync];
+//    [[SyncManager shareInstance] startSync];
+    
 }
 
 #pragma mark - 消息按钮点击事件
@@ -387,6 +393,10 @@
                 self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[dateFormatter stringFromDate:self.selectDate]];
                 self.remindArray = [self updateListTimeArray:self.remindArray];
                 [m_tableView reloadData];
+                
+                //自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Delete dataEntity:[notifi.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
         }];
         [alertView show];

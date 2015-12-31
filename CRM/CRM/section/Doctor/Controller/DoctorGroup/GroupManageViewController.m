@@ -227,10 +227,7 @@
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
-    bgView.backgroundColor = [UIColor whiteColor];
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
-    label.backgroundColor = [UIColor lightGrayColor];
-    [bgView addSubview:label];
+    bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"姓名" forState:UIControlStateNormal];

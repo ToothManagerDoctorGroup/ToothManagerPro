@@ -88,7 +88,7 @@
     [dataEntity setObject:doctor.doctor_position forKey:@"doctor_position"];
     [dataEntity setObject:doctor.doctor_degree forKey:@"doctor_degree"];
     [dataEntity setObject:doctor.doctor_image forKey:@"doctor_image"];
-    [dataEntity setObject:[NSString stringWithFormat:@"%d",doctor.auth_status] forKey:@"doctor_is_verified"];
+    [dataEntity setObject:[NSString stringWithFormat:@"%ld",(long)doctor.auth_status] forKey:@"doctor_is_verified"];
     [dataEntity setObject:doctor.auth_text forKey:@"doctor_verify_reason"];
     [dataEntity setObject:doctor.doctor_certificate forKey:@"doctor_certificate"];
     [dataEntity setObject:doctor.doctor_birthday forKey:@"doctor_birthday"];
@@ -160,10 +160,14 @@
  *  @param user_id 医生id
  *  @param AccessToken  医生AccessToken
  */
-- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken{
+- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     [paramDic setObject:user_id forKey:@"userId"];
     [paramDic setObject:AccessToken forKey:@"AccessToken"];
+    if (!isDoctor) {
+        [paramDic setObject:patientKeyId forKey:@"pkeyId"];
+    }
+    
     TimRequestParam *param = [TimRequestParam paramWithURLSting:Qrcode_URL andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }

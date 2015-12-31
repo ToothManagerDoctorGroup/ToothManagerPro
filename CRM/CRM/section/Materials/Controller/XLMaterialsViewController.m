@@ -17,6 +17,9 @@
 #import "UISearchBar+XLMoveBgView.h"
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
 
 @interface XLMaterialsViewController () <UISearchBarDelegate,UISearchDisplayDelegate>
 {
@@ -35,6 +38,7 @@
     self.searchBar = nil;
     self.searchController = nil;
     _tableView = nil;
+    [self removeNotificationObserver];
 }
 
 #pragma mark - 控件初始化
@@ -89,6 +93,8 @@
 
 - (void)viewDidLoad{
     [super viewDidLoad];
+    //添加通知
+    [self addNotificationObserver];
 }
 
 - (void)initView
@@ -298,7 +304,7 @@
     [cell.imageView setImage:[self drawRoundWithNum:indexPath.row]];
     Material *material = [sourceArray objectAtIndex:indexPath.row];
     [cell.info_lable setText:material.mat_name];
-    [cell.price_label setText:[NSString stringWithFormat:@"%.2f",material.mat_price]];
+    [cell.price_label setText:[NSString stringWithFormat:@"%d",(int)material.mat_price]];
     if(material.mat_type == 1){
         [cell.type_label setText:@"其他"];
     }else{
@@ -314,6 +320,10 @@
         Material *material = [sourceArray objectAtIndex:indexPath.row];
         BOOL ret = [[DBManager shareInstance] deleteMaterialWithId:material.ckeyid];
         if (ret) {
+            //自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Material postType:Delete dataEntity:[material.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            
             [self refreshData];
             [self refreshView];
         }

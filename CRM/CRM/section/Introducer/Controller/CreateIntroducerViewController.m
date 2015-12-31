@@ -14,6 +14,9 @@
 #import "CRMMacro.h"
 #import "DBManager+sync.h"
 #import "CRMHttpRequest+Sync.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
 
 @interface CreateIntroducerViewController () <TimPickerTextFieldDataSource>
 
@@ -82,17 +85,21 @@
     if (ret) {
         if (self.edit) {
             message = @"修改成功";
+            //修改介绍人自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Update dataEntity:[self.introducer.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            
             [self postNotificationName:IntroducerEditedNotification object:nil];
         } else {
             message = @"创建成功";
             [self postNotificationName:IntroducerCreatedNotification object:nil];
             
-           NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
-            if (0 != [recordArray count])
-            {
-                [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+            Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:self.introducer.ckeyid];
+            if (tempIntr != nil) {
+                //创建介绍人自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
-             
         }
         [self.view makeToast:message duration:1.0f position:@"Center"];
         [self popViewControllerAnimated:YES];

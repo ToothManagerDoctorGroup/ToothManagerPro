@@ -10,6 +10,9 @@
 #import "CRMMacro.h"
 #import "DBManager+RepairDoctor.h"
 #import "PickerTextTableViewCell.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
+#import "DBManager+AutoSync.h"
 
 @interface CreatRepairDoctorViewController ()
 
@@ -65,10 +68,24 @@
     if (ret) {
         if (self.edit) {
             message = @"修改成功";
+            //自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_RepairDoctor postType:Update dataEntity:[self.repairDoctor.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            
             [self postNotificationName:RepairDoctorEditedNotification object:nil];
         } else {
             message = @"创建成功";
-            [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+            
+            //获取修复医生信息
+            RepairDoctor *tempRepairDoc = [[DBManager shareInstance] getRepairDoctorWithCkeyId:self.repairDoctor.ckeyid];
+            if (tempRepairDoc != nil) {
+                //自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_RepairDoctor postType:Insert dataEntity:[tempRepairDoc.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                [self postNotificationName:RepairDoctorCreatedNotification object:nil];
+            }
+            
         }
         [self.view makeToast:message duration:1.0f position:@"Center"];
         [self popViewControllerAnimated:YES];

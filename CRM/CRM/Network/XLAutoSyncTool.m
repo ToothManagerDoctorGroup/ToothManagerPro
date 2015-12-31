@@ -39,15 +39,15 @@ Realize_ShareInstance(XLAutoSyncTool);
 //添加相同的参数
 - (NSMutableDictionary *)addCommenParams:(NSMutableDictionary *)params{
     //所有接口添加 userid 和 accesstoken参数
-    if ([[AccountManager shareInstance] isLogin]) {
-        // [reqParam.params setObject:[AccountManager shareInstance].currentUser.accesstoken forKey:@"Accesstoken"];
-        if ([params objectForKey:@"userid"] == nil && [params objectForKey:@"userId"] == nil)
-            [params setObject:[AccountManager shareInstance].currentUser.userid forKey:@"userid"];
-    }
-    [params setObject:@"ios" forKey:@"devicetype"];
-    if ([CRMUserDefalut objectForKey:DeviceToken]) {
-        [params setObject:[CRMUserDefalut objectForKey:DeviceToken] forKey:@"devicetoken"];
-    }
+//    if ([[AccountManager shareInstance] isLogin]) {
+//        // [reqParam.params setObject:[AccountManager shareInstance].currentUser.accesstoken forKey:@"Accesstoken"];
+//        if ([params objectForKey:@"userid"] == nil && [params objectForKey:@"userId"] == nil)
+//            [params setObject:[AccountManager shareInstance].currentUser.userid forKey:@"userid"];
+//    }
+//    [params setObject:@"ios" forKey:@"devicetype"];
+//    if ([CRMUserDefalut objectForKey:DeviceToken]) {
+//        [params setObject:[CRMUserDefalut objectForKey:DeviceToken] forKey:@"devicetoken"];
+//    }
     
     return params;
 }
@@ -84,6 +84,9 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:patient.patient_allergy forKey:@"patient_allergy"];
     [subParamDic setObject:patient.anamnesis forKey:@"Anamnesis"];
     [subParamDic setObject:patient.nickName forKey:@"NickName"];
+    
+    [subParamDic setObject:patient.idCardNum forKey:@"IdCardNum"];
+    [subParamDic setObject:patient.patient_address forKey:@"patient_address"];
     
     NSError *error;
     NSString *jsonString;

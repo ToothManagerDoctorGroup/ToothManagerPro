@@ -63,8 +63,7 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    
+    [super viewDidLoad];    
     
     _jiangeCell.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     self.view.backgroundColor = [UIColor whiteColor];
@@ -104,29 +103,10 @@
         }];
     }
     
-    self.birthDayTextField.mode = TextFieldInputModeDatePicker;
-    self.birthDayTextField.isBirthDay = YES;
-    
-    
-//    NSMutableArray *selectSexArray = [NSMutableArray arrayWithObjects:@"男",@"女" ,nil];
-//    self.sexTextField.mode = TextFieldInputModePicker;
-//    self.sexTextField.pickerDataSource = selectSexArray;
     self.sexTextField.clearButtonMode = UITextFieldViewModeNever;
     self.degreeTextField.clearButtonMode = UITextFieldViewModeNever;
     self.titleTextField.clearButtonMode = UITextFieldViewModeNever;
     self.departmentTextField.clearButtonMode = UITextFieldViewModeNever;
-//    
-//   NSMutableArray  *selectRepeatArray = [NSMutableArray arrayWithObjects:@"大专",@"本科",@"硕士",@"博士", nil];
-//    self.degreeTextField.mode = TextFieldInputModePicker;
-//    self.degreeTextField.pickerDataSource = selectRepeatArray;
-//    
-//    NSMutableArray *selectRepeatArray1 = [NSMutableArray arrayWithObjects:@"医师",@"主治医师",@"副主任医师",@"主任医师", nil];
-//    self.titleTextField.mode = TextFieldInputModePicker;
-//    self.titleTextField.pickerDataSource = selectRepeatArray1;
-//    
-//    NSMutableArray *selectRepeatArray2 = [NSMutableArray arrayWithObjects:@"口腔综合科",@"口腔科",@"正畸科",@"儿童口腔科",@"颌面外科",@"牙周科",@"牙体牙髓科",@"口腔黏膜科",@"种植科",@"口腔预防科",@"其他", nil];
-//    self.departmentTextField.mode = TextFieldInputModePicker;
-//    self.departmentTextField.pickerDataSource = selectRepeatArray2;
     
     //职业资格证手势【暂时】
     UITapGestureRecognizer *choseImgGesture = [[UITapGestureRecognizer alloc]init];
@@ -184,7 +164,10 @@
         }else{
             self.sexTextField.text = @"女";
         }
-        self.birthDayTextField.text = [self.currentDoctor.doctor_birthday substringToIndex:10];
+        
+        //获取年份
+        NSInteger birthYear = [[self.currentDoctor.doctor_birthday substringToIndex:4] integerValue];
+        self.birthDayTextField.text = [NSString stringWithFormat:@"%ld",[self getYear] - birthYear];
     }
 }
 
@@ -223,8 +206,9 @@
     }else{
         [doctor setDoctor_gender:@"0"];
     }
-    
-    [doctor setDoctor_birthday:self.birthDayTextField.text];
+    //计算出生年份
+    NSInteger yearCount = [self getYear] - [self.birthDayTextField.text integerValue];
+    [doctor setDoctor_birthday:[NSString stringWithFormat:@"%ld-01-01",yearCount]];
     if (self.doctor_cv == nil) {
         [doctor setDoctor_cv:self.currentDoctor.doctor_cv];
     }else{
@@ -319,6 +303,7 @@
 - (IBAction)qrCodeAction:(id)sender {
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
+    qrVC.isDoctor = YES;
     [self.navigationController pushViewController:qrVC animated:YES];
 }
 
@@ -576,6 +561,14 @@
     // 2.必须将任务添加到队列中才能执行
     [self.opQueue addOperation:downOp];
     
+}
+
+- (NSInteger)getYear{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSUInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
+    NSDateComponents *dateComponent = [calendar components:unitFlags fromDate:[NSDate date]];
+    NSInteger year = [dateComponent year];
+    return year;
 }
 
 @end

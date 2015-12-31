@@ -50,8 +50,9 @@
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
     
-    [[AccountManager shareInstance]getQrCode:[AccountManager shareInstance].currentUser.userid withAccessToken:[AccountManager shareInstance].currentUser.accesstoken successBlock:^{
-    } failedBlock:^(NSError *error){
+    [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:@"" isDoctor:YES successBlock:^{
+        
+    } failedBlock:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
 }

@@ -181,6 +181,8 @@
 		3D1661E01C2932210062009D /* material_X.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1661D41C2932210062009D /* material_X.png */; };
 		3D1661E11C2932210062009D /* material_X@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1661D51C2932210062009D /* material_X@2x.png */; };
 		3D1661E21C2932210062009D /* material_X@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1661D61C2932210062009D /* material_X@3x.png */; };
+		3D1875F61C33BA5E006931D4 /* MXSCycleScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1875F31C33BA5E006931D4 /* MXSCycleScrollView.m */; };
+		3D1875F71C33BA5E006931D4 /* RBCustomDatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1875F51C33BA5E006931D4 /* RBCustomDatePickerView.m */; };
 		3D18C8431C156C7900EF83DE /* PatientSegumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8421C156C7900EF83DE /* PatientSegumentController.m */; };
 		3D18C84B1C156FE000EF83DE /* NYSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8461C156FE000EF83DE /* NYSegment.m */; };
 		3D18C84C1C156FE000EF83DE /* NYSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D18C8481C156FE000EF83DE /* NYSegmentedControl.m */; };
@@ -624,6 +626,7 @@
 		3D27F7B81C08A6A800C50CBF /* UIViewController+LewPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7B21C08A6A800C50CBF /* UIViewController+LewPopupViewController.m */; };
 		3D27F7BC1C08A7D200C50CBF /* SchedulePopMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7BB1C08A7D200C50CBF /* SchedulePopMenu.m */; };
 		3D27F7BE1C08A82B00C50CBF /* SchedulePopMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D27F7BD1C08A82B00C50CBF /* SchedulePopMenu.xib */; };
+		3D2851CB1C34F41700C88917 /* AutoSyncGetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2851CA1C34F41700C88917 /* AutoSyncGetManager.m */; };
 		3D286F581C2E6469003A561D /* XLTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F571C2E6469003A561D /* XLTestViewController.m */; };
 		3D286F5B1C2E7E4C003A561D /* XLAddressMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F5A1C2E7E4C003A561D /* XLAddressMapViewController.m */; };
 		3D286F5F1C2E8736003A561D /* XLAvatarBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F5E1C2E8736003A561D /* XLAvatarBrowser.m */; };
@@ -1555,6 +1558,10 @@
 		3D1661D41C2932210062009D /* material_X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = material_X.png; sourceTree = "<group>"; };
 		3D1661D51C2932210062009D /* material_X@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "material_X@2x.png"; sourceTree = "<group>"; };
 		3D1661D61C2932210062009D /* material_X@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "material_X@3x.png"; sourceTree = "<group>"; };
+		3D1875F21C33BA5E006931D4 /* MXSCycleScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXSCycleScrollView.h; sourceTree = "<group>"; };
+		3D1875F31C33BA5E006931D4 /* MXSCycleScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXSCycleScrollView.m; sourceTree = "<group>"; };
+		3D1875F41C33BA5E006931D4 /* RBCustomDatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBCustomDatePickerView.h; sourceTree = "<group>"; };
+		3D1875F51C33BA5E006931D4 /* RBCustomDatePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBCustomDatePickerView.m; sourceTree = "<group>"; };
 		3D18C83D1C153D3900EF83DE /* BaseUrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseUrl.h; sourceTree = "<group>"; };
 		3D18C8411C156C7900EF83DE /* PatientSegumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PatientSegumentController.h; sourceTree = "<group>"; };
 		3D18C8421C156C7900EF83DE /* PatientSegumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PatientSegumentController.m; sourceTree = "<group>"; };
@@ -2292,6 +2299,8 @@
 		3D27F7BA1C08A7D200C50CBF /* SchedulePopMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SchedulePopMenu.h; sourceTree = "<group>"; };
 		3D27F7BB1C08A7D200C50CBF /* SchedulePopMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SchedulePopMenu.m; sourceTree = "<group>"; };
 		3D27F7BD1C08A82B00C50CBF /* SchedulePopMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SchedulePopMenu.xib; sourceTree = "<group>"; };
+		3D2851C91C34F41700C88917 /* AutoSyncGetManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoSyncGetManager.h; sourceTree = "<group>"; };
+		3D2851CA1C34F41700C88917 /* AutoSyncGetManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoSyncGetManager.m; sourceTree = "<group>"; };
 		3D286F561C2E6469003A561D /* XLTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTestViewController.h; sourceTree = "<group>"; };
 		3D286F571C2E6469003A561D /* XLTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTestViewController.m; sourceTree = "<group>"; };
 		3D286F591C2E7E4C003A561D /* XLAddressMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAddressMapViewController.h; sourceTree = "<group>"; };
@@ -3591,6 +3600,17 @@
 				3D0AE7CF1C043C6A00DCD4A0 /* ChooseAssistViewController.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		3D1875F11C33BA5E006931D4 /* CycleScollview */ = {
+			isa = PBXGroup;
+			children = (
+				3D1875F21C33BA5E006931D4 /* MXSCycleScrollView.h */,
+				3D1875F31C33BA5E006931D4 /* MXSCycleScrollView.m */,
+				3D1875F41C33BA5E006931D4 /* RBCustomDatePickerView.h */,
+				3D1875F51C33BA5E006931D4 /* RBCustomDatePickerView.m */,
+			);
+			path = CycleScollview;
 			sourceTree = "<group>";
 		};
 		3D18C83F1C153D4700EF83DE /* BaseUrl */ = {
@@ -5338,6 +5358,7 @@
 		3D2A004D1C05E53B00B1EF65 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3D1875F11C33BA5E006931D4 /* CycleScollview */,
 				3D286F5C1C2E8721003A561D /* XLAvatarBrowser */,
 				3DDE33C61C2A414E00458FC8 /* FSCalendar */,
 				3DE7C26A1C228D7C001F24ED /* YYKit */,
@@ -6407,6 +6428,8 @@
 				3DE3DB651C2153E400424A67 /* AutoSyncManager.h */,
 				3DE3DB661C2153E400424A67 /* AutoSyncManager.m */,
 				3DE7C26F1C22A733001F24ED /* AutoSync.h */,
+				3D2851C91C34F41700C88917 /* AutoSyncGetManager.h */,
+				3D2851CA1C34F41700C88917 /* AutoSyncGetManager.m */,
 			);
 			path = Sync;
 			sourceTree = "<group>";
@@ -8546,6 +8569,7 @@
 				3D1B60131C18082B0032D949 /* EaseRefreshTableViewController.m in Sources */,
 				3D1B5FB11C18082B0032D949 /* NSString+Valid.m in Sources */,
 				64BD7C8819BC094B0015D47F /* SVProgressHUD.m in Sources */,
+				3D1875F61C33BA5E006931D4 /* MXSCycleScrollView.m in Sources */,
 				3DF671611BF7139400527B49 /* ClinicCover.m in Sources */,
 				6436DF3519B8C48100DC667E /* UIImage+Resize.m in Sources */,
 				2DFE7EE11B4A71980088B119 /* FMDatabase.m in Sources */,
@@ -8774,6 +8798,7 @@
 				6436DF3919B8C48100DC667E /* TimNavigationBarMenuView.m in Sources */,
 				64CFD91719F7F6A6001EB0DA /* MaterialTableViewCell.m in Sources */,
 				2DFE7ED61B4A71980088B119 /* README.md in Sources */,
+				3D2851CB1C34F41700C88917 /* AutoSyncGetManager.m in Sources */,
 				649B16AB19D32C350080671F /* TimDisplayViewController.m in Sources */,
 				3D1B615B1C18121D0032D949 /* SuccessViewController.m in Sources */,
 				64CFD91A19F7F6A6001EB0DA /* EditCaseViewController.m in Sources */,
@@ -9087,6 +9112,7 @@
 				3D1B61491C18098A0032D949 /* SDWebImageCompat.m in Sources */,
 				2D2ED8511C00942D003B7047 /* MenuButtonPushManager.m in Sources */,
 				3D286F5B1C2E7E4C003A561D /* XLAddressMapViewController.m in Sources */,
+				3D1875F71C33BA5E006931D4 /* RBCustomDatePickerView.m in Sources */,
 				64CFD92519F7F6A6001EB0DA /* CaseFunction.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -147,10 +147,10 @@
 
 #pragma mark - 保存
 - (void)onRightButtonAction:(id)sender{
-    if (self.textView.text.length == 0) {
-        [SVProgressHUD showErrorWithStatus:@"内容不能为空!"];
-        return;
-    }
+//    if (self.textView.text.length == 0) {
+//        [SVProgressHUD showErrorWithStatus:@"内容不能为空!"];
+//        return;
+//    }
     
     Patient *currentPatient = self.patient;
     EditAllergyViewControllerType type;

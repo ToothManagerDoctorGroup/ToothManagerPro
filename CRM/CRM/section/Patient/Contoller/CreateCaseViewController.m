@@ -34,8 +34,12 @@
 #import "MyDateTool.h"
 #import "XLRecordCell.h"
 #import "MyDateTool.h"
+#import "DBManager+AutoSync.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "RBCustomDatePickerView.h"
 
-@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate>
+@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate,RBCustomDatePickerViewDelete>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
 @property (nonatomic,retain) MedicalCase *medicalCase;
 @property (nonatomic,retain) MedicalReserve *medicalRes;
@@ -45,6 +49,15 @@
 @property (nonatomic,retain) NSMutableArray *recordArray;
 @property (nonatomic,retain) HengYaViewController *hengYaVC;
 @property (nonatomic,retain) RuYaViewController *ruYaVC;
+
+
+@property (nonatomic, strong)NSMutableArray *deleteRcords;//删除的病历记录
+@property (nonatomic, strong)NSMutableArray *newRecords;//新增的病历记录
+
+
+@property (nonatomic, strong)NSMutableArray *deleteExpenses;//删除的耗材信息
+@property (nonatomic, strong)NSMutableArray *newExpenses;//新增的耗材信息
+
 @end
 
 @implementation CreateCaseViewController{
@@ -53,6 +66,30 @@
     NSString *repair_time;
 }
 
+- (NSMutableArray *)deleteRcords{
+    if (!_deleteRcords) {
+        _deleteRcords = [NSMutableArray array];
+    }
+    return _deleteRcords;
+}
+- (NSMutableArray *)newRecords{
+    if (!_newRecords) {
+        _newRecords = [NSMutableArray array];
+    }
+    return _newRecords;
+}
+- (NSMutableArray *)newExpenses{
+    if (!_newExpenses) {
+        _newExpenses = [NSMutableArray array];
+    }
+    return _newExpenses;
+}
+- (NSMutableArray *)deleteExpenses{
+    if (!_deleteExpenses) {
+        _deleteExpenses = [NSMutableArray array];
+    }
+    return _deleteExpenses;
+}
 #pragma mark - Life Cicle
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -71,13 +108,13 @@
     self.addRecordButton.layer.cornerRadius = 5.0f;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     _tableHeaderView = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseHeaderViewController"];
-    [_tableHeaderView.view setFrame:CGRectMake(0, 0, self.view.bounds.size.width, 350)];
+    [_tableHeaderView.view setFrame:CGRectMake(0, 0, self.view.bounds.size.width, 300)];
     _tableHeaderView.delegate = self;
     _tableHeaderView.tableView.scrollEnabled = NO;
     [_tableHeaderView setviewWith:_medicalCase andRes:_medicalRes];
     [_tableHeaderView setImages:_ctblibArray];
     [_tableHeaderView setExpenseArray:_expenseArray];
-    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 350 + _expenseArray.count * 40);
+    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 300 + _expenseArray.count * 40);
     
     self.tableView.tableHeaderView = _tableHeaderView.view;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
@@ -153,6 +190,22 @@
     [self.tableHeaderView setCase:_medicalCase andRes:_medicalRes];
     
     if([[DBManager shareInstance] insertMedicalCase:_medicalCase]) {  //先保存病例表
+        //获取病历数据
+        MedicalCase *tempMCase = [[DBManager shareInstance] getMedicalCaseWithCaseId:_medicalCase.ckeyid];
+        if (tempMCase != nil) {
+            if (self.edit) {//表明是编辑病历
+                //添加一条自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalCase postType:Update dataEntity:[tempMCase.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+            }else{//表明是新增病历
+                //添加一条自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalCase postType:Insert dataEntity:[tempMCase.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+        }
+        
+        
       [[DBManager shareInstance] updateUpdateDate:self.patiendId];
         NSString *caseid = _medicalCase.ckeyid;
         if ([NSString isNotEmptyString:caseid]) {
@@ -172,6 +225,10 @@
                     if (libRet == NO) {
                         return NO;
                     }
+                    //添加一条删除ct片的自动同步数据
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[tlib.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    
                 }
             }
             if (libRet == NO) {
@@ -189,6 +246,16 @@
                 if (libRet == NO) {
                     return NO;
                 }
+                
+                //获取ctlib数据
+                CTLib *tempCTLib = [[DBManager shareInstance] getCTLibWithCKeyId:lib.ckeyid];
+                if (tempCTLib != nil) {
+                    //添加ct片的自动同步数据
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Insert dataEntity:[tempCTLib.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                }
+                
+            
             }
             
             //存储预约记录
@@ -205,11 +272,19 @@
             
             //存储病例记录
             BOOL recordRet = YES;
-            recordRet = [[DBManager shareInstance] deleteMedicalRecordWithCaseId:caseid];
-            if (recordRet == NO) {
-                return NO;
+            //删除需要删除的病历记录
+            if (self.deleteRcords.count > 0) {
+                for (MedicalRecord *deleteR in self.deleteRcords) {
+                    if ([deleteR.record_content isEmpty]) {
+                        continue;
+                    }
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Delete dataEntity:[deleteR.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    
+                }
             }
-            for (MedicalRecord *recordTmp in _recordArray) {
+            //添加新增加的病历记录
+            for (MedicalRecord *recordTmp in self.newRecords) {
                 if ([recordTmp.record_content isEmpty]) {
                     continue;
                 }
@@ -223,6 +298,13 @@
                 if (recordRet == NO) {
                     return NO;
                 }
+                //获取病历记录的信息
+                MedicalRecord *tempRecord = [[DBManager shareInstance] getMedicalRecordWithCkeyId:recordTmp.ckeyid];
+                if (tempRecord != nil) {
+                    //添加自动同步数据
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Insert dataEntity:[tempRecord.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                }
             }
             
             //存储种植体消耗信息
@@ -234,6 +316,15 @@
             if (expenseRet == NO) {
                 return NO;
             }
+            //获取所有的种植体信息
+            NSArray *deleteArray = [[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:caseid];
+            for (MedicalExpense *expense in deleteArray) {
+                //删除所有之前的种植体信息
+                //添加自动同步数据
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+            
             for (MedicalExpense *expenseTmp in _expenseArray) {
                 if ([NSString isEmptyString:expenseTmp.mat_id] || expenseTmp.expense_num <=0) {
                     continue;
@@ -247,6 +338,13 @@
                 expenseRet = [[DBManager shareInstance] insertMedicalExpenseWith:expenseTmp];
                 if (expenseRet == NO) {
                     return NO;
+                }
+                //获取完整的耗材信息
+                MedicalExpense *tempExpense = [[DBManager shareInstance] getMedicalExpenseWithCkeyId:expenseTmp.ckeyid];
+                if (tempExpense != nil) {
+                    //添加自动同步数据
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Insert dataEntity:[tempExpense.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 }
             }
             return YES;
@@ -381,6 +479,15 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         if (self.recordArray.count > indexPath.row) {
+            [self.deleteRcords addObject:self.recordArray[indexPath.row]];
+            //判断是不是新增的记录被删除
+            MedicalRecord *record = self.recordArray[indexPath.row];
+            if (self.newRecords.count > 0) {
+                if ([self.newRecords containsObject:record]) {
+                    [self.newRecords removeObject:record];
+                }
+            }
+            
             [self.recordArray removeObjectAtIndex:indexPath.row];
             [self.tableView reloadData];
         }
@@ -510,7 +617,23 @@
         [self.navigationController addChildViewController:self.hengYaVC];
         [self.navigationController.view addSubview:self.hengYaVC.view];
     }
-    
+    else if ([self.tableHeaderView.implantTextField isFirstResponder]){
+        [self.tableHeaderView.implantTextField resignFirstResponder];
+        
+        RBCustomDatePickerView *datePickView = [[RBCustomDatePickerView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+        datePickView.tag = 110;
+        datePickView.delegate = self;
+        datePickView.currentDateStr = self.tableHeaderView.implantTextField.text;
+        [datePickView show];
+    }
+    else if ([self.tableHeaderView.repairTextField isFirstResponder]){
+        [self.tableHeaderView.repairTextField resignFirstResponder];
+        RBCustomDatePickerView *datePickView = [[RBCustomDatePickerView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+        datePickView.tag = 120;
+        datePickView.delegate = self;
+        datePickView.currentDateStr = self.tableHeaderView.repairTextField.text;
+        [datePickView show];
+    }
     flag = NO;
 }
 -(void)removeHengYaVC{
@@ -584,7 +707,7 @@
     }
     [_tableHeaderView setExpenseArray:_expenseArray];
     
-    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 350 + _expenseArray.count * 40);
+    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 300 + _expenseArray.count * 40);
     _tableHeaderView.view.backgroundColor = MyColor(248, 248, 248);
     self.tableView.tableHeaderView = _tableHeaderView.view;
     [self.tableView reloadData];
@@ -609,11 +732,20 @@
         record.record_content = self.recordTextField.text;
         record.creation_date = [MyDateTool stringWithDateWithSec:[NSDate date]];
         [self.recordArray addObject:record];
+        [self.newRecords addObject:record];
         self.recordTextField.text = @"";
         [self refreshData];
     }
 }
 
+#pragma mark - RBCustomDatePickerViewDelete
+- (void)custonDatePickerView:(RBCustomDatePickerView *)pickerView didSelectDateStr:(NSString *)dateStr{
+    if (pickerView.tag == 110) {
+        self.tableHeaderView.implantTextField.text = dateStr;
+    }else if (pickerView.tag == 120){
+        self.tableHeaderView.repairTextField.text = dateStr;
+    }
+}
 
 
 //#pragma mark - XLSelectCalendarViewControllerDelegate

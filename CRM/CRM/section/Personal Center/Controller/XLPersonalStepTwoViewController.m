@@ -164,7 +164,9 @@
     [doctor setDoctor_certificate:@""];  //证书，此处我也不知道要传什么，暂时传空，不能为nil
     [doctor setIsopen:YES];
     [doctor setDoctor_gender:[NSString stringWithFormat:@"%d",self.sexCount]];
-    [doctor setDoctor_birthday:@""];
+    //根据年龄获取当前生日的年份
+    NSInteger year = [self getYear] - [self.ageField.text integerValue];
+    [doctor setDoctor_birthday:[NSString stringWithFormat:@"%ld-01-01",(long)year]];
     [doctor setDoctor_cv:@""];
     [doctor setDoctor_skill:@""];
     
@@ -261,6 +263,14 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self.view endEditing:YES];
+}
+
+- (NSInteger)getYear{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSUInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
+    NSDateComponents *dateComponent = [calendar components:unitFlags fromDate:[NSDate date]];
+    NSInteger year = [dateComponent year];
+    return year;
 }
 
 @end
