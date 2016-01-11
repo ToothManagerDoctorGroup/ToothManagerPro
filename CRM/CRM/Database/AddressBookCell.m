@@ -8,6 +8,7 @@
 
 #import "AddressBookCell.h"
 #import "DBManager+Patients.h"
+#import "UIColor+Extension.h"
 
 
 @interface AddressBookCell (){
@@ -43,6 +44,8 @@
     _iconView = [[UIImageView alloc] init];
     _iconView.layer.cornerRadius = 20;
     _iconView.layer.masksToBounds = YES;
+    _iconView.layer.borderWidth = 1;
+    _iconView.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
     [self.contentView addSubview:_iconView];
     
     _nameLabel = [[UILabel alloc] init];

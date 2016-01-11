@@ -26,6 +26,7 @@
     _nameLabel.textColor = [UIColor blackColor];
     _nameLabel.font = [UIFont systemFontOfSize:16.0f];
     _nameLabel.backgroundColor = [UIColor clearColor];
+    _nameLabel.adjustsFontSizeToFitWidth = YES;
     [self.contentView addSubview:_nameLabel];
     
     _countLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 0,80, 30)];

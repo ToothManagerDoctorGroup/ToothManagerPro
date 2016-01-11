@@ -79,10 +79,7 @@
 {
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:4];
-    /*
-    [dataEntity setObject:patientIds forKey:@"patientIds"];
-    [dataEntity setObject:doctorId forKey:@"doctor_id"];
-    [dataEntity setObject:receiverId forKey:@"receiver_id"];*/
+    
     [dataEntity setObject:patientIds forKey:@"patient_id"];
     [dataEntity setObject:receiverId forKey:@"doctor_id"];
     [dataEntity setObject:doctorId forKey:@"intr_id"];

@@ -122,7 +122,11 @@
     NSString *doctorTitle;
     if (self.medicalCase.repair_doctor && [self.medicalCase.repair_doctor isNotEmpty]) {
         RepairDoctor *rDoctor = [[DBManager shareInstance] getRepairDoctorWithCkeyId:self.medicalCase.repair_doctor];
-        doctorTitle = [NSString stringWithFormat:@"修复医生:%@",rDoctor.doctor_name];
+        if (rDoctor == nil) {
+            doctorTitle = @"修复医生:";
+        }else{
+            doctorTitle = [NSString stringWithFormat:@"修复医生:%@",rDoctor.doctor_name];
+        }
     }else{
         doctorTitle = @"修复医生:";
     }
@@ -263,14 +267,6 @@
 }
 
 - (NSString *)dateStrFromatter:(NSString *)dateStr{
-//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-//    formatter.dateFormat = @"yyyy/MM/dd HH:mm:ss";
-//    NSDate *currentDate = [formatter dateFromString:dateStr];
-//    
-//    NSDateFormatter *formatter2 = [[NSDateFormatter alloc] init];
-//    formatter2.dateFormat = @"MM-dd HH:mm";
-//    
-//    return [formatter2 stringFromDate:currentDate];
     NSString *tempStr = [dateStr componentsSeparatedByString:@" "][0];
     return tempStr;
 }

@@ -28,18 +28,19 @@
     // Do any additional setup after loading the view.
     self.scrollView.contentSize = CGSizeMake(320, 580);
     
-    UITapGestureRecognizer *tapges = [[UITapGestureRecognizer alloc]init];
-    [tapges addTarget:self action:@selector(disMissView)];
-    tapges.numberOfTapsRequired = 1;
-    [self.view addGestureRecognizer:tapges];
+//    UITapGestureRecognizer *tapges = [[UITapGestureRecognizer alloc]init];
+//    [tapges addTarget:self action:@selector(disMissView)];
+//    tapges.numberOfTapsRequired = 1;
+//    [self.view addGestureRecognizer:tapges];
     
     ruYaArray = [[NSMutableArray alloc]initWithCapacity:0];
     
     shangHeArray = [[NSMutableArray alloc]initWithObjects:@"51",@"52",@"53",@"54",@"55",@"61",@"62",@"63",@"64",@"65", nil];
     xiaHeArray = [[NSMutableArray alloc]initWithObjects:@"71",@"72",@"73",@"74",@"75",@"81",@"82",@"83",@"84",@"85", nil];
     quanKouArray = [[NSMutableArray alloc]initWithObjects:@"51",@"52",@"53",@"54",@"55",@"61",@"62",@"63",@"64",@"65",@"71",@"72",@"73",@"74",@"75",@"81",@"82",@"83",@"84",@"85", nil];
-    
-    if ([self.ruYaString isEqualToString:@"上颌"]) {
+    if ([self.ruYaString isEqualToString:@"无"]) {
+
+    }else if ([self.ruYaString isEqualToString:@"上颌"]) {
         [self shClick:shangHeBtn];
     }else if([self.ruYaString isEqualToString:@"下颌"]){
         [self xhClick:xiaHeBtn];
@@ -239,5 +240,8 @@
     if ([self.delegate respondsToSelector:@selector(queDingRuYa:toothStr:)]) {
         [self.delegate queDingRuYa:ruYaArray toothStr:toothStr];
     }
+}
+- (IBAction)cancelAction:(id)sender {
+    [self disMissView];
 }
 @end

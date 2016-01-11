@@ -23,6 +23,7 @@
 
 @property (nonatomic,readonly) UIScrollView *scrollView;
 @property (nonatomic,assign) NSInteger currentPage;
+@property (nonatomic, assign)NSUInteger allPages;
 @property (nonatomic,assign,setter = setDataource:) id<MXSCycleScrollViewDatasource> datasource;
 @property (nonatomic,assign,setter = setDelegate:) id<MXSCycleScrollViewDelegate> delegate;
 
@@ -36,7 +37,7 @@
 
 @optional
 - (void)didClickPage:(MXSCycleScrollView *)csView atIndex:(NSInteger)index;
-- (void)scrollviewDidChangeNumber;
+- (void)scrollviewDidChangeNumber:(MXSCycleScrollView *)csView;
 
 @end
 

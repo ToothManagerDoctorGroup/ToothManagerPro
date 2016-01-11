@@ -21,6 +21,8 @@
 #define AutoSync_RepairDoctor @"AutoSync_RepairDoctor"
 #define AutoSync_PatientConsultation @"AutoSync_PatientConsultation"
 #define AutoSync_PatientIntroducerMap @"AutoSync_PatientIntroducerMap"
+#define AutoSync_WeiXinMessageSend @"AutoSync_WeiXinMessageSend"
+#define AutoSync_ReserveRecord_ForOther @"AutoSync_ReserveRecord_ForOther"
 
 //Post_type
 #define Update @"update"

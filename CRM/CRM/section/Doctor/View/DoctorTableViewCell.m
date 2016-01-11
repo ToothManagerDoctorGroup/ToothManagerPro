@@ -43,6 +43,8 @@
     
     self.iconImageView.layer.cornerRadius = 25;
     self.iconImageView.layer.masksToBounds = YES;
+    self.iconImageView.layer.borderWidth = 1;
+    self.iconImageView.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
     self.iconImageView.userInteractionEnabled = YES;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.iconImageView addGestureRecognizer:tap];
@@ -123,13 +125,16 @@
 }
 
 - (void)setCellWithFrienNotifi:(FriendNotificationItem *)notifiItem {
-    if (![notifiItem.doctor_id isEqualToString:[AccountManager currentUserid]]) {
+    
+    if ([notifiItem.receiver_id isEqualToString:[AccountManager currentUserid]]) {
         self.doctorNameLable.text = notifiItem.doctor_name;
-        self.departmentLable.text = [NSString stringWithFormat:@"%@申请成为你的好友",notifiItem.doctor_name];
+        self.departmentLable.text = [NSString stringWithFormat:@"申请成为你的好友"];
         self.addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
         [self.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        
+        [self.iconImageView sd_setImageLoadingWithURL:[NSURL URLWithString:notifiItem.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
         self.addButton.enabled = YES;
-        if (notifiItem.notification_type.integerValue == 1) {
+//        if (notifiItem.notification_type.integerValue == 1) {
             if (notifiItem.notification_status.integerValue == 0) {
                 [self.addButton setTitle:@"接受" forState:UIControlStateNormal];
             } else if (notifiItem.notification_status.integerValue == 1) {
@@ -143,14 +148,16 @@
                 [self.addButton setTitleColor:[UIColor colorWithHex:0xc80202] forState:UIControlStateNormal];
                 self.addButton.enabled = NO;
             }
-        }
+//        }
     } else {
-        self.doctorNameLable.text = notifiItem.doctor_name;
+        self.doctorNameLable.text = notifiItem.receiver_name;
         self.departmentLable.text = [NSString stringWithFormat:@"你向%@发出的好友申请",notifiItem.receiver_name];
         self.addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
         [self.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         self.addButton.enabled = YES;
-        if (notifiItem.notification_type.integerValue == 1) {
+
+        [self.iconImageView sd_setImageLoadingWithURL:[NSURL URLWithString:notifiItem.receiver_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+//        if (notifiItem.notification_type.integerValue == 1) {
             if (notifiItem.notification_status.integerValue == 0) {
                 [self.addButton setTitle:@"正在验证" forState:UIControlStateNormal];
                 self.addButton.backgroundColor = [UIColor clearColor];
@@ -167,7 +174,7 @@
                 [self.addButton setTitleColor:[UIColor colorWithHex:0xc80202] forState:UIControlStateNormal];
                 self.addButton.enabled = NO;
             }
-        }
+//        }
     }
 }
 

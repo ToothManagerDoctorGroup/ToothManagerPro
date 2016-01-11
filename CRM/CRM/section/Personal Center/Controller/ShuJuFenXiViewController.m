@@ -37,6 +37,13 @@
     patientVC.patientStatus = PatientStatusUnrepaired;
     [self pushViewController:patientVC animated:YES];
 }
+- (IBAction)yizhongzhi:(id)sender {
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
+    patientVC.patientStatus = PatientStatusRepaired;
+    [self pushViewController:patientVC animated:YES];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

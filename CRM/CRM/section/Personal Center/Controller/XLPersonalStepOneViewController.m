@@ -9,8 +9,9 @@
 #import "XLPersonalStepOneViewController.h"
 #import "XLPersonalStepTwoViewController.h"
 #import "TimPickerTextField.h"
+#import "XLDataSelectViewController.h"
 
-@interface XLPersonalStepOneViewController ()
+@interface XLPersonalStepOneViewController ()<XLDataSelectViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *stepCountLabel; //步骤1
 @property (weak, nonatomic) IBOutlet UILabel *step2CountLabel;//步骤2
 @property (weak, nonatomic) IBOutlet UITextField *userNameField;//姓名
@@ -60,6 +61,16 @@
     
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    //添加监听
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
@@ -90,6 +101,44 @@
     twoVc.departMentName = self.departmentField.text;
     twoVc.professionalName = self.professionalField.text;
     [self.navigationController pushViewController:twoVc animated:YES];
+}
+
+#pragma mark - 键盘监听事件
+- (void)keyboardWillShow:(CGFloat)keyboardHeight {
+    static BOOL flag = NO;
+    if (flag == YES || self.navigationController.topViewController != self) {
+        return;
+    }
+    flag = YES;
+    
+    if ([self.departmentField isFirstResponder]) {
+        [self.departmentField resignFirstResponder];
+        
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerDepartment;
+        dataSelectVc.currentContent = self.departmentField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+    }else if ([self.professionalField isFirstResponder]){
+        [self.professionalField resignFirstResponder];
+        
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerProfressional;
+        dataSelectVc.currentContent = self.professionalField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+        
+    }
+    flag = NO;
+}
+
+#pragma mark - XLDataSelectViewControllerDelegate
+- (void)dataSelectViewController:(XLDataSelectViewController *)dataVc didSelectContent:(NSString *)content type:(XLDataSelectViewControllerType)type{
+    if (type == XLDataSelectViewControllerDepartment) {
+        self.departmentField.text = content;
+    }else if (type == XLDataSelectViewControllerProfressional){
+        self.professionalField.text = content;
+    }
 }
 
 

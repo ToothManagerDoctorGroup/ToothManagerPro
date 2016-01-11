@@ -8,10 +8,14 @@
 
 #import "UISearchBar+XLMoveBgView.h"
 #import "CommonMacro.h"
+#import "UIColor+Extension.h"
 
 @implementation UISearchBar (XLMoveBgView)
 - (void)moveBackgroundView{
-    self.backgroundColor = MyColor(187, 187, 187);
+    self.layer.borderWidth = 1;
+    self.layer.borderColor = [[UIColor colorWithHex:0xdddddd] CGColor];
+    
+    self.backgroundColor = [UIColor colorWithHex:0xeeeeee];
     for (UIView *view in self.subviews) {
         if (IOS_7_OR_LATER) {
             // for later iOS7.0(include)

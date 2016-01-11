@@ -14,8 +14,9 @@
 #import "CRMMacro.h"
 #import "DoctorTool.h"
 #import "TimPickerTextField.h"
+#import "XLDataSelectViewController.h"
 
-@interface XLPersonalStepTwoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface XLPersonalStepTwoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *step1CountLabel; //步骤1
 @property (weak, nonatomic) IBOutlet UILabel *step2CountLabel;//步骤2
 @property (weak, nonatomic) IBOutlet UIImageView *headImageView;//头像
@@ -210,6 +211,16 @@
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    //添加监听
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+}
+
 #pragma mark -
 #pragma mark UIImagePicker Delegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -271,6 +282,32 @@
     NSDateComponents *dateComponent = [calendar components:unitFlags fromDate:[NSDate date]];
     NSInteger year = [dateComponent year];
     return year;
+}
+
+
+#pragma mark - 键盘监听事件
+- (void)keyboardWillShow:(CGFloat)keyboardHeight {
+    static BOOL flag = NO;
+    if (flag == YES || self.navigationController.topViewController != self) {
+        return;
+    }
+    flag = YES;
+    
+    if ([self.academicField isFirstResponder]) {
+        [self.academicField resignFirstResponder];
+        
+        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        dataSelectVc.type = XLDataSelectViewControllerDegree;
+        dataSelectVc.currentContent = self.academicField.text;
+        dataSelectVc.delegate = self;
+        [self pushViewController:dataSelectVc animated:YES];
+    }
+    flag = NO;
+}
+
+#pragma mark - XLDataSelectViewControllerDelegate
+- (void)dataSelectViewController:(XLDataSelectViewController *)dataVc didSelectContent:(NSString *)content type:(XLDataSelectViewControllerType)type{
+    self.academicField.text = content;
 }
 
 @end

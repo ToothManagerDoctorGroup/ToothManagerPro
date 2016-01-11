@@ -268,7 +268,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_phone = '%@' and creation_date > datetime('%@')",PatientTableName,phone, [NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_phone = '%@' and creation_date > datetime('%@') and doctor_id = '%@'",PatientTableName,phone, [NSString defaultDateString],[AccountManager currentUserid]];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -815,8 +815,9 @@
     }
     NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@'",PatientTableName,ckeyid];
     __block Patient *retPatient = nil;
+    __block FMResultSet *set = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
-        FMResultSet *set = nil;
+        
         set = [db executeQuery:sqlStr];
         if (set && [set next]) {
             retPatient = [Patient patientlWithResult:set];

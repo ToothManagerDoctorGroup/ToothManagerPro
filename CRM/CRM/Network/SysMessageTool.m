@@ -9,6 +9,7 @@
 #import "SysMessageTool.h"
 #import "CRMHttpTool.h"
 #import "SysMessageModel.h"
+#import "JSONKit.h"
 
 @implementation SysMessageTool
 
@@ -102,5 +103,56 @@
         }
     }];
 }
+
++ (void)sendWeiXinReserveNotificationWithNewReserveId:(NSString *)newId oldReserveId:(NSString *)oldId isCancel:(BOOL)isCancel notification:(LocalNotification *)noti type:(NSString *)type success:(void (^)())success failure:(void (^)())failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ReserveRecordHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"reservenotify";
+    params[@"newReserveId"] = newId;
+    params[@"oldReserveId"] = oldId;
+    params[@"type"] = type;
+    if (isCancel) {
+        NSMutableDictionary *dataEntityParams = [NSMutableDictionary dictionary];
+        dataEntityParams[@"therapy_doctor_id"] = noti.therapy_doctor_id;
+        dataEntityParams[@"therapy_doctor_name"] = noti.therapy_doctor_name;
+        dataEntityParams[@"ckeyid"] = noti.ckeyid;
+        dataEntityParams[@"doctor_id"] = noti.doctor_id;
+        dataEntityParams[@"reserve_content"] = noti.reserve_content;
+        dataEntityParams[@"reserve_type"] = noti.reserve_type;
+        dataEntityParams[@"reserve_time"] = noti.reserve_time;
+        dataEntityParams[@"patient_id"] = noti.patient_id;
+        
+        params[@"reserve_entity"] = [dataEntityParams JSONString];
+    }
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        if (success) {
+            success();
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure();
+        }
+    }];
+}
++ (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ReserveRecordHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"updatereservestatus";
+    params[@"reserve_id"] = reserve_id;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 
 @end

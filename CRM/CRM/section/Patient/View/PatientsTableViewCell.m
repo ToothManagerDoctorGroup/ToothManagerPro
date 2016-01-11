@@ -30,7 +30,7 @@
     self.transferLabel.text = mode.introducerName;
     
     
-    Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager shareInstance].currentUser.userid];
+    Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager currentUserid]];
     if([doc.doctor_name isNotEmpty]){
         self.zhuanZhenImageview.hidden = NO;
     }else{
@@ -40,16 +40,16 @@
     self.countMaterial.text = [NSString stringWithFormat:@"%ld颗",(long)mode.countMaterial];
     switch (mode.status) {
         case PatientStatusUntreatment:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_YELLOW]];
+            [self.statusLabel setTextColor:[UIColor colorWithHex:0x00a0ea]];
             break;
         case PatientStatusUnplanted:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_RED]];
+            [self.statusLabel setTextColor:[UIColor colorWithHex:0xff3b31]];
             break;
         case PatientStatusUnrepaired:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_GREEN]];
+            [self.statusLabel setTextColor:[UIColor colorWithHex:0x37ab4e]];
             break;
         case PatientStatusRepaired:
-            [self.statusLabel setTextColor:[UIColor blackColor]];
+            [self.statusLabel setTextColor:[UIColor colorWithHex:0x888888]];
             break;
         default:
             break;

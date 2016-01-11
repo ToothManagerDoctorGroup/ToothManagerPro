@@ -8,6 +8,7 @@
 
 #import "XLRecordCell.h"
 #import "DBTableMode.h"
+#import "UIColor+Extension.h"
 #define CommenFont [UIFont systemFontOfSize:12]
 
 @interface XLRecordCell ()
@@ -45,6 +46,8 @@
     headImageView.layer.cornerRadius = 20;
     headImageView.layer.masksToBounds = YES;
     self.headImageView = headImageView;
+    headImageView.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
+    headImageView.layer.borderWidth = 1;
     [self.contentView addSubview:headImageView];
     
     UILabel *nameLabel = [[UILabel alloc] init];

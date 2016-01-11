@@ -24,6 +24,7 @@
 #import "DBManager+Introducer.h"
 #import "DBManager+RepairDoctor.h"
 #import "DBManager+LocalNotification.h"
+#import "LocalNotificationCenter.h"
 
 @implementation AutoSyncManager
 Realize_ShareInstance(AutoSyncManager);
@@ -308,6 +309,10 @@ Realize_ShareInstance(AutoSyncManager);
                     //上传失败
                     [self updateFailWithError:error infoModel:info];
                 }];
+#pragma mark -上传新增的微信信息（只有新增的功能）
+            }else if ([info.data_type isEqualToString:AutoSync_WeiXinMessageSend]){
+                
+                
             }
         }
     }
@@ -414,7 +419,10 @@ Realize_ShareInstance(AutoSyncManager);
                 [[XLAutoSyncTool shareInstance] deleteAllNeedSyncReserve_record:localNoti success:^(CRMHttpRespondModel *respond) {
                     //上传成功
                     if([self updateSuccessWithRespondModel:respond infoModel:info]){
+                        //删除提醒
+                        [[LocalNotificationCenter shareInstance] removeLocalNotification:localNoti];
                         [[DBManager shareInstance] deleteLocalNotification_Sync:localNoti];
+                        
                     }
                 } failure:^(NSError *error) {
                     //上传失败

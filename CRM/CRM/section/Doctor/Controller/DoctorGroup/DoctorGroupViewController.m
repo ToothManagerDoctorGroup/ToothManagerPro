@@ -20,6 +20,8 @@
 
 @property (nonatomic, strong)NSMutableArray *dataList;
 
+@property (nonatomic, weak)UILabel *alertLabel;
+
 @end
 
 @implementation DoctorGroupViewController
@@ -50,6 +52,16 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"addgroup"]];
     self.view.backgroundColor = MyColor(248, 248, 248);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    
+    UILabel *alertLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, self.tableView.width, 50)];
+    alertLabel.text = @"赶快给您的患者分组吧!";
+    alertLabel.textColor = MyColor(187, 187, 187);
+    alertLabel.font = [UIFont systemFontOfSize:16];
+    alertLabel.textAlignment = NSTextAlignmentCenter;
+    alertLabel.hidden = YES;
+    self.alertLabel = alertLabel;
+    [self.tableView addSubview:alertLabel];
 }
 
 #pragma mark - 重新请求数据
@@ -66,6 +78,13 @@
         [SVProgressHUD dismiss];
         self.dataList = [NSMutableArray arrayWithArray:result];
         [self.tableView reloadData];
+        
+        if (self.dataList.count == 0) {
+            self.alertLabel.hidden = NO;
+        }else{
+            self.alertLabel.hidden = YES;
+        }
+        
     } failure:^(NSError *error) {
         [SVProgressHUD dismiss];
         if (error) {

@@ -25,12 +25,18 @@
 
 @property (nonatomic, copy)NSString *tooth_position;
 @property (nonatomic, copy)NSString *clinic_reserve_id;
-@property (nonatomic, copy)NSString *duration;
+@property (nonatomic, copy)NSString *duration;//时长
+@property (nonatomic, copy)NSString *reserve_status;//预约状态：0已预约 1已改约
 
+@property (nonatomic, copy)NSString *therapy_doctor_id;//修复医生的id
+@property (nonatomic, copy)NSString *therapy_doctor_name;//修复医生的姓名
 
+/**
+ *  本地使用
+ */
 @property (nonatomic, copy)NSString *reserve_time_end;//预约结束时间
 
-
++ (LocalNotification *)notificationWithNoti:(LocalNotification *)localNoti;
 + (LocalNotification *)notificaitonWithResult:(FMResultSet *)result;
 + (LocalNotification *)LNFromLNFResult:(NSDictionary *)lnRe;
 
@@ -46,6 +52,7 @@ Declare_ShareInstance(LocalNotificationCenter);
 - (BOOL)removeLocalNotification:(LocalNotification *)notificaiton;
 - (BOOL)updateLocalNotification:(LocalNotification *)notification;
 - (NSArray *)localNotificationListWithString:(NSString *)string;
+- (NSArray *)localNotificationListWithString:(NSString *)string array:(NSArray *)array;
 - (NSArray *)localNotificationListWithString1:(NSString *)string;
 
 @end

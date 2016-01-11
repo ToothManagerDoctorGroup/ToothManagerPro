@@ -15,6 +15,8 @@
 #import "DBManager+sync.h"
 #import "NSDictionary+Extension.h"
 #import "CRMHttpRequest+Sync.h"
+#import "CRMHttpTool.h"
+#import "CRMUserDefalut.h"
 
 
 @interface NewFriendsViewController ()<DoctorTableViewCellDelegate>
@@ -39,6 +41,8 @@
     
     //请求数据
     [self refreshData];
+    
+    
 }
 
 - (void)setUpNav{
@@ -48,6 +52,7 @@
 }
 #pragma mark - 请求数据
 - (void)requestDataList{
+    
     [[AccountManager shareInstance] getFriendsNotificationListWithUserid:[AccountManager currentUserid] successBlock:^{
         [SVProgressHUD showWithStatus:@"加载中..."];
     } failedBlock:^(NSError *error) {
@@ -100,9 +105,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     FriendNotificationItem *friNotifiItem = [self.friendNotifiObj.result objectAtIndex:indexPath.row];
+    
     Doctor *tmpdoctor = [[Doctor alloc] init];
-    tmpdoctor.ckeyid = friNotifiItem.doctor_id;
-    tmpdoctor.doctor_name = friNotifiItem.doctor_name;
+    //判断当前接收方是否是自己
+    if (![friNotifiItem.receiver_id isEqualToString:[AccountManager currentUserid]]) {
+        tmpdoctor.ckeyid = friNotifiItem.receiver_id;
+        tmpdoctor.doctor_name = friNotifiItem.receiver_name;
+    }else{
+        tmpdoctor.ckeyid = friNotifiItem.doctor_id;
+        tmpdoctor.doctor_name = friNotifiItem.doctor_name;
+    }
+    
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
     userInfoVC.doctor = tmpdoctor;

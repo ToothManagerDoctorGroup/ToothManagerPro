@@ -40,8 +40,10 @@
 #import "DBManager+AutoSync.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
+#import "XLPatientAppointViewController.h"
 
 #import "DBManager+Doctor.h"
+#import "MyPatientTool.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -99,7 +101,7 @@
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"转诊患者",@"转为介绍人", nil];
+        _menuList = [NSArray arrayWithObjects:@"查看预约",@"转诊患者",@"转为介绍人", nil];
     }
     return _menuList;
 }
@@ -158,7 +160,6 @@
     
     //加载子视图
     [self setUpSubView];
-    
 }
 
 #pragma mark -添加监听
@@ -204,7 +205,7 @@
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"患者详情";
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"菜单"]];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"patient_detail_menu"]];
     self.view.backgroundColor = CommenBgColor;
     
 }
@@ -247,6 +248,8 @@
         }
 
     } failure:^(NSError *error) {
+        //未绑定
+        _headerInfoView.isWeixin = NO;
         if (error) {
              NSLog(@"error:%@",error);
         }
@@ -472,16 +475,25 @@
 - (void)menuPopover:(MLKMenuPopover *)menuPopover didSelectMenuItemAtIndex:(NSInteger)selectedIndex
 {
     [self.menuPopover dismissMenuPopover];
-    if(selectedIndex == 0){
-        [self referralAction:nil];
+    if (selectedIndex == 0) {
+        //查看预约
+        XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
+        appointVc.patient_id = self.detailPatient.ckeyid;
+        [self pushViewController:appointVc animated:YES];
+        
     }else if(selectedIndex == 1){
-//        [[CRMHttpRequest shareInstance] postAllNeedSyncPatient:[NSArray arrayWithObjects:_detailPatient, nil]];
-//        [NSThread sleepForTimeInterval: 0.5];
-        [[IntroducerManager shareInstance]patientToIntroducer:[AccountManager shareInstance].currentUser.userid withCkeyId:_detailPatient.ckeyid withName:_detailPatient.patient_name withPhone:_detailPatient.patient_phone successBlock:^{
-            [SVProgressHUD showWithStatus:@"正在转换..."];
-        }failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
+        [self referralAction:nil];
+    }else if(selectedIndex == 2){
+        //判断当前介绍人是否存在
+        if([[DBManager shareInstance] isInIntroducerTable:_detailPatient.patient_phone]){
+            [SVProgressHUD showImage:nil status:@"介绍人已存在，不能重复转换"];
+        }else{
+            [[IntroducerManager shareInstance]patientToIntroducer:[AccountManager shareInstance].currentUser.userid withCkeyId:_detailPatient.ckeyid withName:_detailPatient.patient_name withPhone:_detailPatient.patient_phone successBlock:^{
+                [SVProgressHUD showWithStatus:@"正在转换..."];
+            }failedBlock:^(NSError *error){
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
+            }];
+        }
     }
 }
 //转诊患者
@@ -516,7 +528,6 @@
         introducer.intr_id = @"0";
         [[DBManager shareInstance] insertIntroducer:introducer];
         
-        //添加自动同步信息
         //获取介绍人信息
         Introducer *intro = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
         if (intro != nil) {
@@ -610,14 +621,35 @@
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
     patient.introducer_id = selectIntroducer.ckeyid;//表明是本地介绍人
     
-//    [SVProgressHUD showWithStatus:@"正在修改..."];
-    if ([[DBManager shareInstance] updatePatient:patient]) {
-        
-        //添加一条自动同步信息
-        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
-        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-        
-        //添加患者介绍人信息
+    //获取原来的介绍人信息
+    PatientIntroducerMap *mapOrigin = [[DBManager shareInstance]getPatientIntroducerMapByPatientId:self.detailPatient.ckeyid];
+    if (mapOrigin != nil) {
+        if([mapOrigin.intr_source rangeOfString:@"B"].location != NSNotFound){
+            //表明存在本地介绍人,当前操作是修改
+            mapOrigin.intr_id = selectIntroducer.ckeyid;
+            mapOrigin.intr_source = @"B";
+            mapOrigin.patient_id = self.patientsCellMode.patientId;
+            mapOrigin.doctor_id = [AccountManager shareInstance].currentUser.userid;
+            mapOrigin.intr_time = [NSString currentDateString];
+            
+            if ([[DBManager shareInstance] updatePatient:patient]) {
+                //添加一条自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                if([[DBManager shareInstance] updatePatientIntroducerMap:mapOrigin]){
+                    //获取介绍人患者信息
+                    PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:mapOrigin.patient_id doctorId:mapOrigin.doctor_id intrId:mapOrigin.intr_id];
+                    if (tempMap != nil) {
+                        //添加一条自动同步信息
+                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
+                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    }
+                }
+            }
+        }
+    }else{
+        //表明是新增介绍人
         PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
         map.intr_id = selectIntroducer.ckeyid;
         map.intr_source = @"B";
@@ -625,17 +657,24 @@
         map.doctor_id = [AccountManager shareInstance].currentUser.userid;
         map.intr_time = [NSString currentDateString];
         
-        if([[DBManager shareInstance] insertPatientIntroducerMap:map]){
-            //获取介绍人患者信息
-            PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:map.patient_id doctorId:map.doctor_id intrId:map.intr_id];
-            if (tempMap != nil) {
-                //添加一条自动同步信息
-                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
-                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        if ([[DBManager shareInstance] updatePatient:patient]) {
+            //添加一条自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            
+            if([[DBManager shareInstance] insertPatientIntroducerMap:map]){
+                //获取介绍人患者信息
+                PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:map.patient_id doctorId:map.doctor_id intrId:map.intr_id];
+                if (tempMap != nil) {
+                    //添加一条自动同步信息
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                }
             }
         }
     }
 }
+
 
 - (void)insertPatientIntroducerMapWithPatient:(Patient *)patient{
     if ([selectIntroducer.intr_id isEqualToString:@"0"]) {
@@ -653,7 +692,7 @@
     map.doctor_id = [AccountManager shareInstance].currentUser.userid;
     map.intr_time = [NSString currentDateString];
     
-    if([[DBManager shareInstance]insertPatientIntroducerMap:map]){
+    if([[DBManager shareInstance] insertPatientIntroducerMap:map]){
         //获取介绍人患者信息
         PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:map.patient_id doctorId:map.doctor_id intrId:map.intr_id];
         if (tempMap != nil) {

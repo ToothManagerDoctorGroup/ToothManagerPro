@@ -38,6 +38,7 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "RBCustomDatePickerView.h"
+#import "UUDatePicker.h"
 
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate,RBCustomDatePickerViewDelete>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
@@ -53,7 +54,6 @@
 
 @property (nonatomic, strong)NSMutableArray *deleteRcords;//删除的病历记录
 @property (nonatomic, strong)NSMutableArray *newRecords;//新增的病历记录
-
 
 @property (nonatomic, strong)NSMutableArray *deleteExpenses;//删除的耗材信息
 @property (nonatomic, strong)NSMutableArray *newExpenses;//新增的耗材信息
@@ -98,6 +98,7 @@
     repair_time = _medicalCase.repair_time;
     
     self.view.backgroundColor = [UIColor whiteColor];
+    self.tableView.backgroundColor = MyColor(248, 248, 248);
     
 }
 - (void)initView {
@@ -129,7 +130,6 @@
     [tapges addTarget:self action:@selector(dismissKeyboard)];
     tapges.numberOfTapsRequired = 1;
     [self.tableView addGestureRecognizer:tapges];
-    
 }
 
 - (void)dismissKeyboard {
@@ -447,7 +447,7 @@
     label.font = [UIFont boldSystemFontOfSize:14.0f];
     label.backgroundColor = [UIColor clearColor];
     label.textColor = MyColor(136, 136, 136);
-    label.text = @"病历描述";
+    label.text = @"病情描述";
     [headerView addSubview:label];
     
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 49, kScreenWidth, 1)];
@@ -617,23 +617,6 @@
         [self.navigationController addChildViewController:self.hengYaVC];
         [self.navigationController.view addSubview:self.hengYaVC.view];
     }
-    else if ([self.tableHeaderView.implantTextField isFirstResponder]){
-        [self.tableHeaderView.implantTextField resignFirstResponder];
-        
-        RBCustomDatePickerView *datePickView = [[RBCustomDatePickerView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-        datePickView.tag = 110;
-        datePickView.delegate = self;
-        datePickView.currentDateStr = self.tableHeaderView.implantTextField.text;
-        [datePickView show];
-    }
-    else if ([self.tableHeaderView.repairTextField isFirstResponder]){
-        [self.tableHeaderView.repairTextField resignFirstResponder];
-        RBCustomDatePickerView *datePickView = [[RBCustomDatePickerView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
-        datePickView.tag = 120;
-        datePickView.delegate = self;
-        datePickView.currentDateStr = self.tableHeaderView.repairTextField.text;
-        [datePickView show];
-    }
     flag = NO;
 }
 -(void)removeHengYaVC{
@@ -737,25 +720,5 @@
         [self refreshData];
     }
 }
-
-#pragma mark - RBCustomDatePickerViewDelete
-- (void)custonDatePickerView:(RBCustomDatePickerView *)pickerView didSelectDateStr:(NSString *)dateStr{
-    if (pickerView.tag == 110) {
-        self.tableHeaderView.implantTextField.text = dateStr;
-    }else if (pickerView.tag == 120){
-        self.tableHeaderView.repairTextField.text = dateStr;
-    }
-}
-
-
-//#pragma mark - XLSelectCalendarViewControllerDelegate
-//- (void)selectCalendarViewController:(XLSelectCalendarViewController *)calendarVc didSelectDateStr:(NSString *)dateStr type:(XLSelectCalendarViewControllerType)type{
-//    if (type == XLSelectCalendarViewControllerTypeRepair) {
-//        self.tableHeaderView.repairTextField.text = dateStr;
-//    }else{
-//        self.tableHeaderView.implantTextField.text = dateStr;
-//    }
-//    
-//}
 
 @end

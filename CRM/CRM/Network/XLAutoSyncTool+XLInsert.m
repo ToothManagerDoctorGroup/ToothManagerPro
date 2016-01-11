@@ -405,6 +405,10 @@
     [subParamDic setObject:reserve_record.clinic_reserve_id forKey:@"clinic_reserve_id"];
     [subParamDic setObject:reserve_record.duration forKey:@"duration"];
     
+    [subParamDic setObject:reserve_record.therapy_doctor_id forKey:@"therapy_doctor_id"];
+    [subParamDic setObject:reserve_record.therapy_doctor_name forKey:@"therapy_doctor_name"];
+    [subParamDic setObject:reserve_record.reserve_status forKey:@"reserve_status"];
+    
     NSString *jsonString = [subParamDic JSONString];
     
     [params setObject:jsonString forKey:@"DataEntity"];

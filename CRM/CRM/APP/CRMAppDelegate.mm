@@ -272,13 +272,13 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    [[DBManager shareInstance] closeDB];
+//    [[DBManager shareInstance] closeDB];
     [[EaseMob sharedInstance] applicationDidEnterBackground:application];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    [[DBManager shareInstance] opendDB];
+//    [[DBManager shareInstance] opendDB];
     [[EaseMob sharedInstance] applicationWillEnterForeground:application];
 }
 

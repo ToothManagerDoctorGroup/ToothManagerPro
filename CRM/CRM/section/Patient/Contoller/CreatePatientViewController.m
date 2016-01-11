@@ -174,7 +174,7 @@
                 UIAlertView * alertview;
                 alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病例", nil];
                 [alertview show];
-                [alertview setDelegate:self];
+//                [alertview setDelegate:self];
                 //把新建的患者倒入手机本地联系人
                 
                 // 初始化一个ABAddressBookRef对象，使用完之后需要进行释放，

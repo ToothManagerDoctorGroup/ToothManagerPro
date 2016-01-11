@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CRMHttpRespondModel.h"
+#import "LocalNotificationCenter.h"
 
 @interface SysMessageTool : NSObject
 /**
@@ -47,4 +48,23 @@
  */
 + (void)setMessageReadedWithMessageId:(NSInteger)messageId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 
+/**
+ *  发送微信信息
+ *
+ *  @param newId   新的预约id
+ *  @param oldId   旧的预约id
+ *  @param type    预约类型（修改预约，取消预约）
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)sendWeiXinReserveNotificationWithNewReserveId:(NSString *)newId oldReserveId:(NSString *)oldId isCancel:(BOOL)isCancel notification:(LocalNotification *)noti type:(NSString *)type success:(void (^)())success failure:(void (^)())failure;
+
+/**
+ *  更新预约信息的状态
+ *
+ *  @param reserve_id 预约信息id
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 @end

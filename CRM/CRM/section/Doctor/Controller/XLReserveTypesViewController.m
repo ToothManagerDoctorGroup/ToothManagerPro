@@ -19,10 +19,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"治疗项目";
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"back"]];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.dataList = [NSArray arrayWithObjects:@"预约定方案",@"预约种植",@"预约拆线",@"预约取模",@"预约戴牙",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"预约复查",@"预约修复",@"开会", nil];
+    self.dataList = [NSArray arrayWithObjects:@"定方案",@"种植",@"拆线",@"修复",@"取模",@"戴牙",@"复查",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"其它", nil];
 }
 
 - (void)onBackButtonAction:(id)sender{

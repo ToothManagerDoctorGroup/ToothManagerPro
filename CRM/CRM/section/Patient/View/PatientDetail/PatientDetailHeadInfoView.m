@@ -142,8 +142,9 @@
     
     //微信按钮
     UIButton *weixinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
+    [self.weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
     self.weixinButton = weixinButton;
+    [weixinButton addTarget:self action:@selector(weixinButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:weixinButton];
     
     //短信按钮父视图
@@ -232,7 +233,7 @@
         remark = @"备注名：";
     }
     self.remarkLabel.frame = CGRectMake(Margin, self.patientPhoneLabel.bottom, kScreenWidth - Margin * 2 - arrowW, RowHeight);
-    self.remarkLabel.attributedText = [remark changeStrColorWithIndex:3];
+    self.remarkLabel.attributedText = [remark changeStrColorWithIndex:4];
     
     UIImageView *remarkArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
     remarkArrow.frame = CGRectMake(kScreenWidth - arrowW - Margin, (RowHeight - arrowH) / 2 + RowHeight * 2, arrowW, arrowH);
@@ -287,7 +288,6 @@
     if (self.isWeixin) {
         [self.weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
     }else{
-        [self.weixinButton addTarget:self action:@selector(weixinButtonClick) forControlEvents:UIControlEventTouchUpInside];
         [self.weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
     }
 }
@@ -323,11 +323,7 @@
     _introduceCanEdit = introduceCanEdit;
     
     if (introduceCanEdit) {
-        if (self.introducerName == nil) {
-            self.introducerImage.hidden = NO;
-        }else{
-            self.introducerImage.hidden = YES;
-        }
+        self.introducerImage.hidden = NO;
     }else{
         self.introducerImage.hidden = YES;
     }
@@ -351,10 +347,14 @@
 
 #pragma mark -微信扫描
 - (void)weixinButtonClick{
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
-    qrVC.patient = self.detailPatient;
-    [self.viewController.navigationController pushViewController:qrVC animated:YES];
+    if (self.isWeixin) {
+        [SVProgressHUD showImage:nil status:@"患者已经关注过微信"];
+    }else{
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
+        qrVC.patient = self.detailPatient;
+        [self.viewController.navigationController pushViewController:qrVC animated:YES];
+    }
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -458,7 +458,7 @@
 
 #pragma mark - 选择介绍人
 - (void)introduceAction:(UITapGestureRecognizer *)tap{
-    if (self.introduceCanEdit && !self.introducerName) {
+    if (self.introduceCanEdit) {
         if (self.delegate && [self.delegate respondsToSelector:@selector(didSelectIntroducer)]) {
             [self.delegate didSelectIntroducer];
         }

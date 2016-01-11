@@ -38,7 +38,6 @@
 
 #import "XLAvatarBrowser.h"
 #import "XLMaterialsViewController.h"
-#import "BaseUrl.h"
 
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
@@ -119,6 +118,12 @@
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
     [XLAvatarBrowser showImage:iconImageView];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    [SVProgressHUD dismiss];
 }
 
 //获取用户的医生列表
@@ -346,10 +351,6 @@
             repairDoctorVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:repairDoctorVC animated:YES];
         }else if (indexPath.row == 2){
-//            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-//            MaterialsViewController *materialsVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
-//            materialsVC.hidesBottomBarWhenPushed = YES;
-//            [self.navigationController pushViewController:materialsVC animated:YES];
             
             XLMaterialsViewController *materialsVC = [[XLMaterialsViewController alloc] init];
             materialsVC.hidesBottomBarWhenPushed = YES;
@@ -440,7 +441,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = @"牙医新生活倡导者：年种植上千颗不是梦";
         mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
-        mode.url = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/InviteFriends.aspx?doctorId=%@",userobj.userid];
+        mode.url = [NSString stringWithFormat:@"%@%@/view/InviteFriends.aspx?doctorId=%@",DomainName,Method_Weixin,userobj.userid];
         mode.image = [UIImage imageNamed:@"crm_logo"];
         [Share shareToPlatform:weixin WithMode:mode];
     }

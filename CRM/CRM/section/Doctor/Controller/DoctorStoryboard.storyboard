@@ -96,6 +96,7 @@
                     </tableView>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
+                        <outlet property="searchBar" destination="ST3-Zf-1bI" id="30m-AL-ueI"/>
                         <outlet property="searchDisplayController" destination="zZ6-uK-L3v" id="x9M-qd-UM0"/>
                     </connections>
                 </tableViewController>

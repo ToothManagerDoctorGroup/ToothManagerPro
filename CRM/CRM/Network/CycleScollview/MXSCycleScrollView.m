@@ -52,6 +52,16 @@
     [self loadData];
 }
 
+- (void)setAllPages:(NSUInteger)allPages{
+    _allPages = allPages;
+    
+    _totalPages = allPages;
+    if (_totalPages == 0) {
+        return;
+    }
+    [self loadData];
+}
+
 - (void)loadData
 {
     //从scrollView上移除所有的subview
@@ -71,8 +81,7 @@
         v.frame = CGRectOffset(v.frame, 0, v.frame.size.height * i );
         [_scrollView addSubview:v];
     }
-    
-    [_scrollView setContentOffset:CGPointMake( 0, (self.bounds.size.height/5) )];
+    [_scrollView setContentOffset:CGPointMake(0, (self.bounds.size.height/5) )];
 }
 
 - (void)getDisplayImagesWithCurpage:(int)page {
@@ -162,9 +171,8 @@
 - (void)scrollViewDidScroll:(UIScrollView *)aScrollView {
     int y = aScrollView.contentOffset.y;
     NSInteger page = aScrollView.contentOffset.y/((self.bounds.size.height/5));
-    NSLog(@"第%d页",page);
     
-    if (y>2*(self.bounds.size.height/5)) {
+    if (y>2*(self.bounds.size.height / 5)) {
         _curPage = [self validPageValue:_curPage+1];
         [self loadData];
     }
@@ -185,8 +193,8 @@
     if (page>1 || page <=0) {
         [self setAfterScrollShowView:aScrollView andCurrentPage:1];
     }
-    if ([_delegate respondsToSelector:@selector(scrollviewDidChangeNumber)]) {
-        [_delegate scrollviewDidChangeNumber];
+    if ([_delegate respondsToSelector:@selector(scrollviewDidChangeNumber:)]) {
+        [_delegate scrollviewDidChangeNumber:self];
     }
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -198,8 +206,8 @@
 {
     [_scrollView setContentOffset:CGPointMake(0, (self.bounds.size.height/5)) animated:YES];
     [self setAfterScrollShowView:scrollView andCurrentPage:1];
-    if ([_delegate respondsToSelector:@selector(scrollviewDidChangeNumber)]) {
-        [_delegate scrollviewDidChangeNumber];
+    if ([_delegate respondsToSelector:@selector(scrollviewDidChangeNumber:)]) {
+        [_delegate scrollviewDidChangeNumber:self];
     }
 }
 
@@ -211,8 +219,8 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     [_scrollView setContentOffset:CGPointMake(0, (self.bounds.size.height/5)) animated:YES];
     [self setAfterScrollShowView:scrollView andCurrentPage:1];
-    if ([_delegate respondsToSelector:@selector(scrollviewDidChangeNumber)]) {
-        [_delegate scrollviewDidChangeNumber];
+    if ([_delegate respondsToSelector:@selector(scrollviewDidChangeNumber:)]) {
+        [_delegate scrollviewDidChangeNumber:self];
     }
 }
 

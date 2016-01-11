@@ -105,7 +105,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self setExtraCellLineHidden:self.tableView];
 
-    selectMatterArray = [NSArray arrayWithObjects:@"预约定方案",@"预约种植",@"预约拆线",@"预约取模",@"预约戴牙",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"预约复查",@"预约修复",@"开会", nil];
+    selectMatterArray = [NSArray arrayWithObjects:@"预约定方案",@"预约种植",@"预约拆线",@"预约取模",@"预约戴牙",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"预约复查",@"预约修复",@"其它", nil];
 
     
     self.selectMatterTextField.text = [selectMatterArray objectAtIndex:0];

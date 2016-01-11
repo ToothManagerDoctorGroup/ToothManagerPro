@@ -8,12 +8,12 @@
 
 #import "TimDisplayViewController.h"
 
-@class MedicalCase,XLAddReminderViewController,Patient;
+@class MedicalCase,XLAddReminderViewController,Patient,LocalNotification;
 @protocol XLAddReminderViewControllerDelegate <NSObject>
 
 @optional
 - (void)addReminderViewController:(XLAddReminderViewController *)vc didSelectDateTime:(NSString *)dateStr;
-
+- (void)addReminderViewController:(XLAddReminderViewController *)vc didUpdateReserveRecord:(LocalNotification *)localNoti;
 @end
 @interface XLAddReminderViewController : TimDisplayViewController
 
@@ -24,6 +24,10 @@
 
 @property (nonatomic, assign)BOOL isAddLocationToPatient;//给指定病人添加预约
 @property (nonatomic, strong)Patient *patient;//指定病人的病历
+
+@property (nonatomic, assign)BOOL isEditAppointment;//修改预约
+@property (nonatomic, strong)LocalNotification *localNoti;//修改预约时传递过来的预约模型
+
 
 @property (nonatomic, weak)id<XLAddReminderViewControllerDelegate> delegate;
 

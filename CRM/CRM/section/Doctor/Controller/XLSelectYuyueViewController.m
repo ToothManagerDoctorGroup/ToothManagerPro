@@ -22,6 +22,7 @@
 #import "XLSelectYuyueCell.h"
 #import "FSCalendar.h"
 #import "XLAddReminderViewController.h"
+#import "DBManager+LocalNotification.h"
 
 @interface XLSelectYuyueViewController ()<ClinicCoverDelegate,MenuTitleViewControllerDelegate,FSCalendarDelegate,FSCalendarDataSource,XLAddReminderViewControllerDelegate>
 @property (nonatomic,retain) NSArray *remindArray; //被预约的时间数组
@@ -36,6 +37,8 @@
 
 @property (nonatomic, strong)NSDate *selectDate;//当前选中的日期
 
+@property (nonatomic, strong)NSMutableArray *currentMothArray;//当前月所有的数据
+
 @end
 
 @implementation XLSelectYuyueViewController
@@ -45,43 +48,39 @@
     
 }
 
+- (NSMutableArray *)currentMothArray{
+    if (!_currentMothArray) {
+        _currentMothArray = [NSMutableArray array];
+    }
+    return _currentMothArray;
+}
+
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *startDateString;
-    if (self.selectDate) {
-        startDateString = [dateFormatter stringFromDate:self.selectDate];
+    if (self.isEditAppointment) {
+        [self.calendar selectDate:[MyDateTool dateWithStringNoSec:self.reserveTime]];
+        [self getAllDataWithDate:[MyDateTool dateWithStringNoSec:self.reserveTime]];
+        [self requestDataWithDate:[MyDateTool dateWithStringNoSec:self.reserveTime]];
     }else{
-        startDateString = [dateFormatter stringFromDate:[NSDate date]];
+        if (self.selectDate) {
+            [self getAllDataWithDate:self.selectDate];
+            [self requestDataWithDate:self.selectDate];
+        }else{
+            [self getAllDataWithDate:[NSDate date]];
+            [self requestDataWithDate:[NSDate date]];
+        }
     }
     
-//    dateString = startDateString;
-//    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:startDateString];
-//    
-//    for (NSString *time in timeArray) {
-//        NSMutableArray *subArr = [NSMutableArray array];
-//        //拼接时间
-//        NSString *targetDateStr = [NSString stringWithFormat:@"%@ %@",startDateString,time];
-//        for (LocalNotification *noti in self.remindArray) {
-//            if ([targetDateStr isEqualToString:noti.reserve_time] || [MyDateTool timeInStartTime:noti.reserve_time endTime:noti.reserve_time_end targetTime:targetDateStr]) {
-//                //表名当前时间在时间跨度内
-//                [subArr addObject:noti];
-//            }
-//        }
-//        [self.dataSuperArray addObject:subArr];
-//    }
-//    
-//    [m_tableView reloadData];
-//    [self.calendar reloadData];
-    
-    if (self.selectDate) {
-        [self requestDataWithDate:self.selectDate];
-    }else{
-        [self requestDataWithDate:[NSDate date]];
-    }
     [self.calendar reloadData];
+}
+#pragma mark - 获取当月的所有数据
+- (void)getAllDataWithDate:(NSDate *)date{
+    [self.currentMothArray removeAllObjects];
+    NSString *beginStr = [MyDateTool getMonthBeginWith:date];
+    NSString *endStr = [MyDateTool getMonthEndWith:beginStr];
+    NSArray *array = [[DBManager shareInstance] localNotificationListWithStartDate:beginStr endDate:endStr];
+    [self.currentMothArray addObjectsFromArray:array];
 }
 
 - (void)viewDidLoad {
@@ -138,10 +137,7 @@
 }
 //今天按钮点击
 - (void)onRightButtonAction:(id)sender{
-//    [self.calendar selectDate:[NSDate date] scrollToDate:NO];
-//    [self.calendar setCurrentPage:[NSDate date]];
     [self.calendar selectDate:[NSDate date]];
-    
     [self requestDataWithDate:[NSDate date]];
 }
 
@@ -153,40 +149,57 @@
 }
 
 - (void)requestDataWithDate:(NSDate *)date{
+    
     NSString *dateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
-    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateStr];
+    self.remindArray = self.currentMothArray;
     dateString = dateStr;
     
-    [self.dataSuperArray removeAllObjects];
-    for (NSString *time in timeArray) {
-        NSMutableArray *subArr = [NSMutableArray array];
-        //拼接时间
-        NSString *targetDateStr = [NSString stringWithFormat:@"%@ %@",dateStr,time];
-        for (LocalNotification *noti in self.remindArray) {
-            if ([targetDateStr isEqualToString:noti.reserve_time]) {
-                //表名当前时间在时间跨度内
-                [subArr addObject:noti];
-            }else if(![targetDateStr isEqualToString:noti.reserve_time_end]){
-                if ([MyDateTool timeInStartTime:noti.reserve_time endTime:noti.reserve_time_end targetTime:targetDateStr]) {
+    __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"正在加载"];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [weakSelf.dataSuperArray removeAllObjects];
+        for (NSString *time in timeArray) {
+            NSMutableArray *subArr = [NSMutableArray array];
+            //拼接时间
+            NSString *targetDateStr = [NSString stringWithFormat:@"%@ %@",dateStr,time];
+            for (LocalNotification *noti in weakSelf.remindArray) {
+                if ([targetDateStr isEqualToString:noti.reserve_time]) {
+                    //表名当前时间在时间跨度内
                     [subArr addObject:noti];
+                }else if(![targetDateStr isEqualToString:noti.reserve_time_end]){
+                    if ([MyDateTool timeInStartTime:noti.reserve_time endTime:noti.reserve_time_end targetTime:targetDateStr]) {
+                        [subArr addObject:noti];
+                    }
                 }
             }
+            [weakSelf.dataSuperArray addObject:subArr];
         }
-        [self.dataSuperArray addObject:subArr];
-    }
-    
-    [m_tableView reloadData];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+            [m_tableView reloadData];
+        });
+    });
 }
 
 - (void)calendarCurrentPageDidChange:(FSCalendar *)calendar
 {
-    NSLog(@"did change to page %@",[calendar stringFromDate:calendar.currentPage format:@"MMMM YYYY"]);
+    NSString *startDateStr = [calendar stringFromDate:calendar.currentPage format:@"yyyy-MM-dd"];
+    [self.currentMothArray removeAllObjects];
+    //获取当前月的所有数据
+    NSString *endDateStr = [MyDateTool getMonthEndWith:[calendar stringFromDate:calendar.currentPage format:@"yyyy-MM-dd"]];
+    //查询当月数据
+    NSArray *array = [[DBManager shareInstance] localNotificationListWithStartDate:startDateStr endDate:endDateStr];
+    
+    [self.currentMothArray addObjectsFromArray:array];
+    [self.calendar reloadData];
+    
 }
 
 - (BOOL)calendar:(FSCalendar *)calendar hasEventForDate:(NSDate *)date
 {
+    //获取当前
     NSString *selectDateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
-    NSArray *array = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr];
+    NSArray *array = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMothArray];
     if (array.count > 0) {
         return YES;
     }else{
@@ -266,19 +279,29 @@
             
             break;
     }
+    
     if ([dicM[@"time"] isNotEmpty]) {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        XLAddReminderViewController *addreminderVc = [storyboard instantiateViewControllerWithIdentifier:@"XLAddReminderViewController"];
-        addreminderVc.infoDic = dicM;
-        if (self.isNextReserve) {
-            addreminderVc.isNextReserve = self.isNextReserve;
-            addreminderVc.medicalCase = self.medicalCase;
-            addreminderVc.delegate = self;
-        }else if (self.isAddLocationToPatient){
-            addreminderVc.isAddLocationToPatient = self.isAddLocationToPatient;
-            addreminderVc.patient = self.patient;
+        if (self.isEditAppointment) {
+            //选择时间页面
+            if (self.delegate && [self.delegate respondsToSelector:@selector(selectYuyueViewController:didSelectData:)]) {
+                [self.delegate selectYuyueViewController:self didSelectData:dicM];
+            }
+            [self popViewControllerAnimated:YES];
+            
+        }else{
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+            XLAddReminderViewController *addreminderVc = [storyboard instantiateViewControllerWithIdentifier:@"XLAddReminderViewController"];
+            addreminderVc.infoDic = dicM;
+            if (self.isNextReserve) {
+                addreminderVc.isNextReserve = self.isNextReserve;
+                addreminderVc.medicalCase = self.medicalCase;
+                addreminderVc.delegate = self;
+            }else if (self.isAddLocationToPatient){
+                addreminderVc.isAddLocationToPatient = self.isAddLocationToPatient;
+                addreminderVc.patient = self.patient;
+            }
+            [self pushViewController:addreminderVc animated:YES];
         }
-        [self pushViewController:addreminderVc animated:YES];
     }
 }
 

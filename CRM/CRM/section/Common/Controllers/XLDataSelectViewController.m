@@ -21,7 +21,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = MyColor(245, 245, 245);
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"back"]];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     //设置数据项
     if (self.type == XLDataSelectViewControllerSex) {
         //性别

@@ -34,6 +34,18 @@
     return [formatter dateFromString:dateStr];
 }
 
++ (NSDate *)dateWithStringNoTime:(NSString *)dateStr{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd";
+    return [formatter dateFromString:dateStr];
+}
+
++ (NSString *)stringWithDateNoTime:(NSDate *)date{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd";
+    return [formatter stringFromDate:date];
+}
+
 + (NSString *)stringWithDateyyyyMMddHHmmss:(NSDate *)date{
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyyMMddHHmmss";
@@ -147,6 +159,75 @@
             break;
     }
     return weekDay;
+}
+
++ (NSComparisonResult)compareWithFromDateStr:(NSString *)fromDateStr{
+    
+    NSDate *fromDate = [self dateWithStringWithSec:fromDateStr];
+    NSDate *toDate = [NSDate date];
+    NSComparisonResult result = [fromDate compare:toDate];
+    return result;
+}
+
++ (BOOL)earlyThanToday:(NSString *)targetDateStr{
+    NSDate *targetDate = [self dateWithStringNoSec:targetDateStr];
+    NSComparisonResult result = [targetDate compare:[self dateWithStringNoSec:[self stringWithDateNoSec:[NSDate date]]]];
+    if (result == NSOrderedAscending) {
+        //targetDate < [NSDate date]
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
++ (NSString *)getMonthEndWith:(NSString *)dateStr{
+    
+//    NSDateFormatter *format=[[NSDateFormatter alloc] init];
+//    [format setDateFormat:@"yyyy-MM"];
+//    NSDate *newDate=[format dateFromString:dateStr];
+//    double interval = 0;
+//    NSDate *beginDate = nil;
+//    NSDate *endDate = nil;
+//    NSCalendar *calendar = [NSCalendar currentCalendar];
+//    
+//    [calendar setFirstWeekday:2];//设定周一为周首日
+//    BOOL ok = [calendar rangeOfUnit:NSMonthCalendarUnit startDate:&beginDate interval:&interval forDate:newDate];
+//    //分别修改为 NSDayCalendarUnit NSWeekCalendarUnit NSYearCalendarUnit
+//    if (ok) {
+//        endDate = [beginDate dateByAddingTimeInterval:interval-1];
+//    }else {
+//        return @"";
+//    }
+//    NSDateFormatter *myDateFormatter = [[NSDateFormatter alloc] init];
+//    [myDateFormatter setDateFormat:@"YYYY.MM.dd"];
+//    NSString *beginString = [myDateFormatter stringFromDate:beginDate];
+//    NSString *endString = [myDateFormatter stringFromDate:endDate];
+//    NSString *s = [NSString stringWithFormat:@"%@-%@",beginString,endString];
+//    return s;
+    
+    
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSRange range = [calendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:[self dateWithStringNoTime:dateStr]];
+    NSUInteger numberOfDaysInMonth = range.length;
+    
+    //获取最后一天的日期
+    NSDate *startDate = [self dateWithStringNoTime:dateStr];
+    NSDate *endDate = [startDate dateByAddingTimeInterval:60 * 24 * 60 * numberOfDaysInMonth];
+    
+    return [self stringWithDateNoTime:endDate];
+}
+
++ (NSString *)getMonthBeginWith:(NSDate *)date{
+    NSString *currentDateStr = [self stringWithDateNoTime:date];
+    NSString *beginStr = [NSString stringWithFormat:@"%@01",[currentDateStr substringToIndex:8]];
+    return beginStr;
+}
+
++ (NSUInteger)getMonthDayCountWithDate:(NSString *)dateStr{
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSRange range = [calendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:[self dateWithStringNoTime:dateStr]];
+    NSUInteger numberOfDaysInMonth = range.length;
+    return numberOfDaysInMonth;
 }
 
 @end

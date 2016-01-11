@@ -17,6 +17,7 @@
 
 @optional
 - (void)selectYuyueViewController:(XLSelectYuyueViewController *)vc didSelectDateTime:(NSString *)dateStr;
+- (void)selectYuyueViewController:(XLSelectYuyueViewController *)vc didSelectData:(NSDictionary *)dic;
 
 @end
 
@@ -33,6 +34,9 @@
 
 @property (nonatomic, assign)BOOL isAddLocationToPatient;//给指定病人添加预约
 @property (nonatomic, strong)Patient *patient;//指定病人的病历
+
+@property (nonatomic, assign)BOOL isEditAppointment;//是编辑病历跳转
+@property (nonatomic, copy)NSString *reserveTime;//当前选择的就诊时间
 
 @property (nonatomic, weak)id<XLSelectYuyueViewControllerDelegate> delegate;
 

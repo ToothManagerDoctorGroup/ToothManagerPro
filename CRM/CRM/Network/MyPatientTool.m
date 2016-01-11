@@ -39,7 +39,7 @@
     }];
 }
 
-+ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(XLPatientTotalInfoModel *model))success failure:(void(^)(NSError *error))failure{
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(NSArray *results))success failure:(void(^)(NSError *error))failure{
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -48,9 +48,14 @@
     params[@"doctor_id"] = doctorId;
     
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
-        XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:responseObject[@"Result"]];
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        for (NSDictionary *dic in responseObject[@"Result"]) {
+            XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+            [arrayM addObject:model];
+        }
         if (success) {
-            success(model);
+            success(arrayM);
         }
     } failure:^(NSError *error) {
         if (failure) {

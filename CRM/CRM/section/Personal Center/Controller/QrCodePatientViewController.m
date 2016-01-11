@@ -51,14 +51,13 @@
     }];
     
     [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:@"" isDoctor:YES successBlock:^{
-        
+        [SVProgressHUD showWithStatus:@"加载中..."];
     } failedBlock:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
 }
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD dismiss];
     NSArray *dicArray = [result objectForKey:@"Result"];
     if (dicArray && dicArray.count > 0) {
         for (NSDictionary *dic in dicArray) {
@@ -133,6 +132,7 @@
         
         //回到主线程更新ui
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [SVProgressHUD dismiss];
             self.QrCodeImageView.image = image;
         }];
     }];

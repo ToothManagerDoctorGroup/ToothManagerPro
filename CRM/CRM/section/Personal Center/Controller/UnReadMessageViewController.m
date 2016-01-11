@@ -115,9 +115,9 @@
             //新增患者
             [SVProgressHUD showWithStatus:@"正在获取患者数据..."];
             //请求患者数据
-            [MyPatientTool getPatientAllInfosWithPatientId:msgModel.message_id doctorID:[AccountManager currentUserid] success:^(XLPatientTotalInfoModel *model) {
+            [MyPatientTool getPatientAllInfosWithPatientId:msgModel.message_id doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
                 //请求成功后缓存患者信息
-                [self savePatientDataWithModel:model messageModel:msgModel];
+                [self savePatientDataWithModel:results[0] messageModel:msgModel];
             } failure:^(NSError *error) {
                 [SVProgressHUD showErrorWithStatus:@"患者信息获取失败"];
                 if (error) {
@@ -183,7 +183,7 @@
         return;
     }
     
-    NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count;
+    NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count + model.introducerMap.count;
     NSInteger current = 0;
     //保存患者消息
     Patient *patient = [Patient PatientFromPatientResult:model.baseInfo];
@@ -254,6 +254,15 @@
         }
     }
     
+    //判断introducerMap数据是否存在
+    if (model.introducerMap.count > 0) {
+        for (NSDictionary *dic in model.introducerMap) {
+            PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
+            if ([[DBManager shareInstance] insertPatientIntroducerMap:map]) {
+                current++;
+            }
+        }
+    }
     if (total == current) {
         //同步数据成功,跳转到患者详情页面
         [self setMessageReadWithModel:msgModel];
@@ -261,50 +270,6 @@
         [SVProgressHUD showErrorWithStatus:@"获取患者数据失败"];
     }
 }
-
-- (void)syncData{
-    //开启一个全局队列
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_async(queue, ^{
-        //添加多线程进行下载操作
-        // 创建一个组
-        dispatch_group_t group = dispatch_group_create();
-        // 关联一个任务到group
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getMaterialTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            
-            [[CRMHttpRequest shareInstance] getIntroducerTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getReserverecordTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getPatIntrMapTable];
-            
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            
-            [[CRMHttpRequest shareInstance] getRepairDoctorTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getDoctorTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getPatientTable];
-            
-        });
-    });
-}
-
 //获取图片
 -(UIImage *) getImageFromURL:(NSString *)fileURL {
     UIImage * result;

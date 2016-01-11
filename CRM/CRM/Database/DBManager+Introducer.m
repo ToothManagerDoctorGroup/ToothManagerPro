@@ -119,7 +119,6 @@
     }
     __block BOOL ret = NO;
 
-    
     NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where intr_phone = '%@' and user_id = '%@' and creation_date > datetime('%@')",IntroducerTableName,phone,[AccountManager currentUserid], [NSString defaultDateString]];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         

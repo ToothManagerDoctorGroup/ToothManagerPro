@@ -61,6 +61,7 @@
     _nameLabel = [[UILabel alloc] init];
     _nameLabel.font = CommenFont;
     _nameLabel.textColor = CommenColor;
+    _nameLabel.adjustsFontSizeToFitWidth = YES;
     [self.contentView addSubview:_nameLabel];
     
     //状态
@@ -83,8 +84,8 @@
     
     //是否选中
     _chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
-    [_chooseButton setImage:[UIImage imageNamed:@"choose-blue"] forState:UIControlStateSelected];
+    [_chooseButton setImage:[UIImage imageNamed:@"no_choose_white"] forState:UIControlStateNormal];
+    [_chooseButton setImage:[UIImage imageNamed:@"choose_blue"] forState:UIControlStateSelected];
     [_chooseButton addTarget:self action:@selector(chooseAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:_chooseButton];
 }
@@ -105,29 +106,30 @@
     }else{
         _signImageView.hidden = NO;
     }
-
+    
     switch (model.patient_status) {
         case PatientStatusUntreatment:
-            [_statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_YELLOW]];
+            [_statusLabel setTextColor:[UIColor colorWithHex:0x00a0ea]];
             break;
         case PatientStatusUnplanted:
-            [_statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_RED]];
+            [_statusLabel setTextColor:[UIColor colorWithHex:0xff3b31]];
             break;
         case PatientStatusUnrepaired:
-            [_statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_GREEN]];
+            [_statusLabel setTextColor:[UIColor colorWithHex:0x37ab4e]];
             break;
         case PatientStatusRepaired:
-            [_statusLabel setTextColor:[UIColor blackColor]];
+            [_statusLabel setTextColor:[UIColor colorWithHex:0x888888]];
             break;
         default:
             break;
     }
+
     //如果已经是组员，默认不可选
     if (model.isMember) {
-        [_chooseButton setImage:[UIImage imageNamed:@"choose-grey"] forState:UIControlStateNormal];
+        [_chooseButton setImage:[UIImage imageNamed:@"no_choose_gray"] forState:UIControlStateNormal];
         _chooseButton.enabled = NO;
     }else {
-        [_chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
+        [_chooseButton setImage:[UIImage imageNamed:@"no_choose_white"] forState:UIControlStateNormal];
         _chooseButton.enabled = YES;
         
         //判断是否选中
@@ -152,10 +154,10 @@
     _introducerLabel.frame = CGRectMake(_statusLabel.right, 0, 80, RowHeight);
     
     //275  320 45
-    _numLabel.frame = CGRectMake(_introducerLabel.right + Margin , 0, 40, RowHeight);
+    _numLabel.frame = CGRectMake(_introducerLabel.right, 0, 40, RowHeight);
     
     if (!self.isManage) {
-        _chooseButton.frame = CGRectMake(self.width - Margin * .5 - 30, (RowHeight - 30) / 2, 30, 30);
+        _chooseButton.frame = CGRectMake(self.width - RowHeight - 5, 0, RowHeight + 5, RowHeight);
     }
     
 }

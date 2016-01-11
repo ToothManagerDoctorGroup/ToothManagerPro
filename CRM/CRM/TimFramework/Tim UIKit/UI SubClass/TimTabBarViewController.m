@@ -18,8 +18,10 @@
 #import "SignUpViewController.h"
 #import "ChatViewController.h"
 #import "MyScheduleReminderViewController.h"
-
-
+#import "AutoSyncManager.h"
+#import "CRMUserDefalut.h"
+#import "AccountManager.h"
+#import "AutoSyncGetManager.h"
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static NSString *kMessageType = @"MessageType";
@@ -38,6 +40,10 @@ static NSString *kConversationChatter = @"ConversationChatter";
 }
 @property (strong, nonatomic) NSDate *lastPlaySoundDate;//最后一次响铃的时间
 
+@property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
+@property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
+
+
 @end
 
 @implementation TimTabBarViewController
@@ -45,10 +51,26 @@ static NSString *kConversationChatter = @"ConversationChatter";
 - (void)dealloc
 {
     [self unregisterNotifications];
+    //移除通知
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:AutoSyncTimeChangeNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:AutoSyncStateChangeNotification object:nil];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //创建一个定时器(NSTimer)
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+    //将定时器添加到主队列中
+    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    
+    
+    //判断当前自动同步是否打开
+//    [self createSyncGetTimer];
+    
+    //添加通知
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncGetTimeChange:) name:AutoSyncTimeChangeNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createSyncGetTimer) name:AutoSyncStateChangeNotification object:nil];
     
     //if 使tabBarController中管理的viewControllers都符合 UIRectEdgeNone
     if ([UIDevice currentDevice].systemVersion.floatValue >= 7) {
@@ -70,6 +92,57 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - 当自动下载时间改变时
+- (void)syncGetTimeChange:(NSNotification *)noti{
+    //创建自动下载定时器
+    [self createSyncGetTimer];
+}
+
+- (void)createSyncGetTimer{
+    if (self.syncGetTimer != nil) {
+        [self.syncGetTimer invalidate];
+        self.syncGetTimer = nil;
+    }
+    
+    //判断当前自动同步是否打开
+    NSString *autoOpen = [CRMUserDefalut objectForKey:AutoSyncOpenKey];
+    if (autoOpen == nil) {
+        autoOpen = Auto_Action_Open;
+    }
+    
+    if ([autoOpen isEqualToString:Auto_Action_Open]) {
+        //获取系统设置的自动下载的时间
+        NSString *autoTime = [CRMUserDefalut objectForKey:AutoSyncTimeKey];
+        NSTimeInterval duration = 0;
+        if (autoTime == nil) {
+            duration = 5.0 * 60;
+        }else{
+            if ([autoTime isEqualToString:AutoSyncTime_Five]) {
+                duration = 5.0 * 60;
+            }else if ([autoTime isEqualToString:AutoSyncTime_Ten]){
+                duration = 10.0 * 60;
+            }else{
+                duration = 20.0 * 60;
+            }
+        }
+        //重新创建定时器
+        self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
+        //将定时器添加到主队列中
+        [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
+    }
+}
+
+#pragma mark - 定时器，自动下载
+- (void)autoSyncGetAction:(NSTimer *)timer{
+    [[AutoSyncGetManager shareInstance] startSyncGet];
+}
+
+#pragma mark - 定时器,自动上传
+- (void)autoSyncAction:(NSTimer *)timer{
+    //开始同步
+    [[AutoSyncManager shareInstance] startAutoSync];
+}
+
 - (void)makeMainView
 {
     //日程提醒
@@ -79,7 +152,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     //介绍人
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     _introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
-    [self setTabbarItemState:_introducerVC withTitle:@"介绍人" withImage1:@"ic_tabbar_library" withImage2:@"ic_tabbar_library_active"];
+    [self setTabbarItemState:_introducerVC withTitle:@"介绍人" withImage1:@"ic_tabbar_jieshaoren_grey" withImage2:@"ic_tabbar_jiashaoren_blue"];
     _introducerVC.isHome = YES;
     TimNavigationViewController* ncViewController2=[[TimNavigationViewController alloc]initWithRootViewController:_introducerVC];
     

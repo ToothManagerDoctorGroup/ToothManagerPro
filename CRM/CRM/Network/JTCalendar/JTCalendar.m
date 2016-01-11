@@ -162,9 +162,19 @@
     self.menuMonthsView.scrollEnabled = YES;
     self.contentView.scrollEnabled = YES;
     //代理方法
-    if ([self.dateDelegate respondsToSelector:@selector(calendar:startDateOfWeak:endDateOfWeak:currentDate:)]) {
-        [self.dateDelegate calendar:self startDateOfWeak:[MyDateTool getMondayDateWithCurrentDate:currentDate] endDateOfWeak:[MyDateTool getSundayDateWithCurrentDate:currentDate] currentDate:currentDate];
-    }
+//    if (self.calendarAppearance.isWeekMode) {
+//        if ([self.dateDelegate respondsToSelector:@selector(calendar:startDate:endDate:currentDate:isWeekMode:)]) {
+//            [self.dateDelegate calendar:self startDate:[MyDateTool getMondayDateWithCurrentDate:currentDate] endDate:[MyDateTool getSundayDateWithCurrentDate:currentDate] currentDate:currentDate isWeekMode:YES];
+//        }
+//    }else{
+        if ([self.dateDelegate respondsToSelector:@selector(calendar:startDate:endDate:currentDate:isWeekMode:)]) {
+            
+            NSString *startDate = [MyDateTool getMonthBeginWith:currentDate];
+            NSString *endDate = [MyDateTool getMonthEndWith:startDate];
+            
+            [self.dateDelegate calendar:self startDate:[MyDateTool dateWithStringNoTime:startDate] endDate:[MyDateTool dateWithStringNoTime:endDate] currentDate:currentDate isWeekMode:NO];
+        }
+//    }
 }
 
 

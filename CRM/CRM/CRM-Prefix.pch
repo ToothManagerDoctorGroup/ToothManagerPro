@@ -47,6 +47,8 @@
 #define DoctorPaySuccessNotification @"DoctorPaySuccessNotification"
 //查看一条未读消息成功后的通知
 #define ReadUnReadMessageSuccessNotification @"ReadUnReadMessageSuccessNotification"
+
+
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 #define MyColor(r,g,b) [UIColor colorWithRed:(r) / 255.0 green:(g) / 255.0 blue:(b) / 255.0 alpha:1]

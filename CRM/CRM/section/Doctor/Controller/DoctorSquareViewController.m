@@ -16,9 +16,11 @@
 #import "IntroducerManager.h"
 #import "CRMHttpRequest+Introducer.h"
 #import "DBManager+Doctor.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 @interface DoctorSquareViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate>
 @property (nonatomic,retain) NSArray *scellModeArray;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (nonatomic,retain) NSMutableArray *searchHistoryArray;
 @end
 
@@ -26,12 +28,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    [self.searchBar moveBackgroundView];
+    self.searchBar.placeholder = @"搜索真实姓名";
 }
 
 - (void)initView {
     [super initView];
-    self.title = @"医生广场";
+    self.title = @"添加好友";
     self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
 }

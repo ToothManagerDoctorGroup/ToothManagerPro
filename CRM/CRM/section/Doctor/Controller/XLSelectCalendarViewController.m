@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"back"]];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"选择时间";
     [self setRightBarButtonWithTitle:@"今天"];
     

@@ -9,6 +9,7 @@
 #import "RepairDocHeaderTableViewController.h"
 #import "AvatarView.h"
 #import "XLAvatarBrowser.h"
+#import "UIColor+Extension.h"
 
 @interface RepairDocHeaderTableViewController ()
 @property (nonatomic,retain) AvatarView *avatar;
@@ -18,12 +19,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.tableView.allowsSelection = NO;
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
@@ -35,15 +30,14 @@
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.phoneTextField setBorderStyle:UITextBorderStyleNone];
     
-//    _avatar = [[AvatarView alloc] initWithURLString:@""];
-//    _avatar.frame = CGRectMake(20, 14, 60, 60);
-//    [self.view addSubview:_avatar];
-    
     self.iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, 14, 60, 60)];
     self.iconImageView.image = [UIImage imageNamed:@"user_icon"];
     self.iconImageView.layer.cornerRadius = 30;
     self.iconImageView.layer.masksToBounds = YES;
     self.iconImageView.userInteractionEnabled = YES;
+    self.iconImageView.layer.borderWidth = 1;
+    self.iconImageView.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
+    
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.iconImageView addGestureRecognizer:tap];

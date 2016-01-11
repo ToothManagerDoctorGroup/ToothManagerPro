@@ -29,6 +29,7 @@
 #import "PatientDetailViewController.h"
 #import "SuccessViewController.h"
 #import "XLPatientDisplayViewController.h"
+#import "UIColor+Extension.h"
 
 @interface PatientSegumentController ()<MudItemsBarDelegate>
 
@@ -87,7 +88,7 @@
     self.segmentedControl.titleFont = [UIFont fontWithName:@"AvenirNext-Medium" size:14.0f];
     self.segmentedControl.titleTextColor = [UIColor whiteColor];
     self.segmentedControl.selectedTitleFont = [UIFont fontWithName:@"AvenirNext-DemiBold" size:14.0f];
-    self.segmentedControl.selectedTitleTextColor = MyColor(95, 169, 236);
+    self.segmentedControl.selectedTitleTextColor = [UIColor colorWithHex:0x00a0ea];
     self.segmentedControl.borderWidth = 1.0f;
     self.segmentedControl.borderColor = [UIColor whiteColor];
     self.segmentedControl.segmentIndicatorInset = 0;
@@ -188,6 +189,7 @@
 }
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [SVProgressHUD dismiss];
     if (self.isBarHidden == NO){                      //如果是显示状态
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
     }

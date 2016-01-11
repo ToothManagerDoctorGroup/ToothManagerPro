@@ -17,6 +17,8 @@
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
 #import "MyDateTool.h"
+#import <EventKit/EventKit.h>
+#import "MyDateTool.h"
 
 NSString * const RepeatIntervalDay = @"每天";
 NSString * const RepeatIntervalWeek = @"每周";
@@ -24,6 +26,30 @@ NSString * const RepeatIntervalMonth = @"每月";
 NSString * const RepeatIntervalNone = @"不重复";
 
 @implementation LocalNotification
+
++ (LocalNotification *)notificationWithNoti:(LocalNotification *)localNoti{
+    LocalNotification *notification = [[LocalNotification alloc]init];
+    notification.patient_id = localNoti.patient_id;
+    notification.reserve_content = localNoti.reserve_content;
+    notification.medical_place = localNoti.medical_place;
+    notification.medical_chair = localNoti.medical_chair;
+    notification.reserve_time = localNoti.reserve_time;
+    notification.reserve_type = localNoti.reserve_type;
+    notification.creation_date = localNoti.creation_date;
+    notification.update_date = localNoti.update_date;
+    notification.sync_time = localNoti.sync_time;
+    
+    notification.tooth_position = localNoti.tooth_position;
+    notification.clinic_reserve_id = localNoti.clinic_reserve_id;
+    notification.duration = localNoti.duration;
+    notification.reserve_status = localNoti.reserve_status;
+    
+    notification.therapy_doctor_id = localNoti.therapy_doctor_id;
+    notification.therapy_doctor_name = localNoti.therapy_doctor_name;
+    
+    return notification;
+
+}
 
 + (LocalNotification *)notificaitonWithResult:(FMResultSet *)result {
     LocalNotification *notification = [[LocalNotification alloc]init];
@@ -39,11 +65,15 @@ NSString * const RepeatIntervalNone = @"不重复";
     notification.user_id = [result stringForColumn:@"user_id"];
     notification.ckeyid = [result stringForColumn:@"ckeyid"];
     notification.doctor_id = [result stringForColumn:@"doctor_id"];
-    
+    notification.reserve_status = [result stringForColumn:@"reserve_status"];
     
     notification.tooth_position = [result stringForColumn:@"tooth_position"];
     notification.clinic_reserve_id = [result stringForColumn:@"clinic_reserve_id"];
     notification.duration = [result stringForColumn:@"duration"];
+    
+    notification.therapy_doctor_id = [result stringForColumn:@"therapy_doctor_id"];
+    notification.therapy_doctor_name = [result stringForColumn:@"therapy_doctor_name"];
+    
     
     
     return notification;
@@ -63,10 +93,14 @@ NSString * const RepeatIntervalNone = @"不重复";
     tempLN.update_date = [NSString defaultDateString];
     tempLN.sync_time = [lnRe stringForKey:@"sync_time"];
     tempLN.doctor_id = [lnRe stringForKey:@"doctor_id"];
+    tempLN.reserve_status = [lnRe stringForKey:@"reserve_status"];
     
     tempLN.tooth_position = [lnRe stringForKey:@"tooth_position"];
     tempLN.clinic_reserve_id = [lnRe stringForKey:@"clinic_reserve_id"];
     tempLN.duration = [lnRe stringForKey:@"duration"];
+    
+    tempLN.therapy_doctor_id = [lnRe stringForKey:@"therapy_doctor_id"];
+    tempLN.therapy_doctor_name = [lnRe stringForKey:@"therapy_doctor_name"];
 
 
     return tempLN;
@@ -143,6 +177,17 @@ Realize_ShareInstance(LocalNotificationCenter);
     }
     return resultArray;
 }
+
+- (NSArray *)localNotificationListWithString:(NSString *)string array:(NSArray *)array{
+    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
+    for (LocalNotification *local in array) {
+        if ([local.reserve_time hasPrefix:string]) {
+            [resultArray addObject:local];
+        }
+    }
+    return resultArray;
+}
+
 - (NSArray *)localNotificationListWithString1:(NSString *)string {
     /*
     NSArray *array = [[DBManager shareInstance] localNotificationListFormDB];
@@ -199,6 +244,17 @@ Realize_ShareInstance(LocalNotificationCenter);
     localNoti.soundName = UILocalNotificationDefaultSoundName;
     localNoti.userInfo = [NSDictionary dictionaryWithObject:notification.ckeyid forKey:@"ckeyid"];
     [[UIApplication sharedApplication] scheduleLocalNotification:localNoti];
+    
+    //获取系统设置
+//    NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
+//    if (autoReserve == nil) {
+//        autoReserve = Auto_Action_Close;
+//        [CRMUserDefalut setObject:autoReserve forKey:AutoReserveRecordKey];
+//    }
+//    if ([autoReserve isEqualToString:Auto_Action_Open]) {
+        //将提醒事件添加到系统日历中
+//        [self addEventToSystemCalendarWithLocalNotification:notification patient:tpatient];
+//    }
 }
 
 - (void)cancelNotification:(LocalNotification *)notification {
@@ -208,6 +264,84 @@ Realize_ShareInstance(LocalNotificationCenter);
         if (![NSString isEmptyString:notificationckeyid] && [notification.ckeyid isEqualToString:notificationckeyid]) {
             [[UIApplication sharedApplication] cancelLocalNotification:localNotifi];
         }
+    }
+}
+
+
+/**
+ *  添加事件到系统日历当中
+ */
+- (void)addEventToSystemCalendarWithLocalNotification:(LocalNotification *)noti patient:(Patient *)patient{
+    //事件市场
+    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    //6.0及以上通过下面方式写入事件
+    if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
+    {
+        [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error)
+                {
+                    //错误细心
+                    // display error message here
+                }
+                else if (!granted)
+                {
+                    //被用户拒绝，不允许访问日历
+                }
+                else
+                {
+                    //事件保存到日历
+                    //创建事件
+                    EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
+                    event.title     = [NSString stringWithFormat:@"患者 %@ %@",patient.patient_name,noti.reserve_type];
+                    event.location = noti.medical_place;
+                    
+                    NSDateFormatter *tempFormatter = [[NSDateFormatter alloc]init];
+                    [tempFormatter setDateFormat:@"dd.MM.yyyy HH:mm"];
+                    
+                    NSString *startT = [NSString stringWithFormat:@"%@:00",noti.reserve_time];
+                    NSString *endT = [NSString stringWithFormat:@"%@:00",noti.reserve_time_end];
+                    
+                    event.startDate = [MyDateTool dateWithStringWithSec:startT];
+                    event.endDate   = [MyDateTool dateWithStringWithSec:endT];
+                    event.allDay = NO;
+                    
+                    //添加提醒
+                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -60.0f * 24]];
+                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -15.0f]];
+                    
+                    [event setCalendar:[eventStore defaultCalendarForNewEvents]];
+                    NSError *err;
+                    [eventStore saveEvent:event span:EKSpanThisEvent error:&err];
+                    
+                    NSLog(@"保存成功");
+                    
+                }
+            });
+        }];
+    }else
+    {
+        //4.0和5.0通过下述方式添加
+        
+        EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
+        event.title     = [NSString stringWithFormat:@"患者 %@ %@",patient.patient_name,noti.reserve_type];
+        event.location = noti.medical_place;
+        
+        NSDateFormatter *tempFormatter = [[NSDateFormatter alloc]init];
+        [tempFormatter setDateFormat:@"dd.MM.yyyy HH:mm"];
+        
+        event.startDate = [MyDateTool dateWithStringNoSec:noti.reserve_time];
+        event.endDate   = [MyDateTool dateWithStringNoSec:noti.reserve_time_end];
+        event.allDay = NO;
+        
+        
+        [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -60.0f * 24]];
+        [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -15.0f]];
+        
+        [event setCalendar:[eventStore defaultCalendarForNewEvents]];
+        NSError *err;
+        [eventStore saveEvent:event span:EKSpanThisEvent error:&err];
+        
     }
 }
 

@@ -161,8 +161,7 @@
     if (!_searchBar) {
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, 200, 44)];
         _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-//        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
+        _searchBar.placeholder = @"患者姓名、备注名、手机号";
         [_searchBar moveBackgroundView];
     }
     
@@ -214,7 +213,6 @@
         
         [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
             if (_searchController.editingStyle == UITableViewCellEditingStyleDelete) {
-                
                 
             }
             
@@ -400,7 +398,7 @@
 //    [groupView addSubview:toplineView];
     
     UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"group_gray"]];
-    iconView.frame = CGRectMake(20, 13, 21, 14);
+    iconView.frame = CGRectMake(20, 13, 16, 14);
     [groupView addSubview:iconView];
     
     UILabel *groupNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 200, 40)];

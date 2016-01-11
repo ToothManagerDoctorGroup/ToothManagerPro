@@ -155,4 +155,29 @@
 
 }
 
++ (void)transferPatientWithPatientId:(NSString *)patientId doctorId:(NSString *)doctorId receiverId:(NSString *)receiverId success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/NotificationPatientHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"transfer";
+
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:4];
+    [dataEntity setObject:patientId forKey:@"patient_id"];
+    [dataEntity setObject:receiverId forKey:@"doctor_id"];
+    [dataEntity setObject:doctorId forKey:@"intr_id"];
+    [dataEntity setObject:@"I" forKey:@"intr_source"];
+    
+    [params setObject:[dataEntity JSONString] forKey:@"DataEntity"];
+    
+    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 @end

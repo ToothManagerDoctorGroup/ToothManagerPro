@@ -133,28 +133,6 @@
     _currentDateStr = currentDateStr;
     
     [self setTimeBroadcastView];
-//    if(currentDateStr != nil){
-//        NSString *weekString = [self fromDateToWeek:currentDateStr];
-//        NSInteger monthInt = [currentDateStr substringWithRange:NSMakeRange(4, 2)].integerValue;
-//        NSInteger dayInt = [currentDateStr substringWithRange:NSMakeRange(6, 2)].integerValue;
-//        nowPickerShowTimeLabel.text = [NSString stringWithFormat:@"%@年%ld月%ld日 %@ %@:%@",[currentDateStr substringWithRange:NSMakeRange(0, 4)],(long)monthInt,(long)dayInt,weekString,[currentDateStr substringWithRange:NSMakeRange(8, 2)],[currentDateStr substringWithRange:NSMakeRange(10, 2)]];
-//        
-//        
-//        NSInteger yearint = [self setNowTimeShow:0 date:[MyDateTool dateWithStringNoSec:currentDateStr]];
-//        [yearScrollView setCurrentSelectPage:(yearint-2002)];
-//        
-//        NSInteger monthint = [self setNowTimeShow:1 date:[MyDateTool dateWithStringNoSec:currentDateStr]];
-//        [monthScrollView setCurrentSelectPage:(monthint-3)];
-//        
-//        NSInteger dayint = [self setNowTimeShow:2 date:[MyDateTool dateWithStringNoSec:currentDateStr]];
-//        [dayScrollView setCurrentSelectPage:(dayint-3)];
-//        
-//        NSInteger hourint = [self setNowTimeShow:3 date:[MyDateTool dateWithStringNoSec:currentDateStr]];
-//        [hourScrollView setCurrentSelectPage:(hourint-2)];
-//        
-//        NSInteger minuteint = [self setNowTimeShow:4 date:[MyDateTool dateWithStringNoSec:currentDateStr]];
-//        [minuteScrollView setCurrentSelectPage:(minuteint-2)];
-//    }
 }
 
 - (void)okBtnClick{
@@ -271,7 +249,7 @@
     }
     else if (scrollView == dayScrollView)
     {
-        return 31;
+        return 28;
     }
     else if (scrollView == hourScrollView)
     {
@@ -289,7 +267,7 @@
     UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, scrollView.bounds.size.width, scrollView.bounds.size.height/5)];
     l.tag = index+1;
     if (scrollView == yearScrollView) {
-        l.text = [NSString stringWithFormat:@"%ld年",2000+index];
+        l.text = [NSString stringWithFormat:@"%ld年",2000+(long)index];
     }
     else if (scrollView == monthScrollView)
     {
@@ -409,7 +387,7 @@
     NSLog(@"Now----%@",taskDateString);
 }
 //滚动时上下标签显示(当前时间和是否为有效时间)
-- (void)scrollviewDidChangeNumber
+- (void)scrollviewDidChangeNumber:(MXSCycleScrollView *)csView
 {
     UILabel *yearLabel = [[(UILabel*)[[yearScrollView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
     UILabel *monthLabel = [[(UILabel*)[[monthScrollView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
@@ -437,6 +415,12 @@
     
     self.selectDateStr = [MyDateTool stringWithDateNoSec:selectDate];
     
+    
+//    if (csView == monthScrollView) {
+//        //获取当前选择的时间
+//        NSUInteger monthCount = [MyDateTool getMonthDayCountWithDate:self.selectDateStr];
+//        dayScrollView.allPages = monthCount;
+//    }
     
 }
 //通过日期求星期

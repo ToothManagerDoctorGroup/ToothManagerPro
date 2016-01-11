@@ -55,7 +55,12 @@
             //设置控件的数据
             Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.localNoti.patient_id];
             self.timeLabel.text = self.localNoti.reserve_time;
-            self.patientLabel.text = patient.patient_name;
+            if ([patient.nickName isNotEmpty]) {
+                self.patientLabel.text = [NSString stringWithFormat:@"%@(%@)",patient.patient_name,patient.nickName];
+            }else{
+                self.patientLabel.text = patient.patient_name;
+            }
+            
             self.toothLabel.text = self.localNoti.tooth_position;
             self.projectLabel.text = self.localNoti.reserve_type;
             self.appointTimeLabel.text = [NSString stringWithFormat:@"%@小时",self.localNoti.duration];

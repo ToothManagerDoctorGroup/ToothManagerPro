@@ -17,7 +17,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"地址搜索";
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"back"]];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = [UIColor whiteColor];
     
     

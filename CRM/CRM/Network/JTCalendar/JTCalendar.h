@@ -16,7 +16,7 @@
 @protocol JTCalendarDelegate <NSObject>
 
 @optional
-- (void)calendar:(JTCalendar *)calendar startDateOfWeak:(NSDate *)startDate endDateOfWeak:(NSDate *)endDate currentDate:(NSDate *)currentDate;
+- (void)calendar:(JTCalendar *)calendar startDate:(NSDate *)startDate endDate:(NSDate *)endDate currentDate:(NSDate *)currentDate isWeekMode:(BOOL)isWeekMode;
 
 @end
 

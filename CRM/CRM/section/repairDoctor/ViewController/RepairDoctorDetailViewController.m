@@ -28,9 +28,26 @@
 @property (nonatomic,retain) NSArray *patientsArray;
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
 
+@property (nonatomic, strong)NSMutableArray *repairArray;//已修复数量
+@property (nonatomic, strong)NSMutableArray *unrepairArray;//未修复数量
+
 @end
 
 @implementation RepairDoctorDetailViewController
+
+- (NSMutableArray *)repairArray{
+    if (!_repairArray) {
+        _repairArray = [NSMutableArray array];
+    }
+    return _repairArray;
+}
+
+- (NSMutableArray *)unrepairArray{
+    if (!_unrepairArray) {
+        _unrepairArray = [NSMutableArray array];
+    }
+    return _unrepairArray;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -68,6 +85,17 @@
         cellMode.status = patientTmp.patient_status;
         cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
         [_patientCellModeArray addObject:cellMode];
+    }
+    
+    //计算已修复和未修复的数量
+    [self.repairArray removeAllObjects];
+    [self.unrepairArray removeAllObjects];
+    for (PatientsCellMode *model in self.patientCellModeArray) {
+        if (model.status == PatientStatusRepaired) {
+            [self.repairArray addObject:model];
+        }else{
+            [self.unrepairArray addObject:model];
+        }
     }
 
 }
@@ -135,7 +163,69 @@
 #pragma mark - UITableView Delegate
 -  (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.patientsArray.count;
+    return self.patientCellModeArray.count;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 40;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
+    superView.backgroundColor = MyColor(234, 234, 234);
+    
+    UIButton *repairedButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    repairedButton.frame = CGRectMake(0, 0, kScreenWidth / 2, 40);
+    repairedButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    NSString *repairStr;
+    if (self.repairArray.count == 0) {
+        repairStr = [NSString stringWithFormat:@"已修复患者（0）"];
+    }else{
+        repairStr = [NSString stringWithFormat:@"已修复患者（%lu）",(unsigned long)self.repairArray.count];
+    }
+    [repairedButton setTitle:repairStr forState:UIControlStateNormal];
+    [repairedButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [repairedButton addTarget:self action:@selector(repairBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [superView addSubview:repairedButton];
+    
+    UIView *dividerView = [[UIView alloc] initWithFrame:CGRectMake(kScreenWidth / 2, 10, 1, 20)];
+    dividerView.backgroundColor = MyColor(188, 188, 188);
+    [superView addSubview:dividerView];
+    
+    UIButton *unRepairedButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    unRepairedButton.frame = CGRectMake(kScreenWidth / 2, 0, kScreenWidth / 2, 40);
+    unRepairedButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [unRepairedButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    NSString *unrepairStr;
+    if (self.unrepairArray.count == 0) {
+        unrepairStr = [NSString stringWithFormat:@"未修复患者（0）"];
+    }else{
+        unrepairStr = [NSString stringWithFormat:@"未修复患者（%lu）",(unsigned long)self.unrepairArray.count];
+    }
+    [unRepairedButton setTitle:unrepairStr forState:UIControlStateNormal];
+    [unRepairedButton addTarget:self action:@selector(unrepairBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [superView addSubview:unRepairedButton];
+    
+    return superView;
+}
+
+#pragma mark - 修复统计按钮点击
+- (void)repairBtnClick{
+    //清除当前数组中的所有数据
+    [self.patientCellModeArray removeAllObjects];
+    
+    [self.patientCellModeArray addObjectsFromArray:self.repairArray];
+    
+    [myTableView reloadData];
+}
+#pragma mark - 未修复统计按钮点击
+- (void)unrepairBtnClick{
+    //清除当前数组中的所有数据
+    [self.patientCellModeArray removeAllObjects];
+    
+    [self.patientCellModeArray addObjectsFromArray:self.unrepairArray];
+    
+    [myTableView reloadData];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -169,15 +259,5 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

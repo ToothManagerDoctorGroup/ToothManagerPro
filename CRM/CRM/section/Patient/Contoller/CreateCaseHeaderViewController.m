@@ -15,17 +15,45 @@
 #import "NSString+Conversion.h"
 #import "DBManager+RepairDoctor.h"
 #import "CRMHttpRequest+Sync.h"
+#import "MyDateTool.h"
+#import "UUDatePicker.h"
 
-@interface CreateCaseHeaderViewController () <TimImagesScrollViewDelegate>
+@interface CreateCaseHeaderViewController () <TimImagesScrollViewDelegate,UUDatePickerDelegate>
+
+@property (nonatomic, strong)UUDatePicker *repairPicker;
+@property (nonatomic, strong)UUDatePicker *implantPicker;
 
 @end
 
 @implementation CreateCaseHeaderViewController
 
+- (UUDatePicker *)repairPicker{
+    if (!_repairPicker) {
+        _repairPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
+    }
+    return _repairPicker;
+}
+
+- (UUDatePicker *)implantPicker{
+    if (!_implantPicker) {
+        _implantPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
+    }
+    return _implantPicker;
+}
+
+- (void)dealloc{
+    self.repairPicker = nil;
+    self.implantPicker = nil;
+}
+
 - (void)awakeFromNib {
     UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped)];
     tapGr.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGr];
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+//    UUDatePicker *repairPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute]
+//    self.repairTextField.inputView = repairPicker;
 }
 -(void)viewTapped{
     [self.casenameTextField resignFirstResponder];
@@ -44,12 +72,17 @@
 - (void)setviewWith:(MedicalCase *)mCase andRes:(MedicalReserve *)mRes {
     if (self.imageScrollView.sdelegate == nil) {
         self.imageScrollView.sdelegate = self;
-        self.implantTextField.borderStyle = UITextBorderStyleNone;
-        self.implantTextField.mode = TextFieldInputModeDatePicker;
+
         self.nextReserveTextField.borderStyle = UITextBorderStyleNone;
         self.nextReserveTextField.mode = TextFieldInputModeExternal;
-        self.repairTextField.borderStyle = UITextBorderStyleNone;
-        self.repairTextField.mode = TextFieldInputModeDatePicker;
+        
+        if (self.repairTextField.inputView == nil) {
+            self.repairTextField.inputView = self.repairPicker;
+        }
+        if (self.implantTextField.inputView == nil) {
+            self.implantTextField.inputView = self.implantPicker;
+        }
+        
         self.expenseTextField.borderStyle = UITextBorderStyleNone;
         self.expenseTextField.mode = TextFieldInputModeExternal;
         self.repairDoctorTextField.borderStyle = UITextBorderStyleNone;
@@ -59,9 +92,18 @@
     }
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:mCase.patient_id];
     self.nameTextField.text = patient.patient_name;
-    self.implantTextField.text = mCase.implant_time;
+    
+    self.implantTextField.text = [MyDateTool stringWithDateNoSec:[MyDateTool dateWithStringWithSec:mCase.implant_time]];
+    if ([self.implantTextField.text isNotEmpty]) {
+        self.implantPicker.ScrollToDate = [MyDateTool dateWithStringWithSec:mCase.implant_time];
+    }
+    
     self.nextReserveTextField.text = mCase.next_reserve_time;
-    self.repairTextField.text = mCase.repair_time;
+    self.repairTextField.text = [MyDateTool stringWithDateNoSec:[MyDateTool dateWithStringWithSec:mCase.repair_time]];
+    if ([self.repairTextField.text isNotEmpty]) {
+        self.repairPicker.ScrollToDate = [MyDateTool dateWithStringWithSec:mCase.repair_time];
+    }
+    
     self.casenameTextField.text = mCase.case_name;
     if (mCase.repair_doctor != nil) {
         RepairDoctor *rDoctor = [[DBManager shareInstance] getRepairDoctorWithCkeyId:mCase.repair_doctor];
@@ -99,7 +141,7 @@
         MedicalExpense *expense = expenseArray[i];
         Material *mater = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
         
-        UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 350 + i * commenH, kScreenWidth, commenH)];
+        UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 300 + i * commenH, kScreenWidth, commenH)];
         superView.tag = 150 + i;
         superView.backgroundColor = MyColor(248, 248, 248);
         [self.view addSubview:superView];
@@ -151,7 +193,7 @@
     if ([NSString isEmptyString:self.implantTextField.text]) {
         mCase.implant_time = @"";
     } else {
-        mCase.implant_time = self.implantTextField.text;
+        mCase.implant_time = [NSString stringWithFormat:@"%@:00",self.implantTextField.text];
     }
     if ([NSString isEmptyString:self.casenameTextField.text]) {
         mCase.case_name = @"";
@@ -166,7 +208,7 @@
     if ([NSString isEmptyString:self.repairTextField.text]) {
         mCase.repair_time = @"";
     } else {
-        mCase.repair_time = self.repairTextField.text;
+        mCase.repair_time = [NSString stringWithFormat:@"%@:00",self.repairTextField.text];
     }
     
     if ([NSString isEmptyString:self.casenameTextField.text]) {
@@ -192,6 +234,16 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(didTouchImageView:)]) {
         [self.delegate didTouchImageView:scrollView];
     }
+}
+
+#pragma mark - UUDatePickerDelegate
+- (void)uuDatePicker:(UUDatePicker *)datePicker year:(NSString *)year month:(NSString *)month day:(NSString *)day hour:(NSString *)hour minute:(NSString *)minute weekDay:(NSString *)weekDay{
+    if (datePicker == self.repairPicker) {
+        self.repairTextField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@",year,month,day,hour,minute];
+    }else if (datePicker == self.implantPicker){
+        self.implantTextField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@",year,month,day,hour,minute];
+    }
+    
 }
 
 

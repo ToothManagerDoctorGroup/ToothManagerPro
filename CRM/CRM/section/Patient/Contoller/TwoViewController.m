@@ -10,11 +10,14 @@
 #import "DoctorGroupViewController.h"
 #import "CustomAlertView.h"
 #import "XLTestViewController.h"
-
+#import "XLPersonalStepOneViewController.h"
+#import "TimNavigationViewController.h"
 #import "UIImageView+WebCache.h"
+#import "NSString+XLValidate.h"
 
 @interface TwoViewController ()
 @property (nonatomic, weak)UIImageView *imageView;
+@property (nonatomic, weak)UITextField *textField;
 @end
 
 @implementation TwoViewController
@@ -36,12 +39,28 @@
     addButton.frame = CGRectMake(100, 100, 40, 40);
     [addButton addTarget:self action:@selector(addClick) forControlEvents:UIControlEventTouchUpInside];
 //    [self.view addSubview:addButton];
+    
+    UITextField *textField =[[UITextField alloc] initWithFrame:CGRectMake(20, 20, 200, 30)];
+    self.textField = textField;
+//    [self.view addSubview:textField];
 }
 
 - (void)addClick{
-    XLTestViewController *testVc = [[XLTestViewController alloc] init];
-    testVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:testVc animated:YES];
+//    XLTestViewController *testVc = [[XLTestViewController alloc] init];
+//    testVc.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:testVc animated:YES];
+//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+//    XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+//    oneVC.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:oneVC animated:YES];
+    //获取手机号
+    BOOL isPhone = [self.textField.text validateMobile];
+    if (isPhone) {
+        [SVProgressHUD showSuccessWithStatus:@"手机号有效"];
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"手机号无效"];
+    }
+    
 }
 
 

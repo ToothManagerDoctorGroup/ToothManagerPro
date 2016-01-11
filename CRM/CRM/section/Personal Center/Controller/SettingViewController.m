@@ -14,9 +14,12 @@
 #import "AccountManager.h"
 #import "TimNavigationViewController.h"
 #import "CRMUserDefalut.h"
+#import "XLSettingViewController.h"
+#import "XLAdviseFeedBackViewController.h"
 
 @interface SettingViewController (){
     
+    IBOutlet UITableViewCell *_settingCell;
     __weak IBOutlet UITableView *_tableView;
     IBOutlet UITableViewCell *_guanyuwomenCell;
     IBOutlet UITableViewCell *_yijianfankuiCell;
@@ -24,9 +27,7 @@
     __weak IBOutlet UILabel *_versionLabel;
     IBOutlet UITableViewCell *_genggaimimaCell;
     IBOutlet UITableViewCell *_tuichuCell;
-    IBOutlet UITableViewCell *_tingxingCell;
 }
-@property (weak, nonatomic) IBOutlet UISwitch *tixingSwitch;
 
 @property (nonatomic, assign)BOOL isOpen;//提醒是否打开
 
@@ -36,9 +37,6 @@
 
 - (void)initView{
     
-}
-- (IBAction)switchAction:(id)sender {
-    [CRMUserDefalut setObject:self.tixingSwitch.isOn?@"open":@"close" forKey:[NSString stringWithFormat:@"%@RemindOpening",[AccountManager currentUserid]]];
 }
 
 - (void)initData{
@@ -56,16 +54,6 @@
     _tableView.delegate=self;
     _tableView.dataSource=self;
     _tableView.backgroundColor=[UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    
-    //获取偏好设置中保存的提醒设置
-    NSString *userId = [AccountManager currentUserid];
-    NSString *isOpen = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"%@RemindOpening",userId]];
-    if (isOpen == nil) {
-        isOpen = @"open";
-        [CRMUserDefalut setObject:isOpen forKey:[NSString stringWithFormat:@"%@RemindOpening",userId]];
-    }
-    
-    self.tixingSwitch.on = [isOpen isEqualToString:@"open"] ? YES : NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -109,9 +97,9 @@
     }else if (indexPath.section == 1){
         if(indexPath.row == 0){
             return _genggaimimaCell;
-        }else if (indexPath.row == 1){
-            return _tingxingCell;
-        }else{
+        }else if(indexPath.row == 1){
+            return _settingCell;
+        }else {
             return _tuichuCell;
         }
     }
@@ -131,13 +119,9 @@
             
         }
         else if (indexPath.row == 1){
-            UIViewController *feedbackVC = [UMFeedback feedbackViewController];
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(0, 0, 45, 44);
-            [button setImage:[UIImage imageNamed:@"btn_back.png"] forState:UIControlStateNormal];
-            [[UMFeedback sharedInstance] setBackButton:button];
-            feedbackVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:feedbackVC animated:YES];
+            XLAdviseFeedBackViewController *feedBackVc = [[XLAdviseFeedBackViewController alloc] init];
+            feedBackVc.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:feedBackVc animated:YES];
             
         }else if (indexPath.row == 2){
                      UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
@@ -145,7 +129,6 @@
             serverVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:serverVC animated:YES];
         }
-        
     }
     
     if(indexPath.section == 1){
@@ -157,6 +140,9 @@
             
          [self.navigationController pushViewController:changepasswdVC animated:YES];
         }else if (indexPath.row == 1){
+            //设置页面
+            XLSettingViewController *settingVc = [[XLSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [self pushViewController:settingVc animated:YES];
             
         }else{
             [[AccountManager shareInstance] logout];
@@ -165,7 +151,6 @@
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 

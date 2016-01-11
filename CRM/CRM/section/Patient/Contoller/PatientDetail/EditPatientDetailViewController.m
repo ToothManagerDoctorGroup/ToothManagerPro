@@ -38,6 +38,19 @@
     //设置导航栏
     [self initNavBar];
     
+    //添加键盘监听事件
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardShow:) name:UIKeyboardWillShowNotification object:nil];
+    
+}
+
+- (void)keyBoardShow:(NSNotification *)noti{
+    if ([self.patientAgeField isFirstResponder]) {
+        self.patientAgeField.text = @"";
+    }
+}
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)initView{
@@ -122,44 +135,52 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    if (indexPath.section == 0) {
-        
-        if (indexPath.row == 2) {
-            XLDataSelectViewController *selectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
-            selectVc.type = XLDataSelectViewControllerSex;
-            selectVc.currentContent = self.patientGenderLabel.text;
-            selectVc.delegate = self;
-            [self pushViewController:selectVc animated:YES];
-        }
-        
-    }else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
-            allergyVc.title = @"过敏史";
-            allergyVc.content = self.allergyLabel.text;
-            allergyVc.type = EditAllergyViewControllerAllergy;
-            allergyVc.patient = self.patient;
-            allergyVc.delegate = self;
-            [self pushViewController:allergyVc animated:YES];
-        }else if(indexPath.row == 1){
-            EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
-            allergyVc.title = @"既往病史";
-            allergyVc.content = self.anamnesisLabel.text;
-            allergyVc.type = EditAllergyViewControllerAnamnesis;
-            allergyVc.patient = self.patient;
-            allergyVc.delegate = self;
-            [self pushViewController:allergyVc animated:YES];
-        }else{
-            EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
-            allergyVc.title = @"备注";
-            allergyVc.content = self.patientRemarkLabel.text;
-            allergyVc.type = EditAllergyViewControllerRemark;
-            allergyVc.patient = self.patient;
-            allergyVc.delegate = self;
-            [self pushViewController:allergyVc animated:YES];
+    if ([self.patientNameField isFirstResponder] || [self.patientPhoneField isFirstResponder] || [self.patientAgeField isFirstResponder] || [self.patientIdCardField isFirstResponder] || [self.patientAddressField isFirstResponder]) {
+        [self.patientNameField resignFirstResponder];
+        [self.patientPhoneField resignFirstResponder];
+        [self.patientAgeField resignFirstResponder];
+        [self.patientIdCardField resignFirstResponder];
+        [self.patientAddressField resignFirstResponder];
+    }else{
+        if (indexPath.section == 0) {
+            
+            if (indexPath.row == 2) {
+                XLDataSelectViewController *selectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                selectVc.type = XLDataSelectViewControllerSex;
+                selectVc.currentContent = self.patientGenderLabel.text;
+                selectVc.delegate = self;
+                [self pushViewController:selectVc animated:YES];
+            }
+            
+        }else if (indexPath.section == 1) {
+            if (indexPath.row == 0) {
+                EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
+                allergyVc.title = @"过敏史";
+                allergyVc.content = self.allergyLabel.text;
+                allergyVc.type = EditAllergyViewControllerAllergy;
+                allergyVc.patient = self.patient;
+                allergyVc.delegate = self;
+                [self pushViewController:allergyVc animated:YES];
+            }else if(indexPath.row == 1){
+                EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
+                allergyVc.title = @"既往病史";
+                allergyVc.content = self.anamnesisLabel.text;
+                allergyVc.type = EditAllergyViewControllerAnamnesis;
+                allergyVc.patient = self.patient;
+                allergyVc.delegate = self;
+                [self pushViewController:allergyVc animated:YES];
+            }else{
+                EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
+                allergyVc.title = @"备注";
+                allergyVc.content = self.patientRemarkLabel.text;
+                allergyVc.type = EditAllergyViewControllerRemark;
+                allergyVc.patient = self.patient;
+                allergyVc.delegate = self;
+                [self pushViewController:allergyVc animated:YES];
+            }
         }
     }
+    
     
 }
 - (NSIndexPath *)tableView:(UITableView *)tv willSelectRowAtIndexPath:(NSIndexPath *)path

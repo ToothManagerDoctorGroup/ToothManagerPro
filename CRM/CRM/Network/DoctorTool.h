@@ -55,6 +55,16 @@
  *  @param failure 失败回调
  */
 + (void)getDoctorFriendListWithDoctorId:(NSString *)doctorId success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
+/**
+ *  转诊患者
+ *
+ *  @param patientId  患者id
+ *  @param doctorId   当前医生的id
+ *  @param receiverId 接收方id
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)transferPatientWithPatientId:(NSString *)patientId doctorId:(NSString *)doctorId receiverId:(NSString *)receiverId success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure;
 
 
 @end

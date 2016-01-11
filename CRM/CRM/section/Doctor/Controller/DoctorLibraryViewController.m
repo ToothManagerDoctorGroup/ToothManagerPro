@@ -35,6 +35,8 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
+#import "AutoSyncManager.h"
+#import "AFNetworkReachabilityManager.h"
 
 @interface DoctorLibraryViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate,RequestIntroducerDelegate,UIAlertViewDelegate>
 @property (nonatomic,retain) NSArray *modeArray;
@@ -53,21 +55,25 @@
 @synthesize patientId;
 
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    [SVProgressHUD dismiss];
+}
+
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [SVProgressHUD dismiss];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tongbuAction:) name:@"tongbu" object:nil];
-    
-    [[AccountManager shareInstance] getFriendsNotificationListWithUserid:[AccountManager currentUserid] successBlock:^{
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
-    
+    if (!self.isTherapyDoctor) {
+        [[AccountManager shareInstance] getFriendsNotificationListWithUserid:[AccountManager currentUserid] successBlock:^{
+        } failedBlock:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+    }
     [self.searchBar moveBackgroundView];
 }
 
@@ -76,27 +82,60 @@
     self.title = @"医生好友";
     self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"add"]];
 }
 
 - (void)initData {
-//    [super initData];
-//    self.searchHistoryArray = [[DBManager shareInstance] getAllDoctor];
-//    [self orderedByNumber];
+
     if (self.searchHistoryArray == nil) {
         self.searchHistoryArray = @[];
     }
+    [self requestWlanData];
     
+//    // 检测网络连接状态
+//    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+//    // 连接状态回调处理
+//    /* AFNetworking的Block内使用self须改为weakSelf, 避免循环强引用, 无法释放 */
+//    __weak typeof(self) weakSelf = self;
+//    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
+//     {
+//         switch (status)
+//         {
+//             case AFNetworkReachabilityStatusUnknown:
+//                 // 未知状态
+//                 [weakSelf requestLocalData];
+//                 break;
+//             case AFNetworkReachabilityStatusNotReachable:
+//                 // 无网络
+//                 NSLog(@"无网络");
+//                 [weakSelf requestLocalData];
+//                 break;
+//             case AFNetworkReachabilityStatusReachableViaWWAN:
+//                 // 手机自带网络
+//                 NSLog(@"手机自带网络");
+//                 [weakSelf requestWlanData];
+//                 break;
+//             case AFNetworkReachabilityStatusReachableViaWiFi:
+//                 // 当有wifi
+//                 [weakSelf requestWlanData];
+//                 break;
+//             default:
+//                 break;
+//         }
+//     }];
+    
+}
+#pragma mark - 请求网络数据
+- (void)requestWlanData{
     //请求网络数据
     [SVProgressHUD showWithStatus:@"正在加载"];
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] success:^(NSArray *array) {
-        
-        [SVProgressHUD dismiss];
         
         self.searchHistoryArray = array;
         //排序
         [self orderedByNumber];
         
+        [SVProgressHUD dismiss];
         [self.tableView reloadData];
         //获取数据库中所有的医生信息
         NSArray *dbDoctors = [[DBManager shareInstance] getAllDoctor];
@@ -127,6 +166,16 @@
         }
     }];
 }
+#pragma mark - 请求本地数据
+- (void)requestLocalData{
+    //请求本地数据
+    NSArray *dbDoctors = [[DBManager shareInstance] getAllDoctor];
+    self.searchHistoryArray = dbDoctors;
+    //排序
+    [self orderedByNumber];
+    [self.tableView reloadData];
+}
+
 -(void)orderedByNumber{
     NSArray *lastArray = [NSArray arrayWithArray:self.searchHistoryArray];
     lastArray = [self.searchHistoryArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -238,8 +287,12 @@
     if ([self isSearchResultsTableView:tableView]) {
         
         Doctor *doctor = [self.modeArray objectAtIndex:indexPath.row];
-        [cell setCellWithSquareMode:doctor];
-        cell.addButton.enabled = YES;
+//        [cell setCellWithSquareMode:doctor];
+//        cell.addButton.enabled = YES;
+        [cell setCellWithMode:doctor];
+        NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
+        [cell.addButton setTitle:[NSString stringWithFormat:@"%ld",(long)count] forState:UIControlStateNormal];
+        cell.addButton.enabled = NO;
         
     }else{
         Doctor *doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
@@ -271,16 +324,28 @@
         [alertView show];
         
     } else if (self.selectDoctor == nil) {
-        DoctorInfoViewController *doctorinfoVC = [[DoctorInfoViewController alloc]init];
-        doctorinfoVC.repairDoctorID = doctor.ckeyid;
-        doctorinfoVC.ifDoctorInfo = YES;
-        [self pushViewController:doctorinfoVC animated:YES];
+        if (self.isTherapyDoctor) {
+            //选择修复医生
+            if (self.delegate && [self.delegate respondsToSelector:@selector(doctorLibraryVc:didSelectDoctor:)]) {
+                [self.delegate doctorLibraryVc:self didSelectDoctor:doctor];
+            }
+            [self popViewControllerAnimated:YES];
+            
+        }else{
+            DoctorInfoViewController *doctorinfoVC = [[DoctorInfoViewController alloc]init];
+            doctorinfoVC.repairDoctorID = doctor.ckeyid;
+            doctorinfoVC.ifDoctorInfo = YES;
+            [self pushViewController:doctorinfoVC animated:YES];
+        }
     }
 }
 
 
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.isTherapyDoctor) {
+        return NO;
+    }
     return YES;
 }
 
@@ -320,8 +385,8 @@
                 [SVProgressHUD showSuccessWithStatus:@"删除成功"];
                 BOOL res = [[DBManager shareInstance] deleteDoctorWithUserObject:self.deleteDoctor];
                 if (res) {
-                    self.searchHistoryArray = [[DBManager shareInstance] getAllDoctor];
-                    [self.tableView reloadData];
+//                    self.searchHistoryArray = [[DBManager shareInstance] getAllDoctor];
+                    [self requestWlanData];
                 }else{
                     [SVProgressHUD showErrorWithStatus:@"删除失败"];
                 }
@@ -335,7 +400,6 @@
     }
     
 }
-
 #pragma mark - SearchDisplay delegate
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
     self.modeArray = @[];
@@ -344,30 +408,30 @@
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-//     self.modeArray = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
-//    [self.searchDisplayController.searchResultsTableView reloadData];
-    [[DoctorManager shareInstance] searchDoctorWithName:searchBar.text successBlock:^{
-        [SVProgressHUD showWithStatus:@"搜索中..."];
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
+    self.modeArray = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
+    [self.searchDisplayController.searchResultsTableView reloadData];
 }
 
-#pragma Doctor request Delegate
-- (void)searchDoctorWithNameFailedWithError:(NSError *)error {
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+    self.modeArray = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchText];
+    [self.searchDisplayController.searchResultsTableView reloadData];
 }
 
-- (void)searchDoctorWithNameSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD dismiss];
-    if ([result integerForKey:@"Code"] == 200) {
-       self.modeArray  = [[DoctorManager shareInstance] arrayWithDoctorResult:[result objectForKey:@"Result"]];
-      [self.searchDisplayController.searchResultsTableView reloadData];
-      [self.tableView reloadData];
-    } else {
-        [SVProgressHUD showImage:nil status:@"查询失败"];
-    }
-}
+//#pragma Doctor request Delegate
+//- (void)searchDoctorWithNameFailedWithError:(NSError *)error {
+//    [SVProgressHUD showImage:nil status:error.localizedDescription];
+//}
+//
+//- (void)searchDoctorWithNameSuccessWithResult:(NSDictionary *)result {
+//    [SVProgressHUD dismiss];
+//    if ([result integerForKey:@"Code"] == 200) {
+//       self.modeArray  = [[DoctorManager shareInstance] arrayWithDoctorResult:[result objectForKey:@"Result"]];
+//      [self.searchDisplayController.searchResultsTableView reloadData];
+//      [self.tableView reloadData];
+//    } else {
+//        [SVProgressHUD showImage:nil status:@"查询失败"];
+//    }
+//}
 - (void)sortDataArrayByCount{ //通过修复人数来给dataArray排序
     
     /*
@@ -407,6 +471,7 @@
             //插入患者介绍人
             [self insertPatientIntroducerMap];
             self.selectDoctor = nil;
+            [self popViewControllerAnimated:YES];
         }
         
     } else {

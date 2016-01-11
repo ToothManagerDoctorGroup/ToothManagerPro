@@ -401,6 +401,9 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:reserve_record.tooth_position forKey:@"tooth_position"];
     [subParamDic setObject:reserve_record.duration forKey:@"duration"];
     [subParamDic setObject:reserve_record.clinic_reserve_id forKey:@"clinic_reserve_id"];
+    [subParamDic setObject:reserve_record.therapy_doctor_id forKey:@"therapy_doctor_id"];
+    [subParamDic setObject:reserve_record.therapy_doctor_name forKey:@"therapy_doctor_name"];
+    [subParamDic setObject:reserve_record.reserve_status forKey:@"reserve_status"];
     
     NSError *error;
     NSString *jsonString;

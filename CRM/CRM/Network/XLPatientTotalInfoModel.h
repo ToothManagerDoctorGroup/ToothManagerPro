@@ -19,6 +19,7 @@
 @property (nonatomic, strong)NSArray *cT;//ct数据CT
 @property (nonatomic, strong)NSArray *consultation;//会诊信息数据Consultation
 @property (nonatomic, strong)NSArray *expense;//耗材数据Expense
+@property (nonatomic, strong)NSArray *introducerMap;//患者介绍人关系表IntroducerMap
 
 
 @end

@@ -139,6 +139,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [SVProgressHUD dismiss];
     if (self.isBarHidden == NO){                      //如果是显示状态
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
     }

@@ -256,7 +256,7 @@
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"数量" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(240, 0, 40, 40)];
+    [numberButton setFrame:CGRectMake(230, 0, 40, 40)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [numberButton addTarget:self action:@selector(numberButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];

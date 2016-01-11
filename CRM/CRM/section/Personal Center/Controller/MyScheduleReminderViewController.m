@@ -38,6 +38,8 @@
 #import "MJExtension.h"
 #import "DBManager+AutoSync.h"
 #import "AutoSyncGetManager.h"
+#import "XLAppointDetailViewController.h"
+#import "CRMHttpRequest+Sync.h"
 
 @interface MyScheduleReminderViewController ()<PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -55,13 +57,20 @@
 @property (nonatomic, weak)ScheduleDateButton *buttonView;
 @property (nonatomic, weak)UILabel *messageCountLabel;//消息提示框
 
-@property (nonatomic, strong)NSTimer *timer;
-
 @property (nonatomic, weak)UIView *noResultView;//无查询结果的提示页面
+
+@property (nonatomic, strong)NSMutableArray *currentMonthArray;//当前月的数据
 
 @end
 
 @implementation MyScheduleReminderViewController
+
+- (NSMutableArray *)currentMonthArray{
+    if (!_currentMonthArray) {
+        _currentMonthArray = [NSMutableArray array];
+    }
+    return _currentMonthArray;
+}
 
 - (UIView *)noResultView{
     if (!_noResultView) {
@@ -84,12 +93,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //创建一个定时器
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
-    //将定时器添加到主队列中
-    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     
-
     self.title = @"日程提醒";
     self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     
@@ -126,6 +130,12 @@
     }
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    [SVProgressHUD dismiss];
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     //请求未读消息数
@@ -153,10 +163,8 @@
 
 #pragma mark - 定时器
 - (void)autoSyncAction:(NSTimer *)timer{
-    //开始同步数据
+    //开始同步
 //    [[AutoSyncManager shareInstance] startAutoSync];
-    [[AutoSyncGetManager shareInstance] startSyncGet];
-    
 }
 #pragma mark - 设置消息按钮
 - (void)setUpMessageItem{
@@ -209,7 +217,9 @@
     }
 }
 - (void)callSync {
-//    [[SyncManager shareInstance] startSync];
+//    [CRMHttpRequest shareInstance].isAutoSync = YES;
+    [[SyncManager shareInstance] startSync];
+//    [[AutoSyncGetManager shareInstance] startSyncGet];
     
 }
 
@@ -267,7 +277,7 @@
     //今天按钮
     UIButton *todayButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [todayButton setTitle:@"今天" forState:UIControlStateNormal];
-    todayButton.frame = CGRectMake(0, 0, 50, 40);
+    todayButton.frame = CGRectMake(kScreenWidth - 50, 0, 50, 40);
     todayButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [todayButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     [todayButton addTarget:self action:@selector(todayAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -305,6 +315,8 @@
 }
 
 - (void)todayAction:(UIButton *)button{
+    [self getAllDataWithCurrentDate:[NSDate date]];
+    
      self.calendar.currentDateSelected = [NSDate date];
     [self calendarDidDateSelected:self.calendar date:[NSDate date]];
     [self.calendar setCurrentDate:[NSDate date]];
@@ -318,8 +330,19 @@
 - (void)initData {
     dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *startDateString = [dateFormatter stringFromDate:[NSDate date]];
-    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:startDateString];
+    [self getAllDataWithCurrentDate:[NSDate date]];
+    
+}
+#pragma mark - 根据当前时间查询当月或当周所有的数据
+- (void)getAllDataWithCurrentDate:(NSDate *)currentDate{
+    [self.currentMonthArray removeAllObjects];
+    //查询月数据
+    NSString *startDate = [MyDateTool getMonthBeginWith:currentDate];
+    NSString *endDate = [MyDateTool getMonthEndWith:startDate];
+    NSArray *array = [[DBManager shareInstance] localNotificationListWithStartDate:startDate endDate:endDate];
+    [self.currentMonthArray addObjectsFromArray:array];
+    
+    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[MyDateTool stringWithDateNoTime:currentDate] array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
 }
 
@@ -338,21 +361,25 @@
 - (void)addNotificationObserver {
     [self addObserveNotificationWithName:NotificationCreated];
     [self addObserveNotificationWithName:NOtificationUpdated];
+    [self addObserveNotificationWithName:NotificationDeleted];
     [self addObserveNotificationWithName:@"tongbu"];
 }
 
 - (void)removeNotificationObserver {
     [self removeObserverNotificationWithName:NotificationCreated];
     [self removeObserverNotificationWithName:NOtificationUpdated];
+    [self removeObserverNotificationWithName:NotificationDeleted];
     [self removeObserverNotificationWithName:@"tongbu"];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
-    if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:@"tongbu"]) {
+    if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:@"tongbu"] || [notifacation.name isEqualToString:NotificationDeleted]) {
         
-        NSString *destDateString = [dateFormatter stringFromDate:self.selectDate];
-        self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:destDateString];
-        self.remindArray = [self updateListTimeArray:self.remindArray];
+//        NSString *destDateString = [dateFormatter stringFromDate:self.selectDate];
+//        self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:destDateString];
+//        self.remindArray = [self updateListTimeArray:self.remindArray];
+        
+        [self getAllDataWithCurrentDate:self.selectDate];
         
         if (self.remindArray.count == 0) {
             self.noResultView.hidden = NO;
@@ -360,9 +387,11 @@
             
             self.noResultView.hidden = YES;
         }
+        
         [m_tableView reloadData];
         //刷新日历，显示红点
         [self.calendar reloadAppearance];
+        [self.calendar reloadData];
     }
 }
 
@@ -379,7 +408,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
+    return NO;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -390,8 +419,10 @@
             LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
             BOOL ret = [[LocalNotificationCenter shareInstance] removeLocalNotification:notifi];
             if (ret) {
-                self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[dateFormatter stringFromDate:self.selectDate]];
-                self.remindArray = [self updateListTimeArray:self.remindArray];
+//                self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[dateFormatter stringFromDate:self.selectDate]];
+//                self.remindArray = [self updateListTimeArray:self.remindArray];
+                [self getAllDataWithCurrentDate:self.selectDate];
+                
                 [m_tableView reloadData];
                 
                 //自动同步信息
@@ -457,12 +488,10 @@
 #pragma mark - 预约详情
 - (void)junpToAppointDetailWithNotification:(LocalNotification *)notifi{
     //跳转到详情页面
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    AppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"AppointDetailViewController"];
-    detailVc.hidesBottomBarWhenPushed = YES;
-    detailVc.isHomeTo = YES;
+    XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
     detailVc.localNoti = notifi;
-    [self.navigationController pushViewController:detailVc animated:YES];
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:detailVc animated:YES];
 }
 
 #pragma mark - 患者详情
@@ -576,17 +605,25 @@
                          [UIView animateWithDuration:.25
                                           animations:^{
                                               self.contentView.layer.opacity = 1;
+                                              
                                           }];
                      }];
+    
+    if (self.calendar.calendarAppearance.isWeekMode) {
+        //定位到当前选择的时间
+        self.calendar.currentDateSelected = self.selectDate;
+        [self.calendar setCurrentDate:self.selectDate];
+    }
+    
 }
 
 
 #pragma mark - JTCalendarDataSource
-
 - (BOOL)calendarHaveEvent:(JTCalendar *)calendar date:(NSDate *)date
 {
     NSString *selectDateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
-    NSArray *array = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr];
+    NSArray *array = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMonthArray];
+    
     if (array.count > 0) {
         return YES;
     }else{
@@ -600,7 +637,7 @@
     self.selectDate = date;
     
     NSString *selectDateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
-    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr];
+   self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
     
     if (self.remindArray.count == 0) {
@@ -612,9 +649,13 @@
 }
 
 #pragma mark - JTCalendarDelegate
-- (void)calendar:(JTCalendar *)calendar startDateOfWeak:(NSDate *)startDate endDateOfWeak:(NSDate *)endDate currentDate:(NSDate *)currentDate{
-    
+- (void)calendar:(JTCalendar *)calendar startDate:(NSDate *)startDate endDate:(NSDate *)endDate currentDate:(NSDate *)currentDate isWeekMode:(BOOL)isWeekMode{
+    NSLog(@"%@---%@",[MyDateTool stringWithDateNoTime:startDate],[MyDateTool stringWithDateNoTime:endDate]);
     self.buttonView.title = [self stringFromDate:currentDate];
+    [self.currentMonthArray removeAllObjects];
+    NSArray *array = [[DBManager shareInstance] localNotificationListWithStartDate:[MyDateTool stringWithDateNoTime:startDate] endDate:[MyDateTool stringWithDateNoTime:endDate]];
+    [self.currentMonthArray addObjectsFromArray:array];
+    [self.calendar reloadData];
 }
 
 

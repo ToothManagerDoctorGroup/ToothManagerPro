@@ -235,7 +235,7 @@
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"数量" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(240, 0, 40, 40)];
+    [numberButton setFrame:CGRectMake(230, 0, 40, 40)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [numberButton addTarget:self action:@selector(numberButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -243,10 +243,10 @@
     
     
     UIButton *chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    chooseButton.frame = CGRectMake(285, 5, 30, 30);
+    chooseButton.frame = CGRectMake(275, 0, 40, 40);
     chooseButton.selected = self.isChooseAll;
-    [chooseButton setImage:[UIImage imageNamed:@"remove-grey"] forState:UIControlStateNormal];
-    [chooseButton setImage:[UIImage imageNamed:@"remove-blue"] forState:UIControlStateSelected];
+    [chooseButton setImage:[UIImage imageNamed:@"total_no_choose"] forState:UIControlStateNormal];
+    [chooseButton setImage:[UIImage imageNamed:@"total_choose"] forState:UIControlStateSelected];
     [chooseButton addTarget:self action:@selector(chooseAction:) forControlEvents:UIControlEventTouchUpInside];
     [bgView addSubview:chooseButton];
     self.chooseButton = chooseButton;

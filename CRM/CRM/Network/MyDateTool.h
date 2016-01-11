@@ -18,6 +18,10 @@
 
 + (NSDate *)dateWithStringNoSec:(NSString *)dateStr;
 
++ (NSDate *)dateWithStringNoTime:(NSString *)dateStr;
+
++ (NSString *)stringWithDateNoTime:(NSDate *)date;
+
 + (NSString *)stringWithDateyyyyMMddHHmmss:(NSDate *)date;
 
 + (NSDate *)getMondayDateWithCurrentDate:(NSDate *)date;
@@ -26,5 +30,14 @@
 
 //比较目标时间是否在一个时间段内
 + (BOOL)timeInStartTime:(NSString *)startTime endTime:(NSString *)endTime targetTime:(NSString *)targetTime;
+//比较两个日期的大小
++ (NSComparisonResult)compareWithFromDateStr:(NSString *)fromDateStr;
+
++ (BOOL)earlyThanToday:(NSString *)targetDateStr;
+
++ (NSString *)getMonthEndWith:(NSString *)dateStr;
++ (NSString *)getMonthBeginWith:(NSDate *)date;
+
++ (NSUInteger)getMonthDayCountWithDate:(NSString *)dateStr;
 
 @end

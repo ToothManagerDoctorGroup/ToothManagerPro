@@ -4076,10 +4076,10 @@ NSMutableArray *autoSync_Update_Patients = nil;
   
     if (0 == [patientArray count]){
 #pragma mark - ***********************同步结束
-//        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-//        [NSThread sleepForTimeInterval:1.0];
-//        [SVProgressHUD dismiss];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+        [NSThread sleepForTimeInterval:1.0];
+        [SVProgressHUD dismiss];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
     }
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
@@ -4155,17 +4155,18 @@ NSMutableArray *autoSync_Update_Patients = nil;
 #if 1
             if ([ctlib.ct_image isNotEmpty]) {
             
-                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-            
-                //ctlib.ct_image
-            
-                UIImage *image = [self getImageFromURL:urlImage];
-            
-                if (nil != image) {
-                   // [CaseFunction saveImageWithImage:image AndWithCTLib:ctlib];
-                    [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
-                }
-
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+                    
+                    //ctlib.ct_image
+                    
+                    UIImage *image = [self getImageFromURL:urlImage];
+                    
+                    if (nil != image) {
+                        // [CaseFunction saveImageWithImage:image AndWithCTLib:ctlib];
+                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                    }
+                });
             }
 #endif
             
@@ -4216,7 +4217,6 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [NSThread sleepForTimeInterval:3.0];
         [SVProgressHUD dismiss];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
-        
         return;
     }
     
@@ -4355,6 +4355,11 @@ NSMutableArray *autoSync_Update_Patients = nil;
         
         [self.delegate dataSycnResultWithTable:MedicalCaseTableName isSucesseful: YES];
 #pragma mark - ***************************************** 第一次同步结束
+        
+        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+        [NSThread sleepForTimeInterval:1.0];
+        [SVProgressHUD dismiss];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
         
     }
     
@@ -4847,10 +4852,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
     [SyncManager shareInstance].syncGetFailCount++;
     
     #pragma mark - ***********************同步结束
-    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-    [NSThread sleepForTimeInterval:1.0];
-    [SVProgressHUD dismiss];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+    if (self.isAutoSync == NO) {
+        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+        [NSThread sleepForTimeInterval:1.0];
+        [SVProgressHUD dismiss];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+    }
     
    
 }

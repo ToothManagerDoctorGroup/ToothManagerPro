@@ -13,9 +13,9 @@
 @property (nonatomic,assign) id <CreateCaseHeaderViewControllerDeleate> delegate;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *casenameTextField;
 @property (weak, nonatomic) IBOutlet UILabel *nameTextField;
-@property (weak, nonatomic) IBOutlet TimPickerTextField *implantTextField;
+@property (weak, nonatomic) IBOutlet UITextField *implantTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nextReserveTextField;
-@property (weak, nonatomic) IBOutlet TimPickerTextField *repairTextField;
+@property (weak, nonatomic) IBOutlet UITextField *repairTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *repairDoctorTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *expenseTextField;
 //@property (weak, nonatomic) IBOutlet UILabel *expenseNumTextField;

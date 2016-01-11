@@ -161,6 +161,8 @@ DEF_STATIC_CONST_STRING(DataSyncGet_Prefix, DataSyncGet);
 
 @property (nonatomic, weak) id delegate;
 
+
+
 //add
 //-(void)postAllNeedSyncDoctor:(NSArray *)doctor;
 

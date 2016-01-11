@@ -90,7 +90,7 @@ Realize_ShareInstance(SyncManager);
          return;
      }
 #endif
-    /*
+    
 //    //upload patient
      NSArray *recordArray = [NSMutableArray arrayWithArray:[[DBManager shareInstance] getAllNeedSyncPatient]];
      if (0 != [recordArray count])
@@ -388,56 +388,77 @@ Realize_ShareInstance(SyncManager);
         [NSThread sleepForTimeInterval: 0.5];
     }
      
-*/
+
 //download
     
 #pragma mark - **************************GCD实现多线程的下载操作*****************
-    //开启一个全局队列
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-//    dispatch_queue_t queue = dispatch_queue_create("serialQueue", DISPATCH_QUEUE_SERIAL);//创建串行队列
-    dispatch_async(queue, ^{
-        //添加多线程进行下载操作
-        // 创建一个组
-        dispatch_group_t group = dispatch_group_create();
-        // 关联一个任务到group
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getMaterialTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            
-            [[CRMHttpRequest shareInstance] getIntroducerTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getReserverecordTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getPatIntrMapTable];
-            
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            
-            [[CRMHttpRequest shareInstance] getRepairDoctorTable];
-        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getDoctorTable];
-        });
-        
+    [NSThread sleepForTimeInterval: 0.2];
+    [[CRMHttpRequest shareInstance] getMaterialTable];
+
+    [NSThread sleepForTimeInterval: 0.2];
+    [[CRMHttpRequest shareInstance] getIntroducerTable];
+    
+    [NSThread sleepForTimeInterval: 0.2];
+    [[CRMHttpRequest shareInstance] getReserverecordTable];
+    
+    [NSThread sleepForTimeInterval: 0.2];
+    [[CRMHttpRequest shareInstance] getPatIntrMapTable];
+    
+    [NSThread sleepForTimeInterval: 0.2];
+    
+    [[CRMHttpRequest shareInstance] getRepairDoctorTable];
+
+    [NSThread sleepForTimeInterval: 0.2];
+    [[CRMHttpRequest shareInstance] getDoctorTable];
+
+    [NSThread sleepForTimeInterval: 0.2];
+    [[CRMHttpRequest shareInstance] getPatientTable];
+//    //开启一个全局队列
+//    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+////    dispatch_queue_t queue = dispatch_queue_create("serialQueue", DISPATCH_QUEUE_SERIAL);//创建串行队列
+//    dispatch_async(queue, ^{
+//        //添加多线程进行下载操作
+//        // 创建一个组
+//        dispatch_group_t group = dispatch_group_create();
+//        // 关联一个任务到group
 //        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//            [NSThread sleepForTimeInterval: 0.5];
-//            [[CRMHttpRequest shareInstance] getPatientConsulationTable];
+//            [NSThread sleepForTimeInterval: 0.2];
+//            [[CRMHttpRequest shareInstance] getMaterialTable];
 //        });
-        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [NSThread sleepForTimeInterval: 0.2];
-            [[CRMHttpRequest shareInstance] getPatientTable];
-            
-        });
-    });
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.2];
+//            
+//            [[CRMHttpRequest shareInstance] getIntroducerTable];
+//        });
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.2];
+//            [[CRMHttpRequest shareInstance] getReserverecordTable];
+//        });
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.2];
+//            [[CRMHttpRequest shareInstance] getPatIntrMapTable];
+//            
+//        });
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.2];
+//            
+//            [[CRMHttpRequest shareInstance] getRepairDoctorTable];
+//        });
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.2];
+//            [[CRMHttpRequest shareInstance] getDoctorTable];
+//        });
+//        
+////        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+////            [NSThread sleepForTimeInterval: 0.5];
+////            [[CRMHttpRequest shareInstance] getPatientConsulationTable];
+////        });
+//        dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [NSThread sleepForTimeInterval: 0.2];
+//            [[CRMHttpRequest shareInstance] getPatientTable];
+//            
+//        });
+//    });
     
 #pragma mark - **************************GCD实现多线程的下载操作*****************
 

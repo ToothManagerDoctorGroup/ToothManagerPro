@@ -17,7 +17,8 @@
              @"medicalCourse" : @"MedicalCourse",
              @"cT" : @"CT",
              @"consultation" : @"Consultation",
-             @"expense" : @"Expense"};
+             @"expense" : @"Expense",
+             @"introducerMap":@"IntroducerMap"};
 }
 
 @end

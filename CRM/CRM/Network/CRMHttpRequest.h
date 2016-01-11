@@ -39,4 +39,7 @@ Declare_ShareInstance(CRMHttpRequest);
  */
 - (void)responderPerformSelector:(SEL)selector withObject:(id)object1 withObject:(id)object2;
 
+
+@property (nonatomic, assign)BOOL isAutoSync;//是否是自动同步
+
 @end
