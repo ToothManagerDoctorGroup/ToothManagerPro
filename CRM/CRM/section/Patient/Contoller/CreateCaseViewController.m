@@ -384,16 +384,16 @@
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }
-        if(![NSString isEmptyString:_medicalCase.repair_doctor] && ![_medicalCase.repair_doctor isEqualToString:repair_doctor] ){
-         NSString* date;
-         NSDateFormatter* formatter = [[NSDateFormatter alloc]init];
-         [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss"];
-         date = [formatter stringFromDate:[NSDate date]];
-         [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:date successBlock:^{
-         } failedBlock:^(NSError *error){
-         [SVProgressHUD showImage:nil status:error.localizedDescription];
-         }];
-        }
+//        if(![NSString isEmptyString:_medicalCase.repair_doctor] && ![_medicalCase.repair_doctor isEqualToString:repair_doctor] ){
+//         NSString* date;
+//         NSDateFormatter* formatter = [[NSDateFormatter alloc]init];
+//         [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss"];
+//         date = [formatter stringFromDate:[NSDate date]];
+//         [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:date successBlock:^{
+//         } failedBlock:^(NSError *error){
+//         [SVProgressHUD showImage:nil status:error.localizedDescription];
+//         }];
+//        }
         if(![NSString isEmptyString:_medicalCase.repair_time] && ![_medicalCase.repair_time isEqualToString:repair_time]){
             [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"修复" withSendType:@"1" withSendTime:_medicalCase.repair_time successBlock:^{
             } failedBlock:^(NSError *error){
@@ -416,6 +416,13 @@
 }
 - (void)weiXinMessageFailedWithError:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
+- (void)onBackButtonAction:(id)sender{
+    [self popViewControllerAnimated:YES];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didCancelCreateAction)]) {
+        [self.delegate didCancelCreateAction];
+    }
 }
 #pragma mark - Notification
 

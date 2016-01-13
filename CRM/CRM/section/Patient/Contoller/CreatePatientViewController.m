@@ -9,7 +9,7 @@
 #import "CreatePatientViewController.h"
 #import "DBManager+Introducer.h"
 #import "DBManager+Patients.h"
-#import "IntroducerViewController.h"
+#import "XLIntroducerViewController.h"
 #import "PickerTextTableViewCell.h"
 #import "CRMMacro.h"
 #import <AddressBook/AddressBook.h>
@@ -22,7 +22,7 @@
 #import "JSONKit.h"
 #import "MJExtension.h"
 
-@interface CreatePatientViewController () <UITextFieldDelegate,IntroducePersonViewControllerDelegate,RequestIntroducerDelegate>
+@interface CreatePatientViewController () <UITextFieldDelegate,RequestIntroducerDelegate,XLIntroducerViewControllerDelegate,CreateCaseViewControllerDelegate>
 {
     Introducer *selectIntroducer;
     Patient * patient;
@@ -90,7 +90,7 @@
 {
     [super initData];
     //创建患者
-    if (self.patientId > 0) {
+    if (self.patientId) {
         patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientId];
         selectIntroducer = [[DBManager shareInstance] getIntroducerByIntroducerID:patient.introducer_id];
         
@@ -110,12 +110,21 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    
+    if(self.phoneTextField.text.length != 11){
+        [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+        return;
+    }
+    if(self.nameTextField.text.length == 0){
+        [SVProgressHUD showImage:nil status:@"请输入患者姓名"];
+        return;
+    }
+    
     [_nameTextField resignFirstResponder];
     [_introducerTextField resignFirstResponder];
     [_phoneTextField resignFirstResponder];
@@ -128,6 +137,12 @@
     if (selectIntroducer && selectIntroducer.ckeyid) {
         patient.introducer_id = selectIntroducer.ckeyid;
     }
+    
+    if([[DBManager shareInstance] patientIsExist:patient]){
+        [SVProgressHUD showImage:nil status:@"此用户已存在，请重新输入"];
+        return;
+    }
+    
     
     if (![patient.patient_name isEmpty] && ![patient.patient_phone isEmpty]){
         NSString * message = nil;
@@ -240,16 +255,20 @@
     }else if(buttonIndex == 1){
         //新建病例
         //由于patient的keyID是在数据库自增，所以，创建完之后必须要去数据库取最后一行数据的keyID作为当前新建患者的KeyID,【不能查数据库的count作为keyid，因为有可能不连续】
-        //    [[NSNotificationCenter defaultCenter] postNotificationName:MedicalCaseNeedCreateNotification object:patient];
-    
-        
+        //    [[NSNotificationCenter defaultCenter] postNotificationName:MedicalCaseNeedCreateNotification object:patient]
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
         CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
         caseVC.title = @"新建病历";
         caseVC.patiendId = patient.ckeyid;
+        caseVC.delegate = self;
         [self pushViewController:caseVC animated:YES];
         
     }
+}
+
+#pragma mark - CreateCaseViewControllerDelegate
+- (void)didCancelCreateAction{
+    [self popViewControllerAnimated:YES];
 }
 
 #pragma mark - FirstRespnder Delegate
@@ -259,8 +278,7 @@
     [_introducerTextField resignFirstResponder];
     [_phoneTextField resignFirstResponder];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+    XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
     introducerVC.delegate = self;
     introducerVC.Mode = IntroducePersonViewSelect;
     
@@ -299,7 +317,7 @@
     
 }
 -(void)postPatientIntroducerMapFailed:(NSError *)error{
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 @end

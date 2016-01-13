@@ -39,6 +39,7 @@
 #import "DBManager+Doctor.h"
 #import "NSDictionary+Extension.h"
 #import "DoctorTool.h"
+#import "XLPatientSelectViewController.h"
 
 
 #define AddReserveType @"新增预约"
@@ -86,12 +87,6 @@
     
     //显示数据
 //    [self initView];
-}
-
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    
-    [SVProgressHUD dismiss];
 }
 
 - (void)dealloc{
@@ -546,12 +541,11 @@
         if (indexPath.section == 0) {
             if (indexPath.row == 0) {
                 //选择患者
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-                PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
-                patientVC.patientStatus = PatientStatuspeAll;
-                patientVC.isYuYuePush = YES;
-                patientVC.hidesBottomBarWhenPushed = YES;
-                [self pushViewController:patientVC animated:YES];
+                XLPatientSelectViewController *patientSelectVc = [[XLPatientSelectViewController alloc] init];
+                patientSelectVc.patientStatus = PatientStatuspeAll;
+                patientSelectVc.isYuYuePush = YES;
+                patientSelectVc.hidesBottomBarWhenPushed = YES;
+                [self pushViewController:patientSelectVc animated:YES];
             }else if (indexPath.row == 1){
                 //选择牙位
                 UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];

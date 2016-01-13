@@ -75,7 +75,7 @@
     self.chatBarMoreView = (EaseChatBarMoreView*)[(EaseChatToolbar *)self.chatToolbar moreView];
     [self.chatBarMoreView removeItematIndex:4];
     
-    self.faceView = (EaseFaceView*)[(EaseChatToolbar *)self.chatToolbar faceView];
+//    self.faceView = (EaseFaceView*)[(EaseChatToolbar *)self.chatToolbar faceView];
     self.recordView = (EaseRecordView*)[(EaseChatToolbar *)self.chatToolbar recordView];
     self.chatToolbar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;    
     

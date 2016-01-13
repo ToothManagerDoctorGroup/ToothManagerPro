@@ -84,8 +84,8 @@
     
     //是否选中
     _chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_chooseButton setImage:[UIImage imageNamed:@"no_choose_white"] forState:UIControlStateNormal];
-    [_chooseButton setImage:[UIImage imageNamed:@"choose_blue"] forState:UIControlStateSelected];
+    [_chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
+    [_chooseButton setImage:[UIImage imageNamed:@"choose-blue"] forState:UIControlStateSelected];
     [_chooseButton addTarget:self action:@selector(chooseAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:_chooseButton];
 }
@@ -126,10 +126,10 @@
 
     //如果已经是组员，默认不可选
     if (model.isMember) {
-        [_chooseButton setImage:[UIImage imageNamed:@"no_choose_gray"] forState:UIControlStateNormal];
+        [_chooseButton setImage:[UIImage imageNamed:@"choose-grey"] forState:UIControlStateNormal];
         _chooseButton.enabled = NO;
     }else {
-        [_chooseButton setImage:[UIImage imageNamed:@"no_choose_white"] forState:UIControlStateNormal];
+        [_chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
         _chooseButton.enabled = YES;
         
         //判断是否选中

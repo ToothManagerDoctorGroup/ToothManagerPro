@@ -34,6 +34,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         //初始化
         [self setUp];
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return self;

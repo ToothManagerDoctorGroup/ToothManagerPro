@@ -78,14 +78,32 @@
             [weakSelf selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
             
         }];
-        
+        //设置可编辑模式
         [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
+            return YES;
+        }];
+        //编辑模式下的删除操作
+        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
             
-//            if (weakSelf.searchController.editingStyle == UITableViewCellEditingStyleDelete) {
-//                [weakSelf deleteMaterialWithIndexPath:indexPath tableView:tableView sourceArray:weakSelf.searchController.resultsSource];
-//            }
-            
-            return NO;
+            TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
+            } comfirmButtonHandlder:^{
+                Material *material = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
+                BOOL ret = [[DBManager shareInstance] deleteMaterialWithId:material.ckeyid];
+                if (ret) {
+                    //移除数组中的元素
+                    [weakSelf.searchController.resultsSource removeObject:material];
+                    
+                    //自动同步信息
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Material postType:Delete dataEntity:[material.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    
+                    [tableView reloadData];
+                    //刷新表视图
+                    [weakSelf refreshData];
+                    [weakSelf refreshView];
+                }
+            }];
+            [alertView show];
         }];
     }
     return _searchController;
@@ -314,6 +332,7 @@
 }
 #pragma mark -删除材料信息
 - (void)deleteMaterialWithIndexPath:(NSIndexPath *)indexPath tableView:(UITableView *)tableView sourceArray:(NSArray *)sourceArray{
+    __weak typeof(self) weakSelf = self;
     TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
         [tableView reloadData];
     } comfirmButtonHandlder:^{
@@ -324,15 +343,14 @@
             InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Material postType:Delete dataEntity:[material.keyValues JSONString] syncStatus:@"0"];
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             
-            [self refreshData];
-            [self refreshView];
+            [weakSelf refreshData];
+            [weakSelf refreshView];
         }
     }];
     [alertView show];
 }
 
 #pragma mark - UISearchBar Delegates
-
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
     [searchBar setShowsCancelButton:YES animated:YES];

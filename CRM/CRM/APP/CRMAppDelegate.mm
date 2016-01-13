@@ -27,12 +27,10 @@
 #import "UMOpus.h"
 #import "SysMsgViewController.h"
 #import "ScheduleReminderViewController.h"
-#import "PatientsDisplayViewController.h"
 #import "AccountViewController.h"
 #import "DBManager+User.h"
 #import "MenuButtonPushManager.h"
 #import "MenuView.h"
-#import "IntroducerViewController.h"
 #import "PatientSegumentController.h"
 #import "TTMUserGuideController.h"
 #import "XLSignInViewController.h"
@@ -50,7 +48,7 @@
     apnsCertName = @"toothManagerDoctor_dis";
 #endif
     
-    [[EaseMob sharedInstance] registerSDKWithAppKey:@"1222223232#toothmanagerdoctor" apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
+    [[EaseMob sharedInstance] registerSDKWithAppKey:@"zijingyiyuan#toothmanagerdoctor" apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
     
     [[EaseMob sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     

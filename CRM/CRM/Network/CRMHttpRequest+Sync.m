@@ -4069,7 +4069,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
          //   [[DBManager shareInstance] insertPatient:patient];
             //稍后条件判断是否成功的代码
-            [[DBManager shareInstance]insertPatientBySync:patient];
+            [[DBManager shareInstance] insertPatientBySync:patient];
         }
         
     }

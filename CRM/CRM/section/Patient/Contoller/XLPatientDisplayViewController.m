@@ -44,7 +44,6 @@
 }
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
-
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
 @property (nonatomic, strong)NSMutableArray *patientCellModeArray;
@@ -61,12 +60,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height - 40);
-    
-    self.tableView.tableHeaderView = self.searchBar;
-    
+    self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
+    //初始化搜索框
+    [self.view addSubview:self.searchBar];
     [self searchController];
-    
     //添加通知
     [self addNotification];
 }
@@ -99,31 +96,27 @@
     [self.tableView reloadData];
 }
 - (void)initData {
-    
-    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
-    _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
-    for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
-        Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
-        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-        cellMode.patientId = patientTmp.ckeyid;
-        cellMode.introducerId = patientTmp.introducer_id;
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
+        _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
+        _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
+        for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
+            Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
+            PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
+            cellMode.patientId = patientTmp.ckeyid;
+            cellMode.introducerId = patientTmp.introducer_id;
+            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+                cellMode.name = patientTmp.nickName;
+            }else{
+                cellMode.name = patientTmp.patient_name;
+            }
+            cellMode.phone = patientTmp.patient_phone;
+            //        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
+            cellMode.introducerName = patientTmp.intr_name;
+            cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
+            cellMode.status = patientTmp.patient_status;
+            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            [_patientCellModeArray addObject:cellMode];
         }
-        cellMode.phone = patientTmp.patient_phone;
-        //        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
-        cellMode.introducerName = patientTmp.intr_name;
-        cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-        cellMode.status = patientTmp.patient_status;
-        cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-        [_patientCellModeArray addObject:cellMode];
-    }
     
-    if (_patientCellModeArray.count > 0) {
-        [self refreshView];
-    }
 }
 
 - (void)refreshData {
@@ -159,7 +152,7 @@
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
-        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, 200, 44)];
+        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
         _searchBar.delegate = self;
         _searchBar.placeholder = @"患者姓名、备注名、手机号";
         [_searchBar moveBackgroundView];
@@ -212,12 +205,11 @@
         }];
         
         [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
-            if (_searchController.editingStyle == UITableViewCellEditingStyleDelete) {
-                
-            }
-            
-            
             return YES;
+        }];
+        
+        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            [weakSelf deletePatientWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource type:@"searchTableView"];
         }];
     }
     
@@ -271,27 +263,39 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
-            [tableView reloadData];
-        } comfirmButtonHandlder:^{
-            PatientsCellMode *cellMode = [_patientCellModeArray objectAtIndex:indexPath.row];
-            NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithPatientId:cellMode.patientId];
-            for (CTLib *lib in libArray) {
-                [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
-            }
-            BOOL ret = [[DBManager shareInstance] deletePatientByPatientID:cellMode.patientId];
-            if (ret == NO) {
-                [SVProgressHUD showImage:nil status:@"删除失败"];
-            } else {
-                
-                [self.patientCellModeArray removeObjectAtIndex:indexPath.row];
+        [self deletePatientWithTableView:tableView indexPath:indexPath sourceArray:self.patientCellModeArray type:@"tableView"];
+    }
+}
+
+#pragma mark - 患者删除事件
+- (void)deletePatientWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSMutableArray *)souryArray type:(NSString *)type{
+    TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
+        [tableView reloadData];
+    } comfirmButtonHandlder:^{
+        PatientsCellMode *cellMode = [souryArray objectAtIndex:indexPath.row];
+        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithPatientId:cellMode.patientId];
+        for (CTLib *lib in libArray) {
+            [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
+        }
+        BOOL ret = [[DBManager shareInstance] deletePatientByPatientID:cellMode.patientId];
+        if (ret == NO) {
+            [SVProgressHUD showImage:nil status:@"删除失败"];
+        } else {
+            if ([type isEqualToString:@"searchTableView"]) {
+                [souryArray removeObject:cellMode];
+                [self.patientCellModeArray removeObject:cellMode];
+                //刷新表示图
+                [tableView reloadData];
                 [self refreshView];
-                
-                Patient *pateintTemp = [[DBManager shareInstance] getPatientCkeyid:cellMode.patientId];
-                //自动同步信息
-                if (pateintTemp != nil) {
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Delete dataEntity:[pateintTemp.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }else{
+                [souryArray removeObject:cellMode];
+                [self refreshView];
+            }
+            Patient *pateintTemp = [[DBManager shareInstance] getPatientCkeyid:cellMode.patientId];
+            //自动同步信息
+            if (pateintTemp != nil) {
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Delete dataEntity:[pateintTemp.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 
                 
                 //获取所有的病历进行删除
@@ -329,7 +333,7 @@
                         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     }
                 }
-                    
+                
                 //获取所有的会诊记录进行删除
                 NSArray *patientCons = [[DBManager shareInstance] getPatientConsultationWithPatientId:cellMode.patientId];
                 if (patientCons.count > 0) {
@@ -340,10 +344,10 @@
                 }
             }
         }
-        }];
-        [alertView show];
-    }
+    }];
+    [alertView show];
 }
+
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {

@@ -28,7 +28,7 @@
 #import "SelectDateViewController.h"
 #import "CRMHttpRequest+Sync.h"
 #import "IntroducerManager.h"
-#import "IntroducerViewController.h"
+#import "XLIntroducerViewController.h"
 #import "NSDictionary+Extension.h"
 #import "CRMMacro.h"
 #import "DBTableMode.h"
@@ -41,6 +41,7 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "XLPatientAppointViewController.h"
+#import "XLDoctorLibraryViewController.h"
 
 #import "DBManager+Doctor.h"
 #import "MyPatientTool.h"
@@ -48,7 +49,7 @@
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
 
-@interface PatientDetailViewController ()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate,MLKMenuPopoverDelegate,PatientHeadMedicalRecordViewDelegate,PatientDetailHeadInfoViewDelegate,IntroducePersonViewControllerDelegate>{
+@interface PatientDetailViewController ()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate,MLKMenuPopoverDelegate,PatientHeadMedicalRecordViewDelegate,PatientDetailHeadInfoViewDelegate,XLIntroducerViewControllerDelegate>{
     UITableView *_tableView;//表示图
     UIView *_headerView; //头视图的背景视图
     PatientDetailHeadInfoView *_headerInfoView; //具体信息
@@ -498,8 +499,7 @@
 }
 //转诊患者
 - (void)referralAction:(id)sender {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
-    DoctorLibraryViewController *doctorVC = [storyboard instantiateViewControllerWithIdentifier:@"DoctorLibraryViewController"];
+    XLDoctorLibraryViewController *doctorVC = [[XLDoctorLibraryViewController alloc] init];
     if (self.detailPatient != nil) {
         doctorVC.isTransfer = YES;
         doctorVC.userId = self.detailPatient.doctor_id;
@@ -542,8 +542,7 @@
 //        {
 //            [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
 //        }
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+        XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
         [self pushViewController:introducerVC animated:YES];
     } else {
         [SVProgressHUD showImage:nil status:@"转换失败"];
@@ -600,14 +599,13 @@
 
 #pragma mark - PatientDetailHeadInfoViewDelegate
 - (void)didSelectIntroducer{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+    XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
     introducerVC.delegate = self;
     introducerVC.Mode = IntroducePersonViewSelect;
     [self.navigationController pushViewController:introducerVC animated:YES];
 }
 
-#pragma mark - IntroducePersonViewControllerDelegate
+#pragma mark - XLIntroducerViewControllerDelegate
 - (void)didSelectedIntroducer:(Introducer *)intro{
     
     if ([self.detailPatient.patient_name isEqualToString:intro.intr_name] && [self.detailPatient.patient_phone isEqualToString:intro.intr_phone]) {

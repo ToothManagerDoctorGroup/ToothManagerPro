@@ -8,7 +8,6 @@
 
 #import "MyScheduleReminderViewController.h"
 #import "ScheduleReminderCell.h"
-#import "PatientsDisplayViewController.h"
 #import "LocalNotificationCenter.h"
 #import "DBManager+Patients.h"
 #import "CRMMacro.h"
@@ -100,7 +99,7 @@
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     //设置消息按钮
     [self setUpMessageItem];
-    
+
     
     
     UIImage *image1 = [[UIImage imageNamed:@"ic_tabbar_qi"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -138,19 +137,8 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    //请求未读消息数
-    [SysMessageTool getUnReadMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-        if (result.count > 0) {
-            self.messageCountLabel.hidden = NO;
-            self.messageCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)result.count];
-        }else{
-            self.messageCountLabel.hidden = YES;
-        }
-    } failure:^(NSError *error) {
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+    
+    [self requestUnreadMessageCount];
     
     if (self.remindArray.count == 0) {
         self.noResultView.hidden = NO;
@@ -160,12 +148,24 @@
     }
     
 }
-
-#pragma mark - 定时器
-- (void)autoSyncAction:(NSTimer *)timer{
-    //开始同步
-//    [[AutoSyncManager shareInstance] startAutoSync];
+//请求未读的数据
+- (void)requestUnreadMessageCount{
+    //请求未读消息数
+    [SysMessageTool getUnReadMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
+        if (result.count > 0) {
+            self.messageCountLabel.hidden = NO;
+            self.messageCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)result.count];
+        }else{
+            self.messageCountLabel.hidden = YES;
+        
+        }
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
+
 #pragma mark - 设置消息按钮
 - (void)setUpMessageItem{
     UIButton *messageButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -231,6 +231,7 @@
     pageController.titleSizeSelected = 15;
     pageController.titleColorSelected = MyColor(0, 139, 232);
     pageController.menuHeight = 44;
+    pageController.bounces = NO;
     pageController.hidesBottomBarWhenPushed = YES;
     [self pushViewController:pageController animated:YES];
 }

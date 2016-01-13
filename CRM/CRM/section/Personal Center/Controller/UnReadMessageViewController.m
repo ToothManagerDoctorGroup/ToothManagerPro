@@ -27,7 +27,10 @@
 #import "CRMHttpRequest+Sync.h"
 #import "PatientManager.h"
 #import "DBManager+Materials.h"
-
+#import "DBManager+LocalNotification.h"
+#import "XLAppointDetailViewController.h"
+#import "XLPatientAppointViewController.h"
+#import "CRMMacro.h"
 
 @interface UnReadMessageViewController ()
 
@@ -37,20 +40,19 @@
 
 @implementation UnReadMessageViewController
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [SVProgressHUD dismiss];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     //添加通知
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.rowHeight = 60;
     
     
     [self requestData];
-    //添加头部刷新控件
-//    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefresh:)];
-//    [self.tableView.header beginRefreshing];
 }
 
 - (void)dealloc{
@@ -82,6 +84,15 @@
     return self.dataList.count;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    SysMessageModel *model = self.dataList[indexPath.row];
+    CGSize contentSize = [model.message_content sizeWithFont:[UIFont systemFontOfSize:13] constrainedToSize:CGSizeMake(kScreenWidth - 10 * 2, MAXFLOAT)];
+    if (contentSize.height + 5 + 20 + 10 + 10 > 60) {
+        return contentSize.height + 5 + 20 + 10 + 10;
+    }
+    return 60;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     SysMessageCell *cell = [SysMessageCell cellWithTableView:tableView];
@@ -108,7 +119,6 @@
     
     //判断消息的类型
     if ([msgModel.message_type isEqualToString:AttainNewPatient]) {
-        
         //获取患者的id
         Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:msgModel.message_id];
         if (patient == nil) {
@@ -130,7 +140,6 @@
             [self setMessageReadWithModel:msgModel];
         }
         
-        
     }else if([msgModel.message_type isEqualToString:AttainNewFriend]){
         
         [SysMessageTool setMessageReadedWithMessageId:msgModel.keyId success:^(CRMHttpRespondModel *respond) {
@@ -147,27 +156,108 @@
         }];
         
     }
+    else if ([msgModel.message_type isEqualToString:InsertReserveRecord]){
+        //新增预约提醒
+        // 1.直接获取预约信息
+        [self getReserveRecordByReserveId:msgModel.message_id messageModel:msgModel];
+        
+    }else if ([msgModel.message_type isEqualToString:UpdateReserveRecord]){
+        //修改预约提醒
+        NSString *oldReserveId = [msgModel.message_id componentsSeparatedByString:@","][0];
+        NSString *newReserveId = [msgModel.message_id componentsSeparatedByString:@","][1];
+        // 1.根据旧的预约id，更新预约信息的状态
+        LocalNotification *oldNoti = [[DBManager shareInstance] getLocalNotificationWithCkeyId:oldReserveId];
+        if (oldNoti != nil) {
+            oldNoti.reserve_status = @"1";
+            [[LocalNotificationCenter shareInstance] removeLocalNotification:oldNoti];
+        }
+        // 2.根据新的预约id，下载最新的预约信息保存到本地
+        [self getReserveRecordByReserveId:newReserveId messageModel:msgModel];
+        
+    }else if ([msgModel.message_type isEqualToString:CancelReserveRecord]){
+        //删除预约
+        NSString *reserve_id = [msgModel.message_id componentsSeparatedByString:@","][1];
+        // 1.删除本地的预约信息
+        LocalNotification *localNoti = [[DBManager shareInstance] getLocalNotificationWithCkeyId:reserve_id];
+        if (localNoti != nil) {
+            [[LocalNotificationCenter shareInstance] cancelNotification:localNoti];
+            [[DBManager shareInstance] deleteLocalNotification_Sync:localNoti];
+        }
+        //设置消息已读
+        [self setMessageReadWithModel:msgModel];
+        
+    }
 }
-
-- (void)setMessageReadWithModel:(SysMessageModel *)model{
+#pragma mark - 设置消息已读
+- (void)setMessageReadWithModel:(SysMessageModel *)model {
     //将消息设置为已读
     [SysMessageTool setMessageReadedWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
         [SVProgressHUD dismiss];
         //重新请求数据
         [self requestData];
-        
-        //跳转到新的患者详情页面
-        PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
-        cellModel.patientId = model.message_id;
-        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-        detailVc.patientsCellMode = cellModel;
-        detailVc.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:detailVc animated:YES];
+        if ([model.message_type isEqualToString:AttainNewPatient]) {
+            //跳转到新的患者详情页面
+            PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+            cellModel.patientId = model.message_id;
+            PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+            detailVc.patientsCellMode = cellModel;
+            detailVc.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:detailVc animated:YES];
+        }else if ([model.message_type isEqualToString:CancelReserveRecord]){
+            // 2.跳转到患者预约列表
+            XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
+            appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
+            [self.navigationController pushViewController:appointVc animated:YES];
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationDeleted object:nil];
+            
+        }else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
+            
+            LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
+            //跳转到预约详情页面
+            XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+            detailVc.localNoti = local;
+            [self.navigationController pushViewController:detailVc animated:YES];
+        }
         
         //发送通知
         [[NSNotificationCenter defaultCenter] postNotificationName:ReadUnReadMessageSuccessNotification object:nil];
     } failure:^(NSError *error) {
         [SVProgressHUD dismiss];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+#pragma mark - 请求预约信息
+- (void)getReserveRecordByReserveId:(NSString *)reserve_id messageModel:(SysMessageModel *)msgModel{
+    [SVProgressHUD showWithStatus:@"正在获取预约信息"];
+    [SysMessageTool getReserveRecordByReserveId:reserve_id success:^(CRMHttpRespondModel *respond) {
+        //将预约信息保存到本地
+        LocalNotification *local = [LocalNotification LNFromLNFResult:respond.result];
+        [[DBManager shareInstance] insertLocalNotification:local];
+        //判断患者是否存在
+        Patient *patient = [[DBManager shareInstance] getPatientCkeyid:local.patient_id];
+        if (patient == nil) {
+            //获取所有的患者信息，同时保存到本地
+            [MyPatientTool getPatientAllInfosWithPatientId:local.patient_id doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
+                //请求成功后缓存患者信息
+                [self savePatientDataWithModel:results[0] messageModel:msgModel];
+            } failure:^(NSError *error) {
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }else{
+            //设置已读
+            [self setMessageReadWithModel:msgModel];
+            
+        }
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"预约信息获取失败"];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -264,10 +354,10 @@
         }
     }
     if (total == current) {
-        //同步数据成功,跳转到患者详情页面
+        //设置已读
         [self setMessageReadWithModel:msgModel];
     }else{
-        [SVProgressHUD showErrorWithStatus:@"获取患者数据失败"];
+        [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
     }
 }
 //获取图片

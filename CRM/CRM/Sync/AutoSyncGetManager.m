@@ -49,6 +49,7 @@ Realize_ShareInstance(AutoSyncGetManager);
              case AFNetworkReachabilityStatusReachableViaWWAN:
                  // 手机自带网络
                  NSLog(@"手机自带网络");
+                 [weakSelf autoSyncGet];
                  break;
              case AFNetworkReachabilityStatusReachableViaWiFi:
                  // 当有wifi情况下自动进行同步

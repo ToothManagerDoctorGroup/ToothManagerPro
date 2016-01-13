@@ -32,6 +32,7 @@
 #import "GroupMemberModel.h"
 #import "DBTableMode.h"
 #import "UISearchBar+XLMoveBgView.h"
+#import "XLGroupPatientDisplayViewController.h"
 
 @interface GroupManageViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate>{
     BOOL ifNameBtnSelected;
@@ -458,8 +459,8 @@
 }
 #pragma mark - 添加成员
 - (void)addGroupMember{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    GroupPatientDisplayController *patientVc = [storyboard instantiateViewControllerWithIdentifier:@"GroupPatientDisplayController"];
+
+    XLGroupPatientDisplayViewController *patientVc = [[XLGroupPatientDisplayViewController alloc] init];
     patientVc.patientStatus = PatientStatuspeAll;
     patientVc.group = self.group;
     patientVc.GroupMembers = self.patientCellModeArray;

@@ -55,4 +55,7 @@ Declare_ShareInstance(LocalNotificationCenter);
 - (NSArray *)localNotificationListWithString:(NSString *)string array:(NSArray *)array;
 - (NSArray *)localNotificationListWithString1:(NSString *)string;
 
+//取消通知
+- (void)cancelNotification:(LocalNotification *)notification;
+
 @end

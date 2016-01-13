@@ -254,7 +254,7 @@ NSInteger curTimeMCNum_mr01 = 0;
                         [downloadPatients01 addObject:patient.ckeyid];
                     }
                     //稍后条件判断是否成功的代码
-                    //                [[DBManager shareInstance] insertPatientBySync:patient];
+                    // [[DBManager shareInstance] insertPatientBySync:patient];
                 }
             }
         });
@@ -281,6 +281,11 @@ NSInteger curTimeMCNum_mr01 = 0;
             }
             
             [self getPatientAllInfo];
+        }else{
+            [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+            [NSThread sleepForTimeInterval:1.0];
+            [SVProgressHUD dismiss];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
         }
         
         
@@ -328,9 +333,13 @@ NSInteger curTimeMCNum_mr01 = 0;
                         }
                     }
                     [self getPatientAllInfo];
+                }else{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
                 }
             }
-            
         });
         
         

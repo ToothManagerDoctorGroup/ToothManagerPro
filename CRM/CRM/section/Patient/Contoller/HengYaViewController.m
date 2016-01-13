@@ -55,7 +55,7 @@
         [self xhClick:xiaHeBtn];
     }else if ([self.hengYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
-    }else{
+    }else if(self.hengYaString.length > 0 && [self.hengYaString containsString:@","]){
         if(self.hengYaString.length > 0 && [self isShuZi:self.hengYaString]){
             NSArray *hen = [self.hengYaString componentsSeparatedByString:@","];
             for(NSInteger i = 0;i<[hen count];i++){
@@ -64,6 +64,8 @@
                 [hengYaArray addObject:hen[i]];
             }
         }
+    }else{
+        return;
     }
 }
 -(BOOL)isShuZi:(NSString *)str {
@@ -245,9 +247,9 @@
     NSString *toothStr;
     if (quanKouBtn.selected) {
         toothStr = @"全口";
-    }else if (shangHeBtn.selected){
+    }else if (shangHeBtn.selected && hengYaArray.count == 16){
         toothStr = @"上颌";
-    }else if (xiaHeBtn.selected){
+    }else if (xiaHeBtn.selected && hengYaArray.count == 16){
         toothStr = @"下颌";
     }else{
         toothStr = @"未连续";

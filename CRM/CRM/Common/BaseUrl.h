@@ -17,7 +17,6 @@
 #define Method_Sys @"sys"
 
 
-
 //通用设置通知
 #define AutoSyncTimeChangeNotification @"AutoSyncTimeChangeNotification"
 #define AutoSyncStateChangeNotification @"AutoSyncStateChangeNotification"
@@ -26,6 +25,21 @@
 #define AutoAlertKey ([NSString stringWithFormat:@"%@_autoAlertKey",[AccountManager currentUserid]])
 #define AutoReserveRecordKey ([NSString stringWithFormat:@"%@_autoReserveRecordKey",[AccountManager currentUserid]])
 #define ResetAutoSyncTimeKey ([NSString stringWithFormat:@"%@_resetAutoSyncTimeKey",[AccountManager currentUserid]])
+
+//预约成功后的通知
+#define DoctorApplyForClinicSuccessNotification @"DoctorApplyForClinicSuccessNotification"
+//医生添加组成员成功后的通知
+#define DoctorAddGroupMemberSuccessNotification @"DoctorAddGroupMemberSuccessNotification"
+//医生修改组名后通知
+#define DoctorUpdateGroupNameSuccessNotification @"DoctorUpdateGroupNameSuccessNotification"
+//医生删除分组后的通知
+#define DoctorDeleteGroupSuccessNotification @"DoctorUpdateGroupNameSuccessNotification"
+//医生删除组员成功后的通知
+#define DoctorDeleteGroupMemberSuccessNotification @"DoctorDeleteGroupMemberSuccessNotification"
+//医生付款成功后的通知
+#define DoctorPaySuccessNotification @"DoctorPaySuccessNotification"
+//查看一条未读消息成功后的通知
+#define ReadUnReadMessageSuccessNotification @"ReadUnReadMessageSuccessNotification"
 
 
 //通用设置状态

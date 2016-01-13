@@ -30,10 +30,17 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     self.view.backgroundColor = [UIColor whiteColor];
-    self.tableView.allowsSelection = NO;
     
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
+    [self.tableView addGestureRecognizer:gestureRecognizer];
+    gestureRecognizer.cancelsTouchesInView = NO;
+    self.tableView.allowsSelection = NO;
     //默认添加一个种植体
     [self addLineAction:nil];
+}
+
+- (void)hideKeyboard{
+    [self.view endEditing:YES];
 }
 
 - (void)initData{
@@ -164,8 +171,11 @@
     if (expense.mat_id) {
         Material *material = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
         cell.materialName.text = material.mat_name;
+
+        cell.materialName.textColor = [UIColor blackColor];
     } else {
         cell.materialName.text = @"选择种植体类型";
+        cell.materialName.textColor = [UIColor colorWithHex:0xdddddd];
     }
     if (expense.expense_num == 0) {
         cell.materialNum.text = @"";
@@ -209,13 +219,10 @@
 
 - (void)didSelectedMaterial:(Material *)material {
    MedicalExpense *expense = [self.materialsArray objectAtIndex:self.selectIndex];
-    expense.mat_id = material.ckeyid;
+    expense.mat_id = material.ckeyid;    
     [self.tableView reloadData];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    [self.view endEditing:YES];
-}
 
 
 

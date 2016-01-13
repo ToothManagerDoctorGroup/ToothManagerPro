@@ -99,9 +99,9 @@
         [alertView show];
     }else{
         ShareMode *mode = [[ShareMode alloc]init];
-        mode.title = @"分享种牙管家医生二维码";
+        mode.title = [NSString stringWithFormat:@"Hi，我是%@医生，请关注我的种牙管家微信平台",[AccountManager shareInstance].currentUser.name];
         // mode.message = [NSString stringWithFormat:@"这是来自%@的%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.hospitalName,[AccountManager shareInstance].currentUser.name];
-        mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
+        mode.message = @"关注后，您将通过种牙管家微信公众号获得预约通知和诊疗医嘱";
         mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainName,Method_Weixin,[[AccountManager shareInstance] currentUser].userid];
         mode.image = self.QrCodeImageView.image;
         [Share shareToPlatform:weixin WithMode:mode];

@@ -259,6 +259,10 @@ Realize_ShareInstance(AccountManager);
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"新密码不能为空" errorCode:400]);
         return;
     }
+    if ([oldpwd isEqualToString:newpwd]) {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"新密码不能与原密码相同" errorCode:400]);
+        return;
+    }
     [[CRMHttpRequest shareInstance] updatePasswdWithOldpwd:oldpwd newpwd:newpwd userId:userId];
     successBlock();
 }

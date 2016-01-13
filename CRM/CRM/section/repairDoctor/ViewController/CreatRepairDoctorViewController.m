@@ -56,8 +56,8 @@
         [SVProgressHUD  showImage:nil status:@"医生名称不能为空"];
         return;
     }
-    if ([NSString isEmptyString:self.phoneTextField.text]) {
-        [SVProgressHUD  showImage:nil status:@"医生电话不能为空"];
+    if (self.phoneTextField.text.length != 11) {
+        [SVProgressHUD  showImage:nil status:@"电话号码无效，请重新输入"];
         return;
     }
     self.repairDoctor.doctor_name = self.nameTextField.text;

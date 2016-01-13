@@ -259,6 +259,7 @@ static UserProfileManager *sharedInstance = nil;
                        saveToLoacal:(BOOL)save
                          completion:(void (^)(BOOL success, NSError *error))completion
 {
+
     PFQuery *query = [PFQuery queryWithClassName:kPARSE_HXUSER];
     [query whereKey:kPARSE_HXUSER_USERNAME containedIn:usernames];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {

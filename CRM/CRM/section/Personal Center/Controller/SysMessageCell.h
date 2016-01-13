@@ -8,8 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+//新增患者
 #define AttainNewPatient @"AttainNewPatient"
+//新的好友
 #define AttainNewFriend @"AttainNewFriend"
+//取消预约
+#define CancelReserveRecord @"CancelReserveRecord"
+//修改预约
+#define UpdateReserveRecord @"UpdateReserveRecord"
+//新增预约
+#define InsertReserveRecord @"InsertReserveRecord"
 
 @class SysMessageModel;
 @interface SysMessageCell : UITableViewCell

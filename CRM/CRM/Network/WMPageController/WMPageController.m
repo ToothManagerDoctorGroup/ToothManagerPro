@@ -9,6 +9,9 @@
 #import "WMPageController.h"
 #import "WMPageConst.h"
 #import "MyBillViewController.h"
+#import "WMScrollerView.h"
+#import "ReadMessageViewController.h"
+#import "UnReadMessageViewController.h"
 
 @interface WMPageController () <WMMenuViewDelegate,UIScrollViewDelegate> {
     CGFloat _viewHeight;
@@ -20,7 +23,7 @@
 }
 @property (nonatomic, strong, readwrite) UIViewController *currentViewController;
 @property (nonatomic, weak) WMMenuView *menuView;
-@property (nonatomic, weak) UIScrollView *scrollView;
+@property (nonatomic, weak) WMScrollerView *scrollView;
 // 用于记录子控制器view的frame，用于 scrollView 上的展示的位置
 @property (nonatomic, strong) NSMutableArray *childViewFrames;
 // 当前展示在屏幕上的控制器，方便在滚动的时候读取 (避免不必要计算)
@@ -156,7 +159,7 @@
 }
 
 - (void)addScrollView {
-    UIScrollView *scrollView = [[UIScrollView alloc] init];
+    WMScrollerView *scrollView = [[WMScrollerView alloc] init];
     
     scrollView.pagingEnabled = YES;
     scrollView.backgroundColor = [UIColor whiteColor];
@@ -268,7 +271,7 @@
     if (!self.rememberLocation) return;
 #pragma clang diagnostic pop
     if ([self.memCache objectForKey:@(index)]) return;
-    UIScrollView *scrollView = [self isKindOfScrollViewController:controller];
+    WMScrollerView *scrollView = [self isKindOfScrollViewController:controller];
     if (scrollView) {
         NSValue *pointValue = self.posRecords[@(index)];
         if (pointValue) {
@@ -284,23 +287,23 @@
 #pragma clang diagnostic ignored"-Wdeprecated-declarations"
     if (!self.rememberLocation) return;
 #pragma clang diagnostic pop
-    UIScrollView *scrollView = [self isKindOfScrollViewController:controller];
+    WMScrollerView *scrollView = [self isKindOfScrollViewController:controller];
     if (scrollView) {
         CGPoint pos = scrollView.contentOffset;
         self.posRecords[@(index)] = [NSValue valueWithCGPoint:pos];
     }
 }
 
-- (UIScrollView *)isKindOfScrollViewController:(UIViewController *)controller {
-    UIScrollView *scrollView = nil;
+- (WMScrollerView *)isKindOfScrollViewController:(UIViewController *)controller {
+    WMScrollerView *scrollView = nil;
     if ([controller.view isKindOfClass:[UIScrollView class]]) {
         // Controller的view是scrollView的子类(UITableViewController/UIViewController替换view为scrollView)
-        scrollView = (UIScrollView *)controller.view;
+        scrollView = (WMScrollerView *)controller.view;
     } else if (controller.view.subviews.count >= 1) {
         // Controller的view的subViews[0]存在且是scrollView的子类，并且frame等与view得frame(UICollectionViewController/UIViewController添加UIScrollView)
         UIView *view = controller.view.subviews[0];
         if ([view isKindOfClass:[UIScrollView class]]) {
-            scrollView = (UIScrollView *)view;
+            scrollView = (WMScrollerView *)view;
         }
     }
     return scrollView;
@@ -402,6 +405,17 @@
         CGFloat rate = contentOffsetX / _viewWidth;
         [self.menuView slideMenuAtProgress:rate];
     }
+    
+    if (scrollView == self.scrollView) {
+        //禁止tableView滑动
+        for (int i = 0; i < self.viewControllerClasses.count; i++) {
+            Class class = self.viewControllerClasses[i];
+            if ([[[class alloc] init] isKindOfClass:[UITableViewController class]]) {
+                UITableViewController *vc = [self.displayVC objectForKey:@(i)];
+                vc.tableView.scrollEnabled = NO;
+            }
+        }
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -412,6 +426,17 @@
     _selectIndex = (int)scrollView.contentOffset.x / _viewWidth;
     self.currentViewController = self.displayVC[@(self.selectIndex)];
     [self postFullyDisplayedNotificationWithCurrentIndex:self.selectIndex];
+    
+    if (scrollView == self.scrollView) {
+        //允许tableView滑动
+        for (int i = 0; i < self.viewControllerClasses.count; i++) {
+            Class class = self.viewControllerClasses[i];
+            if ([[[class alloc] init] isKindOfClass:[UITableViewController class]]) {
+                UITableViewController *vc = [self.displayVC objectForKey:@(i)];
+                vc.tableView.scrollEnabled = YES;
+            }
+        }
+    }
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
@@ -445,6 +470,7 @@
         [self postFullyDisplayedNotificationWithCurrentIndex:(int)index];
     }
 }
+
 
 - (CGFloat)menuView:(WMMenuView *)menu widthForItemAtIndex:(NSInteger)index {
     if (self.itemsWidths) {

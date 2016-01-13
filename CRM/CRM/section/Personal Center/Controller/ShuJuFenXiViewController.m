@@ -8,6 +8,7 @@
 
 #import "ShuJuFenXiViewController.h"
 #import "PatientsDisplayViewController.h"
+#import "XLPatientSelectViewController.h"
 
 @interface ShuJuFenXiViewController ()
 
@@ -25,22 +26,19 @@
 
 
 - (IBAction)weizhongzhi:(id)sender {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
+    XLPatientSelectViewController *patientVC = [[XLPatientSelectViewController alloc] init];
     patientVC.patientStatus = PatientStatusUntreatUnPlanted;
     [self pushViewController:patientVC animated:YES];
 }
 
 - (IBAction)yizhongweixiu:(id)sender {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
+    XLPatientSelectViewController *patientVC = [[XLPatientSelectViewController alloc] init];
     patientVC.patientStatus = PatientStatusUnrepaired;
     [self pushViewController:patientVC animated:YES];
 }
 - (IBAction)yizhongzhi:(id)sender {
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    PatientsDisplayViewController *patientVC = [storyboard instantiateViewControllerWithIdentifier:@"PatientsDisplayViewController"];
+    XLPatientSelectViewController *patientVC = [[XLPatientSelectViewController alloc] init];
     patientVC.patientStatus = PatientStatusRepaired;
     [self pushViewController:patientVC animated:YES];
 }

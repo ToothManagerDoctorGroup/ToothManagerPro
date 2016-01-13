@@ -154,27 +154,28 @@
 
 //接受申请
 - (void)approveIntroducerApplySuccessWithResult:(NSDictionary *)result {
-    Introducer *intro = [[Introducer alloc] init];
-    //    intro.ckeyid = self.addDoctor.ckeyid; //TODO: 不知道是要用拉取下来的id呢，还用自己本地创造的。
-    intro.intr_name = self.addDoctor.doctor_name;
-    intro.intr_phone = self.addDoctor.doctor_phone;
-    intro.intr_level = 1;
-    intro.intr_id = self.addDoctor.doctor_id;
-    BOOL ret = [[DBManager shareInstance] insertIntroducer:intro];
-    if (ret) {
-        [SVProgressHUD showImage:nil status:[result stringForKey:@"Result"]];
-        
-        NSMutableArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
-        
-        if (0 != [recordArray count])
-        {
-            [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
-            [NSThread sleepForTimeInterval: 0.5];
-        }
-        
-    } else {
-        [SVProgressHUD showImage:nil status:@"接受失败"];
-    }
+//    Introducer *intro = [[Introducer alloc] init];
+//    //    intro.ckeyid = self.addDoctor.ckeyid; //TODO: 不知道是要用拉取下来的id呢，还用自己本地创造的。
+//    intro.intr_name = self.addDoctor.doctor_name;
+//    intro.intr_phone = self.addDoctor.doctor_phone;
+//    intro.intr_level = 1;
+//    intro.intr_id = self.addDoctor.doctor_id;
+//    BOOL ret = [[DBManager shareInstance] insertIntroducer:intro];
+//    if (ret) {
+//        [SVProgressHUD showImage:nil status:[result stringForKey:@"Result"]];
+//        
+//        NSMutableArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
+//        
+//        if (0 != [recordArray count])
+//        {
+//            [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+//            [NSThread sleepForTimeInterval: 0.5];
+//        }
+//        
+//    } else {
+//        [SVProgressHUD showImage:nil status:@"接受失败"];
+//    }
+    [SVProgressHUD showImage:nil status:[result stringForKey:@"Result"]];
     self.selectFriendNotiItem.notification_status = [NSNumber numberWithInteger:1];
     [self.tableView reloadData];
     self.selectFriendNotiItem = nil;

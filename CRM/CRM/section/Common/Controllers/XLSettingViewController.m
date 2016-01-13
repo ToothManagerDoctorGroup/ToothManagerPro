@@ -14,6 +14,8 @@
 #import "DBManager.h"
 #import "XLSingleContentWriteViewController.h"
 
+
+#define Patient_AutoSync_Time_Key [NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]
 @interface XLSettingViewController ()<XLSingleContentWriteViewControllerDelegate>
 
 @property (nonatomic, strong)NSArray *dataList;
@@ -57,20 +59,20 @@
     return [self.dataList[section] count];
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 0) {
-        if (indexPath.row == 1) {
-            return indexPath;
-        }else{
-            return nil;
-        }
-    }else if(indexPath.section == 3){
-        return indexPath;
-    }else{
-        return nil;
-    }
-    return indexPath;
-}
+//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+//    if (indexPath.section == 0) {
+//        if (indexPath.row == 1) {
+//            return indexPath;
+//        }else{
+//            return nil;
+//        }
+//    }else if(indexPath.section == 3){
+//        return indexPath;
+//    }else{
+//        return nil;
+//    }
+//    return indexPath;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -160,11 +162,11 @@
         cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         if (indexPath.row == 0) {
-            NSString *resetAutoSyncTime = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]];
+            NSString *resetAutoSyncTime = [CRMUserDefalut objectForKey:Patient_AutoSync_Time_Key];
             if (resetAutoSyncTime == nil) {
                 resetAutoSyncTime = @"1970-01-01 08:00:00";
                 
-                [CRMUserDefalut setObject:resetAutoSyncTime forKey:[CRMUserDefalut objectForKey:[NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]]];
+                [CRMUserDefalut setObject:resetAutoSyncTime forKey:Patient_AutoSync_Time_Key];
             }
             cell.detailTextLabel.text = resetAutoSyncTime;
         }

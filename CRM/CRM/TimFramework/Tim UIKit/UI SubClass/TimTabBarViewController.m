@@ -8,7 +8,6 @@
 
 #import "TimTabBarViewController.h"
 #import "TimFramework.h"
-#import "IntroducerViewController.h"
 #import "ScheduleReminderViewController.h"
 #import "AccountViewController.h"
 #import "PatientSegumentController.h"
@@ -22,6 +21,7 @@
 #import "CRMUserDefalut.h"
 #import "AccountManager.h"
 #import "AutoSyncGetManager.h"
+#import "XLIntroducerViewController.h"
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static NSString *kMessageType = @"MessageType";
@@ -34,7 +34,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     UIView *clearView;
     
     MyScheduleReminderViewController *_scheduleReminderVC;
-    IntroducerViewController *_introducerVC;
+    XLIntroducerViewController *_introducerVC;
     PatientSegumentController *_patientVc;
     AccountViewController *_account;
 }
@@ -151,7 +151,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     
     //介绍人
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    _introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+    _introducerVC = [[XLIntroducerViewController alloc] init];
     [self setTabbarItemState:_introducerVC withTitle:@"介绍人" withImage1:@"ic_tabbar_jieshaoren_grey" withImage2:@"ic_tabbar_jiashaoren_blue"];
     _introducerVC.isHome = YES;
     TimNavigationViewController* ncViewController2=[[TimNavigationViewController alloc]initWithRootViewController:_introducerVC];

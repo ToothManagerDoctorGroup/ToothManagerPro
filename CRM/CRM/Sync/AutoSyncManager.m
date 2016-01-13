@@ -26,6 +26,7 @@
 #import "DBManager+LocalNotification.h"
 #import "LocalNotificationCenter.h"
 
+
 @implementation AutoSyncManager
 Realize_ShareInstance(AutoSyncManager);
 
@@ -52,7 +53,9 @@ Realize_ShareInstance(AutoSyncManager);
                  break;
              case AFNetworkReachabilityStatusReachableViaWWAN:
                  // 手机自带网络
-                 NSLog(@"手机自带网络");
+                 [weakSelf autoSyncUpdate];
+                 [weakSelf autoSyncInsert];
+                 [weakSelf autoSyncDelete];
                  break;
              case AFNetworkReachabilityStatusReachableViaWiFi:
                  // 当有wifi情况下自动进行同步
@@ -204,7 +207,10 @@ Realize_ShareInstance(AutoSyncManager);
                 Patient *patient = [Patient objectWithKeyValues:[self dicFromJsonStr:info.dataEntity]];
                 [[XLAutoSyncTool shareInstance] postAllNeedSyncPatient:patient success:^(CRMHttpRespondModel *respond) {
                     //上传成功
-                    [self updateSuccessWithRespondModel:respond infoModel:info];
+                    if([self updateSuccessWithRespondModel:respond infoModel:info]){
+//                        patient.sync_time = [NSString currentDateString];
+//                        [[DBManager shareInstance] updatePatientBySync:patient];
+                    }
                 } failure:^(NSError *error) {
                     //上传失败
                     [self updateFailWithError:error infoModel:info];
@@ -214,7 +220,9 @@ Realize_ShareInstance(AutoSyncManager);
                 Material *material = [Material objectWithKeyValues:[self dicFromJsonStr:info.dataEntity]];
                 [[XLAutoSyncTool shareInstance] postAllNeedSyncMaterial:material success:^(CRMHttpRespondModel *respond) {
                     //上传成功
-                    [self updateSuccessWithRespondModel:respond infoModel:info];
+                    if([self updateSuccessWithRespondModel:respond infoModel:info]){
+                        
+                    }
                 } failure:^(NSError *error) {
                     //上传失败
                     [self updateFailWithError:error infoModel:info];
@@ -463,14 +471,15 @@ Realize_ShareInstance(AutoSyncManager);
         //上传成功,删除当前的同步信息
         if([[DBManager shareInstance] updateInfoWithSyncStatus:@"2" byInfoId:info.info_id]){
             [[DBManager shareInstance] deleteInfoWithInfoAutoSync:info];
-        
         };
         
         return YES;
     }else{
         NSLog(@"上传失败");
         //上传失败
-        [[DBManager shareInstance] updateInfoWithSyncStatus:@"3" byInfoId:info.info_id];
+        if([[DBManager shareInstance] updateInfoWithSyncStatus:@"2" byInfoId:info.info_id]){
+            [[DBManager shareInstance] deleteInfoWithInfoAutoSync:info];
+        }
         return NO;
     }
 }

@@ -39,14 +39,14 @@
     xiaHeArray = [[NSMutableArray alloc]initWithObjects:@"71",@"72",@"73",@"74",@"75",@"81",@"82",@"83",@"84",@"85", nil];
     quanKouArray = [[NSMutableArray alloc]initWithObjects:@"51",@"52",@"53",@"54",@"55",@"61",@"62",@"63",@"64",@"65",@"71",@"72",@"73",@"74",@"75",@"81",@"82",@"83",@"84",@"85", nil];
     if ([self.ruYaString isEqualToString:@"无"]) {
-
+        return;
     }else if ([self.ruYaString isEqualToString:@"上颌"]) {
         [self shClick:shangHeBtn];
     }else if([self.ruYaString isEqualToString:@"下颌"]){
         [self xhClick:xiaHeBtn];
     }else if ([self.ruYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
-    }else{
+    }else if(self.ruYaString.length > 0 && [self.ruYaString containsString:@","]){
         if(self.ruYaString.length > 0 && ![self isShuZi:self.ruYaString]){
             NSArray *ru = [self.ruYaString componentsSeparatedByString:@","];
             for(NSInteger i = 0;i<[ru count];i++){
@@ -55,6 +55,8 @@
                 [ruYaArray addObject:ru[i]];
             }
         }
+    }else{
+        return;
     }
 }
 -(BOOL)isShuZi:(NSString *)str {
@@ -230,9 +232,9 @@
     NSString *toothStr;
     if (quanKouBtn.selected) {
         toothStr = @"全口";
-    }else if (shangHeBtn.selected){
+    }else if (shangHeBtn.selected && ruYaArray.count == 10){
         toothStr = @"上颌";
-    }else if (xiaHeBtn.selected){
+    }else if (xiaHeBtn.selected && ruYaArray.count == 10){
         toothStr = @"下颌";
     }else{
         toothStr = @"未连续";

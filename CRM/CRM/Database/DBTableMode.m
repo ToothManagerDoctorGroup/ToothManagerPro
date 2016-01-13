@@ -329,7 +329,7 @@ NSString * const Repaired = @"已修复";
     tmpPatient.doctor_id = [pat stringForKey:@"doctor_id"];
     tmpPatient.user_id = [AccountManager currentUserid];
     tmpPatient.intr_name = [pat stringForKey:@"intr_name"];
-    //tmpPatient.update_date = [pat stringForKey:@"update_time"];
+    tmpPatient.update_date = [pat stringForKey:@"update_time"];
     
     tmpPatient.patient_allergy = [pat stringForKey:@"patient_allergy"];
     tmpPatient.patient_remark = [pat stringForKey:@"patient_remark"];

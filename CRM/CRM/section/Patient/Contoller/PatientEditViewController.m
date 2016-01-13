@@ -13,7 +13,7 @@
 #import "DBManager+Introducer.h"
 #import "PatientsCellMode.h"
 #import "TimPickerTextField.h"
-#import "IntroducerViewController.h"
+#import "XLIntroducerViewController.h"
 #import "TimNavigationViewController.h"
 #import "CreateCaseViewController.h"
 #import "PatientCaseTableViewCell.h"
@@ -30,7 +30,7 @@
 #import "PatientEditViewController.h"
 #import "CRMHttpRequest+Introducer.h"
 
-@interface PatientEditViewController ()<UITextFieldDelegate,IntroducePersonViewControllerDelegate>
+@interface PatientEditViewController ()<UITextFieldDelegate,XLIntroducerViewControllerDelegate>
 
 @property (nonatomic,retain) Patient *detailPatient;
 @property (nonatomic,retain) Introducer *detailIntroducer;
@@ -218,8 +218,7 @@
 - (void)keyboardWillShow:(CGFloat)keyboardHeight {
     if ([self.introducerNameTextField isFirstResponder]) {
         [self.introducerNameTextField resignFirstResponder];
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        IntroducerViewController *introducerVC = [storyboard instantiateViewControllerWithIdentifier:@"IntroducerViewController"];
+        XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
         introducerVC.Mode = IntroducePersonViewSelect;
         introducerVC.delegate = self;
         TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:introducerVC];

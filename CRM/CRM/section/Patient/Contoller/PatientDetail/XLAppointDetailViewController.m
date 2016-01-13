@@ -22,6 +22,7 @@
 #import "XLAddReminderViewController.h"
 #import "XLAutoSyncTool+XLDelete.h"
 #import "SysMessageTool.h"
+#import "XLEventStoreManager.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -187,24 +188,25 @@
 #pragma mark - UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0) return;
-    [SVProgressHUD showWithStatus:@"正在删除预约，请稍候..."];
+    [SVProgressHUD showWithStatus:@"正在取消预约，请稍候..."];
     [[XLAutoSyncTool shareInstance] deleteAllNeedSyncReserve_record:self.localNoti success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
             //删除预约成功后
             [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.localNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:YES notification:self.localNoti type:CancelReserveType success:nil failure:nil];
             //删除预约信息
             if([[DBManager shareInstance] deleteLocalNotification_Sync:self.localNoti]){
+                [[LocalNotificationCenter shareInstance] cancelNotification:self.localNoti];
                 //发送通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:NotificationDeleted object:nil];
                 
-                [SVProgressHUD showSuccessWithStatus:@"预约删除成功"];
+                [SVProgressHUD showSuccessWithStatus:@"预约取消成功"];
                 [self popViewControllerAnimated:YES];
             }
         }else{
-             [SVProgressHUD showSuccessWithStatus:@"预约删除失败"];
+             [SVProgressHUD showSuccessWithStatus:@"预约取消失败"];
         }
     } failure:^(NSError *error) {
-        [SVProgressHUD showSuccessWithStatus:@"预约删除失败"];
+        [SVProgressHUD showSuccessWithStatus:@"预约取消失败"];
         if (error) {
             NSLog(@"error:%@",error);
         }

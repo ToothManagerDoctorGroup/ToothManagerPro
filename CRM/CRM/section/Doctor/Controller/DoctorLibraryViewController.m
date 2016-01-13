@@ -91,39 +91,6 @@
         self.searchHistoryArray = @[];
     }
     [self requestWlanData];
-    
-//    // 检测网络连接状态
-//    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
-//    // 连接状态回调处理
-//    /* AFNetworking的Block内使用self须改为weakSelf, 避免循环强引用, 无法释放 */
-//    __weak typeof(self) weakSelf = self;
-//    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
-//     {
-//         switch (status)
-//         {
-//             case AFNetworkReachabilityStatusUnknown:
-//                 // 未知状态
-//                 [weakSelf requestLocalData];
-//                 break;
-//             case AFNetworkReachabilityStatusNotReachable:
-//                 // 无网络
-//                 NSLog(@"无网络");
-//                 [weakSelf requestLocalData];
-//                 break;
-//             case AFNetworkReachabilityStatusReachableViaWWAN:
-//                 // 手机自带网络
-//                 NSLog(@"手机自带网络");
-//                 [weakSelf requestWlanData];
-//                 break;
-//             case AFNetworkReachabilityStatusReachableViaWiFi:
-//                 // 当有wifi
-//                 [weakSelf requestWlanData];
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }];
-    
 }
 #pragma mark - 请求网络数据
 - (void)requestWlanData{
@@ -137,29 +104,30 @@
         
         [SVProgressHUD dismiss];
         [self.tableView reloadData];
-        //获取数据库中所有的医生信息
-        NSArray *dbDoctors = [[DBManager shareInstance] getAllDoctor];
-        NSMutableArray *missDoctors = [NSMutableArray array];
-        for (Doctor *inDoctor in array) {
-            BOOL isExists = NO;
-            for (Doctor *doctor in dbDoctors) {
-                if ([inDoctor.ckeyid isEqualToString:doctor.ckeyid]) {
-                    isExists = YES;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            //获取数据库中所有的医生信息
+            NSArray *dbDoctors = [[DBManager shareInstance] getAllDoctor];
+            NSMutableArray *missDoctors = [NSMutableArray array];
+            for (Doctor *inDoctor in array) {
+                BOOL isExists = NO;
+                for (Doctor *doctor in dbDoctors) {
+                    if ([inDoctor.ckeyid isEqualToString:doctor.ckeyid]) {
+                        isExists = YES;
+                    }
+                }
+                if (!isExists) {
+                    [missDoctors addObject:inDoctor];
                 }
             }
-            if (!isExists) {
-                [missDoctors addObject:inDoctor];
-            }
-        }
-        //将所有本地不存在的医生存入本地数据库
-        if (missDoctors.count > 0) {
-            for (Doctor *doc in missDoctors) {
-                if([[DBManager shareInstance] insertDoctorWithDoctor:doc]){
-                    [self.tableView reloadData];
+            //将所有本地不存在的医生存入本地数据库
+            if (missDoctors.count > 0) {
+                for (Doctor *doc in missDoctors) {
+                    if([[DBManager shareInstance] insertDoctorWithDoctor:doc]){
+                        [self.tableView reloadData];
+                    }
                 }
             }
-        }
-        
+        });
     } failure:^(NSError *error) {
         if (error) {
             NSLog(@"error:%@",error);

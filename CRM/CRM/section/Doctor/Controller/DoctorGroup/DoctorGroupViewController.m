@@ -15,16 +15,26 @@
 #import "GroupManageViewController.h"
 #import "GroupEntity.h"
 #import "DoctorGroupModel.h"
+#import "XLGroupManagerViewController.h"
 
-@interface DoctorGroupViewController ()<CustomAlertViewDelegate>
+@interface DoctorGroupViewController ()<CustomAlertViewDelegate,UIAlertViewDelegate>
 
 @property (nonatomic, strong)NSMutableArray *dataList;
 
 @property (nonatomic, weak)UILabel *alertLabel;
 
+@property (nonatomic, strong)DoctorGroupModel *selectModel;
+
 @end
 
 @implementation DoctorGroupViewController
+
+- (NSMutableArray *)dataList{
+    if (!_dataList) {
+        _dataList = [NSMutableArray array];
+    }
+    return _dataList;
+}
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -66,8 +76,6 @@
 
 #pragma mark - 重新请求数据
 - (void)requestNewData:(NSNotification *)note{
-    [self.dataList removeAllObjects];
-    
     [self requestGroupData];
 }
 
@@ -76,7 +84,8 @@
     [SVProgressHUD showWithStatus:@"正在加载"];
     [DoctorGroupTool getGroupListWithDoctorId:[[AccountManager shareInstance] currentUser].userid ckId:@"" success:^(NSArray *result) {
         [SVProgressHUD dismiss];
-        self.dataList = [NSMutableArray arrayWithArray:result];
+        [self.dataList removeAllObjects];
+        [self.dataList addObjectsFromArray:result];
         [self.tableView reloadData];
         
         if (self.dataList.count == 0) {
@@ -119,11 +128,23 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    GroupManageViewController *manageVc = [storyboard instantiateViewControllerWithIdentifier:@"GroupManageViewController"];
+    XLGroupManagerViewController *manageVc = [[XLGroupManagerViewController alloc] init];
     manageVc.group = self.dataList[indexPath.row];
     manageVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:manageVc animated:YES];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    DoctorGroupModel *model = self.dataList[indexPath.row];
+    self.selectModel = model;
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"删除分组" message:@"删除分组并不会删除患者信息，确认删除分组？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"删除", nil];
+        [alertView show];
+    }
 }
 
 
@@ -151,6 +172,28 @@
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+#pragma mark - UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) return;
+    //删除分组
+    [SVProgressHUD showWithStatus:@"正在删除"];
+    [DoctorGroupTool deleteGroupWithCkId:self.selectModel.ckeyid success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.code integerValue] == 200) {
+            //发送通知
+            [self requestGroupData];
+        }else{
+            [SVProgressHUD showErrorWithStatus:@"删除失败"];
+        }
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+        [SVProgressHUD showErrorWithStatus:@"删除失败"];
+    }];
+
 }
 
 - (void)didReceiveMemoryWarning {

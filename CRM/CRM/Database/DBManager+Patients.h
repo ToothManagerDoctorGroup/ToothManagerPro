@@ -71,6 +71,15 @@
 - (NSArray *)getPatientsWithStatus:(PatientStatus )status;
 
 /**
+ *  判断这个患者是否存在
+ *
+ *  @param patient 患者
+ *
+ *  @return YES/NO
+ */
+- (BOOL)patientIsExist:(Patient *)patient;
+
+/**
  *  获取患者信息
  *
  *  @param ckeyid 患者id

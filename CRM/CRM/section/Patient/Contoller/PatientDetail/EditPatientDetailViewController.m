@@ -96,6 +96,12 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
+    
+    if (self.patientPhoneField.text.length != 11) {
+        [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+        return;
+    }
+    
     Patient *currentPatient = self.patient;
     currentPatient.patient_name = self.patientNameField.text;
     currentPatient.patient_age = self.patientAgeField.text;
@@ -120,10 +126,6 @@
         [SVProgressHUD showErrorWithStatus:@"更新失败"];
     }
     [self popViewControllerAnimated:YES];
-    
-    
-    
-
 }
 
 #pragma mark - UITableViewDataSource

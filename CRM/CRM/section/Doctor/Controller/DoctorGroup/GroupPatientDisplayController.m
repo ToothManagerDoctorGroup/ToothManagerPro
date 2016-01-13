@@ -124,7 +124,7 @@
         if (model.isChoose && !model.isMember) {
             index++;
             //新增患者
-            GroupMemberEntity *member = [[GroupMemberEntity alloc] initWithGroupName:self.group.group_name groupId:self.group.ckeyid doctorId:self.group.doctor_id patientId:model.ckeyid patientName:model.patient_name ckeyId:self.group.ckeyid];
+            GroupMemberEntity *member = [[GroupMemberEntity alloc] initWithGroupName:self.group.group_name groupId:self.group.ckeyid doctorId:self.group.doctor_id patientId:model.ckeyid patientName:model.patient_name ckeyId:@""];
             
             [selectMemberArr addObject:member.keyValues];
         }
@@ -245,8 +245,8 @@
     UIButton *chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     chooseButton.frame = CGRectMake(275, 0, 40, 40);
     chooseButton.selected = self.isChooseAll;
-    [chooseButton setImage:[UIImage imageNamed:@"total_no_choose"] forState:UIControlStateNormal];
-    [chooseButton setImage:[UIImage imageNamed:@"total_choose"] forState:UIControlStateSelected];
+    [chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
+    [chooseButton setImage:[UIImage imageNamed:@"remove-blue"] forState:UIControlStateSelected];
     [chooseButton addTarget:self action:@selector(chooseAction:) forControlEvents:UIControlEventTouchUpInside];
     [bgView addSubview:chooseButton];
     self.chooseButton = chooseButton;
@@ -502,7 +502,6 @@
 #pragma mark - UISearchDisplayDelegate
 - (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)tableView{
     self.isSearchDisplayController = NO;
-    
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didHideSearchResultsTableView:(UITableView *)tableView{

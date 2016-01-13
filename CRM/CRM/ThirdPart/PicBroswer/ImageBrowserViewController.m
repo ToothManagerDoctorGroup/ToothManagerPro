@@ -118,17 +118,22 @@
 }
 
 - (void)deleteAction:(id)sender {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(picBrowserViewController:didDeleteBrowserPicture:)]) {
-        [self.delegate picBrowserViewController:self didDeleteBrowserPicture:[self.imageArray objectAtIndex:self.currentIndex]];
-    }
-    [self.imageArray removeObjectAtIndex:self.currentIndex];
-    if (self.imageArray.count < 1) {
-        [self dismissAction:nil];
-    } else if (self.imageArray.count == 1) {
-        [self refreshView];
-    } else {
-        [_browserView pagedownAction:nil];
-    }
+    __weak typeof(self) weakSelf = self;
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确认删除此CT片？" message:nil cancelHandler:^{
+    } comfirmButtonHandlder:^{
+        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(picBrowserViewController:didDeleteBrowserPicture:)]) {
+            [weakSelf.delegate picBrowserViewController:weakSelf didDeleteBrowserPicture:[weakSelf.imageArray objectAtIndex:weakSelf.currentIndex]];
+        }
+        [weakSelf.imageArray removeObjectAtIndex:weakSelf.currentIndex];
+        if (weakSelf.imageArray.count < 1) {
+            [weakSelf dismissAction:nil];
+        } else if (weakSelf.imageArray.count == 1) {
+            [weakSelf refreshView];
+        } else {
+            [_browserView pagedownAction:nil];
+        }
+    }];
+    [alertView show];
 }
 
 - (void)didReceiveMemoryWarning {

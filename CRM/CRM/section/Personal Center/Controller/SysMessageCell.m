@@ -63,6 +63,7 @@
     UILabel *contentLabel = [[UILabel alloc] init];
     contentLabel.font = CommenFont;
     contentLabel.textColor = CommenColor;
+    contentLabel.numberOfLines = 0;
     self.contentLabel = contentLabel;
     [self.contentView addSubview:contentLabel];
     
@@ -78,8 +79,14 @@
     
     if ([model.message_type isEqualToString:AttainNewFriend]) {
         self.titleLabel.text = @"新增好友";
-    }else{
+    }else if([model.message_type isEqualToString:AttainNewPatient]){
         self.titleLabel.text = @"新增患者";
+    }else if ([model.message_type isEqualToString:InsertReserveRecord]){
+        self.titleLabel.text = @"添加预约";
+    }else if ([model.message_type isEqualToString:CancelReserveRecord]){
+        self.titleLabel.text = @"取消预约";
+    }else{
+        self.titleLabel.text = @"修改预约";
     }
     
     self.timeLabel.text = self.model.create_time;
@@ -98,9 +105,24 @@
     CGSize timeSize = [self.model.create_time sizeWithFont:CommenFont];
     self.timeLabel.frame = CGRectMake(kScreenWidth - timeSize.width - margin, margin / 2, timeSize.width, 20);
     
-    self.contentLabel.frame = CGRectMake(margin, self.titleLabel.bottom + margin, kScreenWidth - margin * 2, 20);
+    //计算内容的宽度和高度
+    CGSize contentSize = [self.model.message_content sizeWithFont:CommenFont constrainedToSize:CGSizeMake(kScreenWidth - margin * 2, MAXFLOAT)];
+    self.contentLabel.frame = CGRectMake(margin, self.titleLabel.bottom + margin, kScreenWidth - margin * 2, contentSize.height);
     
     self.divider.frame = CGRectMake(0, self.height - 1, kScreenWidth, 1);
 }
+
+////tableView的侧滑是从右往左滑。而抽屉是从左往右滑。 解决方法刚刚找到了，判断滑动的视图。
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+//{
+//    // 输出点击的view的类名
+//    NSLog(@"你那是屌丝都调试%@", NSStringFromClass([touch.view class]));
+//    
+//    // 若为UITableViewCellContentView（即点击了tableViewCell），则不截获Touch事件
+//    if ([NSStringFromClass([touch.view class]) isEqualToString:@"UITableViewCellContentView"]) {
+//        return YES;
+//    }
+//    return  NO;
+//}
 
 @end

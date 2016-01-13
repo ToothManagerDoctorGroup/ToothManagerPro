@@ -76,6 +76,11 @@
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    if (self.phoneTextField.text.length != 11) {
+        [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+        return;
+    }
+    
     self.introducer.intr_name = self.nameTextField.text;
     self.introducer.intr_level = self.starTextField.starLevel;
     self.introducer.intr_phone = self.phoneTextField.text;

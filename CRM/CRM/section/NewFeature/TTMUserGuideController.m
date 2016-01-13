@@ -82,7 +82,8 @@
             UIImageView *imageView = [[UIImageView alloc] init];
             CGFloat imageViewX = i * imageViewWidth;
             imageView.frame = CGRectMake(imageViewX, imageViewY, imageViewWidth, imageViewHeight);
-            imageView.image = [UIImage imageDeviceVersionWithName:_images[i]];
+//            imageView.image = [UIImage imageDeviceVersionWithName:_images[i]];
+            imageView.image = [UIImage imageNamed:_images[i]];
             
             // 如果是最后一张页面，添加进入主页的按钮
             if (i == (count - 1)) {

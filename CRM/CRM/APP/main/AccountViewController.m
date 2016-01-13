@@ -8,7 +8,6 @@
 
 #import "AccountViewController.h"
 #import "SettingViewController.h"
-#import "IntroducerViewController.h"
 #import "DoctorLibraryViewController.h"
 #import "RepairDoctorViewController.h"
 #import "MaterialsViewController.h"
@@ -38,6 +37,9 @@
 
 #import "XLAvatarBrowser.h"
 #import "XLMaterialsViewController.h"
+#import "XLRepairDoctorViewController.h"
+#import "XLDoctorLibraryViewController.h"
+#import "UserProfileManager.h"
 
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
@@ -114,6 +116,10 @@
     [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [iconImageView addGestureRecognizer:tap];
+    
+    //获取个人信息保存到本地
+//    [[UserProfileManager sharedInstance] loadUserProfileInBackground:@[[AccountManager currentUserid]] saveToLoacal:YES completion:^(BOOL success, NSError *error) {
+//    }];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -280,7 +286,6 @@
                 return _zhongZhiTiCell;
             }
         }else if (indexPath.section == 2){
-            
             if(indexPath.row == 0){
                 return _myBillCell;
             }else if (indexPath.row == 1){
@@ -341,22 +346,20 @@
     }
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
-            DoctorLibraryViewController *doctorVC = [storyboard instantiateViewControllerWithIdentifier:@"DoctorLibraryViewController"];
-            doctorVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:doctorVC animated:YES];
+            XLDoctorLibraryViewController *doctorLibrary = [[XLDoctorLibraryViewController alloc] init];
+            doctorLibrary.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:doctorLibrary animated:YES];
+            
         }else if (indexPath.row == 1){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            RepairDoctorViewController *repairDoctorVC = [storyboard instantiateViewControllerWithIdentifier:@"RepairDoctorViewController"];
-            repairDoctorVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:repairDoctorVC animated:YES];
+            XLRepairDoctorViewController *repairDocVc = [[XLRepairDoctorViewController alloc] init];
+            repairDocVc.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:repairDocVc animated:YES];
+            
         }else if (indexPath.row == 2){
             
             XLMaterialsViewController *materialsVC = [[XLMaterialsViewController alloc] init];
             materialsVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:materialsVC animated:YES];
-            
-            
         }
     }
     if (self.isSign == YES) {

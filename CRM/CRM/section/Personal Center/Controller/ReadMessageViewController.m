@@ -15,6 +15,9 @@
 #import "AccountManager.h"
 #import "NewFriendsViewController.h"
 #import "PatientDetailViewController.h"
+#import "XLAppointDetailViewController.h"
+#import "DBManager+LocalNotification.h"
+#import "XLPatientAppointViewController.h"
 
 @interface ReadMessageViewController ()
 @property (nonatomic, strong)NSMutableArray *dataList;
@@ -36,7 +39,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requstData) name:ReadUnReadMessageSuccessNotification object:nil];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.rowHeight = 60;
     
     self.pageIndex = 1;
     
@@ -102,6 +104,16 @@
     return self.dataList.count;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    SysMessageModel *model = self.dataList[indexPath.row];
+    CGSize contentSize = [model.message_content sizeWithFont:[UIFont systemFontOfSize:13] constrainedToSize:CGSizeMake(kScreenWidth - 10 * 2, MAXFLOAT)];
+    if (contentSize.height + 5 + 20 + 10 + 10 > 60) {
+        return contentSize.height + 5 + 20 + 10 + 10;
+    }
+    return 60;
+
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     SysMessageModel *model = self.dataList[indexPath.row];
@@ -122,6 +134,35 @@
     [self clickMessageActionWithModel:model];
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    SysMessageModel *model = self.dataList[indexPath.row];
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确认删除此消息吗？" message:nil cancelHandler:^{
+        } comfirmButtonHandlder:^{
+            [SysMessageTool deleteMessageWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
+                if ([respond.code integerValue] == 200) {
+                    [SVProgressHUD showSuccessWithStatus:@"删除成功"];
+                    [self.dataList removeAllObjects];
+                    self.pageIndex = 1;
+                    [self requstData];
+                }else{
+                    [SVProgressHUD showErrorWithStatus:@"删除失败"];
+                }
+            } failure:^(NSError *error) {
+                [SVProgressHUD showErrorWithStatus:@"删除失败"];
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }];
+        [alertView show];
+    }
+}
+
 - (void)clickMessageActionWithModel:(SysMessageModel *)model{
     //判断消息的类型
     if ([model.message_type isEqualToString:AttainNewPatient]) {
@@ -138,6 +179,22 @@
         NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
         [self.navigationController pushViewController:newFriendVc animated:YES];
     }
+    
+    else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
+        LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
+        //跳转到预约详情页面
+        XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+        detailVc.localNoti = local;
+        [self.navigationController pushViewController:detailVc animated:YES];
+        
+    }else if ([model.message_type isEqualToString:CancelReserveRecord]){
+        // 2.跳转到患者预约列表
+        XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
+        appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
+        [self.navigationController pushViewController:appointVc animated:YES];
+    }
 }
+
+
 
 @end

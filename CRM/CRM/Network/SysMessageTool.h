@@ -67,4 +67,13 @@
  *  @param failure    失败回调
  */
 + (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
+
+/**
+ *  获取单挑预约信息
+ *
+ *  @param reserve_id 预约id
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getReserveRecordByReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 @end

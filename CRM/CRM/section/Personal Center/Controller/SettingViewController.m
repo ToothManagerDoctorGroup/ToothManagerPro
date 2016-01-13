@@ -53,7 +53,7 @@
     
     _tableView.delegate=self;
     _tableView.dataSource=self;
-    _tableView.backgroundColor=[UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+    _tableView.backgroundColor = MyColor(238, 238, 238);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -133,7 +133,7 @@
     
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
         ChangePasswdViewController *changepasswdVC = [storyBoard instantiateViewControllerWithIdentifier:@"ChangePasswdViewController"];
             
             changepasswdVC.hidesBottomBarWhenPushed = YES;
@@ -145,7 +145,22 @@
             [self pushViewController:settingVc animated:YES];
             
         }else{
+            
+//            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
+//                if (error && error.errorCode != EMErrorServerNotLogin) {
+//                    
+//                }
+//                else{
+//                    
+//                    [[AccountManager shareInstance] logout];
+////                    [[ApplyViewController shareController] clear];
+////                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+//                }
+//            } onQueue:nil];
+//            
             [[AccountManager shareInstance] logout];
+
+            
         }
     }
 }

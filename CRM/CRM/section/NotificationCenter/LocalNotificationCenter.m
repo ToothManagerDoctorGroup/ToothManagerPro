@@ -19,6 +19,7 @@
 #import "MyDateTool.h"
 #import <EventKit/EventKit.h>
 #import "MyDateTool.h"
+#import "XLEventStoreManager.h"
 
 NSString * const RepeatIntervalDay = @"每天";
 NSString * const RepeatIntervalWeek = @"每周";
@@ -128,10 +129,19 @@ NSString * const RepeatIntervalNone = @"不重复";
 
 @interface LocalNotificationCenter ()
 
+@property (nonatomic, strong)EKEventStore *eventStore;
+
 @end
 
 @implementation LocalNotificationCenter
 Realize_ShareInstance(LocalNotificationCenter);
+
+- (EKEventStore *)eventStore{
+    if (!_eventStore) {
+        _eventStore = [[EKEventStore alloc] init];
+    }
+    return _eventStore;
+}
 
 - (id)init {
     self = [super init];
@@ -246,15 +256,15 @@ Realize_ShareInstance(LocalNotificationCenter);
     [[UIApplication sharedApplication] scheduleLocalNotification:localNoti];
     
     //获取系统设置
-//    NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
-//    if (autoReserve == nil) {
-//        autoReserve = Auto_Action_Close;
-//        [CRMUserDefalut setObject:autoReserve forKey:AutoReserveRecordKey];
-//    }
-//    if ([autoReserve isEqualToString:Auto_Action_Open]) {
+    NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
+    if (autoReserve == nil) {
+        autoReserve = Auto_Action_Close;
+        [CRMUserDefalut setObject:autoReserve forKey:AutoReserveRecordKey];
+    }
+    if ([autoReserve isEqualToString:Auto_Action_Open]) {
         //将提醒事件添加到系统日历中
-//        [self addEventToSystemCalendarWithLocalNotification:notification patient:tpatient];
-//    }
+        [[XLEventStoreManager shareInstance] addEventToSystemCalendarWithLocalNotification:notification patient:tpatient];
+    }
 }
 
 - (void)cancelNotification:(LocalNotification *)notification {
@@ -263,85 +273,18 @@ Realize_ShareInstance(LocalNotificationCenter);
         NSString *notificationckeyid = [localNotifi.userInfo stringForKey:@"ckeyid"];
         if (![NSString isEmptyString:notificationckeyid] && [notification.ckeyid isEqualToString:notificationckeyid]) {
             [[UIApplication sharedApplication] cancelLocalNotification:localNotifi];
+//            //删除当前日历的同时，删除系统日历事件
+//            NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
+//            if (autoReserve == nil) {
+//                autoReserve = Auto_Action_Close;
+//                [CRMUserDefalut setObject:autoReserve forKey:AutoReserveRecordKey];
+//            }
+//            if ([autoReserve isEqualToString:Auto_Action_Open]) {
+//                //删除日历事件
+//                [[XLEventStoreManager shareInstance] removeEventToSystemCalendarWithLocalNotification:notification];
+//                
+//            }
         }
-    }
-}
-
-
-/**
- *  添加事件到系统日历当中
- */
-- (void)addEventToSystemCalendarWithLocalNotification:(LocalNotification *)noti patient:(Patient *)patient{
-    //事件市场
-    EKEventStore *eventStore = [[EKEventStore alloc] init];
-    //6.0及以上通过下面方式写入事件
-    if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
-    {
-        [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (error)
-                {
-                    //错误细心
-                    // display error message here
-                }
-                else if (!granted)
-                {
-                    //被用户拒绝，不允许访问日历
-                }
-                else
-                {
-                    //事件保存到日历
-                    //创建事件
-                    EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
-                    event.title     = [NSString stringWithFormat:@"患者 %@ %@",patient.patient_name,noti.reserve_type];
-                    event.location = noti.medical_place;
-                    
-                    NSDateFormatter *tempFormatter = [[NSDateFormatter alloc]init];
-                    [tempFormatter setDateFormat:@"dd.MM.yyyy HH:mm"];
-                    
-                    NSString *startT = [NSString stringWithFormat:@"%@:00",noti.reserve_time];
-                    NSString *endT = [NSString stringWithFormat:@"%@:00",noti.reserve_time_end];
-                    
-                    event.startDate = [MyDateTool dateWithStringWithSec:startT];
-                    event.endDate   = [MyDateTool dateWithStringWithSec:endT];
-                    event.allDay = NO;
-                    
-                    //添加提醒
-                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -60.0f * 24]];
-                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -15.0f]];
-                    
-                    [event setCalendar:[eventStore defaultCalendarForNewEvents]];
-                    NSError *err;
-                    [eventStore saveEvent:event span:EKSpanThisEvent error:&err];
-                    
-                    NSLog(@"保存成功");
-                    
-                }
-            });
-        }];
-    }else
-    {
-        //4.0和5.0通过下述方式添加
-        
-        EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
-        event.title     = [NSString stringWithFormat:@"患者 %@ %@",patient.patient_name,noti.reserve_type];
-        event.location = noti.medical_place;
-        
-        NSDateFormatter *tempFormatter = [[NSDateFormatter alloc]init];
-        [tempFormatter setDateFormat:@"dd.MM.yyyy HH:mm"];
-        
-        event.startDate = [MyDateTool dateWithStringNoSec:noti.reserve_time];
-        event.endDate   = [MyDateTool dateWithStringNoSec:noti.reserve_time_end];
-        event.allDay = NO;
-        
-        
-        [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -60.0f * 24]];
-        [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -15.0f]];
-        
-        [event setCalendar:[eventStore defaultCalendarForNewEvents]];
-        NSError *err;
-        [eventStore saveEvent:event span:EKSpanThisEvent error:&err];
-        
     }
 }
 

@@ -27,4 +27,7 @@
 @property (copy) void (^didSelectRowAtIndexPathCompletion)(UITableView *tableView, NSIndexPath *indexPath);
 @property (copy) void (^didDeselectRowAtIndexPathCompletion)(UITableView *tableView, NSIndexPath *indexPath);
 
+//编辑风格
+@property (copy) void (^commitEditingStyleAtIndexPathCompletion)(UITableView *tableView, NSIndexPath *indexPath);
+
 @end

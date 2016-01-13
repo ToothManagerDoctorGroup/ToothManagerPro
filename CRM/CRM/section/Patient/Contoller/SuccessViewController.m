@@ -136,7 +136,6 @@
 }
 
 #pragma mark - EaseConversationListViewControllerDelegate
-
 - (void)conversationListViewController:(EaseConversationListViewController *)conversationListViewController
             didSelectConversationModel:(id<IConversationModel>)conversationModel
 {

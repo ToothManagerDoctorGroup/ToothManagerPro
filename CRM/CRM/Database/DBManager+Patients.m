@@ -16,6 +16,8 @@
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
 
+
+#define PageCount 5
 @implementation DBManager (Patients)
 
 /*
@@ -177,7 +179,7 @@
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"introducer_id"]; //介绍人编号
         [columeArray addObject:@"creation_date"]; //创建时间
-       // [columeArray addObject:@"update_date"]; //创建时间
+        [columeArray addObject:@"update_date"]; //创建时间
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
@@ -200,7 +202,7 @@
         [valueArray addObject:patient.user_id];
         [valueArray addObject:patient.introducer_id];
         [valueArray addObject:[NSString currentDateString]];
-       // [valueArray addObject:[NSString currentDateString]];
+        [valueArray addObject:patient.update_date];
         if (patient.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
@@ -220,6 +222,7 @@
         [valueArray addObject:patient.nickName];
         
         
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -512,7 +515,6 @@
         [columeArray addObject:@"ori_user_id"];
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"introducer_id"]; //介绍人编号
-        
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
@@ -678,7 +680,7 @@
 #endif
 
 
-- (NSArray *)getAllPatient {
+- (NSArray *)getAllPatient{
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
@@ -772,7 +774,6 @@
              sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString]];
          }
          result = [db executeQuery:sqlString];
-         //         NSLog(@"sqlString:%@",sqlString);
          while ([result next])
          {
              Patient * patient = [Patient patientlWithResult:result];
@@ -783,6 +784,25 @@
      }];
     
     return resultArray;
+}
+
+- (BOOL)patientIsExist:(Patient *)patient{
+    if (patient == nil) {
+        return NO;
+    }
+    
+    __block BOOL ret = NO;
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" or patient_phone = \"%@\"",PatientTableName,patient.ckeyid,patient.patient_phone];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        FMResultSet *set = nil;
+        set = [db executeQuery:sqlStr];
+        if (set && [set next]) {
+            ret = YES;
+        }
+        [set close];
+    }];
+    return ret;
 }
 
 /**

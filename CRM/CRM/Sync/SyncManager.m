@@ -82,6 +82,7 @@ Realize_ShareInstance(SyncManager);
     self.syncGetFailCount = 0;
     self.syncGetSuccessCount = 0;
     
+    /*
     //目前的设计是手工同步不需要检查网络状态
 #if 0
      if(![self networkAvailable])
@@ -383,12 +384,12 @@ Realize_ShareInstance(SyncManager);
     
     if (0 != [recordArray count])
     {
-        
+
         [[CRMHttpRequest shareInstance] postAllNeedSyncPatientIntroducerMap:recordArray];
         [NSThread sleepForTimeInterval: 0.5];
     }
      
-
+*/
 //download
     
 #pragma mark - **************************GCD实现多线程的下载操作*****************
@@ -405,7 +406,6 @@ Realize_ShareInstance(SyncManager);
     [[CRMHttpRequest shareInstance] getPatIntrMapTable];
     
     [NSThread sleepForTimeInterval: 0.2];
-    
     [[CRMHttpRequest shareInstance] getRepairDoctorTable];
 
     [NSThread sleepForTimeInterval: 0.2];

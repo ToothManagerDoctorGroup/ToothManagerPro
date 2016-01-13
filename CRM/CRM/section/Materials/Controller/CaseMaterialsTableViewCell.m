@@ -9,6 +9,7 @@
 #import "CaseMaterialsTableViewCell.h"
 #import "TimPickerTextField.h"
 #import "DBTableMode.h"
+#import "UIColor+Extension.h"
 
 @interface CaseMaterialsTableViewCell () <TimPickerTextFieldDelegate,UITextFieldDelegate>
 
@@ -17,17 +18,19 @@
 @implementation CaseMaterialsTableViewCell
 
 - (void)setCell:(NSArray *)array {
-    // Initialization code
-//    self.materialName.mode = TextFieldInputModeExternal;
-//    self.materialName.borderStyle = UITextBorderStyleNone;
-//    self.materialName.delegate = self;
+    
+    self.materialName.layer.cornerRadius = 5;
+    self.materialName.layer.masksToBounds = YES;
+    self.materialName.layer.borderWidth = 1;
+    self.materialName.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
+    
+    self.materialNum.layer.cornerRadius = 5;
+    self.materialNum.layer.masksToBounds = YES;
+    self.materialNum.layer.borderWidth = 1;
+    self.materialNum.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.materialName addGestureRecognizer:tap];
-    
-//    self.materialNum.keyboardType = UIKeyboardTypeNumberPad;
-//    self.materialNum.borderStyle = UITextBorderStyleNone;
-//    self.materialNum.backgroundColor = [UIColor redColor];
 
 }
 
