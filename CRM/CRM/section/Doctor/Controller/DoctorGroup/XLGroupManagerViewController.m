@@ -19,6 +19,8 @@
 #import "PatientDetailViewController.h"
 #import "GroupPatientDisplayController.h"
 #import "XLGroupPatientDisplayViewController.h"
+#import "MyPatientTool.h"
+#import "AccountManager.h"
 
 @interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDelegate,UITableViewDataSource>{
     BOOL ifNameBtnSelected;
@@ -57,6 +59,7 @@
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
+
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
         _searchBar.delegate = self;
         _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
@@ -185,7 +188,7 @@
     
     self.title = self.group.group_name;
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, self.view.height - 44) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 40 - 44) style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
@@ -194,6 +197,8 @@
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
+    
+    [self.view addSubview:[self setUpHeaderView]];
     
     
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
@@ -237,12 +242,6 @@
     return 1;
 }
 
-//增加的表头
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 40;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.patientCellModeArray.count;
 }
@@ -281,8 +280,8 @@
     return  UITableViewCellEditingStyleDelete;
 }
 
--(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
+-(UIView *)setUpHeaderView{
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, 320, 40)];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -335,7 +334,26 @@
         detailVc.hidesBottomBarWhenPushed = YES;
         [self pushViewController:detailVc animated:YES];
     }else {
-        [SVProgressHUD showErrorWithStatus:@"需要同步数据"];
+        //根据患者id去服务器获取数据保存到本地
+        [SVProgressHUD showWithStatus:@"正在获取患者数据"];
+        [MyPatientTool getPatientAllInfosWithPatientId:model.ckeyid doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
+            [SVProgressHUD dismiss];
+            BOOL ret = [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:results[0]];
+           if (ret) {
+               PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+               cellModel.patientId = patient.ckeyid;
+               //跳转到新的患者详情页面
+               PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+               detailVc.patientsCellMode = cellModel;
+               detailVc.hidesBottomBarWhenPushed = YES;
+               [self pushViewController:detailVc animated:YES];
+           }
+       } failure:^(NSError *error) {
+           [SVProgressHUD showWithStatus:@"患者数据获取失败"];
+           if (error) {
+               NSLog(@"error:%@",error);
+           }
+       }];
     }
 }
 

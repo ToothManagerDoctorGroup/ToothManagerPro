@@ -13,6 +13,7 @@
 #import "JSONKit.h"
 #import "CRMHttpRespondModel.h"
 #import "DBTableMode.h"
+#import "XLQueryModel.h"
 
 
 #define userIdParam @"userid"
@@ -172,6 +173,36 @@
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
         if (success) {
             success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)getDoctorFriendListWithDoctorId:(NSString *)doctorId syncTime:(NSString *)sync_time queryInfo:(XLQueryModel *)info success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"GetIntroducerByPage";
+    params[@"uid"] = doctorId;
+    params[@"sync_time"] = sync_time;
+    params[@"query_info"] = [info.keyValues JSONString];
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        NSArray *array = responseObject[@"Result"];
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            
+            for (NSDictionary *dic in array) {
+                Doctor *doctor = [Doctor DoctorWithPatientCountFromDoctorResult:dic];
+                [arrayM addObject:doctor];
+            }
+        }
+        if (success) {
+            success(arrayM);
         }
     } failure:^(NSError *error) {
         if (failure) {

@@ -66,4 +66,7 @@
  */
 - (UIImage *)imageCompressForSize:(UIImage *)sourceImage targetSize:(CGSize)size;
 
+
+- (UIImage *)maskImage:(UIColor *)maskColor;
+
 @end

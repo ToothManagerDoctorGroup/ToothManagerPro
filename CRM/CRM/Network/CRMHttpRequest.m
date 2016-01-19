@@ -39,7 +39,6 @@ Realize_ShareInstance(CRMHttpRequest);
 - (void)requestWithParams:(TimRequestParam *)params {
     if (params.additionalParams != nil) {
         //有附加参数的（图片，文件等）
-        
         [self POST:params.requestUrl parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
              for (NSString *key in params.additionalParams.allKeys) {
                  if ([key isEqualToString:@"pic"]) {
@@ -75,6 +74,56 @@ Realize_ShareInstance(CRMHttpRequest);
     } else {
         //没有附加参数的
         [self POST:params.requestUrl parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [self onRequestSucc:operation withResponse:responseObject withParam:params];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            [self onRequestFailure:operation withError:error withParam:params];
+        }];
+    }
+}
+
+
+/*
+ *@brief 发起一个网络请求，待返回值
+ *@param params 请求参数
+ */
+- (AFHTTPRequestOperation *)requestResultWithParams:(TimRequestParam *)params {
+    if (params.additionalParams != nil) {
+        //有附加参数的（图片，文件等）
+        return [self POST:params.requestUrl parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+            for (NSString *key in params.additionalParams.allKeys) {
+                if ([key isEqualToString:@"pic"]) {
+                    
+                    [formData appendPartWithFileData:[params.additionalParams objectForKey:@"key"]
+                                                name:@"uploadfile"
+                                            fileName:[params.additionalParams objectForKey:@"pic"]
+                     //mimeType:@"multipart/form-data"];
+                                            mimeType:@"image/jpeg"];
+                }
+                else if ([key isEqualToString:@"voice"]) {
+                    NSData *amrData = [NSData dataWithContentsOfFile:[params.additionalParams objectForKey:key]];
+                    [formData appendPartWithFileData:amrData
+                                                name:@"voice"
+                                            fileName:[NSString stringWithFormat:@"voice_%d.amr", 10]
+                                            mimeType:@"audio/amr"];
+                }
+                else if ([key isEqualToString:@"file"]) {
+                    NSString* fileName = [params.params stringForKey:@"filename"];
+                    NSData *zipData = [NSData dataWithContentsOfFile:[params.additionalParams objectForKey:key]];
+                    [formData appendPartWithFileData:zipData
+                                                name:@"file"
+                                            fileName:fileName
+                                            mimeType:@"application/zip"];
+                }
+            }
+        } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [self onRequestSucc:operation withResponse:responseObject withParam:params];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            [self onRequestFailure:operation withError:error withParam:params];
+        }];
+        
+    } else {
+        //没有附加参数的
+        return [self POST:params.requestUrl parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
             [self onRequestSucc:operation withResponse:responseObject withParam:params];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             [self onRequestFailure:operation withError:error withParam:params];

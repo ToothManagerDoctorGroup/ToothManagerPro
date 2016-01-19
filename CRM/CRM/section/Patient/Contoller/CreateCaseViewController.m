@@ -546,7 +546,7 @@
         CTLib *lib = [[CTLib alloc]init];
         lib.patient_id = self.medicalCase.patient_id;
         lib.case_id = self.medicalCase.ckeyid;
-        lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage withKey:[NSString stringWithFormat:@"%@.jpg", lib.ckeyid]];
+        lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
         lib.ct_desc = [[NSDate date] dateToNSString];
         [self.ctblibArray addObject:lib];
         [self.tableHeaderView setImages:self.ctblibArray];

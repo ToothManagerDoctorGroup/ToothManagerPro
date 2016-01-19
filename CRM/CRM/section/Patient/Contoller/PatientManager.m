@@ -34,7 +34,6 @@
 + (NSData *)pathImageGetFromDisk:(NSString *)key {
 
    return UIImageJPEGRepresentation([[SDImageCache sharedImageCache] imageFromDiskCacheForKey:key], 0);
-    
 }
 
 + (BOOL)IsImageExisting:(NSString *)key {

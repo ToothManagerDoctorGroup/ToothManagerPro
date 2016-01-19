@@ -256,7 +256,7 @@
             if ([self.inPatientNotifiObj.result count] > 0) {
                 InPatientNotificationItem *inpatientNotiItem = [self.inPatientNotifiObj.result objectAtIndex:indexPath.row];
              //   Doctor *doctor1 = [[DBManager shareInstance] getDoctorWithCkeyId:inpatientNotiItem.doctor_info_id];
-               NSArray *introducerInfoArray = [[DBManager shareInstance] getAllIntroducer];
+               NSArray *introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:0];
                 
                 for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
                     Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];

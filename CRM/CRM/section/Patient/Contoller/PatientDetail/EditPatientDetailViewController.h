@@ -22,7 +22,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *patientAddressField;
 @property (weak, nonatomic) IBOutlet UILabel *allergyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *anamnesisLabel;
-@property (weak, nonatomic) IBOutlet UILabel *patientRemarkLabel;
+@property (weak, nonatomic) IBOutlet UILabel *remarkNameLabel;
 
 @property (nonatomic, assign)BOOL isGroup;//是从分组跳转
 

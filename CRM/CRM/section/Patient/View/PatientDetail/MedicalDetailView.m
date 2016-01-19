@@ -176,7 +176,14 @@
         //计算偏移量
         self.imageScrollView.contentSize = CGSizeMake(cTLibs.count * imageViewW, self.imageScrollView.height);
         
+        //首先移除所有的imageView
+        for (UIView *view in self.imageScrollView.subviews) {
+            if ([view isKindOfClass:[UIImageView class]]) {
+                [view removeFromSuperview];
+            }
+        }
         for (int i = 0; i < cTLibs.count; i++) {
+            
             CTLib *ct = cTLibs[i];
             UIImageView *imageView = [[UIImageView alloc] init];
             imageView.tag = i;
@@ -198,8 +205,16 @@
                 tap.numberOfTouchesRequired = 1;
                 [imageView addGestureRecognizer:tap];
                 
-                NSURL *imgUrl = [NSURL URLWithString:ct.ct_image];
-                [imageView sd_setImageWithURL:imgUrl];
+                UIImage *image = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:ct.ct_image];
+//                if (image == nil) {
+//                    imageView.image = [UIImage imageNamed:@"ctlib_placeholder"];
+//                }else{
+//                    imageView.image = image;
+//                }
+                
+                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:image options:SDWebImageRetryFailed|SDWebImageLowPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+//                    imageView.image = image;
+                }];
             }
             
             [self.imageScrollView addSubview:imageView];

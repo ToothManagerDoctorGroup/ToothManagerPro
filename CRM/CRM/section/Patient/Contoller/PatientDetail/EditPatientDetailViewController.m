@@ -17,6 +17,7 @@
 #import "XLAddressMapViewController.h"
 #import "MyDateTool.h"
 #import "XLDataSelectViewController.h"
+#import "CRMMacro.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
@@ -33,7 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.dataList = @[@[@"姓名",@"电话",@"性别",@"年龄",@"身份证号",@"家庭住址"],@[@"过敏史",@"既往病史",@"备注"]];
+    self.dataList = @[@[@"姓名",@"电话"],@[@"备注名"],@[@"性别",@"年龄",@"家庭住址",@"身份证号"],@[@"过敏史",@"既往病史"]];
     
     //设置导航栏
     [self initNavBar];
@@ -71,7 +72,9 @@
     self.patientAddressField.text = patient.patient_address;
     self.patientIdCardField.text = patient.idCardNum;
     self.patientPhoneField.text = patient.patient_phone;
-    self.patientRemarkLabel.text = patient.patient_remark;
+    
+    self.remarkNameLabel.text = patient.nickName;
+    
     self.allergyLabel.text = patient.patient_allergy;
     self.anamnesisLabel.text = patient.anamnesis;
 }
@@ -109,18 +112,19 @@
     currentPatient.patient_address = self.patientAddressField.text;
     currentPatient.idCardNum = self.patientIdCardField.text;
     currentPatient.patient_phone = self.patientPhoneField.text;
+    currentPatient.nickName = self.remarkNameLabel.text;
+    currentPatient.patient_allergy = self.allergyLabel.text;
+    currentPatient.anamnesis = self.anamnesisLabel.text;
     
     BOOL res = [[DBManager shareInstance] updatePatient:currentPatient];
     if (res) {
         [[DBManager shareInstance] updateUpdateDate:currentPatient.ckeyid];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
         [SVProgressHUD showSuccessWithStatus:@"更新成功"];
         
-        //将修改过的患者信息保存到数据库
-        NSArray *array = [[DBManager shareInstance] getAllEditNeedSyncPatient];
-        for (Patient *patient in array) {
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-        }
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[currentPatient.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         
     }else{
         [SVProgressHUD showErrorWithStatus:@"更新失败"];
@@ -130,10 +134,10 @@
 
 #pragma mark - UITableViewDataSource
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 1) {
-        return 20;
+    if (section == 0) {
+        return 0;
     }
-    return 0;
+    return 20;
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -144,9 +148,20 @@
         [self.patientIdCardField resignFirstResponder];
         [self.patientAddressField resignFirstResponder];
     }else{
-        if (indexPath.section == 0) {
+        if (indexPath.section == 1) {
+            if (indexPath.row == 0) {
+                EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
+                allergyVc.title = @"备注";
+                allergyVc.content = self.patient.nickName;
+                allergyVc.type = EditAllergyViewControllerNickName;
+                allergyVc.patient = self.patient;
+                allergyVc.delegate = self;
+                [self pushViewController:allergyVc animated:YES];
+            }
+        }
+        if (indexPath.section == 2) {
             
-            if (indexPath.row == 2) {
+            if (indexPath.row == 0) {
                 XLDataSelectViewController *selectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
                 selectVc.type = XLDataSelectViewControllerSex;
                 selectVc.currentContent = self.patientGenderLabel.text;
@@ -154,7 +169,7 @@
                 [self pushViewController:selectVc animated:YES];
             }
             
-        }else if (indexPath.section == 1) {
+        }else if (indexPath.section == 3) {
             if (indexPath.row == 0) {
                 EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
                 allergyVc.title = @"过敏史";
@@ -168,14 +183,6 @@
                 allergyVc.title = @"既往病史";
                 allergyVc.content = self.anamnesisLabel.text;
                 allergyVc.type = EditAllergyViewControllerAnamnesis;
-                allergyVc.patient = self.patient;
-                allergyVc.delegate = self;
-                [self pushViewController:allergyVc animated:YES];
-            }else{
-                EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
-                allergyVc.title = @"备注";
-                allergyVc.content = self.patientRemarkLabel.text;
-                allergyVc.type = EditAllergyViewControllerRemark;
                 allergyVc.patient = self.patient;
                 allergyVc.delegate = self;
                 [self pushViewController:allergyVc animated:YES];
@@ -201,8 +208,8 @@
         self.allergyLabel.text = content;
     }else if (type == EditAllergyViewControllerAnamnesis){
         self.anamnesisLabel.text = content;
-    }else if (type == EditAllergyViewControllerRemark){
-        self.patientRemarkLabel.text = content;
+    }else if (type == EditAllergyViewControllerNickName){
+        self.remarkNameLabel.text = content;
     }
 }
 

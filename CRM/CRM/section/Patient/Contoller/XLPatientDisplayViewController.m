@@ -34,8 +34,10 @@
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
 #import "DBManager+sync.h"
+#import "MJRefresh.h"
 
-@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>{
+
+@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,PatientDetailViewControllerDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -49,57 +51,76 @@
 @property (nonatomic, strong)NSMutableArray *patientCellModeArray;
 @property (nonatomic,retain) NSArray *patientInfoArray;
 
+@property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
+
 @end
 
 @implementation XLPatientDisplayViewController
+
+- (NSMutableArray *)patientCellModeArray{
+    if (!_patientCellModeArray) {
+        _patientCellModeArray = [NSMutableArray array];
+    }
+    return _patientCellModeArray;
+}
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)viewWillAppear:(BOOL)animated{}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
+    self.pageNum = 0;
+    self.tableView.frame = CGRectMake(0, 44 + 80, kScreenWidth, kScreenHeight - 64 - 80 - 44);
     //初始化搜索框
     [self.view addSubview:self.searchBar];
+    [self.view addSubview:[self setUpGroupViewAndButtons]];
+    
     [self searchController];
     //添加通知
     [self addNotification];
+    
+    //设置上拉加载和下拉刷新
+    self.showRefreshHeader = YES;
+    
+    //重新请求数据
+    [self.tableView.header beginRefreshing];
 }
+
 //添加通知
 - (void)addNotification{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshAction:) name:PatientCreatedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshAction:) name:PatientEditedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshAction:) name:MedicalCaseCreatedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshAction:) name:MedicalCaseEditedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshAction:) name:PatientTransferNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initAction:) name:@"tongbu" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientCreatedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientEditedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:MedicalCaseCreatedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:MedicalCaseEditedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientTransferNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:@"tongbu" object:nil];
+}
+#pragma mark - 下拉刷新事件
+- (void)tableViewDidTriggerHeaderRefresh{
+    self.pageNum = 0;
+    //重新请求数据
+    [self requestLocalDataWithPage:self.pageNum isHeader:YES isFooter:NO];
+}
+#pragma mark - 上拉加载事件
+- (void)tableViewDidTriggerFooterRefresh{
+    //首先将页码加1
+    [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES];
 }
 
-- (void)refreshAction:(NSNotification *)noti{
-    [self refreshData];
-    [self refreshView];
-}
-
-- (void)initAction:(NSNotification *)noti{
-    [self initData];
-    [self refreshView];
-}
-
--(void)viewWillAppear:(BOOL)animated{
-    [self initData];
-    [self refreshView];
-}
-
-- (void)refreshView {
-    [self.tableView reloadData];
-}
-- (void)initData {
-        _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
-        _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
-        for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
-            Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
+//加载本地数据
+- (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter{
+        self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
+        if (self.patientInfoArray.count > 0) {
+            self.pageNum++;
+        }
+        if (isHeader) {
+            [self.patientCellModeArray removeAllObjects];
+        }
+        for (NSInteger i = 0; i < self.patientInfoArray.count; i++) {
+            Patient *patientTmp = [self.patientInfoArray objectAtIndex:i];
             PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
             cellMode.patientId = patientTmp.ckeyid;
             cellMode.introducerId = patientTmp.introducer_id;
@@ -109,39 +130,25 @@
                 cellMode.name = patientTmp.patient_name;
             }
             cellMode.phone = patientTmp.patient_phone;
-            //        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
             cellMode.introducerName = patientTmp.intr_name;
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
             cellMode.status = patientTmp.patient_status;
             cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-            [_patientCellModeArray addObject:cellMode];
+            [self.patientCellModeArray addObject:cellMode];
         }
     
-}
-
-- (void)refreshData {
-    _patientInfoArray = nil;
-    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
-    [_patientCellModeArray removeAllObjects];
-    for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
-        Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
-        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-        cellMode.patientId = patientTmp.ckeyid;
-        cellMode.introducerId = patientTmp.introducer_id;
-        
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
+    if (isHeader) {
+        if (self.patientCellModeArray.count > 50) {
+            self.showRefreshFooter = YES;
         }else{
-            cellMode.name = patientTmp.patient_name;
+            self.showRefreshFooter = NO;
         }
-        cellMode.phone = patientTmp.patient_phone;
-        //  cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
-        cellMode.introducerName = patientTmp.intr_name;
-        cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-        cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-        
-        [_patientCellModeArray addObject:cellMode];
+        [self tableViewDidFinishTriggerHeader:YES reload:NO];
+    }else if (isFooter){
+        [self tableViewDidFinishTriggerHeader:NO reload:NO];
     }
+    //刷新表示图
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -227,10 +234,6 @@
     return 40;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 80;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     static NSString *cellID = @"cellIdentifier";
@@ -249,11 +252,13 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
     PatientsCellMode *model = self.patientCellModeArray[indexPath.row];
     //跳转到新的患者详情页面
     PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
     detailVc.patientsCellMode = model;
     detailVc.hidesBottomBarWhenPushed = YES;
+    detailVc.delegate = self;
     [self.navigationController pushViewController:detailVc animated:YES];
 }
 
@@ -283,13 +288,16 @@
         } else {
             if ([type isEqualToString:@"searchTableView"]) {
                 [souryArray removeObject:cellMode];
-                [self.patientCellModeArray removeObject:cellMode];
+                
+                if ([self.patientCellModeArray containsObject:cellMode]) {
+                    [self.patientCellModeArray removeObject:cellMode];
+                }
                 //刷新表示图
                 [tableView reloadData];
-                [self refreshView];
+                [self.tableView reloadData];
             }else{
                 [souryArray removeObject:cellMode];
-                [self refreshView];
+                [self.tableView reloadData];
             }
             Patient *pateintTemp = [[DBManager shareInstance] getPatientCkeyid:cellMode.patientId];
             //自动同步信息
@@ -357,12 +365,30 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    NSMutableArray *searchResults;
     if ([searchText isNotEmpty]) {
-        searchResults = [NSMutableArray arrayWithArray:[ChineseSearchEngine resultArraySearchPatientsOnArray:self.patientCellModeArray withSearchText:searchText]];
-        
+//        searchResults = [NSMutableArray arrayWithArray:[ChineseSearchEngine resultArraySearchPatientsOnArray:self.patientCellModeArray withSearchText:searchText]];
+        NSArray *results = [[DBManager shareInstance] getPatientWithKeyWords:searchText];
         [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:searchResults];
+        for (Patient *patient in results) {
+            Patient *patientTmp = patient;
+            PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
+            cellMode.patientId = patientTmp.ckeyid;
+            cellMode.introducerId = patientTmp.introducer_id;
+            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+                cellMode.name = patientTmp.nickName;
+            }else{
+                cellMode.name = patientTmp.patient_name;
+            }
+            cellMode.phone = patientTmp.patient_phone;
+            cellMode.introducerName = patientTmp.intr_name;
+            cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
+            cellMode.status = patientTmp.patient_status;
+            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            
+            [self.searchController.resultsSource addObject:cellMode];
+        }
+        
+        
         [self.searchController.searchResultsTableView reloadData];
     
     }
@@ -386,9 +412,8 @@
 }
 
 #pragma mark - 排序按钮点击
--(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    
-    UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 80)];
+- (UIView *)setUpGroupViewAndButtons{
+    UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, 80)];
     superView.backgroundColor = [UIColor whiteColor];
     
     UIView *groupView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
@@ -396,10 +421,6 @@
     UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [groupView addGestureRecognizer:tapAction];
     [superView addSubview:groupView];
-    
-//    UIView *toplineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 1)];
-//    toplineView.backgroundColor = MyColor(188, 186, 193);
-//    [groupView addSubview:toplineView];
     
     UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"group_gray"]];
     iconView.frame = CGRectMake(20, 13, 16, 14);
@@ -415,9 +436,9 @@
     arrowView.frame = CGRectMake(kScreenWidth - 10 - 15, 12.5, 15, 15);
     [groupView addSubview:arrowView];
     
-//    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39, kScreenWidth, 10)];
-//    lineView.backgroundColor = MyColor(188, 186, 193);
-//    [groupView addSubview:lineView];
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39, kScreenWidth, 10)];
+    lineView.backgroundColor = [UIColor colorWithHex:0xdddddd];
+    [groupView addSubview:lineView];
     
     
     UIView *bgView = [[UIView alloc]init];
@@ -425,9 +446,9 @@
     [superView addSubview:bgView];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
-//    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
-//    label.backgroundColor = MyColor(188, 186, 193);
-//    [bgView addSubview:label];
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, 320, 1)];
+    label.backgroundColor = [UIColor colorWithHex:0xdddddd];
+    [bgView addSubview:label];
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"患者" forState:UIControlStateNormal];
@@ -625,6 +646,20 @@
         
         
     }
+}
+
+#pragma mark - PatientDetailViewControllerDelegate
+- (void)didLoadDataSuccessWithModel:(PatientsCellMode *)model{
+    [SVProgressHUD showSuccessWithStatus:@"CT片下载成功，正在加载数据"];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //跳转到新的患者详情页面
+        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+        detailVc.patientsCellMode = model;
+        detailVc.hidesBottomBarWhenPushed = YES;
+        detailVc.delegate = self;
+        [self.navigationController pushViewController:detailVc animated:YES];
+    });
+    
 }
 
 @end

@@ -4,6 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CommonCrypto/CommonCryptor.h>
 
 @interface NSString (TTMAddtion)
 
@@ -137,6 +138,13 @@
 #pragma mark - MD5加密
 - (NSString *)md5Encrypt;
 
+#pragma mark - ThreeDES加密
++ (NSString*)encrypt:(NSString*)plainText withKey:(NSString*)key;
++ (NSString*)decrypt:(NSString*)encryptText withKey:(NSString*)key;
+- (NSString*) sha1;
+#pragma mark - ThreeDES加密方法二
++ (NSString *)TripleDES:(NSString *)plainText encryptOrDecrypt:(CCOperation)encryptOrDecrypt encryptOrDecryptKey:(NSString *)encryptOrDecryptKey;
+
 #pragma mark - 返回json对象
 - (id)JSONObject;
 
@@ -211,11 +219,5 @@
  */
 + (NSString *)stringwithNumber:(NSNumber *)number;
 
-/**
- *  到现在的时间
- *
- *  @return return value description
- */
-- (NSString *)timeToNow;
 
 @end

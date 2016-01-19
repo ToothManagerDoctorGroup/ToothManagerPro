@@ -45,7 +45,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+//    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     self.view.backgroundColor = [UIColor whiteColor];
     //创建视图

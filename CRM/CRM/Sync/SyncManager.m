@@ -11,8 +11,7 @@
 #import "CRMHttpRequest+Sync.h"
 #import "DBManager+sync.h"
 #import "SVProgressHUD.h"
-
-
+#import "AFHTTPRequestOperation.h"
 
 @interface SyncManager() <dataSyncResult>
 {
@@ -23,6 +22,7 @@
 - (void)startSync;
 
 @property (nonatomic, strong)NSMutableArray *tableNameArr;
+@property (nonatomic, strong)NSOperationQueue *operationQueue;
 
 @end
 
@@ -393,26 +393,27 @@ Realize_ShareInstance(SyncManager);
 //download
     
 #pragma mark - **************************GCD实现多线程的下载操作*****************
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getMaterialTable];
-
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getIntroducerTable];
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getMaterialTable];
+        
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getIntroducerTable];
+        
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getReserverecordTable];
+        
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getPatIntrMapTable];
+        
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getRepairDoctorTable];
+        
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getDoctorTable];
+        
+        [NSThread sleepForTimeInterval: 0.5];
+        [[CRMHttpRequest shareInstance] getPatientTable];
     
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getReserverecordTable];
-    
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getPatIntrMapTable];
-    
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getRepairDoctorTable];
-
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getDoctorTable];
-
-    [NSThread sleepForTimeInterval: 0.2];
-    [[CRMHttpRequest shareInstance] getPatientTable];
 //    //开启一个全局队列
 //    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 ////    dispatch_queue_t queue = dispatch_queue_create("serialQueue", DISPATCH_QUEUE_SERIAL);//创建串行队列

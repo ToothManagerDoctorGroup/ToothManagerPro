@@ -139,25 +139,31 @@
 
 - (void)requestData {
     [SVProgressHUD showWithStatus:@"正在加载..."];
+    __weak typeof(self) weakSelf = self;
     [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
-        
         _patientCellModeArray = [NSMutableArray arrayWithArray:result];
-        
-        if (self.GroupMembers.count > 0) {
-            for (GroupMemberModel *member in self.GroupMembers) {
-                for (GroupMemberModel *patient in _patientCellModeArray) {
-                    if ([member.ckeyid isEqualToString:patient.ckeyid]) {
-                        patient.isMember = YES;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            if (weakSelf.GroupMembers.count > 0) {
+                for (GroupMemberModel *member in weakSelf.GroupMembers) {
+                    for (GroupMemberModel *patient in _patientCellModeArray) {
+                        if ([member.ckeyid isEqualToString:patient.ckeyid]) {
+                            patient.isMember = YES;
+                        }
                     }
                 }
             }
-        }
-        [_tableView reloadData];
-        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD dismiss];
+                [weakSelf reloadTableView];
+            });
+        });
     } failure:^(NSError *error) {
         [SVProgressHUD dismiss];
     }];
+}
+
+- (void)reloadTableView{
+    [_tableView reloadData];
 }
 
 - (void)onRightButtonAction:(id)sender{

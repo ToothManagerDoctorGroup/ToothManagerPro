@@ -58,7 +58,25 @@
  *@brief 获取患者表中全部患者
  *@return NSArray 返回患者数组，没有则为nil
  */
-- (NSArray *)getAllIntroducer;
+- (NSArray *)getAllIntroducerWithPage:(int)page;
+
+/**
+ *  获取本地介绍人数据
+ *
+ *  @param page 页码
+ *
+ *  @return 介绍人数组
+ */
+- (NSArray *)getLocalIntroducerWithPage:(int)page;
+
+/**
+ *  根据介绍人姓名模糊查询
+ *
+ *  @param name 介绍人姓名
+ *
+ *  @return 介绍人数组
+ */
+- (NSArray *)getIntroducerByName:(NSString *)name;
 
 /**
  *  获取介绍人介绍的病人个数

@@ -15,9 +15,12 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
+#import "XLPatientTotalInfoModel.h"
+#import "SDWebImageManager.h"
+#import "PatientManager.h"
 
-
-#define PageCount 5
+#define PageCount 200
+#define ImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 @implementation DBManager (Patients)
 
 /*
@@ -680,7 +683,7 @@
 #endif
 
 
-- (NSArray *)getAllPatient{
+- (NSArray *)getAllPatientWithPage:(int)page{
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
@@ -695,7 +698,7 @@
          
         // NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where doctor_id=\"%@\" union select * from patient_version2 where ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select * from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[intr_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
          
-  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid];
+  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc limit %i,%i",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,page * PageCount,PageCount];
       
          //PatientTableName,PatientTableName,PatIntrMapTableName,IntroducerTableName,PatIntrMapTableName,IntroducerTableName,PatIntrMapTableName,MedicalExpenseTableName
          
@@ -747,6 +750,31 @@
     return resultArray;
 }
 
+- (NSArray *)getPatientWithKeyWords:(NSString *)keyWord{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         
+         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join medical_expense_version2 e on a.[ckeyid]=e.patient_id where a.[patient_name] like '%%%@%%' or a.[nickname] like '%%%@%%' or patient_phone like '%%%@%%' group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,keyWord,keyWord,keyWord];
+         
+
+         
+         result = [db executeQuery:sqlString];
+
+         while ([result next])
+         {
+             Patient * patient = [Patient patientlWithResult:result];
+             [resultArray addObject:patient];
+         }
+         [result close];
+     }];
+    
+    return resultArray;
+}
+
 /**
  *  更具类型获取患者
  *
@@ -754,11 +782,11 @@
  *
  *  @return 患者数组
  */
-- (NSArray *)getPatientsWithStatus:(PatientStatus )status {
+- (NSArray *)getPatientsWithStatus:(PatientStatus )status page:(int)page{
     __block FMResultSet* result = nil;
     
     if (status == PatientStatuspeAll) {
-        return [self getAllPatient];
+        return [self getAllPatientWithPage:page];
     }
     
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
@@ -767,11 +795,11 @@
      {
          NSString * sqlString = nil;
          if (status == PatientStatuspeAll) {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,[AccountManager currentUserid], [NSString defaultDateString]];
+             sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount];
          } else if (status == PatientStatusUntreatUnPlanted) {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status <= %ld and patient_status >= %ld and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,(long)PatientStatusUnplanted,(long)PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString]];
+             sqlString = [NSString stringWithFormat:@"select * from w@ where patient_status <= %ld and patient_status >= %ld and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(long)PatientStatusUnplanted,(long)PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
          } else {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString]];
+             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
          }
          result = [db executeQuery:sqlString];
          while ([result next])
@@ -2535,5 +2563,95 @@
     }];
     return resultArray;
 }
+
+- (BOOL)saveAllDownloadPatientInfoWithPatientModel:(XLPatientTotalInfoModel *)model{
+    NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count + model.introducerMap.count;
+    NSInteger current = 0;
+    //保存患者消息
+    Patient *patient = [Patient PatientFromPatientResult:model.baseInfo];
+    [self insertPatient:patient];
+    //稍后条件判断是否成功的代码
+    if([self insertPatientBySync:patient]){
+        current++;
+    };
+    
+    //判断medicalCase数据是否存在
+    if (model.medicalCase.count > 0) {
+        //保存病历数据
+        for (NSDictionary *dic in model.medicalCase) {
+            MedicalCase *medicalCase = [MedicalCase MedicalCaseFromPatientMedicalCase:dic];
+            if([self insertMedicalCase:medicalCase]){
+                current++;
+            };
+        }
+        
+    }
+    //判断medicalCourse数据是否存在
+    if (model.medicalCourse.count > 0) {
+        for (NSDictionary *dic in model.medicalCourse) {
+            MedicalRecord *medicalrecord = [MedicalRecord MRFromMRResult:dic];
+            if([self insertMedicalRecord:medicalrecord]){
+                current++;
+            }
+        }
+    }
+    
+    //判断CT数据是否存在
+    if (model.cT.count > 0) {
+        for (NSDictionary *dic in model.cT) {
+            CTLib *ctlib = [CTLib CTLibFromCTLibResult:dic];
+            if([self insertCTLib:ctlib]){
+                current++;
+            }
+            if ([ctlib.ct_image isNotEmpty]) {
+                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+                NSURL *imageUrl = [NSURL URLWithString:urlImage];
+                
+                [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageLowPriority|SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                    if (nil != image) {
+                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                    }
+                }];
+            }
+        }
+    }
+    
+    //判断consultation数据是否存在
+    if (model.consultation.count > 0) {
+        for (NSDictionary *dic in model.consultation) {
+            PatientConsultation *patientC = [PatientConsultation PCFromPCResult:dic];
+            if([self insertPatientConsultation:patientC]){
+                current++;
+            }
+        }
+    }
+    
+    //判断expense数据是否存在
+    if (model.expense.count > 0) {
+        for (NSDictionary *dic in model.expense) {
+            MedicalExpense *medicalexpense = [MedicalExpense MEFromMEResult:dic];
+            if([self insertMedicalExpenseWith:medicalexpense]){
+                current++;
+            }
+        }
+    }
+    
+    //判断introducerMap数据是否存在
+    if (model.introducerMap.count > 0) {
+        for (NSDictionary *dic in model.introducerMap) {
+            PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
+            if ([self insertPatientIntroducerMap:map]) {
+                current++;
+            }
+        }
+    }
+    if (total == current) {
+        //都保存成功
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
 
 @end

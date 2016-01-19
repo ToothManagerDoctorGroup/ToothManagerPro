@@ -74,9 +74,14 @@ typedef CGFloat Money;
 @property (nonatomic, copy)NSString *doctor_cv; //医生个人简介
 @property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
 
+/**
+ *  介绍患者的数量，只在好友列表里用
+ */
+@property (nonatomic, copy)NSString *patient_count;
+
 +(Doctor *)doctorlWithResult:(FMResultSet *)result;
 + (Doctor *)DoctorFromDoctorResult:(NSDictionary *)dic;
-
++ (Doctor *)DoctorWithPatientCountFromDoctorResult:(NSDictionary *)dic;
 @end
 
 @interface RepairDoctor : Doctor

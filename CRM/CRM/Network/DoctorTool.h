@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class DoctorInfoModel,CRMHttpRespondModel;
+@class DoctorInfoModel,CRMHttpRespondModel,XLQueryModel;
 @interface DoctorTool : NSObject
 
 /*获取医生的详细信息*/
@@ -66,5 +66,15 @@
  */
 + (void)transferPatientWithPatientId:(NSString *)patientId doctorId:(NSString *)doctorId receiverId:(NSString *)receiverId success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure;
 
+/**
+ *  分页查询好友信息
+ *
+ *  @param doctorId  医生id
+ *  @param sync_time 同步时间
+ *  @param info      排序字段
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)getDoctorFriendListWithDoctorId:(NSString *)doctorId syncTime:(NSString *)sync_time queryInfo:(XLQueryModel *)info success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
 
 @end

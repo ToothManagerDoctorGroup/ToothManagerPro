@@ -485,6 +485,38 @@ NSString * const Repaired = @"已修复";
     tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
     tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
     tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    
+    return tmpDoctor;
+}
+
++ (Doctor *)DoctorWithPatientCountFromDoctorResult:(NSDictionary *)dic{
+    Doctor *tmpDoctor = [[Doctor alloc]init];
+    tmpDoctor.ckeyid = [dic stringForKey:@"doctor_id"];
+    tmpDoctor.creation_date = [dic stringForKey:@"creation_time"];
+    tmpDoctor.doctor_certificate = [dic stringForKey:@"doctor_certificate"];
+    tmpDoctor.doctor_name = [dic stringForKey:@"doctor_name"];
+    tmpDoctor.doctor_phone = [dic stringForKey:@"doctor_phone"];
+    tmpDoctor.doctor_position = [dic stringForKey:@"doctor_position"];
+    tmpDoctor.doctor_degree = [dic stringForKey:@"doctor_degree"];
+    tmpDoctor.doctor_image = [dic stringForKey:@"doctor_image"];
+    tmpDoctor.doctor_dept = [dic stringForKey:@"doctor_dept"];
+    tmpDoctor.doctor_hospital = [dic stringForKey:@"doctor_hospital"];
+    tmpDoctor.auth_status = [dic integerForKey:@"doctor_is_verified"];
+    tmpDoctor.auth_text = [dic stringForKey:@"doctor_verify_reason"];
+    tmpDoctor.isopen = [dic integerForKey:@"is_open"];
+    tmpDoctor.sync_time =[dic stringForKey:@"sync_time"];
+    tmpDoctor.doctor_email = @"";
+    tmpDoctor.auth_pic = @"";
+    tmpDoctor.update_date = [NSString defaultDateString];
+    tmpDoctor.doctor_id = [dic stringForKey:@"doctor_id"];
+    tmpDoctor.user_id = [AccountManager currentUserid];
+    
+    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
+    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    
+    tmpDoctor.patient_count = [dic stringForKey:@"patient_count"];
     return tmpDoctor;
 }
 

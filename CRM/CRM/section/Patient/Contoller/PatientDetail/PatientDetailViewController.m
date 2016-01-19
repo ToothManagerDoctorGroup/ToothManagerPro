@@ -45,6 +45,12 @@
 
 #import "DBManager+Doctor.h"
 #import "MyPatientTool.h"
+#import "XLPatientTotalInfoModel.h"
+#import "PatientManager.h"
+#import "DBManager+Materials.h"
+#import "UIColor+Extension.h"
+#import "EditPatientDetailViewController.h"
+#import "SDWebImageManager.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -102,7 +108,7 @@
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"查看预约",@"转诊患者",@"转为介绍人", nil];
+        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"查看预约",@"转诊患者",@"转为介绍人",@"下载CT片", nil];
     }
     return _menuList;
 }
@@ -323,12 +329,12 @@
     }
     
     if (_headerMedicalView == nil) {
-        _headerMedicalView = [[PatientHeadMedicalRecordView alloc] initWithFrame:CGRectMake(5, _headerInfoView.bottom + 5, kScreenWidth - 10, 260)];
+        _headerMedicalView = [[PatientHeadMedicalRecordView alloc] initWithFrame:CGRectMake(5, _headerInfoView.bottom + 5, kScreenWidth - 10, 300)];
         _headerMedicalView.delegate = self;
         
     }
     if (_headerView == nil) {
-        _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, [_headerInfoView getTotalHeight] + 270)];
+        _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, [_headerInfoView getTotalHeight] + 310)];
         [_headerView addSubview:_headerInfoView];
         [_headerView addSubview:_headerMedicalView];
     }
@@ -388,7 +394,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     //第一组的头视图
     UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
-    headView.backgroundColor = MyColor(26, 155, 236);
+    headView.backgroundColor = [UIColor colorWithHex:0x00a0ea];
     //头视图上的标题
     UIButton *consultationButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [consultationButton setTitle:@"会诊信息" forState:UIControlStateNormal];
@@ -477,25 +483,150 @@
 {
     [self.menuPopover dismissMenuPopover];
     if (selectedIndex == 0) {
+        //编辑患者
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        EditPatientDetailViewController *editDetail = [storyboard instantiateViewControllerWithIdentifier:@"EditPatientDetailViewController"];
+        editDetail.patient = self.detailPatient;
+        [self pushViewController:editDetail animated:YES];
+        
+    }else if (selectedIndex == 1){
         //查看预约
         XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
         appointVc.patient_id = self.detailPatient.ckeyid;
         [self pushViewController:appointVc animated:YES];
-        
-    }else if(selectedIndex == 1){
-        [self referralAction:nil];
     }else if(selectedIndex == 2){
+        [self referralAction:nil];
+    }else if(selectedIndex == 3){
         //判断当前介绍人是否存在
         if([[DBManager shareInstance] isInIntroducerTable:_detailPatient.patient_phone]){
             [SVProgressHUD showImage:nil status:@"介绍人已存在，不能重复转换"];
         }else{
-            [[IntroducerManager shareInstance]patientToIntroducer:[AccountManager shareInstance].currentUser.userid withCkeyId:_detailPatient.ckeyid withName:_detailPatient.patient_name withPhone:_detailPatient.patient_phone successBlock:^{
+            [[IntroducerManager shareInstance] patientToIntroducer:[AccountManager shareInstance].currentUser.userid withCkeyId:_detailPatient.ckeyid withName:_detailPatient.patient_name withPhone:_detailPatient.patient_phone successBlock:^{
                 [SVProgressHUD showWithStatus:@"正在转换..."];
             }failedBlock:^(NSError *error){
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }
+    }else if (selectedIndex == 4){
+        //更新当前患者的所有数据
+        [SVProgressHUD showWithStatus:@"正在下载CT片"];
+        [MyPatientTool getPatientAllInfosWithPatientId:self.detailPatient.ckeyid doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
+            //保存数据到数据库
+            [self savePatientDataWithModel:[results lastObject]];
+        } failure:^(NSError *error) {
+            [SVProgressHUD showErrorWithStatus:@"患者CT片更新失败"];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
     }
+}
+#pragma mark - 保存所有的患者数据到数据库
+- (void)savePatientDataWithModel:(XLPatientTotalInfoModel *)model{
+    
+    NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count + model.introducerMap.count;
+    NSInteger current = 0;
+    //保存患者消息
+    Patient *patient = [Patient PatientFromPatientResult:model.baseInfo];
+    [[DBManager shareInstance] insertPatient:patient];
+    //稍后条件判断是否成功的代码
+    if([[DBManager shareInstance] insertPatientBySync:patient]){
+        current++;
+    };
+    
+    //判断medicalCase数据是否存在
+    if (model.medicalCase.count > 0) {
+        //保存病历数据
+        for (NSDictionary *dic in model.medicalCase) {
+            MedicalCase *medicalCase = [MedicalCase MedicalCaseFromPatientMedicalCase:dic];
+            if([[DBManager shareInstance] insertMedicalCase:medicalCase]){
+                current++;
+            };
+        }
+        
+    }
+    //判断medicalCourse数据是否存在
+    if (model.medicalCourse.count > 0) {
+        for (NSDictionary *dic in model.medicalCourse) {
+            MedicalRecord *medicalrecord = [MedicalRecord MRFromMRResult:dic];
+            if([[DBManager shareInstance] insertMedicalRecord:medicalrecord]){
+                current++;
+            }
+        }
+    }
+    
+    //判断CT数据是否存在
+    if (model.cT.count > 0) {
+        for (NSDictionary *dic in model.cT) {
+            CTLib *ctlib = [CTLib CTLibFromCTLibResult:dic];
+            if([[DBManager shareInstance] insertCTLib:ctlib]){
+                current++;
+            }
+            if ([ctlib.ct_image isNotEmpty]) {
+                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+                NSURL *imageUrl = [NSURL URLWithString:urlImage];
+                if ([PatientManager IsImageExisting:ctlib.ct_image]) {
+                    [[SDImageCache sharedImageCache] removeImageForKey:ctlib.ct_image];
+                }
+                [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                    if (nil != image) {
+                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                    }
+                }];
+                
+            }
+        }
+    }
+    
+    //判断consultation数据是否存在
+    if (model.consultation.count > 0) {
+        for (NSDictionary *dic in model.consultation) {
+            PatientConsultation *patientC = [PatientConsultation PCFromPCResult:dic];
+            if([[DBManager shareInstance] insertPatientConsultation:patientC]){
+                current++;
+            }
+        }
+    }
+    
+    //判断expense数据是否存在
+    if (model.expense.count > 0) {
+        for (NSDictionary *dic in model.expense) {
+            MedicalExpense *medicalexpense = [MedicalExpense MEFromMEResult:dic];
+            if([[DBManager shareInstance] insertMedicalExpenseWith:medicalexpense]){
+                current++;
+            }
+        }
+    }
+    
+    //判断introducerMap数据是否存在
+    if (model.introducerMap.count > 0) {
+        for (NSDictionary *dic in model.introducerMap) {
+            PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
+            if ([[DBManager shareInstance] insertPatientIntroducerMap:map]) {
+                current++;
+            }
+        }
+    }
+    if (total == current) {
+//        [SVProgressHUD showSuccessWithStatus:@"CT片下载成功，请重新打开患者信息"];
+//        if (self.delegate && [self.delegate respondsToSelector:@selector(didLoadDataSuccessWithModel:)]) {
+//            [self.delegate didLoadDataSuccessWithModel:self.patientsCellMode];
+//        }
+//        [self popViewControllerAnimated:YES];
+        [self refreshData];
+        
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"患者CT片下载失败"];
+    }
+}
+//获取图片
+-(UIImage *) getImageFromURL:(NSString *)fileURL {
+    UIImage * result;
+    
+    NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileURL]];
+    result = [UIImage imageWithData:data];
+    
+    return result;
 }
 //转诊患者
 - (void)referralAction:(id)sender {
@@ -522,26 +653,9 @@
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showImage:nil status:@"转换成功"];
         //存入介绍人库
-        Introducer *introducer = [[Introducer alloc]init];
-        introducer.intr_name = _detailPatient.patient_name;
-        introducer.intr_phone = _detailPatient.patient_phone;
-        introducer.intr_id = @"0";
+        Introducer *introducer = [Introducer IntroducerFromIntroducerResult:[self dicFromJsonStr:result[@"Result"]]];
         [[DBManager shareInstance] insertIntroducer:introducer];
         
-        //获取介绍人信息
-        Introducer *intro = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
-        if (intro != nil) {
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[intro.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-        }
-        
-        
-        
-//        NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
-//        if (0 != [recordArray count])
-//        {
-//            [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
-//        }
         XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
         [self pushViewController:introducerVC animated:YES];
     } else {
@@ -550,6 +664,15 @@
 }
 - (void)patientToIntroducerFailed:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
+#pragma mark - 将json字符串转换为字典
+- (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr{
+    NSData *jsonData = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:nil];
+    return dic;
 }
 
 #pragma mark -PatientHeadMedicalRecordViewDelegate

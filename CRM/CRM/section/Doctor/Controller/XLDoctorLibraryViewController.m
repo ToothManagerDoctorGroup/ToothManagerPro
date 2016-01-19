@@ -25,13 +25,15 @@
 #import "CacheFactory.h"
 #import "IntroducerManager.h"
 #import "ChatViewController.h"
+#import "XLQueryModel.h"
+#import "MJRefresh.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
     UITableView *_tableView;
 }
 
 @property (nonatomic,retain) NSArray *modeArray;
-@property (nonatomic,retain) NSArray *searchHistoryArray;
+@property (nonatomic,retain) NSMutableArray *searchHistoryArray;
 @property (nonatomic,retain) Doctor *selectDoctor;
 
 @property (nonatomic, strong)Doctor *deleteDoctor;//当前要删除的医生好友
@@ -41,6 +43,10 @@
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
+@property (nonatomic, strong)XLQueryModel *queryModel;//分页所需的模型
+
+@property (nonatomic, assign)int pageIndex;
+
 @end
 
 @implementation XLDoctorLibraryViewController
@@ -49,6 +55,13 @@
 @synthesize patientId;
 
 #pragma mark - 界面销毁
+- (NSMutableArray *)searchHistoryArray{
+    if (!_searchHistoryArray) {
+        _searchHistoryArray = [NSMutableArray array];
+    }
+    return _searchHistoryArray;
+}
+
 - (void)dealloc{
     self.searchBar = nil;
     self.searchController = nil;
@@ -116,7 +129,8 @@
                         //删除成功
                         [weakSelf.searchController.resultsSource removeObject:doctor];
                         [tableView reloadData];
-                        [weakSelf requestWlanData];
+                        [weakSelf headerRefreshAction];
+                        
                     }else{
                         [SVProgressHUD showErrorWithStatus:@"删除失败"];
                     }
@@ -137,77 +151,82 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.pageIndex = 1;
     if (!self.isTherapyDoctor) {
         [[AccountManager shareInstance] getFriendsNotificationListWithUserid:[AccountManager currentUserid] successBlock:^{
         } failedBlock:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
         }];
     }
+    //加载数据
+    [self initSubViews];
+    
+    [_tableView.header beginRefreshing];
 }
 
-- (void)initView {
-    [super initView];
+- (void)initSubViews{
+
     self.title = @"医生好友";
     self.view.backgroundColor = MyColor(238, 238, 238);
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, self.view.height - 44) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 * 2, kScreenWidth, kScreenHeight - 64 - 44 * 2) style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_tableView];
     
+    //添加上拉刷新和下拉加载
+    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    _tableView.header.updatedTimeHidden = YES;
+    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
+    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
-}
-
-- (void)initData {
     
-    if (self.searchHistoryArray == nil) {
-        self.searchHistoryArray = @[];
-    }
-    [self requestWlanData];
+    [self.view addSubview:[self setUpNewFriendView]];
+}
+#pragma mark - 下拉刷新数据
+- (void)headerRefreshAction{
+    self.pageIndex = 1;
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(200)];
+    [self requestWlanDataWithQueryModel:queryModel isHeader:YES];
+}
+#pragma mark - 上拉加载数据
+- (void)footerRefreshAction{
+    self.pageIndex++;
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(200)];
+    [self requestWlanDataWithQueryModel:queryModel isHeader:NO];
 }
 
 #pragma mark - 请求网络数据
-- (void)requestWlanData{
+- (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
+    if (isHeader) {
+        [self.searchHistoryArray removeAllObjects];
+    }
     //请求网络数据
-    [SVProgressHUD showWithStatus:@"正在加载"];
-    [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] success:^(NSArray *array) {
-        
-        self.searchHistoryArray = array;
-        //排序
-        [self orderedByNumber];
-        
+    [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         [SVProgressHUD dismiss];
+        //将数据添加到数组中
+        [self.searchHistoryArray addObjectsFromArray:array];
+        
+        if (self.searchHistoryArray.count < 50) {
+            [_tableView removeFooter];
+        }
+        
+        if (isHeader) {
+            [_tableView.header endRefreshing];
+        }else{
+            [_tableView.footer endRefreshing];
+        }
+        //刷新表格
         [_tableView reloadData];
-        //获取数据库中所有的医生信息
-        NSArray *dbDoctors = [[DBManager shareInstance] getAllDoctor];
-        NSMutableArray *missDoctors = [NSMutableArray array];
-        for (Doctor *inDoctor in array) {
-            BOOL isExists = NO;
-            for (Doctor *doctor in dbDoctors) {
-                if ([inDoctor.ckeyid isEqualToString:doctor.ckeyid]) {
-                    isExists = YES;
-                }
-            }
-            if (!isExists) {
-                [missDoctors addObject:inDoctor];
-            }
-        }
-        //将所有本地不存在的医生存入本地数据库
-        if (missDoctors.count > 0) {
-            for (Doctor *doc in missDoctors) {
-                if([[DBManager shareInstance] insertDoctorWithDoctor:doc]){
-                    [_tableView reloadData];
-                }
-            }
-        }
         
     } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -234,7 +253,8 @@
     for(NSInteger i = lastArray.count;i>0;i--){
         [resultArray addObject:lastArray[i-1]];
     }
-    self.searchHistoryArray = [NSArray arrayWithArray:resultArray];
+    [self.searchHistoryArray removeAllObjects];
+    [self.searchHistoryArray addObjectsFromArray:resultArray];
 }
 #pragma mark - 医生广场入口
 - (void)onRightButtonAction:(id)sender {
@@ -252,12 +272,10 @@
     return 68.f;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 44;
-}
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 44)];
+- (UIView *)setUpNewFriendView{
+    
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, 44)];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(newFriendAction:)];
     [headerView addGestureRecognizer:tap];
     
@@ -334,8 +352,7 @@
     
     Doctor *doctor = [sourceArray objectAtIndex:indexPath.row];
     [cell setCellWithMode:doctor];
-    NSInteger count = [[DBManager shareInstance] getAllPatientWithID:doctor.ckeyid].count;
-    [cell.addButton setTitle:[NSString stringWithFormat:@"%ld",(long)count] forState:UIControlStateNormal];
+    [cell.addButton setTitle:doctor.patient_count forState:UIControlStateNormal];
     cell.addButton.enabled = NO;
     
     return cell;
@@ -404,8 +421,7 @@
                     //删除成功
                     [self.searchController.resultsSource removeObject:self.deleteDoctor];
 
-                    
-                    [self requestWlanData];
+                    [_tableView.header beginRefreshing];
                 }else{
                     [SVProgressHUD showErrorWithStatus:@"删除失败"];
                 }
@@ -523,13 +539,22 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    NSArray *searchResults;
     if ([searchText isNotEmpty]) {
-        searchResults = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
+        //请求网络数据
+        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(50)];
+        [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         
-        [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:searchResults];
-        [self.searchController.searchResultsTableView reloadData];
+                [self.searchController.resultsSource removeAllObjects];
+                [self.searchController.resultsSource addObjectsFromArray:array];
+                [self.searchController.searchResultsTableView reloadData];
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+//        searchResults = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
+        
+        
     }
 }
 

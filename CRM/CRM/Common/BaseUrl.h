@@ -16,7 +16,8 @@
 #define Method_ClinicServer @"clinicServer"
 #define Method_Sys @"sys"
 
-
+#define MyImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
+#define ImageFilePath(a,b) ([NSString stringWithFormat:@"%@%@_%@", MyImageDown, a, b])
 //通用设置通知
 #define AutoSyncTimeChangeNotification @"AutoSyncTimeChangeNotification"
 #define AutoSyncStateChangeNotification @"AutoSyncStateChangeNotification"

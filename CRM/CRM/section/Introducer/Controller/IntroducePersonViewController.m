@@ -69,7 +69,7 @@
 
 - (void)initData
 {
-    introducerInfoArray = [[DBManager shareInstance] getAllIntroducer];
+    introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:0];
     introducerCellModeArray = [NSMutableArray arrayWithCapacity:0];
     for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
         Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];
@@ -84,7 +84,7 @@
 
 - (void)refreshData {
     introducerInfoArray = nil;
-    introducerInfoArray = [[DBManager shareInstance] getAllIntroducer];
+    introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:0];
     [introducerCellModeArray removeAllObjects];
     for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
         Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];

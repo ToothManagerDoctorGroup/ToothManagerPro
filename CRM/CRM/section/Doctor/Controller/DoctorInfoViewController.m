@@ -65,7 +65,6 @@
         cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
         [_patientCellModeArray addObject:cellMode];
     }
-    
 }
 
 - (void)refreshView {
@@ -146,7 +145,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 

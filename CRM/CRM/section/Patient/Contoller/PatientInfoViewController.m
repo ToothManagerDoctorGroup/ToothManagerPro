@@ -163,7 +163,7 @@
 - (void)updateIntroducerNameTextFieldState{
     //“介绍人”若在本地介绍人库里，则可修改。若为网络介绍人则不可修改。
     NSArray *introducerInfoArray = [[NSArray alloc]init];
-    introducerInfoArray = [[DBManager shareInstance] getAllIntroducer];
+    introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:0];
     NSMutableArray *allIntroducerArray = [NSMutableArray arrayWithCapacity:0];
     for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
         Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];

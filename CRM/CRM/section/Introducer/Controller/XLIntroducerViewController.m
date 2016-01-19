@@ -25,6 +25,7 @@
 #import "JSONKit.h"
 #import "AddressBookViewController.h"
 #import "CreateIntroducerViewController.h"
+#import "MJRefresh.h"
 
 @interface XLIntroducerViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDataSource,UITableViewDelegate,MudItemsBarDelegate>{
     UITableView *_tableView;
@@ -34,16 +35,29 @@
 @property (nonatomic) BOOL isBarHidden;
 @property (nonatomic,retain) NSMutableArray * introducerCellModeArray;
 @property (nonatomic,retain) NSArray * introducerInfoArray;
-@property (nonatomic,readwrite) BOOL useSearchResult;
-@property (nonatomic,retain) NSArray *searchResults;
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
+@property (nonatomic, assign)int pageCount;//分页使用的页数，默认是0
+
 @end
 
-@implementation XLIntroducerViewController
-@synthesize introducerInfoArray,introducerCellModeArray,useSearchResult = _useSearchResult,searchResults = _searchResults;
+@implementation XLIntroducerViewController;
+
+- (NSMutableArray *)introducerCellModeArray{
+    if (!_introducerCellModeArray) {
+        _introducerCellModeArray = [NSMutableArray array];
+    }
+    return _introducerCellModeArray;
+}
+
+- (NSArray *)introducerInfoArray{
+    if (!_introducerInfoArray) {
+        _introducerInfoArray = [NSArray array];
+    }
+    return _introducerInfoArray;
+}
 
 - (void)dealloc {
     [self removeNotificationObserver];
@@ -55,6 +69,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self addNotificationObserver];
+    
+    //请求患者数据
+    self.pageCount = 0;
+    
+    //加载子视图
+    [self initSubViews];
+    
+    //加载数据
+    [_tableView.header beginRefreshing];
+    
 }
 
 #pragma mark - 控件初始化
@@ -104,18 +128,22 @@
             
             TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
             } comfirmButtonHandlder:^{
-                Introducer *intro = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
+                IntroducerCellMode *introCell = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
+                Introducer *intro = [[DBManager shareInstance] getIntroducerByCkeyId:introCell.ckeyid];
                 BOOL ret = [[DBManager shareInstance] deleteIntroducerWithId:intro.ckeyid];
                 if (ret) {
                     //删除介绍人自动同步信息
                     InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Delete dataEntity:[intro.keyValues JSONString] syncStatus:@"0"];
                     [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     
-                    [weakSelf.searchController.resultsSource removeObject:intro];
+                    [weakSelf.searchController.resultsSource removeObject:introCell];
                     [tableView reloadData];
                     
-                    [weakSelf refreshData];
-                    [weakSelf refreshView];
+                    if ([weakSelf.introducerCellModeArray containsObject:introCell]) {
+                        [weakSelf.introducerCellModeArray removeObject:introCell];
+                    }
+                    [weakSelf refreshTableView];
+                    
                 }
                 
             }];
@@ -125,11 +153,14 @@
     return _searchController;
 }
 
-- (void)initView {
-    [super initView];
+- (void)refreshTableView{
+    [_tableView reloadData];
+}
+
+- (void)initSubViews{
     if (self.isHome) {
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+//        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     }else{
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
@@ -143,87 +174,80 @@
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_tableView];
-    
+    //添加头部刷新控件
+    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    _tableView.header.updatedTimeHidden = YES;
+    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
 }
 
-- (void)refreshView {
-    [super refreshView];
-    [_tableView reloadData];
+#pragma mark - 下拉刷新
+- (void)headerRefreshAction{
+    self.pageCount = 0;
+    [self requestLocalDataWitPage:self.pageCount isHeader:YES];
+}
+#pragma mark - 上拉加载
+- (void)footerRefreshAction{
+    [self requestLocalDataWitPage:self.pageCount isHeader:NO];
 }
 
-- (void)initData
+#pragma mark - 请求本地介绍人数据
+- (void)requestLocalDataWitPage:(int)pageCount isHeader:(BOOL)isHeader
 {
-    [super initData];
     self.isBarHidden = YES;
-    introducerInfoArray = [[DBManager shareInstance] getAllIntroducer];
-    introducerCellModeArray = [NSMutableArray arrayWithCapacity:0];
-    for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
-        Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];
+    if (self.Mode == IntroducePersonViewSelect) {
+        self.introducerInfoArray = [[DBManager shareInstance] getLocalIntroducerWithPage:self.pageCount];
+    }else {
+        self.introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:pageCount];
+    }
+    if (self.introducerInfoArray.count > 50) {
+        self.pageCount++;
+    }
+    if (isHeader) {
+        [self.introducerCellModeArray removeAllObjects];
+    }
+    
+    for (NSInteger i = 0; i < self.introducerInfoArray.count; i++) {
+        Introducer *introducerInfo = [self.introducerInfoArray objectAtIndex:i];
         IntroducerCellMode *cellMode = [[IntroducerCellMode alloc]init];
         cellMode.ckeyid = introducerInfo.ckeyid;
         cellMode.name = introducerInfo.intr_name;
         cellMode.level = introducerInfo.intr_level;
         cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
-        [introducerCellModeArray addObject:cellMode];
+        [self.introducerCellModeArray addObject:cellMode];
     }
+//    //如果是“编辑患者”选择“介绍人”进来，则只显示intr_id为0的介绍人，也就是本地介绍人
+//    if (self.Mode == IntroducePersonViewSelect && self.delegate) {
+//        for (NSInteger i = 0; i < self.introducerInfoArray.count; i++) {
+//            Introducer *introducerInfo = [self.introducerInfoArray objectAtIndex:i];
+//            if([introducerInfo.intr_id isEqualToString:@"0"]){
+//                IntroducerCellMode *cellMode = [[IntroducerCellMode alloc]init];
+//                cellMode.ckeyid = introducerInfo.ckeyid;
+//                cellMode.name = introducerInfo.intr_name;
+//                cellMode.level = introducerInfo.intr_level;
+//                cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
+//                [self.introducerCellModeArray addObject:cellMode];
+//            }
+//        }
+//    }else{
+//        
+//    }
     
-    //如果是“编辑患者”选择“介绍人”进来，则只显示intr_id为0的介绍人，也就是本地介绍人
-    if (self.Mode == IntroducePersonViewSelect && self.delegate) {
-        [introducerCellModeArray removeAllObjects];
-        for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
-            Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];
-            
-            if([introducerInfo.intr_id isEqualToString:@"0"]){
-                IntroducerCellMode *cellMode = [[IntroducerCellMode alloc]init];
-                cellMode.ckeyid = introducerInfo.ckeyid;
-                cellMode.name = introducerInfo.intr_name;
-                cellMode.level = introducerInfo.intr_level;
-                cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
-                [introducerCellModeArray addObject:cellMode];
-            }
-        }
-    }
-}
-
-- (void)refreshData {
-    introducerInfoArray = nil;
-    introducerInfoArray = [[DBManager shareInstance] getAllIntroducer];
-    [introducerCellModeArray removeAllObjects];
-    for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
-        Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];
-        IntroducerCellMode *cellMode = [[IntroducerCellMode alloc]init];
-        cellMode.ckeyid = introducerInfo.ckeyid;
-        cellMode.name = introducerInfo.intr_name;
-        cellMode.level = introducerInfo.intr_level;
-        cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
-        [introducerCellModeArray addObject:cellMode];
-    }
-    //如果是“编辑患者”选择“介绍人”进来，则只显示intr_id为0的介绍人，也就是本地介绍人
-    if (self.Mode == IntroducePersonViewSelect && self.delegate) {
-        [introducerCellModeArray removeAllObjects];
-        for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
-            Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];
-            
-            if([introducerInfo.intr_id isEqualToString:@"0"]){
-                IntroducerCellMode *cellMode = [[IntroducerCellMode alloc]init];
-                cellMode.ckeyid = introducerInfo.ckeyid;
-                cellMode.name = introducerInfo.intr_name;
-                cellMode.level = introducerInfo.intr_level;
-                cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
-                [introducerCellModeArray addObject:cellMode];
-            }
-        }
-    }
-}
-
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
+    //对数据进行排序，按介绍人数进行排序
+    [self sortByIntroCount];
     
-    [self refreshData];
-    [self refreshView];
+    if (self.introducerCellModeArray.count < 50) {
+        [_tableView removeFooter];
+    }
+    //刷新
+    if (isHeader) {
+        [_tableView.header endRefreshing];
+    }else{
+        [_tableView.footer endRefreshing];
+    }
+    [_tableView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -234,13 +258,27 @@
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
     }
 }
+#pragma mark - 按介绍人数量进行排序
+- (void)sortByIntroCount{
+    NSArray *lastArray = [NSArray arrayWithArray:self.introducerCellModeArray];
+    lastArray = [self.introducerCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        IntroducerCellMode *object1 = (IntroducerCellMode *)obj1;
+        IntroducerCellMode *object2 = (IntroducerCellMode *)obj2;
+        if(object1.count < object2.count){
+            return  NSOrderedDescending;
+        }
+        if (object1.count > object2.count){
+            return NSOrderedAscending;
+        }
+        return NSOrderedSame;
+    }];
+    self.introducerCellModeArray = [NSMutableArray arrayWithArray:lastArray];
+}
 
 #pragma mark - Button Aciton
 - (void)onBackButtonAction:(id)sender {
     if (self.navigationController.viewControllers.count == 1) {
-        [self dismissViewControllerAnimated:YES completion:^{
-            
-        }];
+        [self dismissViewControllerAnimated:YES completion:nil];
     } else {
         [super onBackButtonAction:sender];
     }
@@ -311,14 +349,8 @@
 - (void)handNotification:(NSNotification *)notifacation {
     [super handNotification:notifacation];
     if ([notifacation.name isEqualToString:IntroducerCreatedNotification]
-        || [notifacation.name isEqualToString:IntroducerEditedNotification]) {
-        [self refreshData];
-        [self refreshView];
-    }
-    //如果是同步的通知
-    if ([notifacation.name isEqualToString:@"tongbu"]) {
-        [self initData];
-        [self refreshView];
+        || [notifacation.name isEqualToString:IntroducerEditedNotification] || [notifacation.name isEqualToString:@"tongbu"]) {
+        [self headerRefreshAction];
     }
 }
 
@@ -335,13 +367,13 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:introducerCellModeArray];
+    return [self setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.introducerCellModeArray];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:introducerCellModeArray];
+    [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.introducerCellModeArray];
 }
 
 #pragma mark - TableView Editing
@@ -354,16 +386,15 @@
         TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
             [tableView reloadData];
         } comfirmButtonHandlder:^{
-            Introducer *intro = [introducerInfoArray objectAtIndex:indexPath.row];
+            Introducer *intro = [self.introducerInfoArray objectAtIndex:indexPath.row];
             BOOL ret = [[DBManager shareInstance] deleteIntroducerWithId:intro.ckeyid];
             if (ret) {
                 //删除介绍人自动同步信息
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Delete dataEntity:[intro.keyValues JSONString] syncStatus:@"0"];
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 
-                
-                [self refreshData];
-                [self refreshView];
+                [self.introducerCellModeArray removeObjectAtIndex:indexPath.row];
+                [self refreshTableView];
             }
         }];
         [alertView show];
@@ -398,49 +429,19 @@
 #pragma mark -设置单元格点击事件
 - (void)selectTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
     NSInteger row = [indexPath row];
-    Introducer *introducer;
-    if (tableView != _tableView) {
-        IntroducerCellMode *cellMode = [sourceArray objectAtIndex:row];
-        for (Introducer *introducerTmp in introducerInfoArray) {
-            if (introducerTmp.ckeyid == cellMode.ckeyid) {
-                introducer = introducerTmp;
-            }
-        }
-    } else {
-        introducer = [introducerInfoArray objectAtIndex:row];
-    }
+    
+    
+    IntroducerCellMode *cellMode = [sourceArray objectAtIndex:row];
+    Introducer *introducer = [[DBManager shareInstance] getIntroducerByCkeyId:cellMode.ckeyid];
+    
     //如果是“编辑患者”选择“介绍人”进来，则只显示intr_id为0的介绍人，也就是本地介绍人
     if (self.Mode == IntroducePersonViewSelect && self.delegate) {
-        NSMutableArray *aara = [[NSMutableArray alloc] initWithCapacity:0];
-        for (NSInteger i = 0; i < introducerInfoArray.count; i++) {
-            Introducer *introducerInfo = [introducerInfoArray objectAtIndex:i];
-            if([introducerInfo.intr_id isEqualToString:@"0"]){
-                [aara addObject:introducerInfo];
-            }
-        }
-        introducer = [aara objectAtIndex:row];
-        
-        //如果是搜索栏下
-        if(tableView != _tableView){
-            NSMutableArray *aara = [[NSMutableArray alloc] initWithCapacity:0];
-            for(NSInteger i = 0;i<[sourceArray count];i++){
-                for(NSInteger j=0;j<[introducerInfoArray count];j++){
-                    Introducer *introducerTmp = [introducerInfoArray objectAtIndex:j];
-                    IntroducerCellMode *cellMode = [sourceArray objectAtIndex:i];
-                    if(introducerTmp.ckeyid == cellMode.ckeyid && [introducerTmp.intr_id isEqualToString:@"0"]){
-                        [aara addObject:introducerTmp];
-                    }
-                }
-            }
-            introducer = [aara objectAtIndex:row];
-        }
-        
         if ([self.delegate respondsToSelector:@selector(didSelectedIntroducer:)]) {
             [self.delegate didSelectedIntroducer:introducer];
             [self onBackButtonAction:nil];
         }
     } else {
-        IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc]init];
+        IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc] init];
         [detailCtl setIntroducer:introducer];
         detailCtl.hidesBottomBarWhenPushed = YES;
         [self pushViewController:detailCtl animated:YES];
@@ -477,7 +478,6 @@
     self.isBarHidden = YES;
 }
 
-
 #pragma mark - UISearchBar Delegates
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
@@ -489,9 +489,17 @@
 {
     NSArray *searchResults;
     if ([searchText isNotEmpty]) {
-        searchResults = [ChineseSearchEngine resultArraySearchIntroducerOnArray:introducerCellModeArray withSearchText:searchText];
+//        searchResults = [ChineseSearchEngine resultArraySearchIntroducerOnArray:self.introducerCellModeArray withSearchText:searchText];
+        searchResults = [[DBManager shareInstance] getIntroducerByName:searchText];
         [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:searchResults];
+        for (Introducer *intro in searchResults) {
+            IntroducerCellMode *cellMode = [[IntroducerCellMode alloc] init];
+            cellMode.ckeyid = intro.ckeyid;
+            cellMode.name = intro.intr_name;
+            cellMode.level = intro.intr_level;
+            cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:intro.ckeyid];
+            [self.searchController.resultsSource addObject:cellMode];
+        }
         [self.searchController.searchResultsTableView reloadData];
     }
 }

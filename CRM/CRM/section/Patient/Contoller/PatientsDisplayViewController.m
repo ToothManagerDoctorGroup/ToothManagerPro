@@ -106,7 +106,7 @@
     }
     
     self.isBarHidden = YES;
-    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
+    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:0];
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
     for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
         Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
@@ -132,7 +132,7 @@
 
 - (void)refreshData {
     _patientInfoArray = nil;
-    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
+    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:0];
     [_patientCellModeArray removeAllObjects];
     for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
         Patient *patientTmp = [_patientInfoArray objectAtIndex:i];

@@ -9,6 +9,8 @@
 #import "DBManager+Introducer.h"
 #import "NSString+Conversion.h"
 
+
+#define PageCount 200
 @implementation DBManager (Introducer)
 #pragma mark - IntroducerTableName
 
@@ -336,15 +338,49 @@
  *@brief 获取介绍人表中全部介绍人
  *@return NSArray 返回介绍人数组，没有则为nil
  */
-- (NSArray *)getAllIntroducer
+- (NSArray *)getAllIntroducerWithPage:(int)page
 {
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by creation_date desc",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString]]];
+         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by creation_date desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount]];
          //NSLog(@"sqlString:%@",[NSString stringWithFormat:@"select * from %@",IntroducerTableName]);
+         while ([result next])
+         {
+             Introducer * introducer = [Introducer introducerlWithResult:result];
+             [resultArray addObject:introducer];
+         }
+         [result close];
+     }];
+    return resultArray;
+}
+
+- (NSArray *)getLocalIntroducerWithPage:(int)page{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') and intr_id = '%@' order by creation_date desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],@"0",page * PageCount,PageCount]];
+         while ([result next])
+         {
+             Introducer * introducer = [Introducer introducerlWithResult:result];
+             [resultArray addObject:introducer];
+         }
+         [result close];
+     }];
+    return resultArray;
+}
+
+- (NSArray *)getIntroducerByName:(NSString *)name{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') and intr_name like '%%%@%%' order by creation_date desc",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],name]];
          while ([result next])
          {
              Introducer * introducer = [Introducer introducerlWithResult:result];

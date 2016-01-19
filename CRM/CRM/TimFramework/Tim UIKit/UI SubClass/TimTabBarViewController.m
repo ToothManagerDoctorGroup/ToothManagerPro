@@ -22,12 +22,13 @@
 #import "AccountManager.h"
 #import "AutoSyncGetManager.h"
 #import "XLIntroducerViewController.h"
+#import "XLGuideView.h"
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static NSString *kMessageType = @"MessageType";
 static NSString *kConversationChatter = @"ConversationChatter";
 
-@interface TimTabBarViewController ()<EMChatManagerDelegate>{
+@interface TimTabBarViewController ()<EMChatManagerDelegate,XLGuideViewDelegate>{
     UIButton *menuButton;
     MenuView *menuView;
     MenuButtonPushManager *manager;
@@ -43,10 +44,10 @@ static NSString *kConversationChatter = @"ConversationChatter";
 @property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
 @property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
 
-
 @end
 
 @implementation TimTabBarViewController
+
 
 - (void)dealloc
 {
@@ -177,12 +178,18 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [self setViewControllers:array];
     
     menuButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    menuButton.frame = CGRectMake(0, 0, SCREEN_WIDTH/5-15, self.tabBar.frame.size.height);
+    menuButton.frame = CGRectMake(0, 0, SCREEN_WIDTH/5-15, self.tabBar.height);
     [menuButton setImage:[UIImage imageNamed:@"menuButton"] forState:UIControlStateNormal];
     [menuButton setImage:[UIImage imageNamed:@"menuButton"] forState:UIControlStateSelected];
     [menuButton addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
     [menuButton setCenter:CGPointMake(SCREEN_WIDTH/2,(self.tabBar.frame.size.height)/2)];
     [self.tabBar addSubview:menuButton];
+    
+    
+    XLGuideView *guideView = [XLGuideView new];
+    guideView.delegate = self;
+    guideView.step = XLGuideViewStepOne;
+    [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
     
 }
 
@@ -560,5 +567,19 @@ static NSString *kConversationChatter = @"ConversationChatter";
     }
 }
 
+#pragma mark - XLGuideViewDelegate
+- (void)guideView:(XLGuideView *)guideView didClickView:(UIView *)view step:(XLGuideViewStep)step{
+    //第一步跳到第二步
+    if (step == XLGuideViewStepOne) {
+        [self click:nil];
+        XLGuideView *gView = [XLGuideView new];
+        gView.delegate = self;
+        gView.step = XLGuideViewStepTwo;
+        [gView showInView:[UIApplication sharedApplication].keyWindow maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height - 100, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
+    }else{
+        [guideView dismiss];
+    }
+    
+}
 
 @end

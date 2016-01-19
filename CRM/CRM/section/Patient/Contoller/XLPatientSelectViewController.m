@@ -26,6 +26,7 @@
 #import "JSONKit.h"
 #import "AddressBookViewController.h"
 #import "CreatePatientViewController.h"
+#import "MJRefresh.h"
 
 @interface XLPatientSelectViewController () <MudItemsBarDelegate,UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDataSource,UITableViewDelegate>{
     BOOL ifNameBtnSelected;
@@ -38,22 +39,36 @@
 @property (nonatomic) BOOL isBarHidden;
 @property (nonatomic,retain) NSArray *patientInfoArray;
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
-@property (nonatomic,retain) NSMutableArray *searchResults;
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
+
+@property (nonatomic, assign)int pageNum;//分页页数
 
 @end
 
 @implementation XLPatientSelectViewController
 
+- (NSArray *)patientInfoArray{
+    if (!_patientInfoArray) {
+        _patientInfoArray = [NSArray array];
+    }
+    return _patientInfoArray;
+}
+
+- (NSMutableArray *)patientCellModeArray{
+    if (!_patientCellModeArray) {
+        _patientCellModeArray = [NSMutableArray array];
+    }
+    return _patientCellModeArray;
+}
 #pragma mark - 控件初始化
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
         _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
+        _searchBar.placeholder = @"患者姓名、备注名、手机号";
         [_searchBar moveBackgroundView];
     }
     return _searchBar;
@@ -84,34 +99,28 @@
             [weakSelf selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
             
         }];
-        //设置可编辑模式
-        [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
-            return YES;
-        }];
-        //编辑模式下的删除操作
-        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            
-            [weakSelf deleteMaterialWithIndexPath:indexPath tableView:tableView sourceArray:weakSelf.searchController.resultsSource];
-        }];
     }
     return _searchController;
 }
 
-#pragma mark - 设置
-- (void)initView {
-    [super initView];
+- (void)dealloc {
+    [self removeNotificationObserver];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
     
-    if(self.isTabbarVc == NO){
-        [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    }
+    [self addNotificationObserver];
+    
+    self.pageNum = 0;
+    //设置子视图
     [self setupView];
+    
+    //第一次刷新
+    [_tableView.header beginRefreshing];
 }
 
--(void)viewWillAppear:(BOOL)animated{
-    [self initData];
-    [self refreshView];
-}
-
+#pragma mark - 设置
 -(void)onLeftButtonAction:(id)sender{
     if(self.isTabbarVc == NO){
         [self popViewControllerAnimated:YES];
@@ -137,7 +146,7 @@
 }
 - (void)setupView {
     self.title = @"患者";
-    [self.searchDisplayController.searchBar setPlaceholder:@"搜索患者"];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = [UIColor whiteColor];
 
     //初始化表示图
@@ -147,87 +156,87 @@
     _tableView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_tableView];
     
+    //添加上拉加载和下拉事件
+    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    _tableView.header.updatedTimeHidden = YES;
+    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
+    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
+    [self.view addSubview:[self setUpGroupViewAndButtons]];
 
+}
+
+#pragma mark - 下拉刷新
+- (void)headerRefreshAction{
+    self.pageNum = 0;
+    [self requestLocalDataWithPage:self.pageNum isHeader:YES];
+}
+#pragma mark - 上拉加载
+- (void)footerRefreshAction{
+    [self requestLocalDataWithPage:self.pageNum isHeader:NO];
 }
 
 - (void)refreshView {
     [_tableView reloadData];
 }
-- (void)initData {
-    [super initData];
-    
-    //设置tableView的内填充
-    if (self.isTabbarVc) {
-        _tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0);
-    }
+
+- (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader{
     
     self.isBarHidden = YES;
-    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
-    _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
-    for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
-        Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
-        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-        cellMode.patientId = patientTmp.ckeyid;
-        cellMode.introducerId = patientTmp.introducer_id;
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
+        self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
+        if (self.patientInfoArray.count > 50) {
+            self.pageNum++;
         }
-        cellMode.phone = patientTmp.patient_phone;
-        //        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
-        cellMode.introducerName = patientTmp.intr_name;
-        cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-        cellMode.status = patientTmp.patient_status;
-        cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-        [_patientCellModeArray addObject:cellMode];
-    }
-    _searchResults = [NSMutableArray arrayWithCapacity:0];
-    [self addNotificationObserver];
+        if (isHeader) {
+            [self.patientCellModeArray removeAllObjects];
+        }
+        for (NSInteger i = 0; i < self.patientInfoArray.count; i++) {
+            Patient *patientTmp = [self.patientInfoArray objectAtIndex:i];
+            PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
+            cellMode.patientId = patientTmp.ckeyid;
+            cellMode.introducerId = patientTmp.introducer_id;
+            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+                cellMode.name = patientTmp.nickName;
+            }else{
+                cellMode.name = patientTmp.patient_name;
+            }
+            cellMode.phone = patientTmp.patient_phone;
+            cellMode.introducerName = patientTmp.intr_name;
+            cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
+            cellMode.status = patientTmp.patient_status;
+            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            [self.patientCellModeArray addObject:cellMode];
+        }
+        if (self.patientCellModeArray.count < 50) {
+            [self removeFooter];
+        }
+        if (isHeader) {
+            [self headerEndRefresh];
+        }else{
+            [self footerEndRefresh];
+        }
+        //刷新表示图
+        [self refreshView];
+}
+#pragma mark - 停止刷新
+- (void)headerEndRefresh{
+    [_tableView.header endRefreshing];
+}
+- (void)footerEndRefresh{
+    [_tableView.footer endRefreshing];
+}
+- (void)removeFooter{
+    [_tableView removeFooter];
 }
 
-- (void)refreshData {
-    _patientInfoArray = nil;
-    _patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus];
-    [_patientCellModeArray removeAllObjects];
-    for (NSInteger i = 0; i < _patientInfoArray.count; i++) {
-        Patient *patientTmp = [_patientInfoArray objectAtIndex:i];
-        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-        cellMode.patientId = patientTmp.ckeyid;
-        cellMode.introducerId = patientTmp.introducer_id;
-        
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
-        }
-        cellMode.phone = patientTmp.patient_phone;
-        //  cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
-        cellMode.introducerName = patientTmp.intr_name;
-        cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-        cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-        
-        [_patientCellModeArray addObject:cellMode];
-    }
-}
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if (self.isBarHidden == NO){                      //如果是显示状态
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
     }
-}
-
-- (void)dealloc {
-    [self removeNotificationObserver];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self addNotificationObserver];
 }
 
 
@@ -306,19 +315,11 @@
     return 1;
 }
 
-//增加的表头
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 40;
-}
-
--(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    
+#pragma mark - 排序按钮点击
+- (UIView *)setUpGroupViewAndButtons{
     UIView *bgView = [[UIView alloc]init];
     bgView.frame = CGRectMake(0, 0, kScreenWidth, 40);
-    
     bgView.backgroundColor = MyColor(238, 238, 238);
-
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"患者" forState:UIControlStateNormal];
@@ -355,7 +356,6 @@
     
     return bgView;
 }
-
 -(void)numberButtonClick:(UIButton *)button{
     ifNumberBtnSelected = !ifNumberBtnSelected;
     if(ifNumberBtnSelected == YES){
@@ -522,16 +522,6 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.patientCellModeArray];
-}
-
--(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
-    }
 }
 
 #pragma mark -设置单元格
@@ -701,11 +691,27 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    NSArray *searchResults;
     if ([searchText isNotEmpty]) {
-        searchResults = [NSMutableArray arrayWithArray:[ChineseSearchEngine resultArraySearchPatientsOnArray:self.patientCellModeArray withSearchText:searchText]];
+        NSArray *results = [[DBManager shareInstance] getPatientWithKeyWords:searchText];
         [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:searchResults];
+        for (Patient *patient in results) {
+            Patient *patientTmp = patient;
+            PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
+            cellMode.patientId = patientTmp.ckeyid;
+            cellMode.introducerId = patientTmp.introducer_id;
+            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+                cellMode.name = patientTmp.nickName;
+            }else{
+                cellMode.name = patientTmp.patient_name;
+            }
+            cellMode.phone = patientTmp.patient_phone;
+            cellMode.introducerName = patientTmp.intr_name;
+            cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
+            cellMode.status = patientTmp.patient_status;
+            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            
+            [self.searchController.resultsSource addObject:cellMode];
+        }
         [self.searchController.searchResultsTableView reloadData];
     }
 }

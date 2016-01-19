@@ -8,6 +8,7 @@
 
 #import "DBManager.h"
 
+@class XLPatientTotalInfoModel;
 @interface DBManager (Patients)
 
 /*
@@ -57,9 +58,11 @@
  *@brief 获取患者表中全部患者
  *@return NSArray 返回患者数组，没有则为nil
  */
-- (NSArray *)getAllPatient;
+- (NSArray *)getAllPatientWithPage:(int)page;
 
 - (NSArray *)getAllPatientWithID:(NSString *)userid;
+
+- (NSArray *)getPatientWithKeyWords:(NSString *)keyWord;
 
 /**
  *  根据类型获取患者
@@ -68,8 +71,7 @@
  *
  *  @return 患者数组
  */
-- (NSArray *)getPatientsWithStatus:(PatientStatus )status;
-
+- (NSArray *)getPatientsWithStatus:(PatientStatus )status page:(int)page;
 /**
  *  判断这个患者是否存在
  *
@@ -326,5 +328,13 @@
  */
 - (NSArray *)getMedicalRecordByPatientId:(NSString *)patientid AndCaseId:(NSString *)caseid;
 
+/**
+ *  保存患者的所有信息到数据库
+ *
+ *  @param infoModel 患者所有信息模型
+ *
+ *  @return 是否保存成功
+ */
+- (BOOL)saveAllDownloadPatientInfoWithPatientModel:(XLPatientTotalInfoModel *)model;
 
 @end
