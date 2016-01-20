@@ -6,11 +6,11 @@
 //  Copyright © 2015年 TimTiger. All rights reserved.
 //
 
-#import "TimViewController.h"
+#import "TimDisplayViewController.h"
 /**
  *  个人信息完善步骤1
  */
-@interface XLPersonalStepOneViewController : TimViewController
+@interface XLPersonalStepOneViewController : TimDisplayViewController
 
 
 @end

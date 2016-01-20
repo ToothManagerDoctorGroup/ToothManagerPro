@@ -182,6 +182,7 @@
     [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
     _tableView.header.updatedTimeHidden = YES;
     [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
+    _tableView.footer.hidden = YES;
     
     //初始化搜索框
     [self.view addSubview:self.searchBar];
@@ -192,13 +193,13 @@
 #pragma mark - 下拉刷新数据
 - (void)headerRefreshAction{
     self.pageIndex = 1;
-    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(200)];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
     [self requestWlanDataWithQueryModel:queryModel isHeader:YES];
 }
 #pragma mark - 上拉加载数据
 - (void)footerRefreshAction{
     self.pageIndex++;
-    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(200)];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
     [self requestWlanDataWithQueryModel:queryModel isHeader:NO];
 }
 
@@ -215,6 +216,8 @@
         
         if (self.searchHistoryArray.count < 50) {
             [_tableView removeFooter];
+        }else{
+            _tableView.footer.hidden = NO;
         }
         
         if (isHeader) {
@@ -226,7 +229,6 @@
         [_tableView reloadData];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -363,9 +365,7 @@
     Doctor *doctor = [sourceArray objectAtIndex:indexPath.row];
     //转诊病人
     if (isTransfer) {
-        
         self.selectDoctor = doctor;
-        
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确认转诊给此好友吗?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
         alertView.tag = 110;
         [alertView show];
@@ -379,11 +379,12 @@
             [self popViewControllerAnimated:YES];
             
         }else{
-//            EMConversation *conversation = [[EaseMob sharedInstance].chatManager conversationForChatter:doctor.doctor_id conversationType:eConversationTypeChat];
-//            ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:conversation.chatter conversationType:conversation.conversationType];
-//            chatController.title = doctor.doctor_name;
-//            chatController.hidesBottomBarWhenPushed = YES;
-//            [self pushViewController:chatController animated:YES];
+            //查询本地是否有此医生
+            Doctor *tmDoc = [[DBManager shareInstance] getDoctorWithCkeyId:doctor.ckeyid];
+            if (tmDoc == nil) {
+                //将此医生信息保存到本地
+                [[DBManager shareInstance] insertDoctorWithDoctor:doctor];
+            }
             DoctorInfoViewController *doctorinfoVC = [[DoctorInfoViewController alloc]init];
             doctorinfoVC.repairDoctorID = doctor.ckeyid;
             doctorinfoVC.ifDoctorInfo = YES;
@@ -541,7 +542,7 @@
 {
     if ([searchText isNotEmpty]) {
         //请求网络数据
-        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(50)];
+        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
         [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         
                 [self.searchController.resultsSource removeAllObjects];
@@ -551,10 +552,7 @@
             if (error) {
                 NSLog(@"error:%@",error);
             }
-        }];
-//        searchResults = [ChineseSearchEngine resultArraySearchDoctorOnArray:self.searchHistoryArray withSearchText:searchBar.text];
-        
-        
+        }];        
     }
 }
 

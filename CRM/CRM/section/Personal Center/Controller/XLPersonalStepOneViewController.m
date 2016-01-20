@@ -28,14 +28,14 @@
     [super viewDidLoad];
     self.title = @"信息完善";
     self.view.backgroundColor = [UIColor whiteColor];
-    [self setBackBarButtonWithImage:nil];
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
     //设置控件属性
     [self setViewAttr];
     
     
 }
-- (void)onBackButtonAction:(id)sender{}
+//- (void)onBackButtonAction:(id)sender{}
 
 #pragma mark - 设置控件属性
 - (void)setViewAttr{
@@ -100,7 +100,7 @@
     twoVc.hospitalName = self.hospitalNameField.text;
     twoVc.departMentName = self.departmentField.text;
     twoVc.professionalName = self.professionalField.text;
-    [self.navigationController pushViewController:twoVc animated:YES];
+    [self pushViewController:twoVc animated:YES];
 }
 
 #pragma mark - 键盘监听事件

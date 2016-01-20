@@ -17,6 +17,13 @@ typedef NS_ENUM(NSInteger, XLGuideViewStep)
     XLGuideViewStepFour = 3
 };
 
+typedef NS_ENUM(NSInteger, XLGuideViewType)
+{
+    //引导图类型
+    XLGuideViewTypePatient = 0,//创建患者的引导图
+    
+};
+
 @class XLGuideView;
 @protocol XLGuideViewDelegate <NSObject>
 
@@ -33,5 +40,6 @@ typedef NS_ENUM(NSInteger, XLGuideViewStep)
 @property (nonatomic, weak)id<XLGuideViewDelegate> delegate;
 
 @property (nonatomic, assign)XLGuideViewStep step;
+@property (nonatomic, assign)XLGuideViewType type;
 
 @end

@@ -24,6 +24,10 @@
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *sexTextField;
 @property (weak, nonatomic) IBOutlet UITextField *birthDayTextField;
+@property (weak, nonatomic) IBOutlet UIButton *personalDescBtn;
+@property (weak, nonatomic) IBOutlet UIButton *personalSkill;
+@property (weak, nonatomic) IBOutlet UIButton *headImageBtn;
+@property (weak, nonatomic) IBOutlet UIButton *qrBtn;
 
 //已经有完整信息 只接传Doctor过来显示,  如果信息不完整 传一个有doctor_name 和 doctor_id的 Doctor过来,needGet set YES
 @property (nonatomic,retain) Doctor *doctor;

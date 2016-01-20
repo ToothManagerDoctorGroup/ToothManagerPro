@@ -10,6 +10,7 @@
 #import "GroupEntity.h"
 #import "GroupMemberEntity.h"
 #import "CRMHttpRespondModel.h"
+#import "XLQueryModel.h"
 
 @interface DoctorGroupTool : NSObject
 /**
@@ -20,6 +21,17 @@
  *  @param failure  失败回调
  */
 + (void)getGroupPatientsWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
+ *  分页获取医生下所有的患者信息(不包括所传分组里的患者信息)
+ *
+ *  @param doctorId   医生id
+ *  @param groupId   分组id
+ *  @param queryModel 分页模型
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getGroupPatientsWithDoctorId:(NSString *)doctorId groupId:(NSString *)groupId queryModel:(XLQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
 /**
  *  获取当前医生所有患者的基本信息
  *
@@ -86,6 +98,16 @@
  *  @param failure 失败回调
  */
 + (void)queryGroupMembersWithCkId:(NSString *)ckId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
+/**
+ *  分页获取分组下患者的信息
+ *
+ *  @param doctorId   患者的id
+ *  @param queryModel 分页以及模糊查询的模型
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)queryGroupMembersWithCkId:(NSString *)ckId queryModel:(XLQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
 
 /**
  *  查询指定分组的详细信息

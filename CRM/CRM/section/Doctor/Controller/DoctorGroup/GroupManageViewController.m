@@ -463,7 +463,6 @@
     XLGroupPatientDisplayViewController *patientVc = [[XLGroupPatientDisplayViewController alloc] init];
     patientVc.patientStatus = PatientStatuspeAll;
     patientVc.group = self.group;
-    patientVc.GroupMembers = self.patientCellModeArray;
     patientVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:patientVc animated:YES];
 }

@@ -51,4 +51,7 @@
 #define AutoSyncTime_Ten @"10分钟"
 #define AutoSyncTime_Twenty @"20分钟"
 
+//分页时每页显示的总个数
+#define CommonPageSize @(100)
+
 

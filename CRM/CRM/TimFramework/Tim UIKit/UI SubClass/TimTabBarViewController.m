@@ -23,6 +23,8 @@
 #import "AutoSyncGetManager.h"
 #import "XLIntroducerViewController.h"
 #import "XLGuideView.h"
+#import "QrCodePatientViewController.h"
+
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static NSString *kMessageType = @"MessageType";
@@ -186,11 +188,17 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [self.tabBar addSubview:menuButton];
     
     
-    XLGuideView *guideView = [XLGuideView new];
-    guideView.delegate = self;
-    guideView.step = XLGuideViewStepOne;
-    [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
-    
+    //获取配置项
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *isShowedKey = @"isShowedKey";
+    BOOL isShowed = [userDefaults boolForKey:isShowedKey];
+    if (!isShowed) {
+        XLGuideView *guideView = [XLGuideView new];
+        guideView.delegate = self;
+        guideView.step = XLGuideViewStepOne;
+        guideView.type = XLGuideViewTypePatient;
+        [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
+    }
 }
 
 -(void)click:(id)sender{
@@ -575,9 +583,17 @@ static NSString *kConversationChatter = @"ConversationChatter";
         XLGuideView *gView = [XLGuideView new];
         gView.delegate = self;
         gView.step = XLGuideViewStepTwo;
-        [gView showInView:[UIApplication sharedApplication].keyWindow maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height - 100, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
+        gView.type = XLGuideViewTypePatient;
+        [gView showInView:[UIApplication sharedApplication].keyWindow maskViewFrame:CGRectMake(SCREEN_WIDTH / 2 - 104 / 2, SCREEN_HEIGHT - self.tabBar.height - 44, 104, 40)];
     }else{
         [guideView dismiss];
+        [self disMissView];
+        
+        //跳转到患者页面
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        QrCodePatientViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodePatientViewController"];
+        qrVC.hidesBottomBarWhenPushed = YES;
+        [(UINavigationController *)self.selectedViewController pushViewController:qrVC animated:YES];
     }
     
 }

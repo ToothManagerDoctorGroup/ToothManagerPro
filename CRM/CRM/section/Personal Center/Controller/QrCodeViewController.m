@@ -17,8 +17,9 @@
 #import "DBManager+User.h"
 #import "MyPatientTool.h"
 #import "CRMHttpRespondModel.h"
+#import "XLGuideView.h"
 
-@interface QrCodeViewController ()<WXApiDelegate>{
+@interface QrCodeViewController ()<WXApiDelegate,XLGuideViewDelegate>{
     NSString *weiXinPageUrl;
 }
 
@@ -50,7 +51,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.title = @"我的二维码";
     [self setRightBarButtonWithTitle:@"分享"];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
@@ -86,11 +86,8 @@
                 NSLog(@"error:%@",error);
             }
         }];
-        
     }
-    
 }
-
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
     NSArray *dicArray = [result objectForKey:@"Result"];
@@ -99,7 +96,6 @@
                 UserObject *obj = [UserObject userobjectFromDic:dic];
                 [[DBManager shareInstance] updateUserWithUserObject:obj];
                 [[AccountManager shareInstance] refreshCurrentUserInfo];
-//                 self.titleLabel.text = [NSString stringWithFormat:@"%@医生  %@  %@",[AccountManager shareInstance].currentUser.name,obj.hospitalName,obj.department];
             }
             return;
         }
@@ -116,7 +112,6 @@
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = @"分享种牙管家医生二维码";
-        // mode.message = [NSString stringWithFormat:@"这是来自%@的%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.hospitalName,[AccountManager shareInstance].currentUser.name];
         mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
         mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainName,Method_Weixin,userobj.userid];
         mode.image = self.QrCodeImageView.image;
@@ -124,9 +119,7 @@
     }
 }
 - (void)qrCodeImageSuccessWithResult:(NSDictionary *)result{
-    NSLog(@"二维码=%@",result);
     NSString *imageUrl = [result objectForKey:@"Message"];
-    
     //下载图片，不带缓存
     [self downloadImageWithImageUrl:imageUrl];
 //    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
@@ -141,12 +134,8 @@
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
-
-
 - (void)downloadImageWithImageUrl:(NSString *)imageStr{
-    
     // 1.创建多线程
     NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
         [NSThread sleepForTimeInterval:0.5];
@@ -163,6 +152,10 @@
     }];
     // 2.必须将任务添加到队列中才能执行
     [self.opQueue addOperation:downOp];
+}
+
+#pragma mark - XLGuideViewDelegate
+- (void)guideView:(XLGuideView *)guideView didClickView:(UIView *)view step:(XLGuideViewStep)step{
     
 }
 

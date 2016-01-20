@@ -66,25 +66,29 @@
 //    NSString *text = @"紫荆易元";
 //    NSLog(@"加密后:%@",[NSString TripleDES:text encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:@""]);
 //    self.enCodeText = [NSString TripleDES:text encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:@""];
-    NSString *urlStr = [NSString stringWithFormat:@"http://118.244.234.207/%@/ashx/ClinicMessage.ashx",Method_His_Crm];
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"getClinic";
-    params[@"doctor_id"] = @"156";;
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        manager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
-    [manager GET:urlStr parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        
-        NSLog(@"%@",str);
-        self.enCodeText = str;
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
-    
+//    NSString *urlStr = [NSString stringWithFormat:@"http://118.244.234.207/%@/ashx/ClinicMessage.ashx",Method_His_Crm];
+//    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+//    params[@"action"] = @"getClinic";
+//    params[@"doctor_id"] = @"156";;
+//    
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//        manager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
+//    [manager GET:urlStr parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        NSString *str = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        
+//        NSLog(@"%@",str);
+//        self.enCodeText = str;
+//        
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        if (error) {
+//            NSLog(@"error:%@",error);
+//        }
+//    }];
+    //个人信息完善界面
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+    oneVC.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:oneVC animated:YES];
 }
 //解密
 - (void)deClick{

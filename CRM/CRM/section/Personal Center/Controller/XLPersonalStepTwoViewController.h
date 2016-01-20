@@ -6,11 +6,11 @@
 //  Copyright © 2015年 TimTiger. All rights reserved.
 //
 
-#import "TimViewController.h"
+#import "TimDisplayViewController.h"
 /**
  *  个人信息完善步骤2
  */
-@interface XLPersonalStepTwoViewController : TimViewController
+@interface XLPersonalStepTwoViewController : TimDisplayViewController
 
 @property (nonatomic, copy)NSString *userName;//姓名
 @property (nonatomic, copy)NSString *hospitalName;//医院

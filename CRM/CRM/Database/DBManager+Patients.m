@@ -19,7 +19,7 @@
 #import "SDWebImageManager.h"
 #import "PatientManager.h"
 
-#define PageCount 200
+#define PageCount 100
 #define ImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 @implementation DBManager (Patients)
 
@@ -797,7 +797,7 @@
          if (status == PatientStatuspeAll) {
              sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount];
          } else if (status == PatientStatusUntreatUnPlanted) {
-             sqlString = [NSString stringWithFormat:@"select * from w@ where patient_status <= %ld and patient_status >= %ld and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(long)PatientStatusUnplanted,(long)PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
+             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status <= %ld and patient_status >= %ld and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(long)PatientStatusUnplanted,(long)PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
          } else {
              sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
          }

@@ -90,9 +90,13 @@
         self.degreeTextField.enabled = NO;
         self.authstatusTextField.enabled = NO;
         self.authTextView.editable = NO;
+        self.personalDescBtn.enabled = NO;
+        self.personalSkill.enabled = NO;
+        self.headImageBtn.enabled = NO;
+        self.qrBtn.enabled = NO;
+        
         self.nicknameTextField.text = self.doctor.doctor_name;
         if (self.needGet || [NSString isEmptyString:self.doctor.doctor_dept]) {
-            self.view.userInteractionEnabled = NO;
             [[DoctorManager shareInstance] getDoctorListWithUserId:self.doctor.ckeyid successBlock:^{
                 [SVProgressHUD showWithStatus:@"加载中..."];
             } failedBlock:^(NSError *error) {
@@ -173,6 +177,8 @@
         //获取年份
         NSInteger birthYear = [[self.doctor.doctor_birthday substringToIndex:4] integerValue];
         self.birthDayTextField.text = [NSString stringWithFormat:@"%ld",(long)([self getYear] - birthYear)];
+        [self.personalDescBtn setTitle:self.doctor.doctor_cv forState:UIControlStateNormal];
+        [self.personalSkill setTitle:self.doctor.doctor_skill forState:UIControlStateNormal];
     } else {
         self.nicknameTextField.text = self.currentDoctor.doctor_name;
         self.departmentTextField.text = self.currentDoctor.doctor_dept;
@@ -182,6 +188,8 @@
         self.degreeTextField.text = self.currentDoctor.doctor_degree;
         self.authstatusTextField.text = [UserObject authStringWithStatus:self.currentDoctor.auth_status];
         self.authTextView.text = self.currentDoctor.auth_text;
+        [self.personalDescBtn setTitle:self.currentDoctor.doctor_cv forState:UIControlStateNormal];
+        [self.personalSkill setTitle:self.currentDoctor.doctor_skill forState:UIControlStateNormal];
         
         [self.authImageView sd_setImageWithURL:[NSURL URLWithString:self.currentDoctor.auth_pic] placeholderImage:[UIImage imageNamed:@"header"]];
         
@@ -408,10 +416,6 @@
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"上传中..."];
     [DoctorTool composeTeacherHeadImg:tempImage userId:[[AccountManager shareInstance] currentUser].userid success:^{
-        //清除图片缓存
-        [[SDImageCache sharedImageCache] cleanDisk];
-        [[SDImageCache sharedImageCache] clearMemory];
-        
         [weakSelf setAuthImage:tempImage];
 
         [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
@@ -549,9 +553,11 @@
     if (type == EditViewControllerTypeSkill) {
         NSLog(@"个人技能修改成功");
         self.doctor_skills = str;
+        [self.personalSkill setTitle:str forState:UIControlStateNormal];
     }else {
         NSLog(@"个人描述修改成功");
         self.doctor_cv = str;
+        [self.personalDescBtn setTitle:str forState:UIControlStateNormal];
     }
 }
 
@@ -609,7 +615,6 @@
     }];
     // 2.必须将任务添加到队列中才能执行
     [self.opQueue addOperation:downOp];
-    
 }
 
 - (NSInteger)getYear{

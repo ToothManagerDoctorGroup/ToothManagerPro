@@ -12,7 +12,6 @@
 
 @interface QrCodeViewController : TimViewController
 @property (weak, nonatomic) IBOutlet UIImageView *QrCodeImageView;
-//@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 
 @property (nonatomic, assign)BOOL isDoctor;
 @property (nonatomic, strong)Patient *patient;

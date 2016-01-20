@@ -2214,17 +2214,18 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="个人简介" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9d7-OK-u01">
-                                                    <rect key="frame" x="20" y="9" width="100" height="21"/>
+                                                    <rect key="frame" x="20" y="9" width="69" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s1l-jp-o4y">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s1l-jp-o4y">
                                                     <rect key="frame" x="97" y="5" width="185" height="30"/>
                                                     <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <state key="normal">
-                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                     <connections>
                                                         <action selector="personalIntroduceAction:" destination="SKr-z1-nCk" eventType="touchUpInside" id="fVS-k3-CQQ"/>
@@ -2247,17 +2248,18 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="擅长项目" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V4E-r4-gkC">
-                                                    <rect key="frame" x="20" y="9" width="100" height="21"/>
+                                                    <rect key="frame" x="20" y="9" width="69" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2SM-x3-6hb">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2SM-x3-6hb">
                                                     <rect key="frame" x="97" y="5" width="187" height="30"/>
                                                     <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <state key="normal">
-                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                     <connections>
                                                         <action selector="skillsAction:" destination="SKr-z1-nCk" eventType="touchUpInside" id="Bri-42-4CY"/>
@@ -2291,12 +2293,16 @@
                         <outlet property="departmentArrow" destination="P1E-1a-FNY" id="Yyz-VZ-B8e"/>
                         <outlet property="departmentTextField" destination="oda-HP-buz" id="iWR-Oq-sF3"/>
                         <outlet property="descArrow" destination="PTm-m5-WtX" id="MCh-hX-3cK"/>
+                        <outlet property="headImageBtn" destination="2rV-VY-TvX" id="v4K-je-HQa"/>
                         <outlet property="hospitalTextField" destination="bbX-Cy-rQS" id="Iml-2e-w2n"/>
                         <outlet property="iconArrow" destination="4Ms-6b-8dj" id="fGc-Yo-TIv"/>
                         <outlet property="iconImageView" destination="2FM-5A-kZ7" id="fAv-pE-cID"/>
                         <outlet property="nicknameTextField" destination="9EN-AJ-OoW" id="McH-bs-21a"/>
+                        <outlet property="personalDescBtn" destination="s1l-jp-o4y" id="cXR-9k-pu4"/>
+                        <outlet property="personalSkill" destination="2SM-x3-6hb" id="Deu-9J-APd"/>
                         <outlet property="phoneTextField" destination="BHq-cX-vRm" id="CTL-BX-rcU"/>
                         <outlet property="professionArrow" destination="Yfd-7Q-wAI" id="2Gf-IV-0Yu"/>
+                        <outlet property="qrBtn" destination="wgs-9s-zyG" id="lJw-1S-c3J"/>
                         <outlet property="sexArrow" destination="gVo-Li-ZHi" id="eei-j8-yMW"/>
                         <outlet property="sexTextField" destination="cpa-fG-CTf" id="byT-eL-aol"/>
                         <outlet property="skillArrow" destination="zJV-MA-Sd8" id="HIi-xx-ZDx"/>

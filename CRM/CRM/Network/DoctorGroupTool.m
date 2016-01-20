@@ -42,6 +42,35 @@
     }];
 }
 
++ (void)getGroupPatientsWithDoctorId:(NSString *)doctorId groupId:(NSString *)groupId queryModel:(XLQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    //ht://118.244.234.207/his.crm/ashx/GroupPatientMapHandler.ashx?action=CanAddMemberByPage&group_id=971_20160113212334&doctor_id=971&query_info={"KeyWord":"","SortField":"姓名","IsAsc":true,"PageIndex":1,"PageSize":5}
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/GroupPatientMapHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"CanAddMemberByPage";
+    params[@"group_id"] = groupId;
+    params[@"doctor_id"] = doctorId;
+    params[@"query_info"] = [queryModel.keyValues JSONString];
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        if ([responseObject[@"Code"] intValue] == 200) {
+            for (NSDictionary *dic in responseObject[@"Result"]) {
+                GroupMemberModel *model = [GroupMemberModel objectWithKeyValues:dic];
+                [arrayM addObject:model];
+            }
+        }
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
 + (void)getPatientsWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -212,6 +241,32 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"GroupListByCkeyId";
     params[@"ckeyid"] = ckId;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        if ([responseObject[@"Code"] intValue] == 200) {
+            for (NSDictionary *dic in responseObject[@"Result"]) {
+                GroupMemberModel *model = [GroupMemberModel objectWithKeyValues:dic];
+                [arrayM addObject:model];
+            }
+        }
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)queryGroupMembersWithCkId:(NSString *)ckId queryModel:(XLQueryModel *)queryModel success:(void (^)(NSArray *))success failure:(void (^)(NSError *))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/GroupPatientMapHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"PatientPageListByGroupId";
+    params[@"ckeyid"] = ckId;
+    params[@"query_info"] = [queryModel.keyValues JSONString];
     
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
         

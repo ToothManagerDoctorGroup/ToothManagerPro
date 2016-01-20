@@ -15,6 +15,7 @@
 #import "GroupMemberModel.h"
 #import "DBManager+Patients.h"
 #import "EditPatientDetailViewController.h"
+#import "MJRefresh.h"
 
 @interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
     BOOL ifNameBtnSelected;
@@ -48,11 +49,22 @@
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
 
+@property (nonatomic, assign)int pageIndex;//分页的页数
+@property (nonatomic, copy)NSString *sortFieldText;//用于排序查询
+@property (nonatomic, assign)BOOL isAsc;//是否是正序还是倒序
+
 @end
 
 @implementation XLGroupPatientDisplayViewController
 
 #pragma mark - 控件初始化
+- (NSMutableArray *)patientCellModeArray{
+    if (!_patientCellModeArray) {
+        _patientCellModeArray = [NSMutableArray array];
+    }
+    return _patientCellModeArray;
+}
+
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
@@ -107,10 +119,12 @@
     [super initView];
     [super viewDidLoad];
     
+    self.pageIndex = 1;
+    
     //初始化
     [self setupView];
     //请求数据
-    [self requestData];
+    [_tableView.header beginRefreshing];
 }
 
 
@@ -122,7 +136,7 @@
     [self setRightBarButtonWithTitle:@"添加"];
     
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, self.view.height - 44) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
@@ -132,33 +146,59 @@
     [self.view addSubview:self.searchBar];
     [self searchController];
     
-    _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
+    [self.view addSubview:[self setUpGroupViewAndButtons]];
     
-    
+    //添加上拉刷新和下拉加载
+    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    _tableView.header.updatedTimeHidden = YES;
+    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
+    _tableView.footer.hidden = YES;
 }
 
-- (void)requestData {
-    [SVProgressHUD showWithStatus:@"正在加载..."];
-    __weak typeof(self) weakSelf = self;
-    [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        _patientCellModeArray = [NSMutableArray arrayWithArray:result];
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            if (weakSelf.GroupMembers.count > 0) {
-                for (GroupMemberModel *member in weakSelf.GroupMembers) {
-                    for (GroupMemberModel *patient in _patientCellModeArray) {
-                        if ([member.ckeyid isEqualToString:patient.ckeyid]) {
-                            patient.isMember = YES;
-                        }
-                    }
-                }
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-                [weakSelf reloadTableView];
-            });
-        });
+#pragma mark - 下拉刷新数据
+- (void)headerRefreshAction{
+    self.pageIndex = 1;
+    NSString *sortFieldText = self.sortFieldText == nil ? @"" : self.sortFieldText;
+    BOOL isAsc = self.isAsc == YES ? true : false;
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:sortFieldText isAsc:@(isAsc) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
+    [self requestWlanDataWithQueryModel:queryModel isHeader:YES];
+}
+#pragma mark - 上拉加载数据
+- (void)footerRefreshAction{
+    self.pageIndex++;
+    NSString *sortFieldText = self.sortFieldText == nil ? @"" : self.sortFieldText;
+    BOOL isAsc = self.isAsc == YES ? true : false;
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:sortFieldText isAsc:@(isAsc) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
+    [self requestWlanDataWithQueryModel:queryModel isHeader:NO];
+}
+
+- (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
+    
+    if (isHeader) {
+        [self.patientCellModeArray removeAllObjects];
+    }
+    [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
+        //将数据添加到数组中
+        [self.patientCellModeArray addObjectsFromArray:result];
+        
+        if (self.patientCellModeArray.count < 50) {
+            [_tableView removeFooter];
+        }else{
+            _tableView.footer.hidden = NO;
+        }
+        
+        if (isHeader) {
+            [_tableView.header endRefreshing];
+        }else{
+            [_tableView.footer endRefreshing];
+        }
+        //刷新表格
+        [_tableView reloadData];
+        
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
     }];
 }
 
@@ -180,7 +220,6 @@
     }
     
     if (selectMemberArr.count > 0) {
-        
         [DoctorGroupTool addGroupMemberWithGroupMemberEntity:selectMemberArr success:^(CRMHttpRespondModel *respondModel) {
             [SVProgressHUD dismiss];
             if ([respondModel.code integerValue] == 200) {
@@ -208,12 +247,6 @@
     return 1;
 }
 
-//增加的表头
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 40;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.patientCellModeArray.count;
 }
@@ -237,8 +270,8 @@
     [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.patientCellModeArray];
 }
 
--(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
+-(UIView *)setUpGroupViewAndButtons{
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, 320, 40)];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -274,16 +307,14 @@
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:numberButton];
     
-    
     UIButton *chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     chooseButton.frame = CGRectMake(275, 0, 40, 40);
     chooseButton.selected = self.isChooseAll;
     [chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
     [chooseButton setImage:[UIImage imageNamed:@"remove-blue"] forState:UIControlStateSelected];
-    [chooseButton addTarget:self action:@selector(chooseAction:) forControlEvents:UIControlEventTouchUpInside];
+    [chooseButton addTarget:self action:@selector(choosePatientAction:) forControlEvents:UIControlEventTouchUpInside];
     [bgView addSubview:chooseButton];
     self.chooseButton = chooseButton;
-    
     
     return bgView;
 }
@@ -302,14 +333,15 @@
     }
 }
 
-
 #pragma mark - 全选按钮点击事件
-- (void)chooseAction:(UIButton *)button{
+- (void)choosePatientAction:(UIButton *)button{
     if (self.isChooseAll) {
         self.isChooseAll = NO;
     }else{
         self.isChooseAll = YES;
     }
+    
+    button.selected = self.isChooseAll;
     
     for (GroupMemberModel *model in self.patientCellModeArray) {
         if (!model.isMember) {
@@ -322,157 +354,53 @@
 
 -(void)numberButtonClick:(UIButton *)button{
     ifNumberBtnSelected = !ifNumberBtnSelected;
+    self.sortFieldText = @"数量";
     if(ifNumberBtnSelected == YES){
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
-            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
-            if(object1.expense_num < object2.expense_num){
-                return  NSOrderedAscending;
-            }
-            if (object1.expense_num > object2.expense_num){
-                return NSOrderedDescending;
-            }
-            return NSOrderedSame;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
+        //正序
+        self.isAsc = YES;
     }else{
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            return NSOrderedDescending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
+        //倒序
+        self.isAsc = NO;
     }
+//    [self headerRefreshAction];
+    [_tableView.header beginRefreshing];
 }
 -(void)nameButtonClick:(UIButton *)button{
     ifNameBtnSelected = !ifNameBtnSelected;
+    self.sortFieldText = @"姓名";
     if(ifNameBtnSelected == YES){
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
-            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
-            result = [object1.patient_name localizedCompare:object2.patient_name];
-            return result == NSOrderedDescending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
+        //正序
+        self.isAsc = YES;
     }else{
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
-            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
-            result = [object1.patient_name localizedCompare:object2.patient_name];
-            return result == NSOrderedAscending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
+        self.isAsc = NO;
     }
+    
+//    [self headerRefreshAction];
+    [_tableView.header beginRefreshing];
+    
 }
 -(void)introducerButtonClick:(UIButton*)button{
     ifIntroducerSelected = !ifIntroducerSelected;
+    self.sortFieldText = @"介绍人";
     if(ifIntroducerSelected == YES){
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
-            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
-            result = [object1.intr_name localizedCompare:object2.intr_name];
-            return result == NSOrderedDescending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
+        self.isAsc = YES;
     }else{
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            GroupMemberModel *object1 = (GroupMemberModel *)obj1;
-            GroupMemberModel *object2 = (GroupMemberModel *)obj2;
-            result = [object1.intr_name localizedCompare:object2.intr_name];
-            return result == NSOrderedDescending;
-        }];
-        NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
-        for(NSInteger i =lastArray.count;i>0;i--){
-            [resultArray addObject:lastArray[i-1]];
-        }
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:resultArray];
-        [_tableView reloadData];
-        
+        self.isAsc = NO;
     }
+//    [self headerRefreshAction];
+    [_tableView.header beginRefreshing];
+    
 }
 -(void)statusButtonClick:(UIButton *)button{
     ifStatusBtnSelected = !ifStatusBtnSelected;
+    self.sortFieldText = @"状态";
     if(ifStatusBtnSelected == YES){
-        NSMutableArray *lastArray = [NSMutableArray arrayWithCapacity:0];
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未就诊"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未种植"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已种未修"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已修复"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
-        
+        self.isAsc = YES;
     }else{
-        NSMutableArray *lastArray = [NSMutableArray arrayWithCapacity:0];
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已修复"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已种未修"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未种植"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            GroupMemberModel *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未就诊"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [_tableView reloadData];
-        
-        
+        self.isAsc = NO;
     }
+//    [self headerRefreshAction];
+    [_tableView.header beginRefreshing];
 }
 
 #pragma mark - UISearchBar Delegates
@@ -484,13 +412,21 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    NSArray *searchResults;
     if ([searchText isNotEmpty]) {
-        searchResults = [ChineseSearchEngine resultArraySearchGroupPatientsOnArray:self.patientCellModeArray withSearchText:searchText];
+        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(true) pageIndex:@(1) pageSize:@(1000)];
+        [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
+            
+            [self.searchController.resultsSource removeAllObjects];
+            [self.searchController.resultsSource addObjectsFromArray:result];
+            [self.searchController.searchResultsTableView reloadData];
+            
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
         
-        [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:searchResults];
-        [self.searchController.searchResultsTableView reloadData];
+        
     }
 }
 
@@ -540,7 +476,7 @@
         }
     }
     //表示当前全选
-    self.isChooseAll = index == (self.patientCellModeArray.count - self.GroupMembers.count);
+    self.isChooseAll = index == self.patientCellModeArray.count;
     self.chooseButton.selected = self.isChooseAll;
 }
 

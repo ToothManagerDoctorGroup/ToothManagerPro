@@ -117,7 +117,7 @@
 - (void)onRightButtonAction:(id)sender {
     
     if(self.phoneTextField.text.length != 11){
-        [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+        [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
         return;
     }
     if(self.nameTextField.text.length == 0){
@@ -139,10 +139,9 @@
     }
     
     if([[DBManager shareInstance] patientIsExist:patient]){
-        [SVProgressHUD showImage:nil status:@"此用户已存在，请重新输入"];
+        [SVProgressHUD showImage:nil status:@"手机号已存在，请重新输入"];
         return;
     }
-    
     
     if (![patient.patient_name isEmpty] && ![patient.patient_phone isEmpty]){
         NSString * message = nil;
@@ -187,7 +186,7 @@
                 }
                 
                 UIAlertView * alertview;
-                alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病例", nil];
+                alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病历", nil];
                 [alertview show];
 //                [alertview setDelegate:self];
                 //把新建的患者倒入手机本地联系人

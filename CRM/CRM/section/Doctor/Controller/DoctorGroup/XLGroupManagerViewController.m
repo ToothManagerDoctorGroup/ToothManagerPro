@@ -21,6 +21,7 @@
 #import "XLGroupPatientDisplayViewController.h"
 #import "MyPatientTool.h"
 #import "AccountManager.h"
+#import "MJRefresh.h"
 
 @interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDelegate,UITableViewDataSource>{
     BOOL ifNameBtnSelected;
@@ -218,7 +219,7 @@
     [DoctorGroupTool queryGroupMembersWithCkId:self.group.ckeyid success:^(NSArray *result) {
         [SVProgressHUD dismiss];
         
-        _patientCellModeArray = [NSMutableArray arrayWithArray:result];
+        [_patientCellModeArray addObjectsFromArray:result];
         
         [_tableView reloadData];
         
@@ -578,7 +579,6 @@
     XLGroupPatientDisplayViewController *patientVc = [[XLGroupPatientDisplayViewController alloc] init];
     patientVc.patientStatus = PatientStatuspeAll;
     patientVc.group = self.group;
-    patientVc.GroupMembers = self.patientCellModeArray;
     patientVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:patientVc animated:YES];
 }

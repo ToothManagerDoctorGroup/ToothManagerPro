@@ -19,6 +19,6 @@
 /**
  *  组员数组
  */
-@property (nonatomic, strong)NSArray *GroupMembers;
+//@property (nonatomic, strong)NSArray *GroupMembers;
 
 @end

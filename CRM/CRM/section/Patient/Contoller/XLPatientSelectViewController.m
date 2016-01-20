@@ -150,7 +150,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
 
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, self.view.height - 44) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
@@ -318,7 +318,7 @@
 #pragma mark - 排序按钮点击
 - (UIView *)setUpGroupViewAndButtons{
     UIView *bgView = [[UIView alloc]init];
-    bgView.frame = CGRectMake(0, 0, kScreenWidth, 40);
+    bgView.frame = CGRectMake(0, 44, kScreenWidth, 40);
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -612,7 +612,6 @@
                         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     }
                 }
-                
                 //获取所有的耗材信息进行删除
                 NSArray *medicalExpenses = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_expense];
                 if (medicalcases.count > 0) {
@@ -621,7 +620,6 @@
                         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     }
                 }
-                
                 //获取所有的病历记录进行删除
                 NSArray *medicalRecords = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_record];
                 if (medicalRecords.count > 0) {
@@ -630,7 +628,6 @@
                         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     }
                 }
-                
                 //获取所有的ct数据进行删除
                 NSArray *ctLibs = [[DBManager shareInstance] getAllDeleteNeedSyncCt_lib];
                 if (ctLibs.count > 0) {
