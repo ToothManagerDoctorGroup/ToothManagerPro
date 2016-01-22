@@ -35,6 +35,15 @@
 #import "TTMUserGuideController.h"
 #import "XLSignInViewController.h"
 #import "XLPersonalStepOneViewController.h"
+#import "XLAdvertisementViewController.h"
+#import "XLAdvertisementView.h"
+#import "UIImageView+WebCache.h"
+
+@interface CRMAppDelegate ()
+
+@property (nonatomic, strong)XLAdvertisementView *adImageView;//启动广告页
+
+@end
 
 @implementation CRMAppDelegate
 
@@ -47,7 +56,6 @@
 #else
     apnsCertName = @"toothManagerDoctor_dis";
 #endif
-    
     [[EaseMob sharedInstance] registerSDKWithAppKey:@"zijingyiyuan#toothmanagerdoctor" apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
     
     [[EaseMob sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
@@ -109,9 +117,25 @@
     //通用的界面的设置
     [CRMViewAppearance setCRMAppearance];
     
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
+    [self turnToMainVc];
+    
+//    self.adImageView = [[XLAdvertisementView alloc] initWithFrame:self.window.bounds];
+//    NSURL *imageUrl = [NSURL URLWithString:@"http://sh.sinaimg.cn/2012/0701/U4818P18DT20120701160643.jpg"];
+//    [self.adImageView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"adImage"] options:SDWebImageRetryFailed];
+//    [self.adImageView start];
+//    [self.window addSubview:self.adImageView];
+//    [self.window bringSubviewToFront:self.adImageView];
+//    self.adImageView.completeBlock = ^(){};
+    
+
+    return YES;
+}
+#pragma mark - 跳转到主页面
+- (void)turnToMainVc{
     //判断用户是否登录
     if ([[AccountManager shareInstance] isLogin]) {
         if (self.tabBarController == nil) {
@@ -147,8 +171,6 @@
     } else {
         [self makeLogin];
     }
-    
-    return YES;
 }
 
 - (void)configThirdPart:(NSDictionary *)launchOptions {

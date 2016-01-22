@@ -19,6 +19,7 @@
 #import "XLSelectYuyueViewController.h"
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"
+#import "ChatViewController.h"
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]
@@ -287,7 +288,10 @@
 #pragma mark -微信扫描
 - (void)weixinButtonClick{
     if (self.isWeixin) {
-        [SVProgressHUD showImage:nil status:@"患者已经关注过微信"];
+        //跳转到即时通讯页面
+        ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:self.detailPatient.ckeyid conversationType:eConversationTypeChat];
+        chatController.title = self.detailPatient.patient_name;
+        [self.viewController.navigationController pushViewController:chatController animated:YES];
     }else{
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
         QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];

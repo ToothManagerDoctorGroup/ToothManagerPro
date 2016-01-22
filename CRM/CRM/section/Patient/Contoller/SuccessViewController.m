@@ -15,6 +15,7 @@
 #import "UISearchBar+XLMoveBgView.h"
 #import "UIColor+Extension.h"
 #import "CommonMacro.h"
+#import "DBManager+Patients.h"
 
 
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
@@ -160,10 +161,9 @@
     EaseConversationModel *model = [[EaseConversationModel alloc] initWithConversation:conversation];
     if (model.conversation.conversationType == eConversationTypeChat) {
         
-        UserProfileEntity *profileEntity = [[UserProfileManager sharedInstance] getUserProfileByUsername:conversation.chatter];
-        if (profileEntity) {
-            model.title = profileEntity.nickname == nil ? profileEntity.username : profileEntity.nickname;
-            model.avatarURLPath = profileEntity.imageUrl;
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:conversation.chatter];
+        if (patient != nil) {
+            model.title = patient.patient_name;
         }
     }
     return model;

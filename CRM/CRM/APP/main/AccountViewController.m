@@ -40,7 +40,7 @@
 #import "XLRepairDoctorViewController.h"
 #import "XLDoctorLibraryViewController.h"
 #import "UserProfileManager.h"
-
+#import "XLDataAnalyseViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
     
@@ -386,9 +386,12 @@
         
         if(indexPath.section == 3){
             if(indexPath.row == 0){
-                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
-                shuju.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:shuju animated:YES];
+//                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
+//                shuju.hidesBottomBarWhenPushed = YES;
+//                [self.navigationController pushViewController:shuju animated:YES];
+                XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
+                analyse.hidesBottomBarWhenPushed = YES;
+                [self pushViewController:analyse animated:YES];
             }else{
                 [self showShareActionChoose];
             }
@@ -405,9 +408,12 @@
     }else{
         if(indexPath.section == 2){
             if(indexPath.row == 0){
-                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
-                shuju.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:shuju animated:YES];
+//                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
+//                shuju.hidesBottomBarWhenPushed = YES;
+//                [self.navigationController pushViewController:shuju animated:YES];
+                XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
+                analyse.hidesBottomBarWhenPushed = YES;
+                [self pushViewController:analyse animated:YES];
             }else{
                 [self showShareActionChoose];
             }

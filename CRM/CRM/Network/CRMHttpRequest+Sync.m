@@ -96,7 +96,7 @@ NSMutableArray* deletedRepairDoc = nil;
 
 //对于medical case的分批处理
 //每次下载病例最大患者数
-NSInteger const curPatientsNum = 20;
+NSInteger const curPatientsNum = 30;
 
 //临时的数组，用来保存当前需要梳理的patient
 NSMutableArray* curPatients = nil;

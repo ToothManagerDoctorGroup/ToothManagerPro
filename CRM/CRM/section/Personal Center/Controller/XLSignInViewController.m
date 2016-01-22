@@ -24,6 +24,7 @@
 #import "XLPersonalStepOneViewController.h"
 #import "XLForgetPasswordViewController.h"
 #import "UserProfileManager.h"
+#import "AFNetworking.h"
 
 @interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate,IChatManagerPushNotification>{
     BOOL check;
@@ -229,7 +230,7 @@
         }
         
     } onQueue:nil];
-    */
+     */
 }
 
 //获取用户的医生列表

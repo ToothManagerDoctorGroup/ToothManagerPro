@@ -59,7 +59,6 @@
     UserObject *userobj = [[AccountManager shareInstance] currentUser];
     [self refreshView];
     [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-        [SVProgressHUD showWithStatus:@"加载中..."];
     } failedBlock:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
@@ -121,8 +120,8 @@
 - (void)qrCodeImageSuccessWithResult:(NSDictionary *)result{
     NSString *imageUrl = [result objectForKey:@"Message"];
     //下载图片，不带缓存
-    [self downloadImageWithImageUrl:imageUrl];
-//    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
+//    [self downloadImageWithImageUrl:imageUrl];
+    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:imageUrl] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
     weiXinPageUrl = imageUrl;
 }
 - (void)qrCodeImageFailedWithError:(NSError *)error{

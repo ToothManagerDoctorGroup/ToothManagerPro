@@ -71,8 +71,6 @@
         [columeArray addObject:@"doctor_skill"];
 
         
-        
-        
         [valueArray addObject:doctorobj.ckeyid];
         [valueArray addObject:doctorobj.doctor_name];
         [valueArray addObject:doctorobj.doctor_dept];

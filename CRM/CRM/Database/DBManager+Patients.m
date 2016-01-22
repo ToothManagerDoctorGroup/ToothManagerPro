@@ -34,7 +34,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" or patient_phone = \"%@\"",PatientTableName,patient.ckeyid,patient.patient_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",PatientTableName,patient.ckeyid];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -151,7 +151,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" or patient_phone = \"%@\"",PatientTableName,patient.ckeyid,patient.patient_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",PatientTableName,patient.ckeyid];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -814,13 +814,37 @@
     return resultArray;
 }
 
+- (int)getPatientsCountWithStatus:(PatientStatus )status{
+    
+    __block FMResultSet* result = nil;
+    __block NSInteger count = 0;
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         NSString *sqlString;
+         if (status == PatientStatuspeAll) {
+             sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where user_id = \"%@\" and creation_date > datetime('%@')",PatientTableName,[AccountManager currentUserid],[NSString defaultDateString]];
+         }else{
+             sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@')",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString]];
+             
+         }
+         result = [db executeQuery:sqlString];
+         
+         while (result.next) {
+             count = [result intForColumn:@"count"];
+         }
+     }];
+    
+    return (int)count;
+}
+
 - (BOOL)patientIsExist:(Patient *)patient{
     if (patient == nil) {
         return NO;
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" or patient_phone = \"%@\"",PatientTableName,patient.ckeyid,patient.patient_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",PatientTableName,patient.ckeyid];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;

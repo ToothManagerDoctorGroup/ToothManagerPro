@@ -14,6 +14,8 @@
 #import "UserProfileViewController.h"
 #import "UserProfileManager.h"
 //#import "ContactListSelectViewController.h"
+#import "AccountManager.h"
+#import "DBManager+Patients.h"
 
 @interface ChatViewController ()<UIAlertViewDelegate, EaseMessageViewControllerDelegate, EaseMessageViewControllerDataSource>
 {
@@ -148,6 +150,7 @@
             sendCell = [[CustomMessageCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier model:model];
             sendCell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
+
         sendCell.model = model;
         return sendCell;
     }
@@ -238,15 +241,21 @@
 - (id<IMessageModel>)messageViewController:(EaseMessageViewController *)viewController
                            modelForMessage:(EMMessage *)message
 {
+    //用户可以根据自己的用户体系,根据message设置用户昵称和头像
     id<IMessageModel> model = nil;
     model = [[EaseMessageModel alloc] initWithMessage:message];
-    model.avatarImage = [UIImage imageNamed:@"EaseUIResource.bundle/user"];
-//    model.avatarURLPath = @"http://122.114.62.57/his.crm/avatar/970.jpg";
-    UserProfileEntity *profileEntity = [[UserProfileManager sharedInstance] getUserProfileByUsername:model.nickname];
-    if (profileEntity) {
-        model.avatarURLPath = profileEntity.imageUrl;
+    model.avatarImage = [UIImage imageNamed:@"patient_head"];//默认头像
+    if (model.isSender) {
+        model.avatarURLPath = [[AccountManager shareInstance] currentUser].img;//头像网络地址
+        model.nickname = [[AccountManager shareInstance] currentUser].name;//用户昵称
+    }else{
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:message.from];
+        if (patient != nil) {
+            model.nickname = patient.patient_name;
+        }
     }
-    model.failImageName = @"imageDownloadFail";
+    
+    
     return model;
 }
 

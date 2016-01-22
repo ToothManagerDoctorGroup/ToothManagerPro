@@ -73,6 +73,14 @@
  */
 - (NSArray *)getPatientsWithStatus:(PatientStatus )status page:(int)page;
 /**
+ *  根据类型获取患者统计数量
+ *
+ *  @param status 患者状态
+ *
+ *  @return 患者数组
+ */
+- (int)getPatientsCountWithStatus:(PatientStatus )status;
+/**
  *  判断这个患者是否存在
  *
  *  @param patient 患者

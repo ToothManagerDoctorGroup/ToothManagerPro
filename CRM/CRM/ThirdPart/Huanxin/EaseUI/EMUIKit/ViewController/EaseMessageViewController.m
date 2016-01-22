@@ -12,6 +12,7 @@
 #import "NSDate+Category.h"
 #import "EaseUsersListViewController.h"
 #import "EaseMessageReadManager.h"
+#import "SysMessageTool.h"
 
 #define KHintAdjustY    50
 
@@ -1635,6 +1636,9 @@
 - (void)sendTextMessage:(NSString *)text
 {
     [self sendTextMessage:text withExt:nil];
+    
+    //调用接口把信息存到数据库
+    [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:@"text" sendContent:text success:^{} failure:^(NSError *error) {}];
 }
 
 - (void)sendTextMessage:(NSString *)text withExt:(NSDictionary*)ext

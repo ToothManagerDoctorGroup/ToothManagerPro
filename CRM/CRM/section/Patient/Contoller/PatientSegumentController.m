@@ -38,6 +38,8 @@
 
 @property (nonatomic,retain) MudItemsBar *menubar;
 @property (nonatomic) BOOL isBarHidden;
+
+@property (nonatomic, weak)UIView *tipView;
 @end
 
 @implementation PatientSegumentController
@@ -98,6 +100,15 @@
     self.segmentedControl.segmentIndicatorBorderWidth = 0.0f;
     self.segmentedControl.selectedSegmentIndex = 0;
     [self.segmentedControl sizeToFit];
+    
+    UIView *tipView = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.segmentedControl.frame) - 20, 2, 8, 8)];
+    tipView.backgroundColor = [UIColor redColor];
+    tipView.layer.cornerRadius = 4;
+    tipView.layer.masksToBounds = YES;
+    tipView.hidden = YES;
+    [self.segmentedControl addSubview:tipView];
+    self.tipView = tipView;
+    
     self.navigationItem.titleView = self.segmentedControl;
 }
 //点击切换选项卡
@@ -192,6 +203,19 @@
     [SVProgressHUD dismiss];
     if (self.isBarHidden == NO){                      //如果是显示状态
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
+    }
+
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    //判断当前是否有显示
+    NSInteger bageNum = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    if (bageNum > 0) {
+        self.tipView.hidden = NO;
+    }else{
+        self.tipView.hidden = YES;
     }
 }
 

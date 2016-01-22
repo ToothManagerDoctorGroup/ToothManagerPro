@@ -145,22 +145,20 @@
             [self pushViewController:settingVc animated:YES];
             
         }else{
-            
 //            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
 //                if (error && error.errorCode != EMErrorServerNotLogin) {
-//                    
+//                    if (error && error.errorCode != EMErrorServerNotLogin) {
+//                        [SVProgressHUD showImage:nil status:@"网络连接失败"];
+//                    }
 //                }
 //                else{
-//                    
 //                    [[AccountManager shareInstance] logout];
 ////                    [[ApplyViewController shareController] clear];
 ////                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
 //                }
 //            } onQueue:nil];
-//            
-            [[AccountManager shareInstance] logout];
 
-            
+            [[AccountManager shareInstance] logout];
         }
     }
 }

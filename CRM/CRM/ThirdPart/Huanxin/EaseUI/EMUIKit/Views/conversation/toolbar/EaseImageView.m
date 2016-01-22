@@ -72,7 +72,7 @@
         _imageView.translatesAutoresizingMaskIntoConstraints = NO;
         _imageView.layer.cornerRadius = _imageCornerRadius;
         _imageView.clipsToBounds = YES;
-        _imageView.backgroundColor = [UIColor grayColor];
+        _imageView.backgroundColor = [UIColor whiteColor];
         [self addSubview:_imageView];
         
         _badgeView = [[UILabel alloc] init];

@@ -28,6 +28,7 @@
     self.nameLabel.adjustsFontSizeToFitWidth = YES;
     self.statusLabel.text = mode.statusStr;
     self.transferLabel.text = mode.introducerName;
+    self.transferLabel.adjustsFontSizeToFitWidth = YES;
     
     
     Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager currentUserid]];

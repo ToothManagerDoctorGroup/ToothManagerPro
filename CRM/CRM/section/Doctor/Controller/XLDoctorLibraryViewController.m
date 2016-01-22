@@ -172,7 +172,7 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 * 2, kScreenWidth, kScreenHeight - 64 - 44 * 2) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];

@@ -69,11 +69,22 @@
 + (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 
 /**
- *  获取单挑预约信息
+ *  获取单条预约信息
  *
  *  @param reserve_id 预约id
  *  @param success    成功回调
  *  @param failure    失败回调
  */
 + (void)getReserveRecordByReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
+/**
+ *  发送消息给患者
+ *
+ *  @param patient_id   患者的环信id
+ *  @param content_type 发送的类型
+ *  @param send_content 发送的内容
+ *  @param success      成功回调
+ *  @param failure      失败回调
+ */
++ (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content success:(void (^)())success failure:(void (^)(NSError *error))failure;
+
 @end

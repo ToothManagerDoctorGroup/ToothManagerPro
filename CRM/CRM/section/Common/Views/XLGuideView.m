@@ -43,6 +43,32 @@
 
 @implementation XLGuideView
 
+- (void)removeAllView{
+    self.superMaskView = nil;
+    self.topMaskView = nil;
+    self.bottomMaskView = nil;
+    self.leftMaskView = nil;
+    self.rightMaskView = nil;
+    self.stepOne_text = nil;
+    self.stepOne_arrow = nil;
+    //步骤二所需的子视图
+    self.stepTwo_arrow = nil;
+    //步骤三所需的子视图
+    self.stepThree_glass1 = nil;
+    self.stepThree_glass2 = nil;
+    self.stepThree_glass3 = nil;
+    self.stepThree_text1 = nil;
+    self.stepThree_text2 = nil;
+    self.stepThree_text3 = nil;
+    //步骤四所需的子视图
+    self.stepFour_text = nil;
+    self.stepFour_arrow = nil;
+}
+
+- (void)dealloc{
+    [self removeAllView];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

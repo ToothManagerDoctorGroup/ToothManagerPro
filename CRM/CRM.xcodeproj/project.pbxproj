@@ -219,6 +219,8 @@
 		3D1661E01C2932210062009D /* material_X.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1661D41C2932210062009D /* material_X.png */; };
 		3D1661E11C2932210062009D /* material_X@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1661D51C2932210062009D /* material_X@2x.png */; };
 		3D1661E21C2932210062009D /* material_X@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1661D61C2932210062009D /* material_X@3x.png */; };
+		3D16D7941C51C7CB0039043F /* XLSeniorStatisticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D16D7931C51C7CB0039043F /* XLSeniorStatisticsViewController.m */; };
+		3D16D7971C51D1F10039043F /* XLSeniorStatisticsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D16D7961C51D1F10039043F /* XLSeniorStatisticsHeaderView.m */; };
 		3D1875F61C33BA5E006931D4 /* MXSCycleScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1875F31C33BA5E006931D4 /* MXSCycleScrollView.m */; };
 		3D1875F71C33BA5E006931D4 /* RBCustomDatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1875F51C33BA5E006931D4 /* RBCustomDatePickerView.m */; };
 		3D18A4FE1C4DCC260016CABE /* guide_arrow2.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D18A4F81C4DCC260016CABE /* guide_arrow2.png */; };
@@ -693,6 +695,11 @@
 		3D23A65B1BF307A60029943D /* ClinicCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65A1BF307A60029943D /* ClinicCell.m */; };
 		3D23A65E1BF3266B0029943D /* SearchClinicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */; };
 		3D23A6641BF33B610029943D /* ClinicDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D23A6631BF33B610029943D /* ClinicDetailViewController.m */; };
+		3D26D3F31C4F335700559BFA /* adImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D26D3F21C4F335700559BFA /* adImage.png */; };
+		3D26D3F61C4F376000559BFA /* XLAdvertisementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D26D3F51C4F376000559BFA /* XLAdvertisementViewController.m */; };
+		3D26D3F91C4F3E7700559BFA /* XLAdvertisementView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D26D3F81C4F3E7700559BFA /* XLAdvertisementView.m */; };
+		3D26D3FF1C4F42D500559BFA /* JKCountDownButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D26D3FE1C4F42D500559BFA /* JKCountDownButton.m */; };
+		3D26D4021C4F442A00559BFA /* XLTimeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D26D4011C4F442A00559BFA /* XLTimeView.m */; };
 		3D27F7B31C08A6A800C50CBF /* LewPopupBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7A71C08A6A800C50CBF /* LewPopupBackgroundView.m */; };
 		3D27F7B41C08A6A800C50CBF /* LewPopupViewAnimationDrop.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7A91C08A6A800C50CBF /* LewPopupViewAnimationDrop.m */; };
 		3D27F7B51C08A6A800C50CBF /* LewPopupViewAnimationFade.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D27F7AB1C08A6A800C50CBF /* LewPopupViewAnimationFade.m */; };
@@ -996,6 +1003,14 @@
 		3DE3DB671C2153E400424A67 /* AutoSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3DB661C2153E400424A67 /* AutoSyncManager.m */; };
 		3DE3DB6B1C21632600424A67 /* SysMessageTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3DB6A1C21632600424A67 /* SysMessageTool.m */; };
 		3DE3DB6E1C21640500424A67 /* SysMessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3DB6D1C21640500424A67 /* SysMessageModel.m */; };
+		3DE4573B1C50B0C900C94177 /* XLPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4573A1C50B0C900C94177 /* XLPieChartView.m */; };
+		3DE4573F1C50B2B400C94177 /* patient_head.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE4573C1C50B2B400C94177 /* patient_head.png */; };
+		3DE457401C50B2B400C94177 /* patient_head@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE4573D1C50B2B400C94177 /* patient_head@2x.png */; };
+		3DE457411C50B2B400C94177 /* patient_head@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE4573E1C50B2B400C94177 /* patient_head@3x.png */; };
+		3DE457481C50B87B00C94177 /* XLDataAnalyseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE457471C50B87B00C94177 /* XLDataAnalyseViewController.m */; };
+		3DE4574B1C50CAC400C94177 /* XLAnalyseHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4574A1C50CAC400C94177 /* XLAnalyseHeaderView.m */; };
+		3DE457511C50CFAB00C94177 /* XLPieChartParam.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE457501C50CFAB00C94177 /* XLPieChartParam.m */; };
+		3DE457541C50DE9A00C94177 /* XLAnalyseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE457531C50DE9A00C94177 /* XLAnalyseButton.m */; };
 		3DE584511C0C2CE200B509C1 /* NSString+MyString.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE584501C0C2CE200B509C1 /* NSString+MyString.m */; };
 		3DE584551C0C2D2F00B509C1 /* NSDate+MyDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE584541C0C2D2F00B509C1 /* NSDate+MyDate.m */; };
 		3DE584581C0C398F00B509C1 /* MyBillPayedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE584571C0C398F00B509C1 /* MyBillPayedCell.m */; };
@@ -1718,6 +1733,10 @@
 		3D1661D41C2932210062009D /* material_X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = material_X.png; sourceTree = "<group>"; };
 		3D1661D51C2932210062009D /* material_X@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "material_X@2x.png"; sourceTree = "<group>"; };
 		3D1661D61C2932210062009D /* material_X@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "material_X@3x.png"; sourceTree = "<group>"; };
+		3D16D7921C51C7CB0039043F /* XLSeniorStatisticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLSeniorStatisticsViewController.h; sourceTree = "<group>"; };
+		3D16D7931C51C7CB0039043F /* XLSeniorStatisticsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSeniorStatisticsViewController.m; sourceTree = "<group>"; };
+		3D16D7951C51D1F10039043F /* XLSeniorStatisticsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLSeniorStatisticsHeaderView.h; sourceTree = "<group>"; };
+		3D16D7961C51D1F10039043F /* XLSeniorStatisticsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSeniorStatisticsHeaderView.m; sourceTree = "<group>"; };
 		3D1875F21C33BA5E006931D4 /* MXSCycleScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXSCycleScrollView.h; sourceTree = "<group>"; };
 		3D1875F31C33BA5E006931D4 /* MXSCycleScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MXSCycleScrollView.m; sourceTree = "<group>"; };
 		3D1875F41C33BA5E006931D4 /* RBCustomDatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBCustomDatePickerView.h; sourceTree = "<group>"; };
@@ -2481,6 +2500,15 @@
 		3D23A65D1BF3266B0029943D /* SearchClinicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchClinicViewController.m; sourceTree = "<group>"; };
 		3D23A6621BF33B610029943D /* ClinicDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicDetailViewController.h; sourceTree = "<group>"; };
 		3D23A6631BF33B610029943D /* ClinicDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicDetailViewController.m; sourceTree = "<group>"; };
+		3D26D3F21C4F335700559BFA /* adImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = adImage.png; sourceTree = "<group>"; };
+		3D26D3F41C4F376000559BFA /* XLAdvertisementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAdvertisementViewController.h; sourceTree = "<group>"; };
+		3D26D3F51C4F376000559BFA /* XLAdvertisementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAdvertisementViewController.m; sourceTree = "<group>"; };
+		3D26D3F71C4F3E7700559BFA /* XLAdvertisementView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAdvertisementView.h; sourceTree = "<group>"; };
+		3D26D3F81C4F3E7700559BFA /* XLAdvertisementView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAdvertisementView.m; sourceTree = "<group>"; };
+		3D26D3FD1C4F42D500559BFA /* JKCountDownButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKCountDownButton.h; sourceTree = "<group>"; };
+		3D26D3FE1C4F42D500559BFA /* JKCountDownButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKCountDownButton.m; sourceTree = "<group>"; };
+		3D26D4001C4F442A00559BFA /* XLTimeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTimeView.h; sourceTree = "<group>"; };
+		3D26D4011C4F442A00559BFA /* XLTimeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTimeView.m; sourceTree = "<group>"; };
 		3D27F7A61C08A6A800C50CBF /* LewPopupBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupBackgroundView.h; sourceTree = "<group>"; };
 		3D27F7A71C08A6A800C50CBF /* LewPopupBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LewPopupBackgroundView.m; sourceTree = "<group>"; };
 		3D27F7A81C08A6A800C50CBF /* LewPopupViewAnimationDrop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LewPopupViewAnimationDrop.h; sourceTree = "<group>"; };
@@ -2918,6 +2946,19 @@
 		3DE3DB6A1C21632600424A67 /* SysMessageTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SysMessageTool.m; sourceTree = "<group>"; };
 		3DE3DB6C1C21640500424A67 /* SysMessageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SysMessageModel.h; sourceTree = "<group>"; };
 		3DE3DB6D1C21640500424A67 /* SysMessageModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SysMessageModel.m; sourceTree = "<group>"; };
+		3DE457391C50B0C900C94177 /* XLPieChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLPieChartView.h; sourceTree = "<group>"; };
+		3DE4573A1C50B0C900C94177 /* XLPieChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLPieChartView.m; sourceTree = "<group>"; };
+		3DE4573C1C50B2B400C94177 /* patient_head.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = patient_head.png; sourceTree = "<group>"; };
+		3DE4573D1C50B2B400C94177 /* patient_head@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "patient_head@2x.png"; sourceTree = "<group>"; };
+		3DE4573E1C50B2B400C94177 /* patient_head@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "patient_head@3x.png"; sourceTree = "<group>"; };
+		3DE457461C50B87B00C94177 /* XLDataAnalyseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLDataAnalyseViewController.h; sourceTree = "<group>"; };
+		3DE457471C50B87B00C94177 /* XLDataAnalyseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLDataAnalyseViewController.m; sourceTree = "<group>"; };
+		3DE457491C50CAC400C94177 /* XLAnalyseHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAnalyseHeaderView.h; sourceTree = "<group>"; };
+		3DE4574A1C50CAC400C94177 /* XLAnalyseHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAnalyseHeaderView.m; sourceTree = "<group>"; };
+		3DE4574F1C50CFAB00C94177 /* XLPieChartParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLPieChartParam.h; sourceTree = "<group>"; };
+		3DE457501C50CFAB00C94177 /* XLPieChartParam.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLPieChartParam.m; sourceTree = "<group>"; };
+		3DE457521C50DE9A00C94177 /* XLAnalyseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAnalyseButton.h; sourceTree = "<group>"; };
+		3DE457531C50DE9A00C94177 /* XLAnalyseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAnalyseButton.m; sourceTree = "<group>"; };
 		3DE5844F1C0C2CE200B509C1 /* NSString+MyString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MyString.h"; sourceTree = "<group>"; };
 		3DE584501C0C2CE200B509C1 /* NSString+MyString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MyString.m"; sourceTree = "<group>"; };
 		3DE584531C0C2D2F00B509C1 /* NSDate+MyDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+MyDate.h"; sourceTree = "<group>"; };
@@ -5651,6 +5692,15 @@
 			path = MJExtension;
 			sourceTree = "<group>";
 		};
+		3D26D3FC1C4F42D500559BFA /* JKCountDownButton */ = {
+			isa = PBXGroup;
+			children = (
+				3D26D3FD1C4F42D500559BFA /* JKCountDownButton.h */,
+				3D26D3FE1C4F42D500559BFA /* JKCountDownButton.m */,
+			);
+			path = JKCountDownButton;
+			sourceTree = "<group>";
+		};
 		3D27F7A51C08A6A800C50CBF /* popupViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -5779,6 +5829,7 @@
 		3D2A004D1C05E53B00B1EF65 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				3D26D3FC1C4F42D500559BFA /* JKCountDownButton */,
 				3D15402F1C4CC66A002B12C9 /* JMHoledView */,
 				3D1540281C4C8AF2002B12C9 /* GTMBase64 */,
 				3D29FE5B1C3CABBD0064D4D8 /* UUDatePicker_Block */,
@@ -6522,6 +6573,8 @@
 			children = (
 				3D1540331C4CEF7A002B12C9 /* XLGuideView.h */,
 				3D1540341C4CEF7A002B12C9 /* XLGuideView.m */,
+				3DE457391C50B0C900C94177 /* XLPieChartView.h */,
+				3DE4573A1C50B0C900C94177 /* XLPieChartView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -6541,6 +6594,8 @@
 			children = (
 				3DE127541C1A642B009C1663 /* TTMUserGuideController.h */,
 				3DE127551C1A642B009C1663 /* TTMUserGuideController.m */,
+				3D26D3F41C4F376000559BFA /* XLAdvertisementViewController.h */,
+				3D26D3F51C4F376000559BFA /* XLAdvertisementViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -6548,6 +6603,10 @@
 		3DE127521C1A63E1009C1663 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3D26D3F71C4F3E7700559BFA /* XLAdvertisementView.h */,
+				3D26D3F81C4F3E7700559BFA /* XLAdvertisementView.m */,
+				3D26D4001C4F442A00559BFA /* XLTimeView.h */,
+				3D26D4011C4F442A00559BFA /* XLTimeView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -6665,6 +6724,49 @@
 				3DE3DB6A1C21632600424A67 /* SysMessageTool.m */,
 			);
 			name = SysMessageTool;
+			sourceTree = "<group>";
+		};
+		3DE457421C50B81D00C94177 /* DataAnalyse */ = {
+			isa = PBXGroup;
+			children = (
+				3DE457451C50B85500C94177 /* Controllers */,
+				3DE457441C50B84F00C94177 /* Models */,
+				3DE457431C50B84700C94177 /* Views */,
+			);
+			name = DataAnalyse;
+			sourceTree = "<group>";
+		};
+		3DE457431C50B84700C94177 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3DE457491C50CAC400C94177 /* XLAnalyseHeaderView.h */,
+				3DE4574A1C50CAC400C94177 /* XLAnalyseHeaderView.m */,
+				3DE457521C50DE9A00C94177 /* XLAnalyseButton.h */,
+				3DE457531C50DE9A00C94177 /* XLAnalyseButton.m */,
+				3D16D7951C51D1F10039043F /* XLSeniorStatisticsHeaderView.h */,
+				3D16D7961C51D1F10039043F /* XLSeniorStatisticsHeaderView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		3DE457441C50B84F00C94177 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3DE4574F1C50CFAB00C94177 /* XLPieChartParam.h */,
+				3DE457501C50CFAB00C94177 /* XLPieChartParam.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		3DE457451C50B85500C94177 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				3DE457461C50B87B00C94177 /* XLDataAnalyseViewController.h */,
+				3DE457471C50B87B00C94177 /* XLDataAnalyseViewController.m */,
+				3D16D7921C51C7CB0039043F /* XLSeniorStatisticsViewController.h */,
+				3D16D7931C51C7CB0039043F /* XLSeniorStatisticsViewController.m */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 		3DE5C2E61C242256008B56DA /* DoctorFriendList */ = {
@@ -6934,6 +7036,7 @@
 		6436DC0919B8C48000DC667E /* APP */ = {
 			isa = PBXGroup;
 			children = (
+				3D26D3F21C4F335700559BFA /* adImage.png */,
 				2D2ED84D1C00942D003B7047 /* MenuButtonPushManager.h */,
 				2D2ED84E1C00942D003B7047 /* MenuButtonPushManager.m */,
 				2D2ED84F1C00942D003B7047 /* MenuView.h */,
@@ -7991,6 +8094,7 @@
 		64CFD8DA19F7F6A6001EB0DA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				3DE457421C50B81D00C94177 /* DataAnalyse */,
 				3DE78BA81C3B7A29001F963F /* Advise */,
 				3D37D0561C281FC900C595F4 /* Login */,
 				3DE3DB521C20F6CF00424A67 /* SysMessage */,
@@ -8115,6 +8219,9 @@
 		64E7C87D1A6416FE00099063 /* Patients */ = {
 			isa = PBXGroup;
 			children = (
+				3DE4573C1C50B2B400C94177 /* patient_head.png */,
+				3DE4573D1C50B2B400C94177 /* patient_head@2x.png */,
+				3DE4573E1C50B2B400C94177 /* patient_head@3x.png */,
 				3DEBEDF01C3F92B9009DC18D /* patient_detail_menu.png */,
 				3DEBEDF11C3F92B9009DC18D /* patient_detail_menu@2x.png */,
 				3DEBEDF21C3F92B9009DC18D /* patient_detail_menu@3x.png */,
@@ -8556,6 +8663,7 @@
 				3D1B60FE1C18082B0032D949 /* groupPrivateHeader@2x.png in Resources */,
 				3D18A5231C4E1C180016CABE /* guide_text2@2x.png in Resources */,
 				A62C8FDD1A0921410013146D /* CRM-Info.plist in Resources */,
+				3DE457411C50B2B400C94177 /* patient_head@3x.png in Resources */,
 				3DDDB8381BFD637D004AD4AC /* kj_zs@2x.png in Resources */,
 				3D309A891C3A6787006FAFDB /* patient_address_blue.png in Resources */,
 				6436DECB19B8C48100DC667E /* star_normal@2x.png in Resources */,
@@ -8750,6 +8858,7 @@
 				3D1B60AF1C18082B0032D949 /* faceDelete.png in Resources */,
 				3D1B60831C18082B0032D949 /* VoiceSearchFeedback013.png in Resources */,
 				3D1B602F1C18082B0032D949 /* chat_sender_bg@2x.png in Resources */,
+				3DE4573F1C50B2B400C94177 /* patient_head.png in Resources */,
 				3DDDB86F1BFDEFA4004AD4AC /* medical_info@3x.png in Resources */,
 				8142BB5D1AEA4BDE00EF08EE /* RepairDocDetailTableViewCell.xib in Resources */,
 				2DFE7E641B4A20A80088B119 /* umeng_fb_audio_play_default@2x.png in Resources */,
@@ -8922,8 +9031,10 @@
 				649B16A719D320580080671F /* header_defult@2x.png in Resources */,
 				2D4085A91B429683003DDE29 /* message@2x.png in Resources */,
 				3DEBEDEA1C3F92A4009DC18D /* ic_tabbar_jiashaoren_blue.png in Resources */,
+				3D26D3F31C4F335700559BFA /* adImage.png in Resources */,
 				6436DEC319B8C48100DC667E /* remind.png in Resources */,
 				2DC828FB1BA30326001CA6A4 /* qrcode@2x.png in Resources */,
+				3DE457401C50B2B400C94177 /* patient_head@2x.png in Resources */,
 				3D1B60C51C18082B0032D949 /* chatBar_recordSelectedBg.png in Resources */,
 				6436DECC19B8C48100DC667E /* userGuide@2x.png in Resources */,
 				3D15404E1C4D0E8A002B12C9 /* guide_circle@3x.png in Resources */,
@@ -9175,6 +9286,7 @@
 				5BFC3DBF19F69E8A009E0007 /* SyncManager.m in Sources */,
 				3D1B5FF41C18082B0032D949 /* PSTCollectionViewController.m in Sources */,
 				3D1B59011C17CBC70032D949 /* GroupPatientCell.m in Sources */,
+				3DE457481C50B87B00C94177 /* XLDataAnalyseViewController.m in Sources */,
 				3D1B614A1C18098A0032D949 /* SDWebImageDecoder.m in Sources */,
 				3DE584551C0C2D2F00B509C1 /* NSDate+MyDate.m in Sources */,
 				3D1B5FB01C18082B0032D949 /* NSDateFormatter+Category.m in Sources */,
@@ -9233,6 +9345,7 @@
 				3D23A6541BF300CC0029943D /* MJIvar.m in Sources */,
 				6436DF0719B8C48100DC667E /* HanyuPinyinOutputFormat.m in Sources */,
 				3D1B590A1C17E5750032D949 /* GroupManageViewController.m in Sources */,
+				3D26D3FF1C4F42D500559BFA /* JKCountDownButton.m in Sources */,
 				3D1B600C1C18082B0032D949 /* EaseEmoji.m in Sources */,
 				3D18CD5D1C3E4B0600BDDE5C /* XLContentWriteViewController.m in Sources */,
 				3D1521611C43CC5300650969 /* XLGroupManagerViewController.m in Sources */,
@@ -9355,6 +9468,7 @@
 				3D23A65B1BF307A60029943D /* ClinicCell.m in Sources */,
 				64CFD92419F7F6A6001EB0DA /* AddCaseView.m in Sources */,
 				3D2D982E1C1AEEDC00498EB8 /* AddressBookCell.m in Sources */,
+				3DE457541C50DE9A00C94177 /* XLAnalyseButton.m in Sources */,
 				2DFE7ED21B4A71980088B119 /* AFURLRequestSerialization.m in Sources */,
 				3D1B5FCC1C18082B0032D949 /* EMCDDeviceManagerBase.m in Sources */,
 				3D29FE821C3CDE070064D4D8 /* LBBaseSettingCell.m in Sources */,
@@ -9375,6 +9489,7 @@
 				3D1B60291C18082B0032D949 /* EaseConversationCell.m in Sources */,
 				3D79615B1C16E1DE00453EB4 /* DoctorGroupTableCell.m in Sources */,
 				2DFE7ED31B4A71980088B119 /* AFURLResponseSerialization.m in Sources */,
+				3D26D3F61C4F376000559BFA /* XLAdvertisementViewController.m in Sources */,
 				3D29FE851C3CDEC30064D4D8 /* LBBadgeView.m in Sources */,
 				3D1B260A1BFEED5400997FDE /* MedicalDetailView.m in Sources */,
 				812FD13C19F8CDDE005C32AF /* ScheduleReminderViewController.m in Sources */,
@@ -9387,6 +9502,7 @@
 				3D1B60191C18082B0032D949 /* EaseMessageTimeCell.m in Sources */,
 				3D1B5FB41C18082B0032D949 /* UIViewController+DismissKeyboard.m in Sources */,
 				3D1B60101C18082B0032D949 /* EaseConversationListViewController.m in Sources */,
+				3DE457511C50CFAB00C94177 /* XLPieChartParam.m in Sources */,
 				3D9D1C381C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.m in Sources */,
 				2D2ED8521C00942D003B7047 /* MenuView.m in Sources */,
 				3D18C84B1C156FE000EF83DE /* NYSegment.m in Sources */,
@@ -9437,6 +9553,7 @@
 				3D1B5F9F1C18082B0032D949 /* MBProgressHUD+Add.m in Sources */,
 				3D1AC2E01BFAC86700F8E1D5 /* ClinicAnnotation.m in Sources */,
 				64CFD94319F7F6A6001EB0DA /* PersonalCenterViewController.m in Sources */,
+				3DE4573B1C50B0C900C94177 /* XLPieChartView.m in Sources */,
 				64CFD92A19F7F6A6001EB0DA /* PatientTableViewCell.m in Sources */,
 				3D2A00671C05E55600B1EF65 /* PMSelectionView.m in Sources */,
 				3D1B260E1BFF031400997FDE /* CommentCell.m in Sources */,
@@ -9534,6 +9651,7 @@
 				64ED49E51AAE980800EFE6FE /* FriendNotification.m in Sources */,
 				3D15215B1C43B51B00650969 /* XLIntroducerViewController.m in Sources */,
 				3DAA118D1BF5C1B900FD8149 /* WMProgressView.m in Sources */,
+				3D26D3F91C4F3E7700559BFA /* XLAdvertisementView.m in Sources */,
 				6436DF3219B8C48100DC667E /* UIApplication+Version.m in Sources */,
 				3D2955A51C48E95000804676 /* XLQueryModel.m in Sources */,
 				6436DF3C19B8C48100DC667E /* TimAlertView.m in Sources */,
@@ -9619,6 +9737,7 @@
 				3D2A00631C05E55600B1EF65 /* PMCalendarController.m in Sources */,
 				3D15212E1C4358B800650969 /* XLEventStoreManager.m in Sources */,
 				3DDF2E981C09C0C2005F48CA /* MyUploadParam.m in Sources */,
+				3D16D7971C51D1F10039043F /* XLSeniorStatisticsHeaderView.m in Sources */,
 				6436DE2819B8C48100DC667E /* CRMAppDelegate.mm in Sources */,
 				3DE5FBCA1BFC68E1001E7728 /* PayParam.m in Sources */,
 				3DDE33E11C2A414E00458FC8 /* FSCalendar+IBExtension.m in Sources */,
@@ -9663,6 +9782,7 @@
 				3D1B60041C18082B0032D949 /* NSDateFormatter+Category.m in Sources */,
 				3D1B60061C18082B0032D949 /* NSString+Valid.m in Sources */,
 				3D1B5FB51C18082B0032D949 /* UIViewController+HUD.m in Sources */,
+				3DE4574B1C50CAC400C94177 /* XLAnalyseHeaderView.m in Sources */,
 				2DFE7ED11B4A71980088B119 /* AFURLConnectionOperation.m in Sources */,
 				3DDE33E81C2A414E00458FC8 /* FSCalendarHeader.m in Sources */,
 				3D309AA31C3A85F6006FAFDB /* XLAppointDetailModel.m in Sources */,
@@ -9692,6 +9812,7 @@
 				2DFE7ED91B4A71980088B119 /* UIAlertView+AFNetworking.m in Sources */,
 				3D1B5FD81C18082B0032D949 /* MWCaptionView.m in Sources */,
 				3DDE33E61C2A414E00458FC8 /* FSCalendarConstance.m in Sources */,
+				3D16D7941C51C7CB0039043F /* XLSeniorStatisticsViewController.m in Sources */,
 				3D1B5FA81C18082B0032D949 /* TTGlobalUICommon.m in Sources */,
 				3D1B5FF31C18082B0032D949 /* PSTCollectionViewCell.m in Sources */,
 				64CFD91919F7F6A6001EB0DA /* CreatePatientViewController.m in Sources */,
@@ -9723,6 +9844,7 @@
 				3D1B5FBB1C18082B0032D949 /* UserProfileManager.m in Sources */,
 				6436DED819B8C48100DC667E /* UIViewController+MMDrawerController.m in Sources */,
 				6404D5551A6A2359001F6F7B /* UIDevice+OpenUDID.m in Sources */,
+				3D26D4021C4F442A00559BFA /* XLTimeView.m in Sources */,
 				3D29FE611C3CABBD0064D4D8 /* UUDatePicker_DateModel.m in Sources */,
 				3D1B616D1C182EC60032D949 /* GroupDetailModel.m in Sources */,
 				3D7F19F71C07280000BE79ED /* MyDateTool.m in Sources */,
@@ -9828,7 +9950,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -9862,7 +9984,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -9917,7 +10039,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = NO;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -9975,7 +10097,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
