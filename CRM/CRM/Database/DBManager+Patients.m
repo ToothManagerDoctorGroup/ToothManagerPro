@@ -1188,7 +1188,7 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"creation_date_sync"]; //创建时间用于，同步那边使用
-        
+        [columeArray addObject:@"repair_doctor_name"];
         
         [valueArray addObject:medicalCase.ckeyid];
         [valueArray addObject:medicalCase.case_name];
@@ -1208,7 +1208,9 @@
         }
         [valueArray addObject:medicalCase.doctor_id];
         [valueArray addObject:[NSString currentDateString]];
+        [valueArray addObject:medicalCase.repair_doctor_name];
         
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -1224,7 +1226,6 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
 
-        
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@) ", MedicalCaseTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
@@ -1268,6 +1269,7 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"creation_date"];
+        [columeArray addObject:@"repair_doctor_name"];
         
         [valueArray addObject:medicalCase.case_name];
         [valueArray addObject:medicalCase.patient_id];
@@ -1292,6 +1294,7 @@
         }
         [valueArray addObject:medicalCase.doctor_id];
         [valueArray addObject:medicalCase.creation_date];
+        [valueArray addObject:medicalCase.repair_doctor_name];
 
         
         // 3. 写入数据库
@@ -1307,7 +1310,7 @@
 }
 
 /**
- *  更具病例id获取病例
+ *  根据病例id获取病例
  *
  *  @param caseid 病例id
  *

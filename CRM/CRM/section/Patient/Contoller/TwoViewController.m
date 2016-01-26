@@ -17,6 +17,7 @@
 #import "NSString+TTMAddtion.h"
 #import "CRMHttpTool.h"
 #import "AFHTTPRequestOperationManager.h"
+#import "XLLoginTool.h"
 
 @interface TwoViewController ()
 @property (nonatomic, weak)UIImageView *imageView;
@@ -46,7 +47,7 @@
     addButton.frame = CGRectMake(0, 100, 50, 30);
     addButton.backgroundColor = [UIColor greenColor];
     [addButton addTarget:self action:@selector(addClick) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:addButton];
+    [self.view addSubview:addButton];
     
     UIButton *deButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [deButton setTitle:@"解密" forState:UIControlStateNormal];
@@ -85,10 +86,11 @@
 //        }
 //    }];
     //个人信息完善界面
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
-    XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
-    oneVC.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:oneVC animated:YES];
+//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+//    XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+//    oneVC.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:oneVC animated:YES];
+    
 }
 //解密
 - (void)deClick{

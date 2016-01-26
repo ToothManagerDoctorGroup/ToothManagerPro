@@ -169,6 +169,12 @@
     return result;
 }
 
++ (NSComparisonResult)compareStartDateStr:(NSString *)startDateStr endDateStr:(NSString *)endDateStr{
+    NSDate *startDate = [self dateWithStringNoTime:startDateStr];
+    NSDate *endDate = [self dateWithStringNoTime:endDateStr];
+    return [startDate compare:endDate];
+}
+
 + (BOOL)earlyThanToday:(NSString *)targetDateStr{
     NSDate *targetDate = [self dateWithStringNoSec:targetDateStr];
     NSComparisonResult result = [targetDate compare:[self dateWithStringNoSec:[self stringWithDateNoSec:[NSDate date]]]];

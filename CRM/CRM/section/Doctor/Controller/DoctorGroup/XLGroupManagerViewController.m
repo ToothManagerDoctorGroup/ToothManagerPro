@@ -102,6 +102,9 @@
         }];
         //设置可编辑模式
         [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
+            if (weakSelf.isAnalyse) {
+                return NO;
+            }
             return YES;
         }];
         //编辑模式下的删除操作
@@ -183,11 +186,12 @@
 
 - (void)setupView {
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithTitle:@"管理"];
-    [self.searchDisplayController.searchBar setPlaceholder:@"搜索"];
+    if (!self.isAnalyse) {
+        [self setRightBarButtonWithTitle:@"管理"];
+        self.title = self.group.group_name;
+    }
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.title = self.group.group_name;
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 40 - 44) style:UITableViewStylePlain];
     _tableView.delegate = self;
@@ -214,21 +218,27 @@
 }
 
 - (void)requestGroupMemberData{
-    //获取当前分组下的所有成员数据
-    [SVProgressHUD showWithStatus:@"正在加载"];
-    [DoctorGroupTool queryGroupMembersWithCkId:self.group.ckeyid success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
-        
-        [_patientCellModeArray addObjectsFromArray:result];
-        
+    if (self.isAnalyse) {
+        [_patientCellModeArray addObjectsFromArray:self.analyseList];
         [_tableView reloadData];
-        
-    } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+    }else{
+        //获取当前分组下的所有成员数据
+        [SVProgressHUD showWithStatus:@"正在加载"];
+        [DoctorGroupTool queryGroupMembersWithCkId:self.group.ckeyid success:^(NSArray *result) {
+            [SVProgressHUD dismiss];
+            
+            [_patientCellModeArray removeAllObjects];
+            [_patientCellModeArray addObjectsFromArray:result];
+            
+            [_tableView reloadData];
+            
+        } failure:^(NSError *error) {
+            [SVProgressHUD dismiss];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
 }
 
 - (void)onRightButtonAction:(id)sender{
@@ -263,6 +273,13 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.patientCellModeArray];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.isAnalyse) {
+        return NO;
+    }
+    return YES;
 }
 
 //当cell向左滑动时会出现删除或者添加按钮，只要实现了下面的方法，此按钮自动添加

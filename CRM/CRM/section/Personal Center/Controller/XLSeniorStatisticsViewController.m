@@ -7,12 +7,26 @@
 //
 
 #import "XLSeniorStatisticsViewController.h"
+#import "XLSeniorStatisticsHeaderView.h"
+#import "XLSeniorStatisticCell.h"
+#import "DoctorTool.h"
+#import "AccountManager.h"
+#import "XLGroupManagerViewController.h"
 
-@interface XLSeniorStatisticsViewController ()
+@interface XLSeniorStatisticsViewController ()<XLSeniorStatisticsHeaderViewDelegate>
+
+@property (nonatomic, strong)NSMutableArray *dataList;
 
 @end
 
 @implementation XLSeniorStatisticsViewController
+
+- (NSMutableArray *)dataList{
+    if (!_dataList) {
+        _dataList = [NSMutableArray array];
+    }
+    return _dataList;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -21,6 +35,7 @@
     
     //设置子视图
     [self setUpSubViews];
+
 }
 
 #pragma mark - 设置导航栏样式
@@ -37,7 +52,16 @@
 
 #pragma mark - 初始化子视图
 - (void)setUpSubViews{
-    
+    XLSeniorStatisticsHeaderView *headerView;
+    if (self.type == SeniorStatisticsViewControllerPlant) {
+        headerView = [[XLSeniorStatisticsHeaderView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 160)];
+        headerView.type = @"plant";
+    }else{
+        headerView = [[XLSeniorStatisticsHeaderView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 210)];
+        headerView.type = @"repair";
+    }
+    headerView.delegate = self;
+    self.tableView.tableHeaderView = headerView;
 }
 
 
@@ -45,15 +69,64 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return 1;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 400;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    static NSString *ID = @"statistic_cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
+    XLSeniorStatisticCell *cell = [XLSeniorStatisticCell cellWithTableView:tableView];
+    if (self.type == SeniorStatisticsViewControllerPlant) {
+        cell.title = @"种植患者";
+    }else{
+        cell.title = @"修复患者";
     }
-    cell.backgroundColor = [UIColor yellowColor];
+    cell.dataList = self.dataList;
+    
     return cell;
+}
+
+#pragma mark - XLSeniorStatisticsHeaderViewDelegate
+- (void)seniorStatisticsHeaderView:(XLSeniorStatisticsHeaderView *)headerView didSearchWithStartTime:(NSString *)startTime endTime:(NSString *)endTime repairDoctor:(RepairDoctor *)repairDoctor{
+    
+    //判断是哪种搜索
+    if (self.type == SeniorStatisticsViewControllerPlant) {
+        //种植搜索
+        [SVProgressHUD showWithStatus:@"正在查询"];
+        //搜索
+        [DoctorTool queryPlantPatientsWithDoctorId:[AccountManager currentUserid] beginDate:startTime endDate:endTime success:^(NSArray *array) {
+            [SVProgressHUD dismiss];
+            [self.dataList removeAllObjects];
+            [self.dataList addObjectsFromArray:array];
+            [self.tableView reloadData];
+        } failure:^(NSError *error) {
+            [SVProgressHUD dismiss];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }else{
+        //ttp://118.244.234.207/his.crm/ashx/PatientHandler.ashx?action=listpatientbyrepairtime&doctor_id=156&begin_date=2015-01-01&end_date=2016-01-16&repair_doctor_id=156_20141204083956
+        //修复搜索
+        [SVProgressHUD showWithStatus:@"正在查询"];
+        [DoctorTool queryRepairPatientsWithDoctorId:[AccountManager currentUserid] beginDate:startTime endDate:endTime repairDoctorId:repairDoctor.ckeyid success:^(NSArray *array) {
+            [SVProgressHUD dismiss];
+            [self.dataList removeAllObjects];
+            [self.dataList addObjectsFromArray:array];
+            [self.tableView reloadData];
+        } failure:^(NSError *error) {
+            [SVProgressHUD dismiss];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [SVProgressHUD dismiss];
 }
 
 - (void)didReceiveMemoryWarning {

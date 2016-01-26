@@ -30,8 +30,10 @@
 
 //比较目标时间是否在一个时间段内
 + (BOOL)timeInStartTime:(NSString *)startTime endTime:(NSString *)endTime targetTime:(NSString *)targetTime;
-//比较两个日期的大小
+//比较输入日期与当前日期的大小
 + (NSComparisonResult)compareWithFromDateStr:(NSString *)fromDateStr;
+//比较两个输入的日期的大小，格式为yyyy-MM-dd
++ (NSComparisonResult)compareStartDateStr:(NSString *)startDateStr endDateStr:(NSString *)endDateStr;
 
 + (BOOL)earlyThanToday:(NSString *)targetDateStr;
 

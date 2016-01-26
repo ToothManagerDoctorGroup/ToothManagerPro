@@ -232,6 +232,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:[NSString stringWithFormat: @"%ld", (long)medical_case.case_status] forKey:@"status"];
     [subParamDic setObject:medical_case.repair_doctor forKey:@"repair_doctor"];
     [subParamDic setObject:medical_case.doctor_id forKey:@"doctor_id"];
+    [subParamDic setObject:medical_case.repair_doctor_name forKey:@"repair_doctor_name"];
     
     NSError *error;
     NSString *jsonString;

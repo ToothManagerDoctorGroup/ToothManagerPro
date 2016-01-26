@@ -25,6 +25,8 @@
 #import "XLForgetPasswordViewController.h"
 #import "UserProfileManager.h"
 #import "AFNetworking.h"
+#import "CRMHttpRespondModel.h"
+#import "XLLoginTool.h"
 
 @interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate,IChatManagerPushNotification>{
     BOOL check;
@@ -105,32 +107,100 @@
 }
 //登录
 - (IBAction)loginInAction:(id)sender {
-    [[AccountManager shareInstance] loginWithNickName:self.userNameField.text passwd:self.passwordField.text successBlock:^{
-        [SVProgressHUD showWithStatus:@"正在登录..."];
+    
+    [SVProgressHUD showWithStatus:@"正在登录"];
+    [XLLoginTool loginWithNickName:self.userNameField.text password:self.passwordField.text success:^(CRMHttpRespondModel *respond) {
         
-        if (!check)
-        {
-            NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
-            [user setObject:nil forKey:@"Name"];
-            [user setObject:nil forKey:@"Password"];
+        //登录成功
+        NSDictionary *resultDic = respond.result;
+        [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+        
+        UserObject *userobj = [[AccountManager shareInstance] currentUser];
+        [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
+        } failedBlock:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+        
+        
+        //环信账号登录
+        [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
             
-            [user removeObjectForKey:@"Name"];
-            [user removeObjectForKey:@"Password"];
+            if (loginInfo && !error) {
+                //设置是否自动登录
+                [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+                
+                //获取数据库中数据
+                [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+                
+                EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+                //设置离线推送的样式
+                options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+                [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+                
+                //发送自动登陆状态通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+                
+                //保存最近一次登录用户名
+                [self saveLastLoginUsername];
+            }
+            else
+            {
+                switch (error.errorCode)
+                {
+                    case EMErrorNotFound:
+                        TTAlertNoTitle(error.description);
+                        break;
+                    case EMErrorNetworkNotConnected:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                        break;
+                    case EMErrorServerNotReachable:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                        break;
+                    case EMErrorServerAuthenticationFailure:
+                        TTAlertNoTitle(error.description);
+                        break;
+                    case EMErrorServerTimeout:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                        break;
+                    default:
+                        TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
+                        break;
+                }
+            }
             
-        }else
-        {
-            
-            NSString *name = self.userNameField.text;
-            NSString *password = self.passwordField.text;
-            NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
-            [user setObject:name forKey:@"Name"];
-            [user setObject:password forKey:@"Password"];
-            [user synchronize];
+        } onQueue:nil];
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
         }
-        
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showTextWithStatus:[error localizedDescription]];
+        [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
     }];
+//    [[AccountManager shareInstance] loginWithNickName:self.userNameField.text passwd:self.passwordField.text successBlock:^{
+//        [SVProgressHUD showWithStatus:@"正在登录..."];
+//        
+//        if (!check)
+//        {
+//            NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+//            [user setObject:nil forKey:@"Name"];
+//            [user setObject:nil forKey:@"Password"];
+//            
+//            [user removeObjectForKey:@"Name"];
+//            [user removeObjectForKey:@"Password"];
+//            
+//        }else
+//        {
+//            NSString *name = self.userNameField.text;
+//            NSString *password = self.passwordField.text;
+//            NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+//            [user setObject:name forKey:@"Name"];
+//            [user setObject:password forKey:@"Password"];
+//            [user synchronize];
+//        }
+//        
+//    } failedBlock:^(NSError *error) {
+//        [SVProgressHUD showTextWithStatus:[error localizedDescription]];
+//    }];
 }
 #pragma  mark - 保存密码到本地
 - (void)saveLastLoginUsername
@@ -182,9 +252,9 @@
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
     
-    /*
+    
     //环信账号登录
-    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:self.passwordField.text completion:^(NSDictionary *loginInfo, EMError *error) {
+    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
         
         if (loginInfo && !error) {
             //设置是否自动登录
@@ -230,7 +300,6 @@
         }
         
     } onQueue:nil];
-     */
 }
 
 //获取用户的医生列表

@@ -31,7 +31,7 @@
 }
 - (UIImageView *)arrowView{
     if (!_arrowView) {
-        _arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"common_icon_arrow"]];
+        _arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
     }
     return _arrowView;
 }

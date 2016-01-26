@@ -140,6 +140,7 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
     [self.view addSubview:_tableView];
     
     //初始化搜索框

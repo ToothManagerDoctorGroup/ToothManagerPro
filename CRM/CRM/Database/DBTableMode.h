@@ -179,7 +179,8 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *next_reserve_time;    //下次预约时间
 @property (nonatomic,copy) NSString *repair_time;          //修复时间
 @property (nonatomic,readwrite) NSInteger case_status;     //病例状态
-@property (nonatomic,copy) NSString *repair_doctor;        //修复医生
+@property (nonatomic,copy) NSString *repair_doctor;        //修复医生id
+@property (nonatomic, copy)NSString *repair_doctor_name;   //修复医生名称
 @property (nonatomic,copy)  NSString *creation_date;      //创建日期
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;  //同步时间

@@ -14,7 +14,7 @@
 #import "CRMHttpRespondModel.h"
 #import "DBTableMode.h"
 #import "XLQueryModel.h"
-
+#import "GroupMemberModel.h"
 
 #define userIdParam @"userid"
 #define requestActionParam @"action"
@@ -204,6 +204,68 @@
         if (success) {
             success(arrayM);
         }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)queryPlantPatientsWithDoctorId:(NSString *)doctor_id beginDate:(NSString *)begin_date endDate:(NSString *)end_date success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure{
+    ////ttp://118.244.234.207/his.crm/ashx/PatientHandler.ashx?action=listpatientbyimplanttime&doctor_id=156&begin_date=2015-01-01&end_date=2016-01-16
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"listpatientbyimplanttime";
+    params[@"doctor_id"] = doctor_id;
+    params[@"begin_date"] = begin_date;
+    params[@"end_date"] = end_date;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        NSArray *array = responseObject[@"Result"];
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            
+            for (NSDictionary *dic in array) {
+                GroupMemberModel *member = [GroupMemberModel objectWithKeyValues:dic];
+                [arrayM addObject:member];
+            }
+        }
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)queryRepairPatientsWithDoctorId:(NSString *)doctor_id beginDate:(NSString *)begin_date endDate:(NSString *)end_date repairDoctorId:(NSString *)repair_doctor_id success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure{
+    //ttp://118.244.234.207/his.crm/ashx/PatientHandler.ashx?action=listpatientbyrepairtime&doctor_id=156&begin_date=2015-01-01&end_date=2016-01-16&repair_doctor_id=156_20141204083956
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"listpatientbyrepairtime";
+    params[@"doctor_id"] = doctor_id;
+    params[@"begin_date"] = begin_date;
+    params[@"end_date"] = end_date;
+    params[@"repair_doctor_id"] = repair_doctor_id;
+    
+    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+        
+        NSMutableArray *arrayM = [NSMutableArray array];
+        NSArray *array = responseObject[@"Result"];
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            
+            for (NSDictionary *dic in array) {
+                GroupMemberModel *member = [GroupMemberModel objectWithKeyValues:dic];
+                [arrayM addObject:member];
+            }
+        }
+        if (success) {
+            success(arrayM);
+        }
+    
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);

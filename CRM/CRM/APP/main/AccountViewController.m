@@ -41,6 +41,8 @@
 #import "XLDoctorLibraryViewController.h"
 #import "UserProfileManager.h"
 #import "XLDataAnalyseViewController.h"
+#import "XLMessageTemplateTool.h"
+#import "XLMessageTemplateViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
     
@@ -96,7 +98,7 @@
     
     _tableView.delegate=self;
     _tableView.dataSource=self;
-    _tableView.backgroundColor=[UIColor clearColor];
+    _tableView.backgroundColor = MyColor(248, 248, 248);
     
     
     UIImage *image1 = [[UIImage imageNamed:@"ic_tabbar_me"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -120,6 +122,16 @@
     //获取个人信息保存到本地
 //    [[UserProfileManager sharedInstance] loadUserProfileInBackground:@[[AccountManager currentUserid]] saveToLoacal:YES completion:^(BOOL success, NSError *error) {
 //    }];
+}
+
+- (void)onRightButtonAction:(id)sender{
+    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -181,12 +193,12 @@
     }];
 }
 
-
+#pragma mark - UITableViewDataSource/Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     if (self.isSign == YES) {
-        return 5;
+        return 6;
     }else{
-        return 4;
+        return 5;
     }
     
 }
@@ -196,10 +208,12 @@
         if(section==0){
             return 1;
         }else if (section==1){
-            return 3;
+            return 2;
         }else if (section==2){
             return 2;
         }else if (section==3){
+            return 2;
+        }else if(section == 4){
             return 2;
         }else{
             return 1;
@@ -208,8 +222,10 @@
         if(section==0){
             return 1;
         }else if (section==1){
-            return 3;
+            return 2;
         }else if (section==2){
+            return 2;
+        }else if(section == 3){
             return 2;
         }else{
             return 1;
@@ -224,53 +240,12 @@
     return 20;
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    if (self.isSign == YES) {
-        if(section == 4){
-            return 30;
-        }
-    }else{
-        if(section == 3){
-            return 30;
-        }
-    }
-    return 1;
-}
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
     view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     return view;
 }
 
-
-- (UIView *) tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    if (self.isSign == YES) {
-        if(section == 4){
-            UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
-            // [view setBackgroundColor:[UIColor lightGrayColor]];
-            
-            view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-            
-            return view;
-        }
-    }else{
-        if(section == 3){
-            UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
-            // [view setBackgroundColor:[UIColor lightGrayColor]];
-            
-            view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-            
-            return view;
-        }
-    }
-    
-    
-    
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
-    [view setBackgroundColor:[UIColor whiteColor]];
-    return view;
-}
- 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -282,23 +257,27 @@
                 return _doctorCell;
             }else if (indexPath.row == 1){
                 return _repairDoctorCell;
-            }else if (indexPath.row == 2){
-                return _zhongZhiTiCell;
             }
         }else if (indexPath.section == 2){
+            if (indexPath.row == 0) {
+                return _zhongZhiTiCell;
+            }else{
+                return _tiXingMuBanCell;
+            }
+        }else if (indexPath.section == 3){
             if(indexPath.row == 0){
                 return _myBillCell;
             }else if (indexPath.row == 1){
                 return _myClinicCell;
             }
-        }else if (indexPath.section == 3){
+        }else if (indexPath.section == 4){
             if (indexPath.row == 0) {
                 return _shuJuFenXiCell;
             }else if(indexPath.row == 1){
                 return _shareCell;
             }
             
-        }else if (indexPath.section == 4){
+        }else if (indexPath.section == 5){
             return _sheZhiCell;
         }
     }else{
@@ -314,11 +293,17 @@
             }
         }else if (indexPath.section == 2){
             if (indexPath.row == 0) {
+                return _zhongZhiTiCell;
+            }else{
+                return _tiXingMuBanCell;
+            }
+        }else if (indexPath.section == 3){
+            if (indexPath.row == 0) {
                 return _shuJuFenXiCell;
             }else if(indexPath.row == 1){
                 return _shareCell;
             }
-        }else if (indexPath.section == 3){
+        }else if (indexPath.section == 4){
             return _sheZhiCell;
         }
     }
@@ -355,15 +340,22 @@
             repairDocVc.hidesBottomBarWhenPushed = YES;
             [self pushViewController:repairDocVc animated:YES];
             
-        }else if (indexPath.row == 2){
-            
+        }
+    }
+    if (indexPath.section == 2) {
+        if (indexPath.row == 0) {
             XLMaterialsViewController *materialsVC = [[XLMaterialsViewController alloc] init];
             materialsVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:materialsVC animated:YES];
+        }else if (indexPath.row == 1){
+            XLMessageTemplateViewController *templateVc = [[XLMessageTemplateViewController alloc] initWithStyle:UITableViewStylePlain];
+            templateVc.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:templateVc animated:YES];
         }
     }
+    
     if (self.isSign == YES) {
-        if (indexPath.section == 2) {
+        if (indexPath.section == 3) {
             if (indexPath.row == 0) {
                 
                 WMPageController *pageController = [self p_defaultController];
@@ -384,11 +376,8 @@
             }
         }
         
-        if(indexPath.section == 3){
+        if(indexPath.section == 4){
             if(indexPath.row == 0){
-//                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
-//                shuju.hidesBottomBarWhenPushed = YES;
-//                [self.navigationController pushViewController:shuju animated:YES];
                 XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
                 analyse.hidesBottomBarWhenPushed = YES;
                 [self pushViewController:analyse animated:YES];
@@ -396,7 +385,7 @@
                 [self showShareActionChoose];
             }
         }
-        if(indexPath.section == 4){
+        if(indexPath.section == 5){
             if(indexPath.row == 0){
                 SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
                 set.hidesBottomBarWhenPushed = YES;
@@ -406,11 +395,8 @@
             
         }
     }else{
-        if(indexPath.section == 2){
+        if(indexPath.section == 3){
             if(indexPath.row == 0){
-//                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
-//                shuju.hidesBottomBarWhenPushed = YES;
-//                [self.navigationController pushViewController:shuju animated:YES];
                 XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
                 analyse.hidesBottomBarWhenPushed = YES;
                 [self pushViewController:analyse animated:YES];
@@ -418,7 +404,7 @@
                 [self showShareActionChoose];
             }
         }
-        if(indexPath.section == 3){
+        if(indexPath.section == 4){
             if(indexPath.row == 0){
                 SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
                 set.hidesBottomBarWhenPushed = YES;

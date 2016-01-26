@@ -148,6 +148,9 @@
 #pragma mark - 返回json对象
 - (id)JSONObject;
 
+#pragma mark - 将json字符串转换为字典
++ (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr;
+
 /**
  *  去掉字符串的单位
  *

@@ -236,7 +236,7 @@
 //    }
     
     //对数据进行排序，按介绍人数进行排序
-    [self sortByIntroCount];
+//    [self sortByIntroCount];
     
     if (self.introducerCellModeArray.count < 50) {
         [_tableView removeFooter];

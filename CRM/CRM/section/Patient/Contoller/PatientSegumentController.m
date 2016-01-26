@@ -72,12 +72,12 @@
     
     
     //消息视图
-//    SuccessViewController *successVc = [[SuccessViewController alloc] init];
-//    [successVc networkChanged:_connectionState];
-//    [self addChildViewController:successVc];
+    SuccessViewController *successVc = [[SuccessViewController alloc] init];
+    [successVc networkChanged:_connectionState];
+    [self addChildViewController:successVc];
     
-    TwoViewController *twoVc = [[TwoViewController alloc] init];
-    [self addChildViewController:twoVc];
+//    TwoViewController *twoVc = [[TwoViewController alloc] init];
+//    [self addChildViewController:twoVc];
     
     [self.view addSubview:patientVc.view];
     
@@ -114,8 +114,8 @@
 //点击切换选项卡
 - (void)segmentSelected {
     XLPatientDisplayViewController *patientVC = self.childViewControllers[0];
-//    SuccessViewController *successVc = self.childViewControllers[1];
-    TwoViewController *twoVc = self.childViewControllers[1];
+    SuccessViewController *successVc = self.childViewControllers[1];
+//    TwoViewController *twoVc = self.childViewControllers[1];
     
     if (self.segmentedControl.selectedSegmentIndex == 0) {
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
@@ -126,16 +126,16 @@
               if (finished) {
                   self.currentViewController = patientVC;
               }else{
-                  self.currentViewController = twoVc;
+                  self.currentViewController = successVc;
               }
           }];
     }else{
         [self setRightBarButtonWithImage:nil];
         self.navigationItem.rightBarButtonItem.enabled = NO;
-        [self transitionFromViewController:self.currentViewController toViewController:twoVc duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
+        [self transitionFromViewController:self.currentViewController toViewController:successVc duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
         } completion:^(BOOL finished) {
             if (finished) {
-                self.currentViewController = twoVc;
+                self.currentViewController = successVc;
             }else{
                 self.currentViewController = patientVC;
             }

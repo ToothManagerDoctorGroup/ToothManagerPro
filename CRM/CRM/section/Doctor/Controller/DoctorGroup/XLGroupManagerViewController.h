@@ -13,4 +13,7 @@
 
 @property (nonatomic, strong)DoctorGroupModel *group;
 
+@property (nonatomic, assign)BOOL isAnalyse;//从数据分析页面跳转过来
+@property (nonatomic, strong)NSArray *analyseList;//数据分析获取到的数据
+
 @end

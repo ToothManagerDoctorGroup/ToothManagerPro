@@ -7,14 +7,30 @@
 //
 
 #import "XLReserveTypesViewController.h"
+#import "XLMessageTemplateTool.h"
+#import "AccountManager.h"
+#import "XLMessageTemplateModel.h"
 
 @interface XLReserveTypesViewController ()
 
-@property (nonatomic, strong)NSArray *dataList;
+@property (nonatomic, strong)NSMutableArray *dataList;
 
 @end
 
 @implementation XLReserveTypesViewController
+
+- (NSMutableArray *)dataList{
+    if (!_dataList) {
+        _dataList = [NSMutableArray array];
+    }
+    return _dataList;
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    
+    [SVProgressHUD dismiss];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -22,7 +38,31 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.dataList = [NSArray arrayWithObjects:@"定方案",@"种植",@"拆线",@"修复",@"取模",@"戴牙",@"复查",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"其它", nil];
+    //请求网络数据
+    [self requestWlanData];
+}
+- (void)requestWlanData{
+    [SVProgressHUD showWithStatus:@"正在获取预约事项"];
+    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
+        [SVProgressHUD dismiss];
+        //对数据进行分组
+        for (XLMessageTemplateModel *model in result) {
+            if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"] ||
+                [model.message_name isEqualToString:@"转诊后通知"] ||
+                [model.message_name isEqualToString:@"成为介绍人通知"]) {
+            }else{
+                [self.dataList addObject:model];
+            }
+        }
+        
+        [self.tableView reloadData];
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 - (void)onBackButtonAction:(id)sender{
@@ -43,9 +83,10 @@
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }
     
-    cell.textLabel.text = self.dataList[indexPath.row];
+    XLMessageTemplateModel *model = self.dataList[indexPath.row];
+    cell.textLabel.text = model.message_type;
     
-    if ([self.dataList[indexPath.row] isEqualToString:self.reserve_type] && self.dataList[indexPath.row] != nil) {
+    if ([model.message_type isEqualToString:self.reserve_type] && model.message_type != nil) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }else{
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -58,12 +99,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    self.reserve_type = self.dataList[indexPath.row];
+    XLMessageTemplateModel *model = self.dataList[indexPath.row];
+    
+    self.reserve_type = model.message_type;
     
     [self.tableView reloadData];
     
     if ([self.delegate respondsToSelector:@selector(reserveTypesViewController:didSelectReserveType:)]) {
-        [self.delegate reserveTypesViewController:self didSelectReserveType:self.dataList[indexPath.row]];
+        [self.delegate reserveTypesViewController:self didSelectReserveType:model.message_type];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }

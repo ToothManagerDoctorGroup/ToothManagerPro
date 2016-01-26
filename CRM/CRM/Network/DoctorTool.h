@@ -77,4 +77,26 @@
  */
 + (void)getDoctorFriendListWithDoctorId:(NSString *)doctorId syncTime:(NSString *)sync_time queryInfo:(XLQueryModel *)info success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
 
+/**
+ *  根据种植时间查询患者
+ *
+ *  @param doctor_id  医生id
+ *  @param begin_date 种植开始时间
+ *  @param end_date   种植结束时间
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)queryPlantPatientsWithDoctorId:(NSString *)doctor_id beginDate:(NSString *)begin_date endDate:(NSString *)end_date success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
+
+/**
+ *  根据修复时间段和修复医生查询患者信息
+ *
+ *  @param doctor_id        医生id
+ *  @param begin_date       修复开始时间
+ *  @param end_date         修复结束时间
+ *  @param repair_doctor_id 修复医生id
+ *  @param success          成功回调
+ *  @param failure          失败回调
+ */
++ (void)queryRepairPatientsWithDoctorId:(NSString *)doctor_id beginDate:(NSString *)begin_date endDate:(NSString *)end_date repairDoctorId:(NSString *)repair_doctor_id success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
 @end

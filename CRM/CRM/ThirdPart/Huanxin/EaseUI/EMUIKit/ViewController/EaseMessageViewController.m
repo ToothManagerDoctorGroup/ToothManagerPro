@@ -13,6 +13,7 @@
 #import "EaseUsersListViewController.h"
 #import "EaseMessageReadManager.h"
 #import "SysMessageTool.h"
+#import "JSONKit.h"
 
 #define KHintAdjustY    50
 
@@ -1380,6 +1381,38 @@
         }
     }
     else{
+        //获取回调消息中的消息体
+        NSMutableDictionary *params = [NSMutableDictionary dictionary];
+        NSString *type;
+        id body = message.messageBodies[0];
+        if ([body isKindOfClass:[EMTextMessageBody class]]) {
+            EMTextMessageBody *textBody = (EMTextMessageBody *)body;
+            NSLog(@"EMTextMessageBody%@",textBody.text);
+            type = @"text";
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:textBody.text success:^{} failure:^(NSError *error) {}];
+            
+        }else if ([body isKindOfClass:[EMVoiceMessageBody class]]){
+            EMVoiceMessageBody *voiceBody = (EMVoiceMessageBody *)body;
+             NSLog(@"EMVoiceMessageBody%@",voiceBody.secretKey);
+            type = @"audio";
+            params[@"secret"] = voiceBody.secretKey;
+            params[@"url"] = voiceBody.remotePath;
+            params[@"suffix"] = [voiceBody.localPath componentsSeparatedByString:@"."][1];
+            
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] success:^{} failure:^(NSError *error) {}];
+
+        }else if ([body isKindOfClass:[EMImageMessageBody class]]){
+            EMImageMessageBody *imageBody = (EMImageMessageBody *)body;
+             NSLog(@"EMImageMessageBody%@",imageBody.secretKey);
+            type = @"img";
+            params[@"secret"] = imageBody.secretKey;
+            params[@"url"] = imageBody.remotePath;
+            params[@"suffix"] = [imageBody.localPath componentsSeparatedByString:@"."][1];
+            
+            //调用接口把信息存到数据库
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] success:^{} failure:^(NSError *error) {}];
+        }
+        
         if (_delegate && [_delegate respondsToSelector:@selector(messageViewController:didSendMessageModel:)]) {
             [_delegate messageViewController:self didSendMessageModel:model];
         }
@@ -1387,6 +1420,15 @@
             [self.tableView reloadData];
         }
     }
+}
+
+#pragma mark - 将json字符串转换为字典
+- (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr{
+    NSData *jsonData = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:nil];
+    return dic;
 }
 
 - (void)reloadTableViewDataWithMessage:(EMMessage *)message{
@@ -1636,9 +1678,6 @@
 - (void)sendTextMessage:(NSString *)text
 {
     [self sendTextMessage:text withExt:nil];
-    
-    //调用接口把信息存到数据库
-    [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:@"text" sendContent:text success:^{} failure:^(NSError *error) {}];
 }
 
 - (void)sendTextMessage:(NSString *)text withExt:(NSDictionary*)ext

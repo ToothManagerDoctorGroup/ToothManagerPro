@@ -56,7 +56,14 @@
 #else
     apnsCertName = @"toothManagerDoctor_dis";
 #endif
-    [[EaseMob sharedInstance] registerSDKWithAppKey:@"zijingyiyuan#toothmanagerdoctor" apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
+    //如果是测试环境
+    NSString *appKeyStr;
+    if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
+        appKeyStr = @"zijingyiyuan#zygjtest";
+    }else{
+        appKeyStr = @"zijingyiyuan#zygj";
+    }
+    [[EaseMob sharedInstance] registerSDKWithAppKey:appKeyStr apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
     
     [[EaseMob sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     

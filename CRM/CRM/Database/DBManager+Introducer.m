@@ -345,7 +345,8 @@
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by creation_date desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount]];
+         NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount];
+         result = [db executeQuery:sqlStr];
          //NSLog(@"sqlString:%@",[NSString stringWithFormat:@"select * from %@",IntroducerTableName]);
          while ([result next])
          {

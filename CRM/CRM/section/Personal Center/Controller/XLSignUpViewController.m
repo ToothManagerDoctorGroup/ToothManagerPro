@@ -18,6 +18,8 @@
 #import "UserInfoViewController.h"
 #import "AccountViewController.h"
 #import "XLPersonalStepOneViewController.h"
+#import "XLLoginTool.h"
+#import "CRMHttpRespondModel.h"
 
 @interface XLSignUpViewController ()<CRMHttpRequestPersonalCenterDelegate>
 
@@ -173,30 +175,101 @@
     
     //    [self postNotificationName:SignUpSuccessNotification object:nil];
     
-    [[AccountManager shareInstance] loginWithNickName:self.nicknameTextField.text passwd:self.passwdTextField.text successBlock:^{
+    
+    [XLLoginTool loginWithNickName:self.nicknameTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
+        if ([respond.code integerValue] == 200) {
+            [self loginSucessWithResult:respond.result];
+        }
         
-    } failedBlock:^(NSError *error) {
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
         [SVProgressHUD showTextWithStatus:[error localizedDescription]];
     }];
+//    [[AccountManager shareInstance] loginWithNickName:self.nicknameTextField.text passwd:self.passwdTextField.text successBlock:^{
+//        
+//    } failedBlock:^(NSError *error) {
+//        [SVProgressHUD showTextWithStatus:[error localizedDescription]];
+//    }];
 }
 
 - (void)loginSucessWithResult:(NSDictionary *)result {
-    NSDictionary *resultDic = [result objectForKey:@"Result"];
+    NSDictionary *resultDic = result;
     [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
     
-    
-//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-//    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-//    userInfoVC.hidesBottomBarWhenPushed = YES;
-//    userInfoVC.isZhuCe = YES;
-//    [self pushViewController:userInfoVC animated:YES];
+    //环信账号登录
+    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
+        
+        if (loginInfo && !error) {
+            //设置是否自动登录
+            [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+            
+            //获取数据库中数据
+            [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+            
+            EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+            //设置离线推送的样式
+            options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+            [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+            
+            //发送自动登陆状态通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+            
+            //保存最近一次登录用户名
+            [self saveLastLoginUsername];
+        }
+        else
+        {
+            switch (error.errorCode)
+            {
+                case EMErrorNotFound:
+                    TTAlertNoTitle(error.description);
+                    break;
+                case EMErrorNetworkNotConnected:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                    break;
+                case EMErrorServerNotReachable:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                    break;
+                case EMErrorServerAuthenticationFailure:
+                    TTAlertNoTitle(error.description);
+                    break;
+                case EMErrorServerTimeout:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                    break;
+                default:
+                    TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
+                    break;
+            }
+        }
+        
+    } onQueue:nil];
     
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
     XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
     oneVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:oneVc animated:YES];
-    
-    
+}
+
+#pragma  mark - 保存密码到本地
+- (void)saveLastLoginUsername
+{
+    NSString *username = [[[EaseMob sharedInstance].chatManager loginInfo] objectForKey:kSDKUsername];
+    if (username && username.length > 0) {
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        [ud setObject:username forKey:[NSString stringWithFormat:@"em_lastLogin_%@",kSDKUsername]];
+        [ud synchronize];
+    }
+}
+- (NSString*)lastLoginUsername
+{
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    NSString *username = [ud objectForKey:[NSString stringWithFormat:@"em_lastLogin_%@",kSDKUsername]];
+    if (username && username.length > 0) {
+        return username;
+    }
+    return nil;
 }
 
 - (void)loginFailedWithError:(NSError *)error {
@@ -215,6 +288,15 @@
 
 - (void)sendValidateFailedWithError:(NSError *)error
 {
+
+    [myTimer invalidate];
+    myTimer = nil;
+    [self.validateButton setUserInteractionEnabled:YES];
+    [self.validateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [self.validateButton setTitle:@"重  发" forState:UIControlStateNormal];
+    [_timeLabel setText:@""];
+    timeCount = 0;
+    
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 

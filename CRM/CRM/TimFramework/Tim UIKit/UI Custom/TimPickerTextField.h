@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, TextFieldDateMode) {
 //设置日期选择器的时间格式
 @property (nonatomic,readwrite) TextFieldDateMode dateMode;
 
-@property (nonatomic, assign)BOOL *isBirthDay; //是否是选择生日
+@property (nonatomic, assign)BOOL isBirthDay; //是否是选择生日
 
 #pragma mark - Picker
 //普通选择器作为输入源，只能用于一列的情况。

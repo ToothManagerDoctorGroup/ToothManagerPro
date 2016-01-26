@@ -100,7 +100,7 @@ Realize_ShareInstance(DBManager);
     
     [self createDBTableWithTableName:CTLibTableName andParams:@"patient_id text, case_id text, ct_image text, ct_desc text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
 
-    [self createDBTableWithTableName:MedicalCaseTableName andParams:@"case_name text, creation_date text , patient_id text, case_status integer, repair_time text,next_reserve_time text,implant_time text,user_id text,repair_doctor text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
+    [self createDBTableWithTableName:MedicalCaseTableName andParams:@"case_name text, creation_date text , patient_id text, case_status integer, repair_time text,next_reserve_time text,implant_time text,user_id text,repair_doctor text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text,repair_doctor_name text"];
     
     [self createDBTableWithTableName:MedicalExpenseTableName andParams:@"patient_id text, case_id text , mat_id text, expense_num integer, expense_price float, expense_money float,user_id text, creation_date text,creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
     

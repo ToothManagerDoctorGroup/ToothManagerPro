@@ -325,6 +325,14 @@
                                            options:kNilOptions error:nil];
 }
 
++ (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr{
+    NSData *jsonData = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:nil];
+    return dic;
+}
+
 - (NSString *)removeUnit {
     NSString *result = [self trim];
     NSError *error;

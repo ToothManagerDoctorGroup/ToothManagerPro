@@ -276,8 +276,8 @@
 
 #pragma mark -打电话
 - (void)phoneButtonClick{
-    if(![NSString isEmptyString:self.patientPhoneLabel.text]){
-        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:[NSString stringWithFormat:@"是否拨打%@",self.patientPhoneLabel.text] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+    if(![NSString isEmptyString:self.detailPatient.patient_phone]){
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:[NSString stringWithFormat:@"是否拨打电话%@",self.detailPatient.patient_phone] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
         alertView.tag = 101;
         [alertView show];
     }else{
@@ -304,7 +304,7 @@
     if(alertView.tag == 101){
         if(buttonIndex == 0){
         }else{
-            NSString *number = self.patientPhoneLabel.text;
+            NSString *number = self.detailPatient.patient_phone;
             NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
         }
