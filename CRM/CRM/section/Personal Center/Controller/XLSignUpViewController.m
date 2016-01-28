@@ -179,6 +179,8 @@
     [XLLoginTool loginWithNickName:self.nicknameTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
             [self loginSucessWithResult:respond.result];
+        }else{
+            [SVProgressHUD showTextWithStatus:respond.result];
         }
         
     } failure:^(NSError *error) {

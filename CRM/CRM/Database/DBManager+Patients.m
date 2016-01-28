@@ -750,11 +750,69 @@
     return resultArray;
 }
 
-- (NSArray *)getPatientWithKeyWords:(NSString *)keyWord{
+- (NSArray *)getAllPatientWIthID:(NSString *)userid type:(NSString *)type{
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
     
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         
+         NSString *sqlString;
+         if ([type isEqualToString:@"from"]) {
+             //我转给别人的
+             sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,userid,[AccountManager currentUserid]];
+         }else if([type isEqualToString:@"to"]){
+             //别人转给我的
+             sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,[AccountManager currentUserid],userid];
+         }else{
+             //我修复的
+             sqlString = [NSString stringWithFormat:@"select * from '%@'  where ckeyid in ( select distinct patient_id from '%@' where repair_doctor= '%@') and user_id = '%@' and creation_date > datetime('%@')",PatientTableName,MedicalCaseTableName,userid,[AccountManager currentUserid],[NSString defaultDateString]];
+         }
+         result = [db executeQuery:sqlString];
+         while ([result next])
+         {
+             Patient * patient = [Patient patientlWithResult:result];
+             [resultArray addObject:patient];
+         }
+         [result close];
+     }];
+    
+    return resultArray;
+}
+
+- (NSInteger)getPatientCountWithID:(NSString *)userid type:(NSString *)type{
+    __block FMResultSet* result = nil;
+    __block NSInteger count = 0;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         
+         NSString *sqlString;
+         if ([type isEqualToString:@"from"]) {
+             //我转给别人的
+             sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,userid,[AccountManager currentUserid]];
+         }else if([type isEqualToString:@"to"]){
+             //别人转给我的
+             sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,[AccountManager currentUserid],userid];
+         }else{
+             //我修复的
+             sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from '%@'  where ckeyid in ( select distinct patient_id from '%@' where repair_doctor= '%@') and user_id = '%@' and creation_date > datetime('%@')",PatientTableName,MedicalCaseTableName,userid,[AccountManager currentUserid],[NSString defaultDateString]];
+         }
+         result = [db executeQuery:sqlString];
+         while (result.next) {
+             count = [result intForColumn:@"count"];
+         }
+         [result close];
+     }];
+    
+    return count;
+}
+
+- (NSArray *)getPatientWithKeyWords:(NSString *)keyWord{
+    __block FMResultSet* result = nil;
+    
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
          
@@ -833,6 +891,7 @@
          while (result.next) {
              count = [result intForColumn:@"count"];
          }
+         [result close];
      }];
     
     return (int)count;
@@ -1208,7 +1267,11 @@
         }
         [valueArray addObject:medicalCase.doctor_id];
         [valueArray addObject:[NSString currentDateString]];
-        [valueArray addObject:medicalCase.repair_doctor_name];
+        if (medicalCase.repair_doctor_name == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.repair_doctor_name];
+        }
         
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -1294,7 +1357,11 @@
         }
         [valueArray addObject:medicalCase.doctor_id];
         [valueArray addObject:medicalCase.creation_date];
-        [valueArray addObject:medicalCase.repair_doctor_name];
+        if (medicalCase.repair_doctor_name == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.repair_doctor_name];
+        }
 
         
         // 3. 写入数据库

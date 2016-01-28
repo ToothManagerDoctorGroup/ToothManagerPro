@@ -19,15 +19,52 @@
 #import "DBManager+Patients.h"
 #import "UIImageView+WebCache.h"
 #import "PatientDetailViewController.h"
+#import "XLSliderView.h"
 
-@interface DoctorInfoViewController ()
+#define TYPE_FROM @"from"
+#define TYPE_TO @"to"
+#define TYPE_REPAIR @"repair"
+
+@interface DoctorInfoViewController ()<XLSliderViewDelegate>
 @property (nonatomic,retain) RepairDocHeaderTableViewController *tbheaderView;
 @property (nonatomic,retain) Doctor *doctor;
-@property (nonatomic,retain) NSArray *patientsArray;
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
+
+@property (nonatomic, strong)XLSliderView *sliderView;
 @end
 
 @implementation DoctorInfoViewController
+
+- (NSMutableArray *)patientCellModeArray{
+    if (!_patientCellModeArray) {
+        _patientCellModeArray = [NSMutableArray array];
+    }
+    return _patientCellModeArray;
+}
+
+- (void)dealloc{
+    self.doctor = nil;
+    [self.patientCellModeArray removeAllObjects];
+    self.patientCellModeArray = nil;
+    self.sliderView = nil;
+    self.tbheaderView = nil;
+}
+
+- (XLSliderView *)sliderView{
+    if (!_sliderView) {
+        _sliderView = [[XLSliderView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 52)];
+        _sliderView.backgroundColor = MyColor(238, 238, 238);
+        NSInteger fromCount = [[DBManager shareInstance] getPatientCountWithID:self.repairDoctorID type:TYPE_FROM];
+        NSInteger toCount = [[DBManager shareInstance] getPatientCountWithID:self.repairDoctorID type:TYPE_TO];
+        NSInteger repairCount = [[DBManager shareInstance] getPatientCountWithID:self.repairDoctorID type:TYPE_REPAIR];
+        NSString *fromStr = [NSString stringWithFormat:@"我转给他%ld人",(long)fromCount];
+        NSString *toStr = [NSString stringWithFormat:@"他转给我%ld人",(long)toCount];
+        NSString *repairStr = [NSString stringWithFormat:@"修复%ld人",(long)repairCount];
+        _sliderView.sourceList = @[toStr,fromStr,repairStr];
+        _sliderView.delegate = self;
+    }
+    return _sliderView;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -36,24 +73,38 @@
     UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped)];
     tapGr.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGr];
+    
+    //初始化子视图
+    [self initSubViews];
+    //请求数据
+    [self requestLocalDataWithType:TYPE_TO];
+    //请求头视图数据
+    [self initHeaderViewData];
 }
 -(void)viewTapped{
     [_tbheaderView.phoneTextField resignFirstResponder];
     [_tbheaderView.nameTextField resignFirstResponder];
 }
-- (void)initView {
-    [super initView];
+- (void)initSubViews {
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self loadTableView];
 }
 
-- (void)initData {
-    [super initData];
-    _doctor = [[DBManager shareInstance] getDoctorWithCkeyId:_repairDoctorID];
-    _patientsArray = [[DBManager shareInstance] getAllPatientWithID:_repairDoctorID];
-    _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
-    for (NSInteger i = 0; i < _patientsArray.count; i++) {
-        Patient *patientTmp = [_patientsArray objectAtIndex:i];
+- (void)requestLocalDataWithType:(NSString *)type{
+    [self.patientCellModeArray removeAllObjects];
+    NSArray *patientsArray;
+    if ([type isEqualToString:TYPE_FROM]) {
+        //表示我转出去的
+        patientsArray = [[DBManager shareInstance] getAllPatientWIthID:self.repairDoctorID type:TYPE_FROM];
+    }else if ([type isEqualToString:TYPE_TO]){
+        //表示别人转给我的
+        patientsArray = [[DBManager shareInstance] getAllPatientWIthID:self.repairDoctorID type:TYPE_TO];
+    }else{
+        //表示我修复的患者
+        patientsArray = [[DBManager shareInstance] getAllPatientWIthID:self.repairDoctorID type:TYPE_REPAIR];
+    }
+    for (NSInteger i = 0; i < patientsArray.count; i++) {
+        Patient *patientTmp = [patientsArray objectAtIndex:i];
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
@@ -63,16 +114,22 @@
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
         cellMode.status = patientTmp.patient_status;
         cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-        [_patientCellModeArray addObject:cellMode];
+        Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
+        if ([doc.doctor_name isNotEmpty]) {
+            cellMode.isTransfer = YES;
+        }else{
+            cellMode.isTransfer = NO;
+        }
+        [self.patientCellModeArray addObject:cellMode];
     }
 }
 
-- (void)refreshView {
-    [super refreshView];
+- (void)initHeaderViewData{
+
+    _doctor = [[DBManager shareInstance] getDoctorWithCkeyId:self.repairDoctorID];
     _tbheaderView.phoneTextField.text = _doctor.doctor_phone;
     _tbheaderView.nameTextField.text = _doctor.doctor_name;
     [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:_doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
-    [myTableView reloadData];
 }
 
 #pragma mark - Private API
@@ -96,7 +153,6 @@
     _tbheaderView.phoneTextField.text = _doctor.doctor_phone;
     _tbheaderView.nameTextField.text = _doctor.doctor_name;
     [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:_doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
-//    [_tbheaderView.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@/avatar/%@.jpg",DomainName,Method_His_Crm,_doctor.ckeyid]]];
     _tbheaderView.phoneTextField.enabled = NO;
     _tbheaderView.nameTextField.enabled = NO;
     myTableView.tableHeaderView = _tbheaderView.view;
@@ -105,13 +161,21 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self refreshView];
+//    [self refreshView];
 }
 
 #pragma mark - UITableView Delegate
 -  (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.patientsArray.count;
+    return self.patientCellModeArray.count;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 52;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    return self.sliderView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -119,10 +183,9 @@
     static NSString *cellID = @"cellIdentifier";
     PatientsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (cell == nil) {
-        cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientsTableViewCell" owner:nil options:nil] objectAtIndex:0];//[[PatientsTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientsTableViewCell" owner:nil options:nil] objectAtIndex:0];
         [tableView registerNib:[UINib nibWithNibName:@"PatientsTableViewCell" bundle:nil] forCellReuseIdentifier:cellID];
     }
-    
     //赋值,获取患者信息
     NSInteger row = [indexPath row];
     PatientsCellMode *cellMode = [self.patientCellModeArray objectAtIndex:row];
@@ -145,6 +208,19 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark - XLSliderViewDelegate
+- (void)sliderView:(XLSliderView *)sliderView didClickBtnFrom:(NSInteger)from to:(NSInteger)to{
+    if (to == 0) {
+        [self requestLocalDataWithType:TYPE_TO];
+    }else if (to == 1){
+        [self requestLocalDataWithType:TYPE_FROM];
+    }else{
+        [self requestLocalDataWithType:TYPE_REPAIR];
+    }
+    //重新请求数据进行显示
+    [myTableView reloadData];
 }
 
 

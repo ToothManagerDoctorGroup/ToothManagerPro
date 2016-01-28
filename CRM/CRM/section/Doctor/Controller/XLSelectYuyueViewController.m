@@ -39,6 +39,8 @@
 
 @property (nonatomic, strong)NSMutableArray *currentMothArray;//当前月所有的数据
 
+@property (nonatomic, strong)NSMutableArray *currentDayArray;//当前天所有的数据
+
 @end
 
 @implementation XLSelectYuyueViewController
@@ -46,6 +48,13 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     
+}
+
+- (NSMutableArray *)currentDayArray{
+    if (!_currentDayArray) {
+        _currentDayArray = [NSMutableArray array];
+    }
+    return _currentDayArray;
 }
 
 - (NSMutableArray *)currentMothArray{
@@ -151,8 +160,10 @@
 - (void)requestDataWithDate:(NSDate *)date{
     
     NSString *dateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
-    self.remindArray = self.currentMothArray;
+//    self.remindArray = self.currentMothArray;
+    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateStr array:self.currentMothArray];
     dateString = dateStr;
+    
     
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"正在加载"];

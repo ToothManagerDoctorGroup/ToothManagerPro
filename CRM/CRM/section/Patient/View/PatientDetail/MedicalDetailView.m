@@ -120,16 +120,12 @@
     
     //修复医生
     NSString *doctorTitle;
-    if (self.medicalCase.repair_doctor && [self.medicalCase.repair_doctor isNotEmpty]) {
-        RepairDoctor *rDoctor = [[DBManager shareInstance] getRepairDoctorWithCkeyId:self.medicalCase.repair_doctor];
-        if (rDoctor == nil) {
-            doctorTitle = @"修复医生:";
-        }else{
-            doctorTitle = [NSString stringWithFormat:@"修复医生:%@",rDoctor.doctor_name];
-        }
+    if (self.medicalCase.repair_doctor_name && [self.medicalCase.repair_doctor_name isNotEmpty]) {
+        doctorTitle = [NSString stringWithFormat:@"修复医生:%@",self.medicalCase.repair_doctor_name];
     }else{
         doctorTitle = @"修复医生:";
     }
+    
     CGSize doctorTitleSize = [doctorTitle sizeWithFont:CommenTitleFont];
     CGFloat doctorX = Margin;
     CGFloat doctorY = self.repairTimeTitle.top - doctorTitleSize.height - Margin;
@@ -239,6 +235,9 @@
     }
     
     //创建图片显示控制器对象
+//    if (!_browser) {
+//        _browser = [[MJPhotoBrowser alloc] init];
+//    }
     MJPhotoBrowser *browser = [[MJPhotoBrowser alloc] init];
     browser.photos = mJPhotos;
     browser.currentPhotoIndex = imageView.tag;

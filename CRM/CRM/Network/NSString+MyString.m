@@ -34,7 +34,6 @@
 }
 
 
-
 - (NSMutableAttributedString *)changeStrColorWithIndex:(NSInteger)index{
     
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:self];

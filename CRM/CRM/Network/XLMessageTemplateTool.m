@@ -9,6 +9,10 @@
 #import "XLMessageTemplateTool.h"
 #import "CRMHttpTool.h"
 #import "XLMessageTemplateModel.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "XLMessageTemplateParam.h"
+#import "CRMHttpRespondModel.h"
 
 @implementation XLMessageTemplateTool
 
@@ -29,6 +33,60 @@
         }
         if (success) {
             success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)addMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"add";
+    params[@"DataEntity"] = [param.keyValues JSONString];
+    
+    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)editMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"edit";
+    params[@"DataEntity"] = [param.keyValues JSONString];
+    
+    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)deleteMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"delete";
+    params[@"DataEntity"] = [param.keyValues JSONString];
+    
+    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        if (success) {
+            success(model);
         }
     } failure:^(NSError *error) {
         if (failure) {

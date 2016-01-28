@@ -17,7 +17,6 @@
 #import "MLKMenuPopover.h"
 
 #import "PatientEditViewController.h"
-#import "DoctorLibraryViewController.h"
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
 #import "DBManager+Introducer.h"

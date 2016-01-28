@@ -28,7 +28,7 @@
 #import "CRMHttpRespondModel.h"
 #import "XLLoginTool.h"
 
-@interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate,IChatManagerPushNotification>{
+@interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate,IChatManagerPushNotification,IChatManagerBase,IChatManagerPushNotification>{
     BOOL check;
 }
 @property (weak, nonatomic) IBOutlet UITextField *userNameField;
@@ -111,64 +111,68 @@
     [SVProgressHUD showWithStatus:@"正在登录"];
     [XLLoginTool loginWithNickName:self.userNameField.text password:self.passwordField.text success:^(CRMHttpRespondModel *respond) {
         
-        //登录成功
-        NSDictionary *resultDic = respond.result;
-        [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
-        
-        UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-        } failedBlock:^(NSError *error) {
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
-        
-        
-        //环信账号登录
-        [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
+        if ([respond.code integerValue] == 200) {
+            //登录成功
+            NSDictionary *resultDic = respond.result;
+            [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
             
-            if (loginInfo && !error) {
-                //设置是否自动登录
-                [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+            UserObject *userobj = [[AccountManager shareInstance] currentUser];
+            [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
+            } failedBlock:^(NSError *error) {
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
+            }];
+            
+            
+            //环信账号登录
+            [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
                 
-                //获取数据库中数据
-                [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
-                
-                EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
-                //设置离线推送的样式
-                options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
-                [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
-                
-                //发送自动登陆状态通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
-                
-                //保存最近一次登录用户名
-                [self saveLastLoginUsername];
-            }
-            else
-            {
-                switch (error.errorCode)
-                {
-                    case EMErrorNotFound:
-                        TTAlertNoTitle(error.description);
-                        break;
-                    case EMErrorNetworkNotConnected:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                        break;
-                    case EMErrorServerNotReachable:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                        break;
-                    case EMErrorServerAuthenticationFailure:
-                        TTAlertNoTitle(error.description);
-                        break;
-                    case EMErrorServerTimeout:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                        break;
-                    default:
-                        TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
-                        break;
+                if (loginInfo && !error) {
+                    //设置是否自动登录
+                    [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+                    
+                    //获取数据库中数据
+                    [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+                    
+                    EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+                    //设置离线推送的样式
+                    options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+                    [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+                    
+                    //发送自动登陆状态通知
+                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+                    
+                    //保存最近一次登录用户名
+                    [self saveLastLoginUsername];
                 }
-            }
-            
-        } onQueue:nil];
+                else
+                {
+                    switch (error.errorCode)
+                    {
+                        case EMErrorNotFound:
+                            TTAlertNoTitle(error.description);
+                            break;
+                        case EMErrorNetworkNotConnected:
+                            TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                            break;
+                        case EMErrorServerNotReachable:
+                            TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                            break;
+                        case EMErrorServerAuthenticationFailure:
+                            TTAlertNoTitle(error.description);
+                            break;
+                        case EMErrorServerTimeout:
+                            TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                            break;
+                        default:
+                            TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
+                            break;
+                    }
+                }
+                
+            } onQueue:nil];
+        }else{
+            [SVProgressHUD showErrorWithStatus:respond.result];
+        }
         
     } failure:^(NSError *error) {
         if (error) {

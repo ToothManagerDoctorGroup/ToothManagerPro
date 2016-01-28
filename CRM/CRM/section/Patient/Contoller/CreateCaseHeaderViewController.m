@@ -29,14 +29,14 @@
 
 - (UUDatePicker *)repairPicker{
     if (!_repairPicker) {
-        _repairPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
+        _repairPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 260) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
     }
     return _repairPicker;
 }
 
 - (UUDatePicker *)implantPicker{
     if (!_implantPicker) {
-        _implantPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
+        _implantPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 260) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
     }
     return _implantPicker;
 }
@@ -105,13 +105,9 @@
     }
     
     self.casenameTextField.text = mCase.case_name;
-    if (mCase.repair_doctor != nil) {
-        RepairDoctor *rDoctor = [[DBManager shareInstance] getRepairDoctorWithCkeyId:mCase.repair_doctor];
-        self.repairDoctorTextField.text = rDoctor.doctor_name;
+    if (mCase.repair_doctor_name != nil && [mCase.repair_doctor_name isNotEmpty]) {
+        self.repairDoctorTextField.text = mCase.repair_doctor_name;
     }
-    
-//  self.expenseNumTextField.text = mRes.
-//  self.expenseTextField.text =
 }
 
 - (void)setExpenseArray:(NSArray *)expenseArray {
@@ -243,7 +239,13 @@
     }else if (datePicker == self.implantPicker){
         self.implantTextField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@",year,month,day,hour,minute];
     }
-    
+}
+- (void)uuDatePicker:(UUDatePicker *)datePicker didClickBtn:(UIButton *)btn{
+    if (datePicker == self.repairPicker) {
+        [self.repairTextField resignFirstResponder];
+    }else if (datePicker == self.implantPicker){
+        [self.implantTextField resignFirstResponder];
+    }
 }
 
 

@@ -37,10 +37,10 @@
 #import "DBManager+AutoSync.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
-#import "RBCustomDatePickerView.h"
 #import "UUDatePicker.h"
+#import "XLDoctorLibraryViewController.h"
 
-@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,RepairDoctorViewControllerDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate,RBCustomDatePickerViewDelete>
+@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
 @property (nonatomic,retain) MedicalCase *medicalCase;
 @property (nonatomic,retain) MedicalReserve *medicalRes;
@@ -50,7 +50,6 @@
 @property (nonatomic,retain) NSMutableArray *recordArray;
 @property (nonatomic,retain) HengYaViewController *hengYaVC;
 @property (nonatomic,retain) RuYaViewController *ruYaVC;
-
 
 @property (nonatomic, strong)NSMutableArray *deleteRcords;//删除的病历记录
 @property (nonatomic, strong)NSMutableArray *newRecords;//新增的病历记录
@@ -376,6 +375,11 @@
 }
 
 - (void)onRightButtonAction:(id)sender {
+    if (self.tableHeaderView.casenameTextField.text.length == 0) {
+        [SVProgressHUD showImage:nil status:@"请选择牙位"];
+        return;
+    }
+    
     BOOL ret =  [self saveData];
     if (ret) {
         if(![NSString isEmptyString:_medicalCase.implant_time] && ![_medicalCase.implant_time isEqualToString:implant_time] ){
@@ -600,10 +604,16 @@
     } else if ([self.tableHeaderView.repairDoctorTextField isFirstResponder]) {
         [self.tableHeaderView.repairDoctorTextField resignFirstResponder];
         //跳转界面
-        RepairDoctorViewController *repairdoctorVC = [[RepairDoctorViewController alloc]initWithStyle:UITableViewStylePlain];
-        TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:repairdoctorVC];
-        repairdoctorVC.delegate = self;
-        [self presentViewController:nav animated:YES completion:^{}];
+//        RepairDoctorViewController *repairdoctorVC = [[RepairDoctorViewController alloc]initWithStyle:UITableViewStylePlain];
+//        TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:repairdoctorVC];
+//        repairdoctorVC.delegate = self;
+//        [self presentViewController:nav animated:YES completion:^{}];
+        //选择治疗医生
+        XLDoctorLibraryViewController *docLibrary = [[XLDoctorLibraryViewController alloc] init];
+        docLibrary.isTherapyDoctor = YES;
+        docLibrary.delegate = self;
+        [self pushViewController:docLibrary animated:YES];
+        
     } else if ([self.tableHeaderView.nextReserveTextField isFirstResponder]) {
         [self.tableHeaderView.nextReserveTextField resignFirstResponder];
         
@@ -708,11 +718,17 @@
     self.tableHeaderView.nextReserveTextField.text = dateStr;
 }
 
-
-- (void)didSelectedRepairDoctor:(RepairDoctor *)doctor {
+#pragma mark - XLDoctorLibraryViewControllerDelegate
+- (void)doctorLibraryVc:(XLDoctorLibraryViewController *)doctorLibraryVc didSelectDoctor:(Doctor *)doctor{
     _medicalCase.repair_doctor = doctor.ckeyid;
+    _medicalCase.repair_doctor_name = doctor.doctor_name;
     self.tableHeaderView.repairDoctorTextField.text = doctor.doctor_name;
 }
+
+//- (void)didSelectedRepairDoctor:(RepairDoctor *)doctor {
+//    _medicalCase.repair_doctor = doctor.ckeyid;
+//    self.tableHeaderView.repairDoctorTextField.text = doctor.doctor_name;
+//}
 
 - (IBAction)addRecordAction:(id)sender {
     if ([NSString isNotEmptyString:self.recordTextField.text]) {

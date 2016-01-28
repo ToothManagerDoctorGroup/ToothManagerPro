@@ -170,7 +170,11 @@ Realize_ShareInstance(CRMHttpRequest);
     NSMutableURLRequest *request = [requestManager.requestSerializer requestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:requestManager.baseURL] absoluteString] parameters:params.params error:nil];
     request.timeoutInterval = params.timeoutInterval;
     NSLog(@"%@", URLString);
-NSLog(@"%@", [[NSString alloc] initWithData:request.HTTPBody encoding:4]);    AFHTTPRequestOperation *operation = [requestManager HTTPRequestOperationWithRequest:request success:success failure:failure];
+    NSLog(@"%@", [[NSString alloc] initWithData:request.HTTPBody encoding:4]);
+    AFHTTPRequestOperation *operation = [requestManager
+                 HTTPRequestOperationWithRequest:request
+                                         success:success
+                                         failure:failure];
     [requestManager.operationQueue addOperation:operation];
     return operation;
 }

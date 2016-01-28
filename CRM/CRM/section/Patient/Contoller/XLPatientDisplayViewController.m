@@ -35,7 +35,7 @@
 #import "DBManager+AutoSync.h"
 #import "DBManager+sync.h"
 #import "MJRefresh.h"
-
+#import "DBManager+Doctor.h"
 
 @interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,PatientDetailViewControllerDelegate>{
     BOOL ifNameBtnSelected;
@@ -134,6 +134,12 @@
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
             cellMode.status = patientTmp.patient_status;
             cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
+            if ([doc.doctor_name isNotEmpty]) {
+                cellMode.isTransfer = YES;
+            }else{
+                cellMode.isTransfer = NO;
+            }
             [self.patientCellModeArray addObject:cellMode];
         }
     

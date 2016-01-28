@@ -24,6 +24,7 @@
         
         self.searchResultsDataSource = self;
         self.searchResultsDelegate = self;
+        self.delegate = self;
         self.searchResultsTitle = NSLocalizedString(@"searchResults", @"The search results");
     }
     return self;
@@ -109,7 +110,14 @@
 }
 
 #pragma mark - UISearchDisplayDelegate
-
+- (void) searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller NS_DEPRECATED_IOS(3_0,8_0){
+    //相对于上面的接口，这个接口可以动画的改变statusBar的前景色
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+- (void) searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller NS_DEPRECATED_IOS(3_0,8_0){
+    //相对于上面的接口，这个接口可以动画的改变statusBar的前景色
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
 
 
 @end

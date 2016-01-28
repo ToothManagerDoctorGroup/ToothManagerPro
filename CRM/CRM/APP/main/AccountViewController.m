@@ -8,7 +8,6 @@
 
 #import "AccountViewController.h"
 #import "SettingViewController.h"
-#import "DoctorLibraryViewController.h"
 #import "RepairDoctorViewController.h"
 #import "MaterialsViewController.h"
 #import "DBTableMode.h"

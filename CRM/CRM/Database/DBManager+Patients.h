@@ -65,6 +65,25 @@
 - (NSArray *)getPatientWithKeyWords:(NSString *)keyWord;
 
 /**
+ *  根据类型获取患者信息
+ *
+ *  @param userid 好友的id
+ *  @param type   类型：（我转出去的，别人转给我的，修复的）
+ *
+ *  @return 患者数组
+ */
+- (NSArray *)getAllPatientWIthID:(NSString *)userid type:(NSString *)type;
+/**
+ *  根据类型获取患者的数量
+ *
+ *  @param userid 好友的id
+ *  @param type   类型：（我转出去的，别人转给我的，修复的）
+ *
+ *  @return 数量
+ */
+- (NSInteger)getPatientCountWithID:(NSString *)userid type:(NSString *)type;
+
+/**
  *  根据类型获取患者
  *
  *  @param status 患者状态

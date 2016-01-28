@@ -91,6 +91,27 @@
     return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
+- (NSArray *)indexOfTargetStr:(NSString *)targetStr{
+    NSString *temp = nil;
+    NSMutableArray *arrayM = [NSMutableArray array];
+    for(int i =0; i < [self length]; i++)
+    {
+        temp = [self substringWithRange:NSMakeRange(i, 1)];
+        if ([temp isEqualToString:targetStr]) {
+            [arrayM addObject:@(i)];
+        }
+    }
+    return arrayM;
+}
+
+- (NSMutableAttributedString *)changeStrColorWithRange:(NSRange)range color:(UIColor *)color{
+    
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:self];
+    //设置：在0-3个单位长度内的内容显示成红色
+    [str addAttribute:NSForegroundColorAttributeName value:color range:range];
+    return str;
+}
+
 - (NSString *)urlEncode {
     CFStringRef encoded = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                                   (__bridge CFStringRef)self,

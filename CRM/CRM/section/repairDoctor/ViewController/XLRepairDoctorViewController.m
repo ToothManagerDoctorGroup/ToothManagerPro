@@ -26,7 +26,7 @@
 
 #define CellHeight 40
 
-@interface XLRepairDoctorViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,MudItemsBarDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface XLRepairDoctorViewController ()<UISearchBarDelegate,MudItemsBarDelegate,UITableViewDataSource,UITableViewDelegate>{
     UITableView *_tableView;
 }
 
@@ -83,7 +83,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         

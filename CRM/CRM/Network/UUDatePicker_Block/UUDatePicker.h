@@ -36,6 +36,8 @@ typedef void (^FinishBlock)(NSString * year,
                 hour:(NSString *)hour
               minute:(NSString *)minute
              weekDay:(NSString *)weekDay;
+
+- (void)uuDatePicker:(UUDatePicker *)datePicker didClickBtn:(UIButton *)btn;
 @end
 
 

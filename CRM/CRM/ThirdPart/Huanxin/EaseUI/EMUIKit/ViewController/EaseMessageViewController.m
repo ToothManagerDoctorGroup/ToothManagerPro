@@ -75,7 +75,9 @@
     self.chatToolbar = [[EaseChatToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - chatbarHeight, self.view.frame.size.width, chatbarHeight) type:barType];
     [(EaseChatToolbar *)self.chatToolbar setDelegate:self];
     self.chatBarMoreView = (EaseChatBarMoreView*)[(EaseChatToolbar *)self.chatToolbar moreView];
-    [self.chatBarMoreView removeItematIndex:4];
+    [self.chatBarMoreView removeItematIndex:1];
+    [self.chatBarMoreView removeItematIndex:2];
+    [self.chatBarMoreView removeItematIndex:2];
     
 //    self.faceView = (EaseFaceView*)[(EaseChatToolbar *)self.chatToolbar faceView];
     self.recordView = (EaseRecordView*)[(EaseChatToolbar *)self.chatToolbar recordView];

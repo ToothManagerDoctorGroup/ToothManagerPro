@@ -81,7 +81,7 @@
     timeField.placeholder = @"请选择同步时间";
     timeField.backgroundColor = [UIColor whiteColor];
     self.timeField = timeField;
-    UUDatePicker *datePicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
+    UUDatePicker *datePicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 260) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute];
     self.timeField.inputView = datePicker;
     [self.view addSubview:timeField];
 }
@@ -106,6 +106,10 @@
 #pragma mark - UUDatePickerDelegate
 - (void)uuDatePicker:(UUDatePicker *)datePicker year:(NSString *)year month:(NSString *)month day:(NSString *)day hour:(NSString *)hour minute:(NSString *)minute weekDay:(NSString *)weekDay{
     self.timeField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@:00",year,month,day,hour,minute];
+}
+
+- (void)uuDatePicker:(UUDatePicker *)datePicker didClickBtn:(UIButton *)btn{
+    [self.timeField resignFirstResponder];
 }
 
 - (void)viewDidAppear:(BOOL)animated{

@@ -22,7 +22,6 @@
 #import "SDImageCache.h"
 #import "NSString+Conversion.h"
 #import "CRMMacro.h"
-#import "DoctorLibraryViewController.h"
 #import "SelectDateViewController.h"
 #import "LocalNotificationCenter.h"
 #import "IntroducerCellMode.h"

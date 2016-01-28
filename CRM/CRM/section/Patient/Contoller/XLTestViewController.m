@@ -11,7 +11,7 @@
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"
 
-@interface XLTestViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface XLTestViewController ()<UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
     UITableView *_tableView;
 }
 
@@ -55,7 +55,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         

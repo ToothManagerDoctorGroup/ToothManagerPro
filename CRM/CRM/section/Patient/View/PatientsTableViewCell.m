@@ -30,9 +30,8 @@
     self.transferLabel.text = mode.introducerName;
     self.transferLabel.adjustsFontSizeToFitWidth = YES;
     
-    
-    Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager currentUserid]];
-    if([doc.doctor_name isNotEmpty]){
+//    Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager currentUserid]];
+    if(mode.isTransfer){
         self.zhuanZhenImageview.hidden = NO;
     }else{
         self.zhuanZhenImageview.hidden = YES;

@@ -76,7 +76,7 @@
     }
 }
 
-//添加 网络回调响应者
+//移除 网络回调响应者
 - (void)removeResponder:(id)responder{
     @synchronized(_responders) {
         for (ResponderObject *obj in _responders) {

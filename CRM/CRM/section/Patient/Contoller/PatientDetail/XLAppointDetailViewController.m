@@ -65,7 +65,7 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = MyColor(238, 238, 238);
     
-    self.titles = @[@"时间",@"患者",@"牙位",@"项目",@"预约时长",@"医院",@"治疗医生",@"备注"];
+    self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"医院",@"治疗医生",@"备注"];
     
 }
 

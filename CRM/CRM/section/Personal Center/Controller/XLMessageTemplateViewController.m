@@ -11,6 +11,7 @@
 #import "AccountManager.h"
 #import "XLMessageTemplateModel.h"
 #import "UIColor+Extension.h"
+#import "XLTemplateDetailViewController.h"
 
 @interface XLMessageTemplateViewController ()
 
@@ -19,6 +20,10 @@
 @end
 
 @implementation XLMessageTemplateViewController
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (NSMutableArray *)messageTemplates{
     if (!_messageTemplates) {
@@ -34,6 +39,8 @@
     [self setUpNavStyle];
     //获取用户的消息模板
     [self requestData];
+    //添加通知
+    [self addNotification];
 }
 
 #pragma mark - 设置导航栏样式
@@ -41,20 +48,17 @@
     self.title = @"提醒事项";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = MyColor(238, 238, 238);
-    
 }
-
-- (void)viewDidDisappear:(BOOL)animated{
-    [super viewDidDisappear:animated];
-    
-    [SVProgressHUD dismiss];
+#pragma mark - 添加通知
+- (void)addNotification{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLocalData) name:MessageTemplateAddNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLocalData) name:MessageTemplateEditNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshLocalData) name:MessageTemplateDeleteNotification object:nil];
 }
-
-#pragma mark - 请求网络数据
-- (void)requestData{
-    [SVProgressHUD showWithStatus:@"正在获取模板"];
+#pragma mark - 刷新数据
+- (void)refreshLocalData{
     [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
+        [self.messageTemplates removeAllObjects];
         //对数据进行分组
         NSMutableArray *group1 = [NSMutableArray array];
         NSMutableArray *group2 = [NSMutableArray array];
@@ -71,6 +75,35 @@
         [self.messageTemplates addObject:group1];
         [self.messageTemplates addObject:group2];
         
+        [self.tableView reloadData];
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+#pragma mark - 请求网络数据
+- (void)requestData{
+    [SVProgressHUD showWithStatus:@"正在加载"];
+    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
+        [self.messageTemplates removeAllObjects];
+        //对数据进行分组
+        NSMutableArray *group1 = [NSMutableArray array];
+        NSMutableArray *group2 = [NSMutableArray array];
+        for (XLMessageTemplateModel *model in result) {
+            if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"] ||
+                [model.message_name isEqualToString:@"转诊后通知"] ||
+                [model.message_name isEqualToString:@"成为介绍人通知"]) {
+                [group1 addObject:model];
+            }else{
+                [group2 addObject:model];
+            }
+        }
+        
+        [self.messageTemplates addObject:group1];
+        [self.messageTemplates addObject:group2];
+        [SVProgressHUD dismiss];
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
@@ -115,10 +148,12 @@
     [addBtn setTitleColor:[UIColor colorWithHex:0x00a0ea] forState:UIControlStateNormal];
     addBtn.titleLabel.font = [UIFont systemFontOfSize:15];
     addBtn.frame = CGRectMake(kScreenWidth - 50 - 10, 20, 50, 20);
+    [addBtn addTarget:self action:@selector(addBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [view addSubview:addBtn];
     
     return view;
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -137,6 +172,27 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    XLMessageTemplateModel *model = self.messageTemplates[indexPath.section][indexPath.row];
+    
+    XLTemplateDetailViewController *detailVc = [[XLTemplateDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    detailVc.model = model;
+    detailVc.isEdit = YES;
+    if (indexPath.section == 0) {
+        detailVc.isSystem = YES;
+    }
+    [self pushViewController:detailVc animated:YES];
+}
+
+
+#pragma mark - 添加模板
+- (void)addBtnAction{
+    XLTemplateDetailViewController *detailVc = [[XLTemplateDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    detailVc.isSystem = YES;
+    [self pushViewController:detailVc animated:YES];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

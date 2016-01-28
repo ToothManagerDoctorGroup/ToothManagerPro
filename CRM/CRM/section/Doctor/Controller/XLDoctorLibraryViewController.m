@@ -28,7 +28,7 @@
 #import "XLQueryModel.h"
 #import "MJRefresh.h"
 
-@interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
+@interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
     UITableView *_tableView;
 }
 
@@ -91,7 +91,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         
@@ -354,7 +353,9 @@
     
     Doctor *doctor = [sourceArray objectAtIndex:indexPath.row];
     [cell setCellWithMode:doctor];
+    
     [cell.addButton setTitle:doctor.patient_count forState:UIControlStateNormal];
+    cell.addButton.hidden = YES;
     cell.addButton.enabled = NO;
     
     return cell;

@@ -10,6 +10,11 @@
 #import "XLMessageTemplateTool.h"
 #import "AccountManager.h"
 #import "XLMessageTemplateModel.h"
+#import "XLTemplateDetailViewController.h"
+
+
+#define TYPE_LOAD @"load"
+#define TYPE_REFRESH @"refresh"
 
 @interface XLReserveTypesViewController ()
 
@@ -26,6 +31,10 @@
     return _dataList;
 }
 
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
     
@@ -36,15 +45,36 @@
     [super viewDidLoad];
     self.title = @"治疗项目";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     self.view.backgroundColor = [UIColor whiteColor];
     
+    //添加通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addTemplateAction:) name:MessageTemplateAddNotification object:nil];
+    
     //请求网络数据
-    [self requestWlanData];
+    [self requestWlanDataWithType:TYPE_LOAD];
 }
-- (void)requestWlanData{
-    [SVProgressHUD showWithStatus:@"正在获取预约事项"];
+
+- (void)onRightButtonAction:(id)sender{
+    XLTemplateDetailViewController *detailVc = [[XLTemplateDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    detailVc.isSystem = YES;
+    [self pushViewController:detailVc animated:YES];
+}
+//添加预约事项的通知
+- (void)addTemplateAction:(NSNotification *)noti{
+    [self requestWlanDataWithType:TYPE_REFRESH];
+}
+
+- (void)requestWlanDataWithType:(NSString *)type{
+    if ([type isEqualToString:TYPE_LOAD]) {
+        //首次加载
+        [SVProgressHUD showWithStatus:@"正在获取预约事项"];
+    }
     [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
+        if ([type isEqualToString:TYPE_LOAD]) {
+            [SVProgressHUD dismiss];
+        }
+        
         //对数据进行分组
         for (XLMessageTemplateModel *model in result) {
             if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"] ||
@@ -58,15 +88,13 @@
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        if ([type isEqualToString:TYPE_LOAD]) {
+            [SVProgressHUD dismiss];
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }
     }];
-}
-
-- (void)onBackButtonAction:(id)sender{
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UITableView Delegate/DataSource
@@ -108,6 +136,6 @@
     if ([self.delegate respondsToSelector:@selector(reserveTypesViewController:didSelectReserveType:)]) {
         [self.delegate reserveTypesViewController:self didSelectReserveType:model.message_type];
     }
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self popViewControllerAnimated:YES];
 }
 @end

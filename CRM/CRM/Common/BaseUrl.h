@@ -7,9 +7,9 @@
 //
 
 // 域名
-//#define DomainName @"http://122.114.62.57/"
+#define DomainName @"http://122.114.62.57/"
 
-#define DomainName @"http://118.244.234.207/"
+//#define DomainName @"http://118.244.234.207/"
 
 #define Method_His_Crm @"his.crm"
 #define Method_Weixin @"NewWeixin"
@@ -54,4 +54,9 @@
 //分页时每页显示的总个数
 #define CommonPageSize @(100)
 
+
+//预约事项通知
+#define MessageTemplateAddNotification @"MessageTemplateAddNotification"//添加
+#define MessageTemplateEditNotification @"MessageTemplateEditNotification"//修改
+#define MessageTemplateDeleteNotification @"MessageTemplateDeleteNotification"//删除
 

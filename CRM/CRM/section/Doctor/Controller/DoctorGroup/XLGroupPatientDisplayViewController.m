@@ -17,7 +17,7 @@
 #import "EditPatientDetailViewController.h"
 #import "MJRefresh.h"
 
-@interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -80,7 +80,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         

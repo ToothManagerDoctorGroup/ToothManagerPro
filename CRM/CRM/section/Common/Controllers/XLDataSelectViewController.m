@@ -29,7 +29,7 @@
         self.title = @"性别";
     }else if (self.type == XLDataSelectViewControllerDepartment){
         //科室
-        self.dataList = @[@"口腔综合科",@"口腔科",@"正畸科",@"儿童口腔科",@"颌面外科",@"牙周科",@"牙体牙髓科",@"口腔黏膜科",@"种植科",@"口腔预防科",@"其他"];
+        self.dataList = @[@"口腔科",@"颌面外科",@"修复科",@"种植科",@"正畸科",@"牙体牙髓科",@"牙周科",@"口腔黏膜科",@"儿童口腔科",@"口腔综合科",@"特诊科",@"特需科",@"口腔预防科",@"老年口腔科",@"关节科",@"急诊科",@"其它"];
         self.title = @"科室";
     }else if(self.type == XLDataSelectViewControllerHospital){
         //医院

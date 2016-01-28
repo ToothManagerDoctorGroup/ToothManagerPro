@@ -23,7 +23,7 @@
 #import "AccountManager.h"
 #import "MJRefresh.h"
 
-@interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDelegate,UITableViewDataSource>{
+@interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -73,7 +73,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         

@@ -27,6 +27,7 @@
 @interface UUDatePicker ()
 {
     UIPickerView *myPickerView;
+    UIView *toolBarView;
     
     //日期存储数组
     NSMutableArray *yearArray;
@@ -71,10 +72,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 1)];
-        lineView.backgroundColor = MyColor(238, 238, 238);
-        [self addSubview:lineView];
-        
         self.backgroundColor =[UIColor whiteColor];
     }
     return self;
@@ -101,8 +98,8 @@
 //进行初始化
 - (void)drawRect:(CGRect)rect
 {
-    if (self.frame.size.height<216 || self.frame.size.width<320)
-        self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, 320, 216);
+    if (self.frame.size.height<260 || self.frame.size.width<320)
+        self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, 320, 260);
 
     yearArray   = [self ishave:yearArray];
     monthArray  = [self ishave:monthArray];
@@ -142,19 +139,65 @@
     //获取当前日期，储存当前时间位置
     NSArray *indexArray = [self getNowDate:self.ScrollToDate];
     
+    if (!toolBarView) {
+        toolBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 44)];
+        toolBarView.backgroundColor = MyColor(228, 228, 228);
+        [self addSubview:toolBarView];
+        
+        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+        lineView.backgroundColor = MyColor(238, 238, 238);
+        [self addSubview:lineView];
+        
+        //取消按钮
+        UIButton *cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+        cancelBtn.frame = CGRectMake(20, 0, 50, 44);
+        [cancelBtn setTitleColor:[UIColor colorWithHex:0x00a0ea] forState:UIControlStateNormal];
+        [cancelBtn addTarget:self action:@selector(cancelBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:cancelBtn];
+        
+        //确定按钮
+        UIButton *finishBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [finishBtn setTitle:@"确定" forState:UIControlStateNormal];
+        finishBtn.frame = CGRectMake(self.frame.size.width - 50 - 20, 0, 50, 44);
+        [finishBtn setTitleColor:[UIColor colorWithHex:0x00a0ea] forState:UIControlStateNormal];
+        [finishBtn addTarget:self action:@selector(finishBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:finishBtn];
+    }
+    
+    
     if (!myPickerView) {
-        myPickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        myPickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(toolBarView.frame), self.frame.size.width, self.frame.size.height - 44)];
         myPickerView.showsSelectionIndicator = YES;
         myPickerView.backgroundColor = [UIColor clearColor];
         myPickerView.delegate = self;
         myPickerView.dataSource = self;
         [self addSubview:myPickerView];
+        
+        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetMaxY(toolBarView.frame), 1)];
+        lineView.backgroundColor = MyColor(238, 238, 238);
+        [self addSubview:lineView];
     }
     //调整为现在的时间
     for (int i=0; i<indexArray.count; i++) {
         [myPickerView selectRow:[indexArray[i] integerValue] inComponent:i animated:NO];
     }
 }
+
+#pragma mark - 按钮点击事件
+- (void)cancelBtnClick:(UIButton *)btn{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(uuDatePicker:didClickBtn:)]) {
+        [self.delegate uuDatePicker:self didClickBtn:btn];
+    }
+}
+
+- (void)finishBtnClick:(UIButton *)btn{
+    [self playTheDelegate];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(uuDatePicker:didClickBtn:)]) {
+        [self.delegate uuDatePicker:self didClickBtn:btn];
+    }
+}
+
 #pragma mark - 调整颜色
 
 //获取当前时间解析及位置
@@ -203,7 +246,7 @@
 
 - (void)addLabelWithNames:(NSString *)name withPointX:(NSInteger)point_x
 {
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(point_x, 99, 20, 20)];
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(point_x, 99 + 44, 20, 20)];
     label.text = name;
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont systemFontOfSize:18];

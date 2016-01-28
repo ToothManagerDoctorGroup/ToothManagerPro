@@ -24,8 +24,6 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "DBManager+LocalNotification.h"
-#import "RBCustomDatePickerView.h"
-#import "DoctorLibraryViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "UIColor+Extension.h"
 #import "CRMMacro.h"
@@ -40,13 +38,13 @@
 #import "NSDictionary+Extension.h"
 #import "DoctorTool.h"
 #import "XLPatientSelectViewController.h"
-
+#import "XLDoctorLibraryViewController.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
 #define UpdateReserveType @"修改预约"
 
-@interface XLAddReminderViewController ()<HengYaDeleate,RuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,DoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>
+@interface XLAddReminderViewController ()<HengYaDeleate,RuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *patientNameLabel;//患者名称
 @property (weak, nonatomic) IBOutlet UILabel *yaweiNameLabel;//牙位
@@ -510,11 +508,10 @@
         if (indexPath.section == 0) {
             if (indexPath.row == 3) {
                 //选择治疗医生
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
-                DoctorLibraryViewController *doctorVc = [storyboard instantiateViewControllerWithIdentifier:@"DoctorLibraryViewController"];
-                doctorVc.isTherapyDoctor = YES;
-                doctorVc.delegate = self;
-                [self pushViewController:doctorVc animated:YES];
+                XLDoctorLibraryViewController *docLibrary = [[XLDoctorLibraryViewController alloc] init];
+                docLibrary.isTherapyDoctor = YES;
+                docLibrary.delegate = self;
+                [self pushViewController:docLibrary animated:YES];
             }
         }
         
@@ -559,15 +556,13 @@
                 XLReserveTypesViewController *reserceVC = [[XLReserveTypesViewController alloc] initWithStyle:UITableViewStylePlain];
                 reserceVC.reserve_type = self.reserveTypeLabel.text;
                 reserceVC.delegate = self;
-                TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:reserceVC];
-                [self presentViewController:nav animated:YES completion:nil];
+                [self pushViewController:reserceVC animated:YES];
             }else{
                 //选择治疗医生
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
-                DoctorLibraryViewController *doctorVc = [storyboard instantiateViewControllerWithIdentifier:@"DoctorLibraryViewController"];
-                doctorVc.isTherapyDoctor = YES;
-                doctorVc.delegate = self;
-                [self pushViewController:doctorVc animated:YES];
+                XLDoctorLibraryViewController *docLibrary = [[XLDoctorLibraryViewController alloc] init];
+                docLibrary.isTherapyDoctor = YES;
+                docLibrary.delegate = self;
+                [self pushViewController:docLibrary animated:YES];
             }
         }else if (indexPath.section == 1){
             if (indexPath.row == 3) {
@@ -641,7 +636,7 @@
 }
 
 #pragma mark - DoctorLibraryViewControllerDelegate
-- (void)doctorLibraryVc:(DoctorLibraryViewController *)doctorLibraryVc didSelectDoctor:(Doctor *)doctor{
+- (void)doctorLibraryVc:(XLDoctorLibraryViewController *)doctorLibraryVc didSelectDoctor:(Doctor *)doctor{
     //选择了医生
     self.therapyDoctor.text = doctor.doctor_name;
     self.currentSelectDoctor = doctor;

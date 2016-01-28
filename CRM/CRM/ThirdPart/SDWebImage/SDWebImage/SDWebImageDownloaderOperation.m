@@ -344,7 +344,13 @@
             completionBlock(nil, nil, nil, YES);
         }
         else {
+           
+            
             UIImage *image = [UIImage sd_imageWithData:self.imageData];
+            //将等比压缩过的image在赋在转成data赋给self.imageData
+            NSData *data = UIImageJPEGRepresentation(image, 1);
+            self.imageData = [NSMutableData dataWithData:data];
+            
             NSString *key = [[SDWebImageManager sharedManager] cacheKeyForURL:self.request.URL];
             image = [self scaledImageForKey:key image:image];
             

@@ -27,7 +27,7 @@
 #import "CreateIntroducerViewController.h"
 #import "MJRefresh.h"
 
-@interface XLIntroducerViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDataSource,UITableViewDelegate,MudItemsBarDelegate>{
+@interface XLIntroducerViewController ()<UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,MudItemsBarDelegate,UISearchDisplayDelegate>{
     UITableView *_tableView;
 }
 
@@ -66,6 +66,7 @@
     _tableView = nil;
 }
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self addNotificationObserver];
@@ -98,10 +99,8 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
         __weak XLIntroducerViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             
@@ -520,6 +519,8 @@
     [searchBar resignFirstResponder];
     [searchBar setShowsCancelButton:NO animated:YES];
 }
+#pragma mark - UISearchDisplayDelegate
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

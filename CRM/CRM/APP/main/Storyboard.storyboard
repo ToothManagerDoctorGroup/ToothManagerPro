@@ -862,7 +862,7 @@
                                                     <rect key="frame" x="285" y="14" width="15" height="15"/>
                                                     <animations/>
                                                 </imageView>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="kj_zs.png" translatesAutoresizingMaskIntoConstraints="NO" id="AaO-1f-Ui5">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ic_tixing.png" translatesAutoresizingMaskIntoConstraints="NO" id="AaO-1f-Ui5">
                                                     <rect key="frame" x="22" y="12" width="20" height="20"/>
                                                     <animations/>
                                                 </imageView>
@@ -4205,7 +4205,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="治疗项目" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U27-pV-OJG">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="预约事项" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U27-pV-OJG">
                                                     <rect key="frame" x="15" y="14" width="56" height="22"/>
                                                     <animations/>
                                                     <constraints>
@@ -4596,6 +4596,7 @@
         <image name="ic_list_set.png" width="40" height="40"/>
         <image name="ic_list_shuju.png" width="40" height="40"/>
         <image name="ic_list_zhongzhiti.png" width="40" height="40"/>
+        <image name="ic_tixing.png" width="22" height="24"/>
         <image name="icon_login_password.png" width="38" height="38"/>
         <image name="icon_login_user.png" width="38" height="38"/>
         <image name="kj_zd.png" width="46" height="46"/>

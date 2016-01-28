@@ -107,7 +107,24 @@
  *  @return 返回去掉了头尾空格的字符串
  */
 - (NSString *)trim;
+/**
+ *  获取某个字符串在当前字符串中的位置
+ *
+ *  @param targetStr 目标字符串
+ *
+ *  @return 位置数组
+ */
+- (NSArray *)indexOfTargetStr:(NSString *)targetStr;
 
+/**
+ *  改变指定字符串的颜色
+ *
+ *  @param range 字符串的位置
+ *  @param color 颜色
+ *
+ *  @return 带有属性的字符串
+ */
+- (NSMutableAttributedString *)changeStrColorWithRange:(NSRange)range color:(UIColor *)color;
 
 #pragma mark - 字符串的网络编码
 /**

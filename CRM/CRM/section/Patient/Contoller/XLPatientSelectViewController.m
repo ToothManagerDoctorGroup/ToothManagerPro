@@ -27,8 +27,9 @@
 #import "AddressBookViewController.h"
 #import "CreatePatientViewController.h"
 #import "MJRefresh.h"
+#import "DBManager+Doctor.h"
 
-@interface XLPatientSelectViewController () <MudItemsBarDelegate,UISearchBarDelegate,UISearchDisplayDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface XLPatientSelectViewController () <MudItemsBarDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -78,7 +79,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         
@@ -207,6 +207,12 @@
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
             cellMode.status = patientTmp.patient_status;
             cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
+            if ([doc.doctor_name isNotEmpty]) {
+                cellMode.isTransfer = YES;
+            }else{
+                cellMode.isTransfer = NO;
+            }
             [self.patientCellModeArray addObject:cellMode];
         }
         if (self.patientCellModeArray.count < 50) {

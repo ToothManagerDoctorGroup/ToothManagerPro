@@ -21,7 +21,7 @@
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
 
-@interface XLMaterialsViewController () <UISearchBarDelegate,UISearchDisplayDelegate>
+@interface XLMaterialsViewController () <UISearchBarDelegate>
 {
     UITableView *_tableView;
 }
@@ -58,7 +58,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         
