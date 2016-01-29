@@ -18,6 +18,7 @@
 #import "XLAppointDetailViewController.h"
 #import "DBManager+LocalNotification.h"
 #import "XLPatientAppointViewController.h"
+#import "DBManager+Patients.h"
 
 @interface ReadMessageViewController ()
 @property (nonatomic, strong)NSMutableArray *dataList;
@@ -166,6 +167,11 @@
 - (void)clickMessageActionWithModel:(SysMessageModel *)model{
     //判断消息的类型
     if ([model.message_type isEqualToString:AttainNewPatient]) {
+        Patient *patient = [[DBManager shareInstance] getPatientCkeyid:model.message_id];
+        if (patient == nil) {
+            [SVProgressHUD showErrorWithStatus:@"患者不存在"];
+            return;
+        }
         //跳转到新的患者详情页面
         PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
         cellModel.patientId = model.message_id;

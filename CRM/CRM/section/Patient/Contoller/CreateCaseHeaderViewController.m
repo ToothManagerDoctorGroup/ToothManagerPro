@@ -17,6 +17,7 @@
 #import "CRMHttpRequest+Sync.h"
 #import "MyDateTool.h"
 #import "UUDatePicker.h"
+#import "DoctorTool.h"
 
 @interface CreateCaseHeaderViewController () <TimImagesScrollViewDelegate,UUDatePickerDelegate>
 
@@ -234,17 +235,29 @@
 
 #pragma mark - UUDatePickerDelegate
 - (void)uuDatePicker:(UUDatePicker *)datePicker year:(NSString *)year month:(NSString *)month day:(NSString *)day hour:(NSString *)hour minute:(NSString *)minute weekDay:(NSString *)weekDay{
+    NSString *time = [NSString stringWithFormat:@"%@-%@-%@ %@:%@",year,month,day,hour,minute];
+    
     if (datePicker == self.repairPicker) {
-        self.repairTextField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@",year,month,day,hour,minute];
+        self.repairTextField.text = time;
+        
     }else if (datePicker == self.implantPicker){
-        self.implantTextField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@",year,month,day,hour,minute];
+        self.implantTextField.text = time;
     }
 }
 - (void)uuDatePicker:(UUDatePicker *)datePicker didClickBtn:(UIButton *)btn{
+    NSString *type;
+    NSString *time;
     if (datePicker == self.repairPicker) {
         [self.repairTextField resignFirstResponder];
+        type = @"修复";
+        time = self.repairTextField.text;
     }else if (datePicker == self.implantPicker){
         [self.implantTextField resignFirstResponder];
+        type = @"种植";
+        time = self.implantTextField.text;
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didChooseTime:withType:)]) {
+        [self.delegate didChooseTime:time withType:type];
     }
 }
 

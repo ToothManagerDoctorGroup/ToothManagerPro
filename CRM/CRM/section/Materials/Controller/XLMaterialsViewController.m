@@ -244,7 +244,7 @@
     }
     double width=80.0f;
     //圆的背景颜色
-    UIColor * color=[UIColor colorWithRed:94.0f / 255.0f green:170.0f / 255.0f blue:235.0f / 255.0f alpha:1];
+    UIColor * color=[UIColor colorWithHex:0x00a0ea];
     //中间字的颜色
     UIColor * color1 = [UIColor whiteColor];
     
@@ -305,7 +305,7 @@
 #pragma mark -设置单元格
 - (UITableViewCell *)setUpTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
     //cell选中时的背景颜色要与圆圈的背景颜色一致
-    UIColor * seleColor = [UIColor colorWithRed:94.0f / 255.0f green:170.0f / 255.0f blue:235.0f / 255.0f alpha:1];
+    UIColor * seleColor = [UIColor colorWithHex:0x00a0ea];
     static NSString * ideString = @"materialCell";
     MaterialTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:ideString];
     if (cell == nil) {

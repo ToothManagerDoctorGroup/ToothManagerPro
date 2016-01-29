@@ -66,6 +66,15 @@
  */
 - (UIImage *)imageCompressForSize:(UIImage *)sourceImage targetSize:(CGSize)size;
 
+/**
+ *  对图片指定宽度按比例缩放
+ *
+ *  @param sourceImage 原图片
+ *  @param defineWidth 指定宽度
+ *
+ *  @return 压缩后的图片
+ */
+- (UIImage *) imageCompressForWidth:(UIImage *)sourceImage targetWidth:(CGFloat)defineWidth;
 
 - (UIImage *)maskImage:(UIColor *)maskColor;
 

@@ -169,6 +169,10 @@ BOOL ImageDataHasPNGPreffix(NSData *data) {
                 }
 
                 if (imageIsPng) {
+//                    UIImage *imageTmp = image;
+//                    if (imageData.length / 1024 > 1024) {
+//                        imageTmp = [UIImage compressImageWith:image];
+//                    }
                     data = UIImagePNGRepresentation(image);
                 }
                 else {

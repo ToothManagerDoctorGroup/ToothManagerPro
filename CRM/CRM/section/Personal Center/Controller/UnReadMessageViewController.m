@@ -314,13 +314,11 @@
             }
             if ([ctlib.ct_image isNotEmpty]) {
                 NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-                NSURL *imageUrl = [NSURL URLWithString:urlImage];
-                //下载图片
-                [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageLowPriority|SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                
+                UIImage *image = [self getImageFromURL:urlImage];
                     if (nil != image) {
                         [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
                     }
-                }];
             }
         }
     }
@@ -360,6 +358,16 @@
     }else{
         [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
     }
+}
+
+//获取图片
+-(UIImage *) getImageFromURL:(NSString *)fileURL {
+    UIImage * result;
+    
+    NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileURL]];
+    result = [UIImage imageWithData:data];
+    
+    return result;
 }
 
 @end

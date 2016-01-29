@@ -49,8 +49,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createMedicalCaseSuccessAction:) name:@"CreateMedicalCaseSuccessNotification" object:nil];
 }
 
 #pragma mark -创建病历成功
@@ -68,7 +66,7 @@
     if (self.edit) {
         self.title = @"编辑患者";
     } else {
-        self.title = @"新建患者";
+        self.title = @"手工录入患者";
     }
     
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
@@ -260,6 +258,7 @@
         caseVC.title = @"新建病历";
         caseVC.patiendId = patient.ckeyid;
         caseVC.delegate = self;
+        caseVC.isNewPatient = YES;
         [self pushViewController:caseVC animated:YES];
         
     }

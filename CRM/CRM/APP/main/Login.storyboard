@@ -23,16 +23,16 @@
                                     <rect key="frame" x="121" y="72" width="79" height="87"/>
                                     <animations/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="87" id="8Wn-SU-vRi"/>
+                                        <constraint firstAttribute="height" constant="87" id="Hjz-bd-Tk9"/>
+                                        <constraint firstAttribute="width" constant="79" id="X8a-Ub-30p"/>
                                     </constraints>
                                 </imageView>
                             </subviews>
                             <animations/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
-                                <constraint firstItem="ddu-dU-Z4T" firstAttribute="top" secondItem="h66-Wn-FoJ" secondAttribute="top" constant="72" id="OKC-QF-Y4i"/>
-                                <constraint firstItem="ddu-dU-Z4T" firstAttribute="leading" secondItem="h66-Wn-FoJ" secondAttribute="leading" constant="121" id="ddg-Fb-bhT"/>
-                                <constraint firstAttribute="trailing" secondItem="ddu-dU-Z4T" secondAttribute="trailing" constant="120" id="qHh-J2-dJb"/>
+                                <constraint firstItem="ddu-dU-Z4T" firstAttribute="top" secondItem="h66-Wn-FoJ" secondAttribute="top" constant="72" id="5an-q8-2Yo"/>
+                                <constraint firstItem="ddu-dU-Z4T" firstAttribute="centerX" secondItem="h66-Wn-FoJ" secondAttribute="centerX" id="lh5-sA-tOY"/>
                             </constraints>
                         </view>
                         <view key="tableFooterView" contentMode="scaleToFill" id="09p-tT-gkb">

@@ -147,6 +147,11 @@
     } else {
         doctor = [self.searchHistoryArray objectAtIndex:cell.tag-100];
     }
+    if ([doctor.ckeyid isEqualToString:[AccountManager currentUserid]]) {
+        [SVProgressHUD showImage:nil status:@"不能添加自己为好友"];
+        return;
+    }
+    
     [[IntroducerManager shareInstance] applyToBecomeIntroducerWithDoctorId:doctor.ckeyid successBlock:^{
         [SVProgressHUD showImage:nil status:@"请求中..."];
         [cell.addButton setTitle:@"正在验证" forState:UIControlStateNormal];

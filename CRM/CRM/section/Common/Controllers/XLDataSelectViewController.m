@@ -60,7 +60,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
-        
+        cell.textLabel.font = [UIFont systemFontOfSize:15];
     }
     
     cell.textLabel.text = self.dataList[indexPath.row];

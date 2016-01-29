@@ -48,7 +48,7 @@
     params[@"DataEntity"] = [param.keyValues JSONString];
     
     [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
         }
@@ -66,7 +66,7 @@
     params[@"DataEntity"] = [param.keyValues JSONString];
     
     [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
         }
@@ -84,7 +84,7 @@
     params[@"DataEntity"] = [param.keyValues JSONString];
     
     [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
         }

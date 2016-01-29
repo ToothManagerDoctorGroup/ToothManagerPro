@@ -7,6 +7,7 @@
 //
 
 #import "DBManager+AutoSync.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation DBManager (AutoSync)
 
@@ -142,7 +143,7 @@
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
          NSString *sqlString;
-         if ([status containsString:@","]) {
+         if ([status isContainsString:@","]) {
              NSArray *statusArr = [status componentsSeparatedByString:@","];
              NSMutableString *sqlStringM = [NSMutableString stringWithFormat:@"select * from %@ where post_type=\"%@\" and (",InfoAutoSyncTableName,postType];
              for (int i = 0; i < statusArr.count; i++) {

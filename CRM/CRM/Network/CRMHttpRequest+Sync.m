@@ -136,15 +136,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
 }
 
 
--(void) setDelegate:(id) delegate {
-    
+- (void) setDelegate:(id) delegate {
     objc_setAssociatedObject(self,ASSOCIATION_DATATABLE_SYNC,delegate,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
 }
 
 //post
-
--(void)postAllNeedSyncPatient:(NSArray *)patient
+- (void)postAllNeedSyncPatient:(NSArray *)patient
 {
     
     
@@ -4113,6 +4110,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
 
 
 -(UIImage *) getImageFromURL:(NSString *)fileURL {
+    
     UIImage * result;
     
     NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileURL]];
@@ -4150,16 +4148,23 @@ NSMutableArray *autoSync_Update_Patients = nil;
 #if 1
                 if ([ctlib.ct_image isNotEmpty]) {
                     
-                    NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-                    
-                    NSURL *imageUrl = [NSURL URLWithString:urlImage];
-                    //下载网络图片
-                    [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageRetryFailed progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                    if (![PatientManager IsImageExisting:ctlib.ct_image]) {
+                        NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+                        UIImage *image = [self getImageFromURL:urlImage];
                         if (nil != image) {
-                            [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                            
+                            NSString *key = [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                            NSLog(@"图片下载完成:%@ --- %@----key:%@",urlImage,[NSThread currentThread],key);
                         }
-                    }];
+                    }
+
+                    //下载网络图片
+//                    [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageRetryFailed progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+//                    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+//                        if (nil != image) {
+//                            [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+//                        }
+//                    }];
                 }
 #endif
                 

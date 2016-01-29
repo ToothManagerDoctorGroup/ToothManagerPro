@@ -12,4 +12,7 @@
 + (instancetype)getOriginImageWithImageName:(NSString *)imageName;
 //拉伸图片
 + (instancetype)imageWithStretchableName:(NSString *)imageName;
+
+//下载图片
++ (UIImage *) getImageFromURL:(NSString *)fileURL;
 @end

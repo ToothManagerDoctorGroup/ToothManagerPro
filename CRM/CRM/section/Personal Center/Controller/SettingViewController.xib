@@ -13,6 +13,7 @@
                 <outlet property="_settingCell" destination="BdL-TE-IND" id="aUV-Xv-hvq"/>
                 <outlet property="_tableView" destination="DWY-ho-zns" id="Y9z-OK-Vb8"/>
                 <outlet property="_tuichuCell" destination="FWv-JR-tKb" id="ru9-9D-g2H"/>
+                <outlet property="_userAssistence" destination="tGY-qA-MC3" id="Nxu-8f-DyE"/>
                 <outlet property="_versionLabel" destination="ubj-vA-apR" id="rke-tN-cW9"/>
                 <outlet property="_yijianfankuiCell" destination="yyf-M4-uGZ" id="Au9-Em-eTQ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -170,27 +171,76 @@
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BRB-PN-OXl">
-                        <rect key="frame" x="0.0" y="42" width="320" height="1"/>
+                        <rect key="frame" x="15" y="43" width="290" height="1"/>
                         <animations/>
                         <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="1" id="h1O-o4-nDc"/>
+                            <constraint firstAttribute="height" constant="1" id="QdF-0u-Qdi"/>
                         </constraints>
                     </view>
                 </subviews>
                 <animations/>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="BRB-PN-OXl" secondAttribute="trailing" id="1SM-Qx-HhT"/>
-                    <constraint firstItem="BRB-PN-OXl" firstAttribute="leading" secondItem="euh-s0-cRy" secondAttribute="leading" id="COw-q8-inx"/>
+                    <constraint firstItem="BRB-PN-OXl" firstAttribute="leading" secondItem="euh-s0-cRy" secondAttribute="leading" constant="15" id="EwA-dS-3cJ"/>
                     <constraint firstItem="JqK-Nc-bVM" firstAttribute="top" secondItem="euh-s0-cRy" secondAttribute="top" constant="14" id="Nux-uO-vIe"/>
+                    <constraint firstItem="BRB-PN-OXl" firstAttribute="top" secondItem="euh-s0-cRy" secondAttribute="top" constant="43" id="TBd-ML-hpX"/>
                     <constraint firstAttribute="trailing" secondItem="JqK-Nc-bVM" secondAttribute="trailing" constant="15" id="YPa-1w-6mb"/>
                     <constraint firstItem="1AU-jN-Em9" firstAttribute="leading" secondItem="euh-s0-cRy" secondAttribute="leading" constant="15" id="ckM-I6-1sN"/>
                     <constraint firstItem="1AU-jN-Em9" firstAttribute="top" secondItem="euh-s0-cRy" secondAttribute="top" constant="11" id="jcl-Kg-kid"/>
-                    <constraint firstAttribute="bottom" secondItem="BRB-PN-OXl" secondAttribute="bottom" constant="0.5" id="vN7-Na-RFK"/>
+                    <constraint firstAttribute="trailing" secondItem="BRB-PN-OXl" secondAttribute="trailing" constant="15" id="m5t-XW-kca"/>
                 </constraints>
             </tableViewCellContentView>
             <animations/>
             <point key="canvasLocation" x="-248" y="106"/>
+        </tableViewCell>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="tGY-qA-MC3" userLabel="User Assistence Cell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tGY-qA-MC3" id="geJ-sF-b8g">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="使用帮助" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KND-5l-9wW">
+                        <rect key="frame" x="15" y="11" width="120" height="21"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="QY0-cx-Qd3"/>
+                            <constraint firstAttribute="width" constant="120" id="q8Y-YF-VtR"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="Zl2-p8-bgZ">
+                        <rect key="frame" x="290" y="14" width="15" height="15"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="15" id="CEX-J0-Mrp"/>
+                            <constraint firstAttribute="width" constant="15" id="qrb-Rq-cJC"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s4m-Qc-JrR">
+                        <rect key="frame" x="0.0" y="42" width="320" height="1"/>
+                        <animations/>
+                        <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="r3s-8e-fM7"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="s4m-Qc-JrR" firstAttribute="leading" secondItem="geJ-sF-b8g" secondAttribute="leading" id="33A-Lt-RK3"/>
+                    <constraint firstItem="Zl2-p8-bgZ" firstAttribute="top" secondItem="geJ-sF-b8g" secondAttribute="top" constant="14" id="5f9-OT-I4J"/>
+                    <constraint firstAttribute="trailing" secondItem="s4m-Qc-JrR" secondAttribute="trailing" id="Dgg-fy-zxF"/>
+                    <constraint firstItem="KND-5l-9wW" firstAttribute="top" secondItem="geJ-sF-b8g" secondAttribute="top" constant="11" id="MIu-uz-51o"/>
+                    <constraint firstItem="KND-5l-9wW" firstAttribute="leading" secondItem="geJ-sF-b8g" secondAttribute="leading" constant="15" id="e79-qq-Mu5"/>
+                    <constraint firstAttribute="bottom" secondItem="s4m-Qc-JrR" secondAttribute="bottom" constant="0.5" id="mUc-d0-dSM"/>
+                    <constraint firstAttribute="trailing" secondItem="Zl2-p8-bgZ" secondAttribute="trailing" constant="15" id="qzQ-zA-pd9"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <point key="canvasLocation" x="-255" y="203"/>
         </tableViewCell>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="qoQ-ON-tv8">
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -217,7 +267,7 @@
                 <animations/>
             </tableViewCellContentView>
             <animations/>
-            <point key="canvasLocation" x="-289" y="209"/>
+            <point key="canvasLocation" x="-637" y="280"/>
         </tableViewCell>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Xes-Ub-Kkp">
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -277,7 +327,7 @@
                 </constraints>
             </tableViewCellContentView>
             <animations/>
-            <point key="canvasLocation" x="-237" y="304"/>
+            <point key="canvasLocation" x="-255" y="310"/>
         </tableViewCell>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="FWv-JR-tKb">
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>

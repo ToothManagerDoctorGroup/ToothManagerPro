@@ -34,5 +34,6 @@
 
 - (void)createCTAction:(id)sender;
 - (void)didTouchImageView:(id)sender;
+- (void)didChooseTime:(NSString *)time withType:(NSString *)type;
 
 @end

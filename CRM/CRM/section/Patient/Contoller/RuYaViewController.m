@@ -7,6 +7,7 @@
 //
 
 #import "RuYaViewController.h"
+#import "NSString+TTMAddtion.h"
 
 @interface RuYaViewController (){
     NSMutableArray *ruYaArray;
@@ -46,7 +47,7 @@
         [self xhClick:xiaHeBtn];
     }else if ([self.ruYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
-    }else if(self.ruYaString.length > 0 && [self.ruYaString containsString:@","]){
+    }else if(self.ruYaString.length > 0 && [self.ruYaString isContainsString:@","]){
         if(self.ruYaString.length > 0 && ![self isShuZi:self.ruYaString]){
             NSArray *ru = [self.ruYaString componentsSeparatedByString:@","];
             for(NSInteger i = 0;i<[ru count];i++){

@@ -25,6 +25,9 @@
 //如果是编辑病例状态需要在push界面之前设置 病例id
 @property (nonatomic,copy) NSString *medicalCaseId;
 
+//当从新建患者后跳转过来的时候，设置为YES
+@property (nonatomic, assign)BOOL isNewPatient;
+
 @property (weak, nonatomic) IBOutlet UIButton *addRecordButton;
 @property (weak, nonatomic) IBOutlet UITextField *recordTextField;
 @property (weak, nonatomic) IBOutlet UIView *tooBar;

@@ -39,6 +39,9 @@
 #import "JSONKit.h"
 #import "UUDatePicker.h"
 #import "XLDoctorLibraryViewController.h"
+#import "QrCodePatientViewController.h"
+#import "DoctorTool.h"
+#import "CRMHttpRespondModel.h"
 
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
@@ -204,8 +207,6 @@
             }
         }
         
-        
-      [[DBManager shareInstance] updateUpdateDate:self.patiendId];
         NSString *caseid = _medicalCase.ckeyid;
         if ([NSString isNotEmptyString:caseid]) {
             //存储ct照片
@@ -363,11 +364,6 @@
     [super viewDidAppear:animated];
 }
 
-- (void)dealloc
-{
-    
-}
-
 #pragma mark - IBActions
 - (void)createCTAction:(id)sender {
     UIActionSheet *actionsheet = [[UIActionSheet alloc]initWithTitle:@"添加CT片" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"拍照" otherButtonTitles:@"相册", nil];
@@ -406,10 +402,26 @@
         }
         
         [SVProgressHUD showImage:nil status:@"保存成功"];
-        
+        //获取患者数据
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
+        if (patient != nil) {
+            //添加一条删除ct片的自动同步数据
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateMedicalCaseSuccessNotification" object:nil];
-        [self popViewControllerAnimated:YES];
+        
+        if (self.isNewPatient) {
+            
+            for (UIViewController *vc in self.navigationController.viewControllers) {
+                if ([vc isKindOfClass:[QrCodePatientViewController class]]) {
+                    [self popToViewController:vc animated:YES];
+                    return;
+                }
+            }
+        }else{
+            [self popViewControllerAnimated:YES];
+        }
         
     } else {
         [SVProgressHUD showImage:nil status:@"保存失败"];
@@ -423,9 +435,18 @@
 }
 
 - (void)onBackButtonAction:(id)sender{
-    [self popViewControllerAnimated:YES];
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didCancelCreateAction)]) {
-        [self.delegate didCancelCreateAction];
+    if (self.isNewPatient) {
+        for (UIViewController *vc in self.navigationController.viewControllers) {
+            if ([vc isKindOfClass:[QrCodePatientViewController class]]) {
+                [self.navigationController popToViewController:vc animated:YES];
+                return;
+            }
+        }
+    }{
+        [self popViewControllerAnimated:YES];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didCancelCreateAction)]) {
+            [self.delegate didCancelCreateAction];
+        }
     }
 }
 #pragma mark - Notification
@@ -729,6 +750,21 @@
 //    _medicalCase.repair_doctor = doctor.ckeyid;
 //    self.tableHeaderView.repairDoctorTextField.text = doctor.doctor_name;
 //}
+
+#pragma mark - CreateCaseHeaderViewControllerDeleate
+- (void)didChooseTime:(NSString *)time withType:(NSString *)type{
+    //获取提醒数据
+    [DoctorTool yuYueMessagePatient:self.patiendId fromDoctor:[AccountManager currentUserid] withMessageType:type withSendType:@"1" withSendTime:time success:^(CRMHttpRespondModel *result) {
+        if ([result.code integerValue] == 200) {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"保存后提醒患者" message:result.result delegate:self cancelButtonTitle:NULL otherButtonTitles:@"知道了", nil];
+            [alertView show];
+        }
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
 
 - (IBAction)addRecordAction:(id)sender {
     if ([NSString isNotEmptyString:self.recordTextField.text]) {

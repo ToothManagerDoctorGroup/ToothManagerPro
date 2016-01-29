@@ -494,6 +494,7 @@
         appointVc.patient_id = self.detailPatient.ckeyid;
         [self pushViewController:appointVc animated:YES];
     }else if(selectedIndex == 2){
+        //转诊患者
         [self referralAction:nil];
     }else if(selectedIndex == 3){
         //判断当前介绍人是否存在
@@ -563,16 +564,12 @@
             }
             if ([ctlib.ct_image isNotEmpty]) {
                 NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-                NSURL *imageUrl = [NSURL URLWithString:urlImage];
-                if ([PatientManager IsImageExisting:ctlib.ct_image]) {
-                    [[SDImageCache sharedImageCache] removeImageForKey:ctlib.ct_image];
-                }
-                [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                    if (nil != image) {
-                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
-                    }
-                }];
                 
+                UIImage *image = [self getImageFromURL:urlImage];
+                
+                if (nil != image) {
+                    [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                }
             }
         }
     }
@@ -607,11 +604,7 @@
         }
     }
     if (total == current) {
-//        [SVProgressHUD showSuccessWithStatus:@"CT片下载成功，请重新打开患者信息"];
-//        if (self.delegate && [self.delegate respondsToSelector:@selector(didLoadDataSuccessWithModel:)]) {
-//            [self.delegate didLoadDataSuccessWithModel:self.patientsCellMode];
-//        }
-//        [self popViewControllerAnimated:YES];
+        [SVProgressHUD dismiss];
         [self refreshData];
         
     }else{

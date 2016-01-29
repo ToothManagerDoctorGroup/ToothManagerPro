@@ -52,6 +52,8 @@
  */
 @property (nonatomic, strong)GroupMemberModel *selectModel;
 
+@property (nonatomic, assign)BOOL canEdit;//是否进入编辑状态
+
 @end
 
 @implementation XLGroupManagerViewController
@@ -241,9 +243,17 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    //显示菜单
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-    [self.menuPopover showInView:keyWindow];
+    if (self.canEdit) {
+        self.canEdit = NO;
+        [_tableView setEditing:self.canEdit animated:YES];
+        [self setRightBarButtonWithTitle:@"管理"];
+    }else
+    {
+        //显示菜单
+        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+        [self.menuPopover showInView:keyWindow];
+    }
+    
 }
 
 
@@ -575,7 +585,10 @@
             break;
         case 1:
             //移除成员
-            [_tableView setEditing:!_tableView.isEditing animated:YES];
+            self.canEdit = YES;
+            [_tableView setEditing:self.canEdit animated:YES];
+            //设置右侧导航栏按钮
+            [self setRightBarButtonWithTitle:@"完成"];
             break;
         case 2:
             //编辑组名

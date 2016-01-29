@@ -188,9 +188,9 @@
             imageView.layer.masksToBounds = YES;
             imageView.frame = CGRectMake(i * imageViewW, 0, imageViewW, imageViewH);
             //添加长按事件
-            UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
-            longPress.minimumPressDuration = 1.0f;
-            [imageView addGestureRecognizer:longPress];
+//            UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
+//            longPress.minimumPressDuration = 1.0f;
+//            [imageView addGestureRecognizer:longPress];
             //显示图片
             if ([ct.ckeyid isEqualToString:@"-100"]) {
                 imageView.image = [UIImage imageNamed:ct.ct_image];
@@ -201,18 +201,8 @@
                 tap.numberOfTouchesRequired = 1;
                 [imageView addGestureRecognizer:tap];
                 
-                UIImage *image = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:ct.ct_image];
-//                if (image == nil) {
-//                    imageView.image = [UIImage imageNamed:@"ctlib_placeholder"];
-//                }else{
-//                    imageView.image = image;
-//                }
-                
-                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:image options:SDWebImageRetryFailed|SDWebImageLowPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-//                    imageView.image = image;
-                }];
+                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:[UIImage imageNamed:ct.ct_image] options:SDWebImageRetryFailed|SDWebImageLowPriority completed:nil];
             }
-            
             [self.imageScrollView addSubview:imageView];
         }
     }

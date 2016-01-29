@@ -103,7 +103,6 @@
     
     self.dataSuperArray = [NSMutableArray array];
     
-    
     self.title = @"选择时间";
     self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back.png"]];

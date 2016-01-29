@@ -27,6 +27,7 @@
 #import "ChatViewController.h"
 #import "XLQueryModel.h"
 #import "MJRefresh.h"
+#import "CRMMacro.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
     UITableView *_tableView;
@@ -175,6 +176,7 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
     [self.view addSubview:_tableView];
     
     //添加上拉刷新和下拉加载
@@ -450,6 +452,8 @@
             //插入患者介绍人
             [self insertPatientIntroducerMap];
             self.selectDoctor = nil;
+            //发送通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
             [self popViewControllerAnimated:YES];
         }
         

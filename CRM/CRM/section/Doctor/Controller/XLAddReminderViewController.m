@@ -136,8 +136,12 @@
                     otherNoti.reserve_time = [NSString stringWithFormat:@"%@:00",self.visitTimeLabel.text];
                     otherNoti.reserve_content = self.yuyueRemarkLabel.text;
                     otherNoti.reserve_status = @"0";
+                    otherNoti.doctor_id = self.localNoti.doctor_id;
+                    if (self.currentSelectDoctor && ![self.currentSelectDoctor.ckeyid isEqualToString:self.localNoti.therapy_doctor_id]) {
+                        otherNoti.therapy_doctor_id = self.currentSelectDoctor.ckeyid;
+                        otherNoti.therapy_doctor_name = self.currentSelectDoctor.doctor_name;
+                    }
                     otherNoti.ckeyid = [self createCkeyIdWithDoctorId:otherNoti.therapy_doctor_id];
-                    otherNoti.doctor_id = [AccountManager currentUserid];
                     self.currentNoti = otherNoti;
                     
                     //添加一个新的预约
@@ -265,7 +269,9 @@
 }
 #pragma mark - 修改预约方法
 - (void)updateReserveRecordSuccess{
-    [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
+    if ([self.localNoti.doctor_id isEqualToString:[AccountManager currentUserid]]) {
+         [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
+    }
     
     [SVProgressHUD showSuccessWithStatus:@"预约修改成功"];
     //发送通知
@@ -369,13 +375,17 @@
         //添加一条本地预约数据
         BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:self.currentNoti];
         if (ret) {
+            //发送转诊成功的通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
+            
             if (self.isEditAppointment) {
-                [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
-                
+                if ([self.localNoti.doctor_id isEqualToString:[AccountManager currentUserid]]) {
+                    [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
+                }
                 //发送通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
             }else{
+                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
                 //判断微信发送是否打开
                 if (self.weixinSendSwitch.isOn) {
                     //发送微信给治疗医生和患者
@@ -400,7 +410,7 @@
     map.patient_id = self.currentNoti.patient_id;
     map.doctor_id = self.currentNoti.therapy_doctor_id;
     map.intr_time = [NSString currentDateString];
-    [[DBManager shareInstance]insertPatientIntroducerMap:map];
+    [[DBManager shareInstance] insertPatientIntroducerMap:map];
 }
 #pragma mark - 加载视图数据
 - (void)initView{

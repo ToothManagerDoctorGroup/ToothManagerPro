@@ -9,6 +9,7 @@
 #import "HengYaViewController.h"
 #import "CommonMacro.h"
 #import "JSONKit.h"
+#import "NSString+TTMAddtion.h"
 
 @interface HengYaViewController (){
     NSMutableArray *hengYaArray;
@@ -55,7 +56,7 @@
         [self xhClick:xiaHeBtn];
     }else if ([self.hengYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
-    }else if(self.hengYaString.length > 0 && [self.hengYaString containsString:@","]){
+    }else if(self.hengYaString.length > 0 && [self.hengYaString isContainsString:@","]){
         if(self.hengYaString.length > 0 && [self isShuZi:self.hengYaString]){
             NSArray *hen = [self.hengYaString componentsSeparatedByString:@","];
             for(NSInteger i = 0;i<[hen count];i++){

@@ -175,7 +175,7 @@
     
     //    [self postNotificationName:SignUpSuccessNotification object:nil];
     
-    
+    [SVProgressHUD showSuccessWithStatus:@"注册成功，正在登陆"];
     [XLLoginTool loginWithNickName:self.nicknameTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
             [self loginSucessWithResult:respond.result];
@@ -197,6 +197,8 @@
 }
 
 - (void)loginSucessWithResult:(NSDictionary *)result {
+    [SVProgressHUD dismiss];
+    
     NSDictionary *resultDic = result;
     [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
     

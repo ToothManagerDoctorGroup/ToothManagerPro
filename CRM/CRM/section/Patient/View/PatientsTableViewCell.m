@@ -20,7 +20,9 @@
 @implementation PatientsTableViewCell
 
 - (void)awakeFromNib {
-    // Initialization code
+    UIView *selectView = [[UIView alloc] initWithFrame:self.frame];
+    self.selectedBackgroundView = selectView;
+    selectView.backgroundColor = [UIColor colorWithHex:0xeeeeee];
 }
 
 - (void)configCellWithCellMode:(PatientsCellMode *)mode {

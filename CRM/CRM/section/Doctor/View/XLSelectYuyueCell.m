@@ -54,13 +54,17 @@
     
     CGFloat margin = 10;
     
-    CGSize timeSize = [self.time sizeWithFont:[UIFont systemFontOfSize:15]];
+    NSString *commonTime = @"00:00";
+    CGSize timeSize = [commonTime sizeWithFont:[UIFont systemFontOfSize:15]];
     _timeLabel.frame = CGRectMake(margin, 0, timeSize.width, self.height);
     _timeLabel.text = self.time;
     
     _contentView.frame = CGRectMake(_timeLabel.right + margin, 0, kScreenWidth - margin * 2 - _timeLabel.width, 40);
     
     if (models.count > 0) {
+        for (UIView *view in _contentView.subviews) {
+            [view removeFromSuperview];
+        }
         _contentView.hidden = NO;
         [self.contentView addSubview:_contentView];
         CGFloat contentW = (self.width - _timeLabel.width - 20) / models.count;

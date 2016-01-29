@@ -18,6 +18,7 @@
 #import "ClinicCover.h"
 #import "MenuTitleViewController.h"
 #import "MyDateTool.h"
+#import "NSString+TTMAddtion.h"
 
 @interface SelectYuYueDetailViewController ()<ClinicCoverDelegate,MenuTitleViewControllerDelegate>
 @property (nonatomic,retain) NSArray *remindArray; //被预约的时间数组
@@ -285,7 +286,7 @@
             }
         }
         for (NSString *temp in self.remindTwoArray) {
-            if ([temp containsString:string]) {
+            if ([temp isContainsString:string]) {
                 return nil;
             }
         }

@@ -211,7 +211,7 @@
     [super viewWillAppear:animated];
     
     //判断当前是否有显示
-    NSInteger bageNum = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    NSInteger bageNum = [self.tabBarItem.badgeValue integerValue];
     if (bageNum > 0) {
         self.tipView.hidden = NO;
     }else{

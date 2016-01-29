@@ -170,7 +170,7 @@
     [params setObject:[dataEntity JSONString] forKey:@"DataEntity"];
     
     [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject[@"Result"]];
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
         }

@@ -16,9 +16,11 @@
 #import "CRMUserDefalut.h"
 #import "XLSettingViewController.h"
 #import "XLAdviseFeedBackViewController.h"
+#import "XLUserAssistenceViewController.h"
 
 @interface SettingViewController (){
     
+    IBOutlet UITableViewCell *_userAssistence;
     IBOutlet UITableViewCell *_settingCell;
     __weak IBOutlet UITableView *_tableView;
     IBOutlet UITableViewCell *_guanyuwomenCell;
@@ -68,7 +70,7 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section==0){
-        return 3;
+        return 4;
     }else{
         return 3;
     }
@@ -93,6 +95,8 @@
             return _yijianfankuiCell;
         }else if (indexPath.row == 2){
             return _fuwuCell;
+        }else if (indexPath.row == 3){
+            return _userAssistence;
         }
     }else if (indexPath.section == 1){
         if(indexPath.row == 0){
@@ -128,6 +132,9 @@
                         ServerPrivacyViewController *serverVC = [storyBoard instantiateViewControllerWithIdentifier:@"ServerPrivacyViewController"];
             serverVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:serverVC animated:YES];
+        }else if (indexPath.row == 3){
+            XLUserAssistenceViewController *assistence = [[XLUserAssistenceViewController alloc] initWithStyle:UITableViewStylePlain];
+            [self.navigationController pushViewController:assistence animated:YES];
         }
     }
     
