@@ -45,7 +45,7 @@
 
 #pragma mark - 设置导航栏样式
 - (void)setUpNavStyle{
-    self.title = @"提醒事项";
+    self.title = @"通知管理";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = MyColor(238, 238, 238);
 }
@@ -135,7 +135,7 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 50)];
     view.backgroundColor = MyColor(238, 238, 238);
     
-    NSString *title = @"预约通知提醒";
+    NSString *title = @"预约通知";
     CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:15]];
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, titleSize.width, titleSize.height)];
     titleLabel.text = title;

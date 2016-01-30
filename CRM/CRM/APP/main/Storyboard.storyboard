@@ -757,7 +757,7 @@
                                                     <color key="backgroundColor" red="0.8666666666666667" green="0.8666666666666667" blue="0.8666666666666667" alpha="1" colorSpace="calibratedRGB"/>
                                                 </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="医生好友" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IXb-Sa-ve1">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -768,7 +768,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ic_list_doctor.png" translatesAutoresizingMaskIntoConstraints="NO" id="R8S-k2-6Ws">
-                                                    <rect key="frame" x="12" y="2" width="40" height="40"/>
+                                                    <rect key="frame" x="22" y="12" width="20" height="20"/>
                                                     <animations/>
                                                 </imageView>
                                             </subviews>
@@ -784,7 +784,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="修复医生" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QpB-37-U74">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -795,7 +795,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ic_list_repairdoctor.png" translatesAutoresizingMaskIntoConstraints="NO" id="a3E-sx-ohc">
-                                                    <rect key="frame" x="12" y="2" width="40" height="40"/>
+                                                    <rect key="frame" x="22" y="12" width="20" height="20"/>
                                                     <animations/>
                                                 </imageView>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DZC-EH-8AA">
@@ -820,7 +820,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="种植体" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ne4-2O-pGh">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -836,7 +836,7 @@
                                                     <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 </view>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ic_list_zhongzhiti.png" translatesAutoresizingMaskIntoConstraints="NO" id="74C-du-Afq">
-                                                    <rect key="frame" x="12" y="2" width="40" height="40"/>
+                                                    <rect key="frame" x="22" y="12" width="20" height="20"/>
                                                     <animations/>
                                                 </imageView>
                                             </subviews>
@@ -851,8 +851,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="提醒管理" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V3E-hE-LgV">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="通知管理" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V3E-hE-LgV">
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -888,7 +888,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="我的账单" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xLu-dL-94A">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -920,7 +920,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="我的诊所" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7Q-TP-m6Y">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -956,7 +956,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="数据分析" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jLM-ZC-Lof">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -967,7 +967,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ic_list_shuju.png" translatesAutoresizingMaskIntoConstraints="NO" id="8YM-Pl-6DA">
-                                                    <rect key="frame" x="12" y="2" width="40" height="40"/>
+                                                    <rect key="frame" x="22" y="12" width="20" height="20"/>
                                                     <animations/>
                                                 </imageView>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b1y-4N-O1a">
@@ -988,7 +988,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="推荐给医生好友" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4VU-AK-FBR">
-                                                    <rect key="frame" x="71" y="11" width="105" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="105" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -1024,7 +1024,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="设置" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VsO-Zz-fFR">
-                                                    <rect key="frame" x="71" y="11" width="100" height="21"/>
+                                                    <rect key="frame" x="61" y="11" width="100" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -1035,7 +1035,7 @@
                                                     <animations/>
                                                 </imageView>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ic_list_set.png" translatesAutoresizingMaskIntoConstraints="NO" id="aJf-ab-FaF">
-                                                    <rect key="frame" x="12" y="2" width="40" height="40"/>
+                                                    <rect key="frame" x="22" y="12" width="20" height="20"/>
                                                     <animations/>
                                                 </imageView>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hra-J3-Xfm">
@@ -4591,12 +4591,12 @@
     <resources>
         <image name="arrow_crm.png" width="13" height="18"/>
         <image name="header_defult.png" width="100" height="100"/>
-        <image name="ic_list_doctor.png" width="40" height="40"/>
-        <image name="ic_list_repairdoctor.png" width="40" height="40"/>
-        <image name="ic_list_set.png" width="40" height="40"/>
-        <image name="ic_list_shuju.png" width="40" height="40"/>
-        <image name="ic_list_zhongzhiti.png" width="40" height="40"/>
-        <image name="ic_tixing.png" width="22" height="24"/>
+        <image name="ic_list_doctor.png" width="20" height="20"/>
+        <image name="ic_list_repairdoctor.png" width="20" height="20"/>
+        <image name="ic_list_set.png" width="20" height="20"/>
+        <image name="ic_list_shuju.png" width="20" height="20"/>
+        <image name="ic_list_zhongzhiti.png" width="20" height="20"/>
+        <image name="ic_tixing.png" width="20" height="20"/>
         <image name="icon_login_password.png" width="38" height="38"/>
         <image name="icon_login_user.png" width="38" height="38"/>
         <image name="kj_zd.png" width="46" height="46"/>
@@ -4611,6 +4611,6 @@
         <image name="register_button.png" width="60" height="20"/>
         <image name="sq_bj.png" width="498" height="81"/>
         <image name="user_icon.png" width="50" height="50"/>
-        <image name="yaoqing.png" width="26" height="26"/>
+        <image name="yaoqing.png" width="20" height="20"/>
     </resources>
 </document>

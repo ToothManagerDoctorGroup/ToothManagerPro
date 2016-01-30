@@ -23,7 +23,7 @@
         self.send_type = @(0);
         self.message_content = message_content;
         self.amr_file = @"";
-        self.message_name = [NSString stringWithFormat:@"%@预约通知",message_type];
+        self.message_name = message_type;
         self.disp_order = @(1);
         self.enabled = @(1);
     }

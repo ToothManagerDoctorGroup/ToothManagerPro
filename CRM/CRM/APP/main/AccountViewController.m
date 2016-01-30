@@ -124,13 +124,13 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        
-    } failure:^(NSError *error) {
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+//    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
+//        
+//    } failure:^(NSError *error) {
+//        if (error) {
+//            NSLog(@"error:%@",error);
+//        }
+//    }];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{

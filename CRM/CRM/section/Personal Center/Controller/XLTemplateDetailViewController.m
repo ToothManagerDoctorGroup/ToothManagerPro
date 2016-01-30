@@ -143,7 +143,7 @@
 - (void)setUpData{
     if (self.isEdit) {
         self.title = self.model.message_type;
-        self.messageTypeField.text = self.model.message_type;
+        self.messageTypeField.text = self.model.message_name;
         self.messageContentView.attributedText = [self changeStrColorWithSourceStr:self.model.message_content];
     }else{
         self.title = @"新增预约事项";

@@ -93,11 +93,15 @@
                 CGFloat intoButtonX = (imageViewWidth - intoButtonW) * 0.5;
                 CGFloat intoButtonY = imageViewHeight * 0.82;
                 UIButton *intoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-                [intoButton setBackgroundImage:[UIImage resizedImageWithName:@"guide_button_normal"]
-                                      forState:UIControlStateNormal];
-                [intoButton setBackgroundImage:[UIImage resizedImageWithName:@"guide_button_pressed"]
-                                      forState:UIControlStateSelected];
+//                [intoButton setBackgroundImage:[UIImage resizedImageWithName:@"guide_button_normal"]
+//                                      forState:UIControlStateNormal];
+//                [intoButton setBackgroundImage:[UIImage resizedImageWithName:@"guide_button_pressed"]
+//                                      forState:UIControlStateSelected];
                 [intoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                intoButton.layer.cornerRadius = 5;
+                intoButton.layer.masksToBounds = YES;
+                intoButton.layer.borderWidth = 1;
+                intoButton.layer.borderColor = [UIColor whiteColor].CGColor;
                 [intoButton setTitleColor:MyColor(25.0f, 83.0f, 151.0f) forState:UIControlStateSelected];
                 [intoButton setTitle:@"立即体验" forState:UIControlStateNormal];
                 intoButton.frame = CGRectMake(intoButtonX, intoButtonY, intoButtonW, intoButtonH);
