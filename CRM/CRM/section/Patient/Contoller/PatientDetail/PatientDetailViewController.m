@@ -50,6 +50,9 @@
 #import "UIColor+Extension.h"
 #import "EditPatientDetailViewController.h"
 #import "SDWebImageManager.h"
+#import "DoctorManager.h"
+#import "AccountManager.h"
+#import "MyDateTool.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -644,6 +647,11 @@
 - (void)patientToIntroducerSuccess:(NSDictionary *)result{
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showImage:nil status:@"转换成功"];
+        //发送微信消息
+        [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+        } failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
         //存入介绍人库
         Introducer *introducer = [Introducer IntroducerFromIntroducerResult:[self dicFromJsonStr:result[@"Result"]]];
         [[DBManager shareInstance] insertIntroducer:introducer];

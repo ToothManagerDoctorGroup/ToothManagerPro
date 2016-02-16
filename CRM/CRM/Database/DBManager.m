@@ -127,7 +127,7 @@ Realize_ShareInstance(DBManager);
 - (void)initMaterial {
 //    NSArray *nameArray = @[@"Straumamn",@"Nobel",@"Dentium"];
 //    for (NSInteger i = 0; i < nameArray.count; i++) {
-//        Material *material = [[Material alloc]init];
+//        Material *material = [[Material alloc] init];
 //        material.ckeyid = [NSString stringWithFormat:@"%@_0000000%d",[AccountManager currentUserid],i];
 //        material.mat_name = [nameArray objectAtIndex:i];
 //        material.mat_price = 0;

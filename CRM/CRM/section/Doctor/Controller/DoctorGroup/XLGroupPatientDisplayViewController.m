@@ -174,10 +174,10 @@
 
 - (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
     
-    if (isHeader) {
-        [self.patientCellModeArray removeAllObjects];
-    }
     [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
+        if (isHeader) {
+            [self.patientCellModeArray removeAllObjects];
+        }
         //将数据添加到数组中
         [self.patientCellModeArray addObjectsFromArray:result];
         

@@ -28,6 +28,8 @@
 #import "XLQueryModel.h"
 #import "MJRefresh.h"
 #import "CRMMacro.h"
+#import "DoctorManager.h"
+#import "MyDateTool.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
     UITableView *_tableView;
@@ -456,6 +458,11 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
             [self popViewControllerAnimated:YES];
         }
+        //发送微信消息
+        [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+        } failedBlock:^(NSError *error){
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
         
     } else {
         [SVProgressHUD showErrorWithStatus:@"转诊患者失败"];
