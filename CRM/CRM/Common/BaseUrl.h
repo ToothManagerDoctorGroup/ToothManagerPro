@@ -18,14 +18,19 @@
 
 #define MyImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 #define ImageFilePath(a,b) ([NSString stringWithFormat:@"%@%@_%@", MyImageDown, a, b])
-//通用设置通知
+/**
+ *  通用设置
+ *
+ */
 #define AutoSyncTimeChangeNotification @"AutoSyncTimeChangeNotification"
 #define AutoSyncStateChangeNotification @"AutoSyncStateChangeNotification"
+
 #define AutoSyncOpenKey ([NSString stringWithFormat:@"%@_autoSyncOpen",[AccountManager currentUserid]])
 #define AutoSyncTimeKey ([NSString stringWithFormat:@"%@_autoSyncTime",[AccountManager currentUserid]])
 #define AutoAlertKey ([NSString stringWithFormat:@"%@_autoAlertKey",[AccountManager currentUserid]])
 #define AutoReserveRecordKey ([NSString stringWithFormat:@"%@_autoReserveRecordKey",[AccountManager currentUserid]])
 #define ResetAutoSyncTimeKey ([NSString stringWithFormat:@"%@_resetAutoSyncTimeKey",[AccountManager currentUserid]])
+#define PatientToAddressBookKey ([NSString stringWithFormat:@"%@_patientToAddressBookKey",[AccountManager currentUserid]])
 
 //预约成功后的通知
 #define DoctorApplyForClinicSuccessNotification @"DoctorApplyForClinicSuccessNotification"

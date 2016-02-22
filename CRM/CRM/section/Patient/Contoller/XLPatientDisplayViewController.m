@@ -131,6 +131,8 @@
             }
             cellMode.phone = patientTmp.patient_phone;
             cellMode.introducerName = patientTmp.intr_name;
+            
+            
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
             cellMode.status = patientTmp.patient_status;
             cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
@@ -356,6 +358,8 @@
                         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     }
                 }
+                
+                //获取所有的预约数据进行删除
             }
         }
     }];

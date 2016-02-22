@@ -14,12 +14,12 @@
 
 
 @property (nonatomic,retain) Patient *patient;
-@property (weak, nonatomic) IBOutlet UITextField *patientNameField;
-@property (weak, nonatomic) IBOutlet UITextField *patientPhoneField;
+@property (weak, nonatomic) IBOutlet UILabel *patientNameField;
+@property (weak, nonatomic) IBOutlet UILabel *patientPhoneField;
 @property (weak, nonatomic) IBOutlet UILabel *patientGenderLabel;
-@property (weak, nonatomic) IBOutlet UITextField *patientAgeField;
-@property (weak, nonatomic) IBOutlet UITextField *patientIdCardField;
-@property (weak, nonatomic) IBOutlet UITextField *patientAddressField;
+@property (weak, nonatomic) IBOutlet UILabel *patientAgeField;
+@property (weak, nonatomic) IBOutlet UILabel *patientIdCardField;
+@property (weak, nonatomic) IBOutlet UILabel *patientAddressLabel;
 @property (weak, nonatomic) IBOutlet UILabel *allergyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *anamnesisLabel;
 @property (weak, nonatomic) IBOutlet UILabel *remarkNameLabel;

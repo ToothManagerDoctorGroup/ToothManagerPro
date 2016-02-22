@@ -428,7 +428,7 @@ Realize_ShareInstance(AutoSyncManager);
                     //上传成功
                     if([self updateSuccessWithRespondModel:respond infoModel:info]){
                         //删除提醒
-                        [[LocalNotificationCenter shareInstance] removeLocalNotification:localNoti];
+                        [[LocalNotificationCenter shareInstance] cancelNotification:localNoti];
                         [[DBManager shareInstance] deleteLocalNotification_Sync:localNoti];
                         
                     }

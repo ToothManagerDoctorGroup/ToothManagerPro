@@ -35,7 +35,7 @@
     self.view.backgroundColor = MyColor(238, 238, 238);
     
     
-    self.dataList = @[@[@"自动同步",@"同步间隔时间"],@[@"显示提醒内容"],@[@"同步日程到系统日历"],@[@"重置同步时间"]];
+    self.dataList = @[@[@"自动同步",@"同步间隔时间"],@[@"显示提醒内容"],@[@"是否将患者插入通讯录",@"同步日程到系统日历"],@[@"重置同步时间"]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshData) name:AutoSyncTimeChangeNotification object:nil];
     
@@ -141,6 +141,25 @@
     }else if (indexPath.section == 2){
         cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
         if (indexPath.row == 0) {
+            //将患者插入通讯录
+            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
+            [switchView addTarget:self action:@selector(switchAddressAction:) forControlEvents:UIControlEventValueChanged];
+            NSString *patientToAddress = [CRMUserDefalut objectForKey:PatientToAddressBookKey];
+            if (patientToAddress == nil) {
+                switchView.on = YES;
+                [CRMUserDefalut setObject:Auto_Action_Open forKey:PatientToAddressBookKey];
+            }else{
+                if ([patientToAddress isEqualToString:Auto_Action_Open]) {
+                    switchView.on = YES;
+                }else {
+                    switchView.on = NO;
+                }
+            }
+            cell.accessoryView = switchView;
+            cell.detailTextLabel.text = @"";
+            
+            
+        }else if (indexPath.row == 1) {
             UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
             [switchView addTarget:self action:@selector(switchReserveAction:) forControlEvents:UIControlEventValueChanged];
             
@@ -198,7 +217,7 @@
     
 }
 
-
+#pragma mark - Switch Action
 - (void)switchAction:(UISwitch *)switchBtn{
     if (switchBtn.isOn) {
         [CRMUserDefalut setObject:Auto_Action_Open forKey:AutoSyncOpenKey];
@@ -225,9 +244,18 @@
     }
 }
 
+- (void)switchAddressAction:(UISwitch *)switchBtn{
+    if (switchBtn.isOn) {
+        [CRMUserDefalut setObject:Auto_Action_Open forKey:PatientToAddressBookKey];
+    }else{
+        [CRMUserDefalut setObject:Auto_Action_Close forKey:PatientToAddressBookKey];
+    }
+}
+
 #pragma mark - XLSingleContentWriteViewControllerDelegate
 - (void)singleContentViewController:(XLSingleContentWriteViewController *)singleVC didChangeSyncTime:(NSString *)syncTime{
     [self.tableView reloadData];
 }
+
 
 @end

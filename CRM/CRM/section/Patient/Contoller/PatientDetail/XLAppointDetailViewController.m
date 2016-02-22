@@ -23,6 +23,7 @@
 #import "XLAutoSyncTool+XLDelete.h"
 #import "SysMessageTool.h"
 #import "XLEventStoreManager.h"
+#import "DBManager+Doctor.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -65,8 +66,7 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = MyColor(238, 238, 238);
     
-    self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"医院",@"治疗医生",@"备注"];
-    
+    self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"医院",@"治疗医生",@"预约人",@"备注"];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -101,6 +101,16 @@
             model.content = notification.medical_place;
         }else if(i == 6){
             model.content = notification.therapy_doctor_name;
+        }else if(i == 7){
+            //预约人
+            if ([notification.doctor_id isEqualToString:[AccountManager currentUserid]]) {
+                model.content = [[AccountManager shareInstance] currentUser].name;
+            }else{
+                Doctor *doc = [[DBManager shareInstance] getDoctorWithCkeyId:notification.doctor_id];
+                if (doc != nil) {
+                    model.content = doc.doctor_name;
+                }
+            }
         }else{
             model.content = notification.reserve_content;
         }

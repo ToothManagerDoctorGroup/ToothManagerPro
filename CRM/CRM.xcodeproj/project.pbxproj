@@ -15,8 +15,6 @@
 		0B100A8E1A2CB4AF00A0385B /* home_05.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B100A881A2CB4AF00A0385B /* home_05.png */; };
 		0B100A8F1A2CB4AF00A0385B /* home_06.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B100A891A2CB4AF00A0385B /* home_06.png */; };
 		0B4CB13C19D32E34006E438F /* NewMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4CB13A19D32E34006E438F /* NewMainViewController.m */; };
-		0B4CB13D19D32E34006E438F /* NewMainViewController_iphone5.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B4CB13B19D32E34006E438F /* NewMainViewController_iphone5.xib */; };
-		0B4CB14019D32F39006E438F /* NewMainViewController_iphone6.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B4CB13F19D32F39006E438F /* NewMainViewController_iphone6.xib */; };
 		0B4CB15019D3BECD006E438F /* home_head.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B4CB14819D3BECD006E438F /* home_head.png */; };
 		0B6D6F7E1AFA598000F967EB /* InPatientNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D6F7D1AFA598000F967EB /* InPatientNotification.m */; };
 		0B6D6F891AFBA8E500F967EB /* PatientInfoCellTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D6F871AFBA8E500F967EB /* PatientInfoCellTableViewCell.m */; };
@@ -714,7 +712,6 @@
 		3D2851E61C35202400C88917 /* XLSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2851E51C35202400C88917 /* XLSettingViewController.m */; };
 		3D2851E91C352B5F00C88917 /* XLTimeSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2851E81C352B5F00C88917 /* XLTimeSelectViewController.m */; };
 		3D286F581C2E6469003A561D /* XLTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F571C2E6469003A561D /* XLTestViewController.m */; };
-		3D286F5B1C2E7E4C003A561D /* XLAddressMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F5A1C2E7E4C003A561D /* XLAddressMapViewController.m */; };
 		3D286F5F1C2E8736003A561D /* XLAvatarBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F5E1C2E8736003A561D /* XLAvatarBrowser.m */; };
 		3D286F651C2E8DC7003A561D /* XLMaterialsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F641C2E8DC7003A561D /* XLMaterialsViewController.m */; };
 		3D286F681C2E9C4D003A561D /* XLPatientTotalInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D286F671C2E9C4D003A561D /* XLPatientTotalInfoModel.m */; };
@@ -820,6 +817,11 @@
 		3D79618C1C16E70900453EB4 /* search@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D7961741C16E70900453EB4 /* search@3x.png */; };
 		3D79618F1C16E9B200453EB4 /* CustomAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D79618E1C16E9B200453EB4 /* CustomAlertView.m */; };
 		3D7F19F71C07280000BE79ED /* MyDateTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7F19F61C07280000BE79ED /* MyDateTool.m */; };
+		3D8C38A51C72F68E0052DB74 /* XLCommonEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8C38A41C72F68E0052DB74 /* XLCommonEditViewController.m */; };
+		3D8C38AF1C72FF0E0052DB74 /* AreaObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8C38AB1C72FF0E0052DB74 /* AreaObject.m */; };
+		3D8C38B01C72FF0E0052DB74 /* AddressChoicePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8C38AD1C72FF0E0052DB74 /* AddressChoicePickerView.m */; };
+		3D8C38B11C72FF0E0052DB74 /* AddressChoicePickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D8C38AE1C72FF0E0052DB74 /* AddressChoicePickerView.xib */; };
+		3D8C38B51C7303B50052DB74 /* address.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D8C38B41C7303B50052DB74 /* address.plist */; };
 		3D9C84771C0D7126007B2CD2 /* UIImageView+DownLoadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */; };
 		3D9D1C381C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D9D1C371C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.m */; };
 		3DA11F301C0FE53C00AB9A46 /* libUMessage_Sdk_1.1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DA11F2D1C0FE52300AB9A46 /* libUMessage_Sdk_1.1.0.a */; };
@@ -1471,8 +1473,6 @@
 		0B100A891A2CB4AF00A0385B /* home_06.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_06.png; sourceTree = "<group>"; };
 		0B4CB13919D32E34006E438F /* NewMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewMainViewController.h; sourceTree = "<group>"; };
 		0B4CB13A19D32E34006E438F /* NewMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewMainViewController.m; sourceTree = "<group>"; };
-		0B4CB13B19D32E34006E438F /* NewMainViewController_iphone5.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewMainViewController_iphone5.xib; sourceTree = "<group>"; };
-		0B4CB13F19D32F39006E438F /* NewMainViewController_iphone6.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewMainViewController_iphone6.xib; sourceTree = "<group>"; };
 		0B4CB14819D3BECD006E438F /* home_head.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_head.png; sourceTree = "<group>"; };
 		0B6D6F7C1AFA598000F967EB /* InPatientNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InPatientNotification.h; sourceTree = "<group>"; };
 		0B6D6F7D1AFA598000F967EB /* InPatientNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InPatientNotification.m; sourceTree = "<group>"; };
@@ -2571,8 +2571,6 @@
 		3D2851E81C352B5F00C88917 /* XLTimeSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTimeSelectViewController.m; sourceTree = "<group>"; };
 		3D286F561C2E6469003A561D /* XLTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTestViewController.h; sourceTree = "<group>"; };
 		3D286F571C2E6469003A561D /* XLTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTestViewController.m; sourceTree = "<group>"; };
-		3D286F591C2E7E4C003A561D /* XLAddressMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAddressMapViewController.h; sourceTree = "<group>"; };
-		3D286F5A1C2E7E4C003A561D /* XLAddressMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAddressMapViewController.m; sourceTree = "<group>"; };
 		3D286F5D1C2E8736003A561D /* XLAvatarBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAvatarBrowser.h; sourceTree = "<group>"; };
 		3D286F5E1C2E8736003A561D /* XLAvatarBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAvatarBrowser.m; sourceTree = "<group>"; };
 		3D286F631C2E8DC7003A561D /* XLMaterialsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLMaterialsViewController.h; sourceTree = "<group>"; };
@@ -2726,6 +2724,14 @@
 		3D79618E1C16E9B200453EB4 /* CustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomAlertView.m; sourceTree = "<group>"; };
 		3D7F19F51C07280000BE79ED /* MyDateTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDateTool.h; sourceTree = "<group>"; };
 		3D7F19F61C07280000BE79ED /* MyDateTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDateTool.m; sourceTree = "<group>"; };
+		3D8C38A31C72F68E0052DB74 /* XLCommonEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLCommonEditViewController.h; sourceTree = "<group>"; };
+		3D8C38A41C72F68E0052DB74 /* XLCommonEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLCommonEditViewController.m; sourceTree = "<group>"; };
+		3D8C38AA1C72FF0E0052DB74 /* AreaObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AreaObject.h; sourceTree = "<group>"; };
+		3D8C38AB1C72FF0E0052DB74 /* AreaObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AreaObject.m; sourceTree = "<group>"; };
+		3D8C38AC1C72FF0E0052DB74 /* AddressChoicePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressChoicePickerView.h; sourceTree = "<group>"; };
+		3D8C38AD1C72FF0E0052DB74 /* AddressChoicePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressChoicePickerView.m; sourceTree = "<group>"; };
+		3D8C38AE1C72FF0E0052DB74 /* AddressChoicePickerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddressChoicePickerView.xib; sourceTree = "<group>"; };
+		3D8C38B41C7303B50052DB74 /* address.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = address.plist; sourceTree = "<group>"; };
 		3D9C84751C0D7126007B2CD2 /* UIImageView+DownLoadImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+DownLoadImage.h"; sourceTree = "<group>"; };
 		3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+DownLoadImage.m"; sourceTree = "<group>"; };
 		3D9D1C361C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPRequestOperationManager+Synchronous.h"; sourceTree = "<group>"; };
@@ -4383,8 +4389,6 @@
 				3DDE7FE31C1ED3B5006053DA /* EditAllergyViewController.m */,
 				3DDE7FE51C1EDDE4006053DA /* EditPatientDetailViewController.h */,
 				3DDE7FE61C1EDDE4006053DA /* EditPatientDetailViewController.m */,
-				3D286F591C2E7E4C003A561D /* XLAddressMapViewController.h */,
-				3D286F5A1C2E7E4C003A561D /* XLAddressMapViewController.m */,
 				3D309A711C3A5FF8006FAFDB /* XLPatientAppointViewController.h */,
 				3D309A721C3A5FF8006FAFDB /* XLPatientAppointViewController.m */,
 				3D309A9B1C3A7B27006FAFDB /* XLAppointDetailViewController.h */,
@@ -6170,6 +6174,19 @@
 			path = group;
 			sourceTree = "<group>";
 		};
+		3D8C38A91C72FED10052DB74 /* AddressBook(日期选择) */ = {
+			isa = PBXGroup;
+			children = (
+				3D8C38AA1C72FF0E0052DB74 /* AreaObject.h */,
+				3D8C38AB1C72FF0E0052DB74 /* AreaObject.m */,
+				3D8C38AC1C72FF0E0052DB74 /* AddressChoicePickerView.h */,
+				3D8C38AD1C72FF0E0052DB74 /* AddressChoicePickerView.m */,
+				3D8C38AE1C72FF0E0052DB74 /* AddressChoicePickerView.xib */,
+				3D8C38B41C7303B50052DB74 /* address.plist */,
+			);
+			name = "AddressBook(日期选择)";
+			sourceTree = "<group>";
+		};
 		3DA11F2C1C0FE52300AB9A46 /* UMessage_Sdk_1.1.0 */ = {
 			isa = PBXGroup;
 			children = (
@@ -6711,6 +6728,7 @@
 		3DDF0E1A1C31435F00358EDD /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				3D8C38A91C72FED10052DB74 /* AddressBook(日期选择) */,
 				3DDF0E1D1C31438200358EDD /* XLDataSelectViewController.h */,
 				3DDF0E1E1C31438200358EDD /* XLDataSelectViewController.m */,
 				3D2851E41C35202400C88917 /* XLSettingViewController.h */,
@@ -6721,6 +6739,8 @@
 				3D18CD5C1C3E4B0600BDDE5C /* XLContentWriteViewController.m */,
 				3DEBEE051C400B6B009DC18D /* XLSingleContentWriteViewController.h */,
 				3DEBEE061C400B6B009DC18D /* XLSingleContentWriteViewController.m */,
+				3D8C38A31C72F68E0052DB74 /* XLCommonEditViewController.h */,
+				3D8C38A41C72F68E0052DB74 /* XLCommonEditViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -7242,8 +7262,6 @@
 				3D37CFFF1C28162900C595F4 /* Login.storyboard */,
 				0B4CB13919D32E34006E438F /* NewMainViewController.h */,
 				0B4CB13A19D32E34006E438F /* NewMainViewController.m */,
-				0B4CB13B19D32E34006E438F /* NewMainViewController_iphone5.xib */,
-				0B4CB13F19D32F39006E438F /* NewMainViewController_iphone6.xib */,
 				2DC828F41BA2CF30001CA6A4 /* AccountViewController.h */,
 				2DC828F51BA2CF30001CA6A4 /* AccountViewController.m */,
 			);
@@ -8780,6 +8798,7 @@
 				3D1540401C4D076F002B12C9 /* guide_arrow.png in Resources */,
 				64E7C8831A6416FE00099063 /* baritem_select_bg@2x.png in Resources */,
 				3DF671891BF730A900527B49 /* zzs_bjb@3x.png in Resources */,
+				3D8C38B11C72FF0E0052DB74 /* AddressChoicePickerView.xib in Resources */,
 				3D1B604C1C18082B0032D949 /* messageVideo@2x.png in Resources */,
 				3D1B60451C18082B0032D949 /* chatBar_recordSelectedBg@2x.png in Resources */,
 				3D1B60B71C18082B0032D949 /* chatBar_keyboard.png in Resources */,
@@ -9189,7 +9208,6 @@
 				8142BB551AEA49B500EF08EE /* RepairDoctor.storyboard in Resources */,
 				3D1B60571C18082B0032D949 /* VoiceSearchFeedback011@2x.png in Resources */,
 				3D1B60441C18082B0032D949 /* chatBar_recordSelected@2x.png in Resources */,
-				0B4CB14019D32F39006E438F /* NewMainViewController_iphone6.xib in Resources */,
 				81DA09B11A89FC2200763EBC /* doctor_headimage.png in Resources */,
 				2DFE7E5F1B4A20A80088B119 /* umeng_fb_audio_dialog_cancel@2x.png in Resources */,
 				64E87CA61A32D99000EDA3B7 /* select_down.png in Resources */,
@@ -9254,6 +9272,7 @@
 				3DE457401C50B2B400C94177 /* patient_head@2x.png in Resources */,
 				3D1B60C51C18082B0032D949 /* chatBar_recordSelectedBg.png in Resources */,
 				6436DECC19B8C48100DC667E /* userGuide@2x.png in Resources */,
+				3D8C38B51C7303B50052DB74 /* address.plist in Resources */,
 				3D15404E1C4D0E8A002B12C9 /* guide_circle@3x.png in Resources */,
 				3D1521461C4386F800650969 /* choose-grey@3x.png in Resources */,
 				3D1B604D1C18082B0032D949 /* VoiceSearchFeedback001@2x.png in Resources */,
@@ -9334,7 +9353,6 @@
 				3D1B60CE1C18082B0032D949 /* chatBar_colorMore_photoSelected@2x.png in Resources */,
 				3D1B60DF1C18082B0032D949 /* messageToolbarBg@2x.png in Resources */,
 				6436DEB619B8C48100DC667E /* icon_phone.png in Resources */,
-				0B4CB13D19D32E34006E438F /* NewMainViewController_iphone5.xib in Resources */,
 				3D1AB0791C00453600547809 /* DefaultLine.png in Resources */,
 				3D1B60CD1C18082B0032D949 /* chatBar_colorMore_photo@2x.png in Resources */,
 				3D5B4F8B1C2CE1C100E37140 /* patient_bianji.png in Resources */,
@@ -9856,6 +9874,7 @@
 				64CFD92E19F7F6A6001EB0DA /* DesTableViewCell.m in Sources */,
 				6436DF3A19B8C48100DC667E /* TimPickerTextField.m in Sources */,
 				3DDF0E071C3114E200358EDD /* XLAutoSyncTool+XLInsert.m in Sources */,
+				3D8C38B01C72FF0E0052DB74 /* AddressChoicePickerView.m in Sources */,
 				3DAA11081BF5946300FD8149 /* MJPhotoProgressView.m in Sources */,
 				2DFE7ECE1B4A71980088B119 /* AFHTTPSessionManager.m in Sources */,
 				A6C223A51AFE618D0017A086 /* CacheFactory.m in Sources */,
@@ -9865,6 +9884,7 @@
 				2D2ED8591C009615003B7047 /* QrCodePatientViewController.m in Sources */,
 				6436DF4119B8C48100DC667E /* TimTableViewController.m in Sources */,
 				3D1B60141C18082B0032D949 /* EaseUsersListViewController.m in Sources */,
+				3D8C38AF1C72FF0E0052DB74 /* AreaObject.m in Sources */,
 				3D1B601A1C18082B0032D949 /* EaseBubbleView+File.m in Sources */,
 				3DD2C7181C59E973008F2C99 /* XLUserAssistenceViewController.m in Sources */,
 				64C699E81AA9B0A600B268C9 /* CRMHttpRequest+Notification.m in Sources */,
@@ -10057,6 +10077,7 @@
 				3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */,
 				3DDE7FCB1C1E8AD9006053DA /* JTCalendarMenuView.m in Sources */,
 				3D9C84771C0D7126007B2CD2 /* UIImageView+DownLoadImage.m in Sources */,
+				3D8C38A51C72F68E0052DB74 /* XLCommonEditViewController.m in Sources */,
 				3D1B601C1C18082B0032D949 /* EaseBubbleView+Location.m in Sources */,
 				6436DF3F19B8C48100DC667E /* TimPickerView.m in Sources */,
 				3D1B61511C18098A0032D949 /* UIImage+MultiFormat.m in Sources */,
@@ -10086,7 +10107,6 @@
 				3D1B5FBE1C18082B0032D949 /* EMTextView.m in Sources */,
 				3D1B61491C18098A0032D949 /* SDWebImageCompat.m in Sources */,
 				2D2ED8511C00942D003B7047 /* MenuButtonPushManager.m in Sources */,
-				3D286F5B1C2E7E4C003A561D /* XLAddressMapViewController.m in Sources */,
 				64CFD92519F7F6A6001EB0DA /* CaseFunction.m in Sources */,
 				3DEBEDF81C3FCD25009DC18D /* NSString+XLValidate.m in Sources */,
 			);
