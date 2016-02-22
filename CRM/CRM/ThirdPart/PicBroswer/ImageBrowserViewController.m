@@ -98,7 +98,7 @@
 }
 
 - (void)pagedownAction:(id)sender {
-    NSInteger center = self.currentIndex+1;
+    NSInteger center = self.currentIndex + 1;
     NSInteger left = self.currentIndex;
     NSInteger right = center+1;
     if (center >= self.imageArray.count) {

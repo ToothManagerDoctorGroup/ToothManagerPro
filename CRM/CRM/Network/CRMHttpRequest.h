@@ -46,6 +46,12 @@ Declare_ShareInstance(CRMHttpRequest);
  */
 - (void)responderPerformSelector:(SEL)selector withObject:(id)object1 withObject:(id)object2;
 
+/**
+ *  取消所有网络请求
+ */
+- (void)cancelAllOperations;
+
+
 
 @property (nonatomic, assign)BOOL isAutoSync;//是否是自动同步
 

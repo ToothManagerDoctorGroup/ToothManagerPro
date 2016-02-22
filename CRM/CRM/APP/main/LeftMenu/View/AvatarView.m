@@ -10,9 +10,9 @@
 #import "UIButton+WebCache.h"
 #import "CornerButton.h"
 #import "NSString+Conversion.h"
+#import "UIColor+Extension.h"
 
 @interface AvatarView ()
-
 
 @property (nonatomic,retain) CornerButton *avatarButton;
 @property (nonatomic,retain) UILabel *titleLabel;
@@ -37,6 +37,8 @@
         self.userInteractionEnabled = YES;
         _avatarButton = [CornerButton buttonWithType:UIButtonTypeCustom];
         [_avatarButton setImage:[UIImage imageNamed:@"user_icon"] forState:UIControlStateNormal];
+        _avatarButton.layer.borderWidth = 1;
+        _avatarButton.layer.borderColor = [UIColor colorWithHex:0xCCCCCC].CGColor;
         [self addSubview:_avatarButton];
         _titleLabel = [[UILabel alloc]init];
         _titleLabel.backgroundColor = [UIColor clearColor];
@@ -53,7 +55,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.avatarButton.frame = CGRectMake(1,1,self.bounds.size.height-2, self.bounds.size.height-2);
+    self.avatarButton.frame = CGRectMake(1,1,self.bounds.size.height - 2, self.bounds.size.height - 2);
 //    self.layer.cornerRadius = self.bounds.size.height/2.0f;
     self.backgroundColor = [UIColor clearColor];
     

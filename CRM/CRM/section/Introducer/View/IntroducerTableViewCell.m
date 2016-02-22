@@ -21,6 +21,21 @@
     return self;
 }
 
+static void setLastCellSeperatorToLeft(UITableViewCell* cell)
+{
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
+    
+    if([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]){
+        [cell setPreservesSuperviewLayoutMargins:NO];
+    }
+}
+
 - (void)setupView {
     _nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 0,80, 30)];
     _nameLabel.textColor = [UIColor blackColor];

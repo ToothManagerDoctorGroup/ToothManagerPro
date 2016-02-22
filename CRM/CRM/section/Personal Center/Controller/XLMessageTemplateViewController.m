@@ -34,7 +34,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
- 
+    
+     [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     //设置导航栏样式
     [self setUpNavStyle];
     //获取用户的消息模板

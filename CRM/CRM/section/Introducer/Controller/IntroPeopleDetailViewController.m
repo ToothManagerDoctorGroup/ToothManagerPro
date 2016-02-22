@@ -26,8 +26,9 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
+#import "XLStarSelectViewController.h"
 
-@interface IntroPeopleDetailViewController ()
+@interface IntroPeopleDetailViewController ()<IntroDetailHeaderTableViewControllerDelegate,XLStarSelectViewControllerDelegate>
 
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
 @property (nonatomic,retain) IntroDetailHeaderTableViewController *tbheaderView;
@@ -42,7 +43,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        self.title = @"介绍人详情";
     }
     return self;
 }
@@ -63,14 +63,16 @@
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+    
     [self loadTableView];
+    
 }
 
 - (void)refreshView {
     [super refreshView];
     _tbheaderView.nameTextField.text = introducer.intr_name;
 //    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
+    _tbheaderView.levelView.level = introducer.intr_level;
     _tbheaderView.phoneTextField.text = introducer.intr_phone;
     _tbheaderView.ckeyId = introducer.ckeyid;
     [myTableView reloadData];
@@ -128,36 +130,58 @@
 - (void)loadTableView
 {
     myTableView = [[UITableView alloc]init];
-    [myTableView setFrame:CGRectMake(0,
-                                     detailInfoView.frame.origin.y + detailInfoView.frame.size.height,
-                                     self.view.frame.size.width,
-                                     self.view.frame.size.height - detailInfoView.frame.size.height)];
+    [myTableView setFrame:CGRectMake(0,132,kScreenWidth,kScreenHeight - 64 - 132)];
     myTableView.backgroundColor = [UIColor whiteColor];
     [myTableView setDelegate:self];
     [myTableView setDataSource:self];
     //去掉多余的cell
     myTableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+    [self.view addSubview:myTableView];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introducer" bundle:nil];
     _tbheaderView = [storyboard instantiateViewControllerWithIdentifier:@"IntroDetailHeaderTableViewController"];
+    _tbheaderView.delegate = self;
     _tbheaderView.view.frame = CGRectMake(0, 0, kScreenWidth,132);
-    myTableView.tableHeaderView = _tbheaderView.view;
-    [self.view addSubview:myTableView];
+    [self.view addSubview:_tbheaderView.view];
+    
+    if (self.isEdit) {
+        //编辑模式
+        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+        myTableView.hidden = YES;
+         self.title = @"编辑介绍人";
+    }else{
+        _tbheaderView.nameTextField.enabled = NO;
+        _tbheaderView.levelView.enabled = NO;
+        _tbheaderView.phoneTextField.enabled = NO;
+        [self setRightBarButtonWithImage:[UIImage imageNamed:@"material_bianji_white"]];
+         self.title = @"介绍人详情";
+    }
+    
+    [self refreshView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    _tbheaderView.nameTextField.text = introducer.intr_name;
-//    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
-    _tbheaderView.levelView.level = introducer.intr_level;
-    _tbheaderView.phoneTextField.text = introducer.intr_phone;
-    _tbheaderView.ckeyId = introducer.ckeyid;
+//    _tbheaderView.nameTextField.text = introducer.intr_name;
+////    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
+//    _tbheaderView.levelView.level = introducer.intr_level;
+//    _tbheaderView.phoneTextField.text = introducer.intr_phone;
+//    _tbheaderView.ckeyId = introducer.ckeyid;
 }
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    
+    if (!self.isEdit) {
+        //编辑状态
+        IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc]init];
+        [detailCtl setIntroducer:introducer];
+        detailCtl.hidesBottomBarWhenPushed = YES;
+        detailCtl.isEdit = YES;
+        [self pushViewController:detailCtl animated:YES];
+        return;
+    }
     [self.tbheaderView.nameTextField resignFirstResponder];
-//    [self.tbheaderView.levelTextField resignFirstResponder];
     [self.tbheaderView.phoneTextField resignFirstResponder];
     self.introducer.intr_name = self.tbheaderView.nameTextField.text;
     self.introducer.intr_level = self.tbheaderView.levelView.level;
@@ -170,6 +194,8 @@
         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         
         [self postNotificationName:IntroducerEditedNotification object:nil];
+        
+        [self popViewControllerAnimated:YES];
     } else {
         [SVProgressHUD showImage:nil status:@"修改失败"];
     }
@@ -251,7 +277,18 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - IntroDetailHeaderTableViewControllerDelegate
+- (void)didClickStarView{
+    XLStarSelectViewController *selectVc = [[XLStarSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    selectVc.delegate = self;
+    [self.navigationController pushViewController:selectVc animated:YES];
+}
+
+#pragma mark - XLStarSelectViewControllerDelegate
+- (void)starSelectViewController:(XLStarSelectViewController *)starSelectVc didSelectLevel:(NSInteger)level{
+    self.tbheaderView.levelView.level = level;
 }
 
 @end

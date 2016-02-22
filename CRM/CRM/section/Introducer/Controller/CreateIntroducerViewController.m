@@ -17,8 +17,10 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
+#import "XLStarView.h"
+#import "XLStarSelectViewController.h"
 
-@interface CreateIntroducerViewController () <TimPickerTextFieldDataSource>
+@interface CreateIntroducerViewController () <TimPickerTextFieldDataSource,XLStarSelectViewControllerDelegate>
 
 @property (nonatomic,readonly) Introducer *introducer;
 
@@ -53,10 +55,19 @@
     
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
     self.nameTextField.clearButtonMode = UITextFieldViewModeNever;
-    self.starTextField.bounds = self.nameTextField.bounds;
     self.phoneTextField.mode = TextFieldInputModeKeyBoard;
     self.phoneTextField.clearButtonMode = UITextFieldViewModeNever;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
+    self.starView.level = 1;
+    self.starView.alignment = XLStarViewAlignmentRight;
+    
+    [self.starView addTarget:self action:@selector(chooseStarLevel) forControlEvents:UIControlEventTouchUpInside];
+}
+#pragma mark - 选择星级
+- (void)chooseStarLevel{
+    XLStarSelectViewController *starSelectVc = [[XLStarSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    starSelectVc.delegate = self;
+    [self pushViewController:starSelectVc animated:YES];
 }
 
 - (void)initData {
@@ -64,7 +75,7 @@
     if (self.edit) {
         _introducer = [[DBManager shareInstance] getIntroducerByIntroducerID:self.introducerId];
         self.nameTextField.text = self.introducer.intr_name;
-        self.starTextField.starLevel = self.introducer.intr_level;
+        self.starView.level = self.introducer.intr_level;
         self.phoneTextField.text = self.introducer.intr_phone;
     } else {
         _introducer = [[Introducer alloc]init];
@@ -83,7 +94,7 @@
     }
     
     self.introducer.intr_name = self.nameTextField.text;
-    self.introducer.intr_level = self.starTextField.starLevel;
+    self.introducer.intr_level = self.starView.level;
     self.introducer.intr_phone = self.phoneTextField.text;
     self.introducer.intr_id = @"0";
     BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
@@ -118,6 +129,11 @@
         [self.view makeToast:message duration:1.0f position:@"Center"];
     }
         
+}
+
+#pragma mark - XLStarSelectViewControllerDelegate
+- (void)starSelectViewController:(XLStarSelectViewController *)starSelectVc didSelectLevel:(NSInteger)level{
+    self.starView.level = level;
 }
 
 @end

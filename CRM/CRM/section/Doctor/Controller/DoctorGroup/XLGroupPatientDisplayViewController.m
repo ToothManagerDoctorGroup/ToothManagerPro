@@ -139,6 +139,7 @@
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
     _tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
+    [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
     //初始化搜索框

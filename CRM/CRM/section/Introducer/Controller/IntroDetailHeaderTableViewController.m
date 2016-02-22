@@ -14,8 +14,10 @@
 #import "DBManager+Doctor.h"
 #import "IntroducerManager.h"
 #import "CRMHttpRequest+Introducer.h"
+#import "XLStarView.h"
+#import "XLStarSelectViewController.h"
 
-@interface IntroDetailHeaderTableViewController ()
+@interface IntroDetailHeaderTableViewController ()<XLStarSelectViewControllerDelegate>
 @property (nonatomic,retain) AvatarView *avatar;
 
 @end
@@ -37,9 +39,17 @@
     _avatar = [[AvatarView alloc] initWithURLString:@""];
     _avatar.frame = CGRectMake(10, 26, 80, 80);
     [self.view addSubview:_avatar];
-
+    
+    [self.levelView addTarget:self action:@selector(clickAction) forControlEvents:UIControlEventTouchUpInside];
 
 }
+
+- (void)clickAction{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didClickStarView)]) {
+        [self.delegate didClickStarView];
+    }
+}
+
 - (IBAction)tel:(id)sender {
     if(![NSString isEmptyString:self.phoneTextField.text]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"是否拨打该电话" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
@@ -49,6 +59,8 @@
         [SVProgressHUD showImage:nil status:@"未找到介绍人电话"];
     }
 }
+
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(alertView.tag == 101){
         if(buttonIndex == 0){

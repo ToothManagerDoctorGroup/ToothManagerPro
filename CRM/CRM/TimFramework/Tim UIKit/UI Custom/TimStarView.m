@@ -23,7 +23,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     starNormalView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    starHighlightView.frame = CGRectMake(0, 0, self.bounds.size.width*(self.scale/5.0f), self.bounds.size.height);
+    starHighlightView.frame = CGRectMake(0, 0, self.bounds.size.width * (self.scale / 5.0f), self.bounds.size.height);
 }
 
 - (void)initView {

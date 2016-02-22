@@ -8,10 +8,9 @@
 
 #import "XLStarView.h"
 #import "TimStarView.h"
-#import "XLStarSelectViewController.h"
 #import "UIView+WXViewController.h"
 
-@interface XLStarView ()<XLStarSelectViewControllerDelegate>
+@interface XLStarView ()
 
 @property (nonatomic, strong)TimStarView *starView;
 
@@ -21,7 +20,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
-        
+
     }
     return self;
 }
@@ -35,29 +34,34 @@
     if (self.starView == nil) {
         self.starView = [[TimStarView alloc] init];
         self.starView.userInteractionEnabled = NO;
+        self.alignment = XLStarViewAlignmentCentre;
         [self addSubview:self.starView];
     }
+}
+
+- (void)layoutSubviews{
+    [super layoutSubviews];
     
-    //添加单击事件
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
-    [self addGestureRecognizer:tap];
+    if (self.alignment == XLStarViewAlignmentCentre) {
+        self.starView.frame = CGRectMake((self.bounds.size.width - 75) / 2, (self.bounds.size.height - 15) / 2, 75, 15);
+    }else if (self.alignment == XLStarViewAlignmentLeft){
+        self.starView.frame = CGRectMake(0, (self.bounds.size.height - 15) / 2, 75, 15);
+    }else{
+        self.starView.frame = CGRectMake(self.bounds.size.width - 75, (self.bounds.size.height - 15) / 2, 75, 15);
+    }
+    
+    self.starView.scale = self.level;
 }
 
 - (void)setLevel:(NSInteger)level{
     _level = level;
     
-    self.starView.frame = CGRectMake((self.bounds.size.width - 75) / 2, (self.bounds.size.height - 15) / 2, 75, 15);
-    self.starView.scale = level;
+    [self setNeedsLayout];
 }
 
-- (void)tapAction:(UITapGestureRecognizer *)tap{
-    XLStarSelectViewController *selectVc = [[XLStarSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    selectVc.delegate = self;
-    [self.viewController.navigationController pushViewController:selectVc animated:YES];
+- (void)setAlignment:(XLStarViewAlignment)alignment{
+    _alignment = alignment;
+    
+    [self setNeedsLayout];
 }
-
-- (void)starSelectViewController:(XLStarSelectViewController *)starSelectVc didSelectLevel:(NSInteger)level{
-    [self setLevel:level];
-}
-
 @end

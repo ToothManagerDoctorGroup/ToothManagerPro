@@ -28,7 +28,7 @@
 #import "CRMHttpRespondModel.h"
 #import "XLLoginTool.h"
 
-@interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate,IChatManagerPushNotification,IChatManagerBase,IChatManagerPushNotification>{
+@interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate>{
     BOOL check;
 }
 @property (weak, nonatomic) IBOutlet UITextField *userNameField;
@@ -46,8 +46,14 @@
     //设置控件属性
     [self initViewAttr];
     
-    
 }
+
+- (void)awakeFromNib{
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor colorWithHex:0x00a0ea];
+}
+
+
 #pragma mark - 设置控件属性
 - (void)initViewAttr{
     //设置占位字体颜色
@@ -64,8 +70,6 @@
     self.title = @"登录";
     self.remenberPwd.selected = YES;
     
-    
-    self.view.backgroundColor = [UIColor colorWithHex:0x00a0ea];
     
     UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped:)];
     tapGr.cancelsTouchesInView = NO;

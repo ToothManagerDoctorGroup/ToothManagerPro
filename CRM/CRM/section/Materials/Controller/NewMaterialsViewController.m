@@ -102,6 +102,7 @@
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
+    [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     
   //  patientCellModeArray = [NSMutableArray arrayWithObjects:@"1",@"2", nil];
 }

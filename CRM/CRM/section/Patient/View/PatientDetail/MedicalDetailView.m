@@ -91,6 +91,21 @@
     
     _medicalCase = medicalCase;
     
+    //修复医生
+    NSString *doctorTitle;
+    if (self.medicalCase.repair_doctor_name && [self.medicalCase.repair_doctor_name isNotEmpty]) {
+        doctorTitle = [NSString stringWithFormat:@"修复医生:%@",self.medicalCase.repair_doctor_name];
+    }else{
+        doctorTitle = @"修复医生:";
+    }
+    
+    CGSize doctorTitleSize = [doctorTitle sizeWithFont:CommenTitleFont];
+    CGFloat doctorX = Margin;
+    CGFloat doctorY = self.height - doctorTitleSize.height - Margin;
+    //self.height - repairTimeSize.height - Margin
+    self.repairDoctorTitle.frame = CGRectMake(doctorX, doctorY, doctorTitleSize.width, doctorTitleSize.height);
+    self.repairDoctorTitle.text = doctorTitle;
+    
     //修复时间
     NSString *repairTime;
     if (self.medicalCase.repair_time && [self.medicalCase.repair_time isNotEmpty]) {
@@ -101,7 +116,7 @@
     
     CGSize repairTimeSize = [repairTime sizeWithFont:CommenTitleFont];
     CGFloat repairTimeX = Margin;
-    CGFloat repairTimeY = self.height - repairTimeSize.height - Margin;
+    CGFloat repairTimeY = self.repairDoctorTitle.top - repairTimeSize.height - Margin;
     self.repairTimeTitle.frame = CGRectMake(repairTimeX, repairTimeY, repairTimeSize.width, repairTimeSize.height);
     self.repairTimeTitle.text = repairTime;
     
@@ -117,20 +132,6 @@
     CGFloat orderY = self.height - orderTimeSize.height - Margin;
     self.orderTimeTitle.frame = CGRectMake(orderX, orderY, orderTimeSize.width, orderTimeSize.height);
     self.orderTimeTitle.text = orderTime;
-    
-    //修复医生
-    NSString *doctorTitle;
-    if (self.medicalCase.repair_doctor_name && [self.medicalCase.repair_doctor_name isNotEmpty]) {
-        doctorTitle = [NSString stringWithFormat:@"修复医生:%@",self.medicalCase.repair_doctor_name];
-    }else{
-        doctorTitle = @"修复医生:";
-    }
-    
-    CGSize doctorTitleSize = [doctorTitle sizeWithFont:CommenTitleFont];
-    CGFloat doctorX = Margin;
-    CGFloat doctorY = self.repairTimeTitle.top - doctorTitleSize.height - Margin;
-    self.repairDoctorTitle.frame = CGRectMake(doctorX, doctorY, doctorTitleSize.width, doctorTitleSize.height);
-    self.repairDoctorTitle.text = doctorTitle;
     
     //种植时间
     NSString *plantTime;

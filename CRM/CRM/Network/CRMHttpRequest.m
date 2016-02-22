@@ -243,5 +243,11 @@ Realize_ShareInstance(CRMHttpRequest);
 }
 
 
+#pragma mark - 取消所有网络请求
+- (void)cancelAllOperations{
+    [requestManager.operationQueue cancelAllOperations];
+}
+
+
 
 @end

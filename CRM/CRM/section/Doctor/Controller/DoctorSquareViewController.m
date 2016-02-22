@@ -31,6 +31,7 @@
     
     [self.searchBar moveBackgroundView];
     self.searchBar.placeholder = @"搜索真实姓名";
+    [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
 }
 
 - (void)initView {

@@ -142,7 +142,7 @@
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     
     self.title = @"修复医生";
     
@@ -151,6 +151,7 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
+    [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
     //初始化搜索框

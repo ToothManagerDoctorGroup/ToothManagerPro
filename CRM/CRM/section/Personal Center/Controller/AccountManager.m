@@ -220,6 +220,9 @@ Realize_ShareInstance(AccountManager);
     NSString *signKey = [NSString stringWithFormat:@"%@isSign",[self currentUser].userid];
     [CRMUserDefalut setObject:nil forKey:signKey];
     
+    //取消所有的下载操作
+    [[CRMHttpRequest shareInstance] cancelAllOperations];
+    //发送退出通知
     [[NSNotificationCenter defaultCenter] postNotificationName:SignOutSuccessNotification object:nil];
 }
 

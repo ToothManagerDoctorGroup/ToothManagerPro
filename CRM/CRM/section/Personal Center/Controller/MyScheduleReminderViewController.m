@@ -582,6 +582,9 @@
     self.calendar.calendarAppearance.isWeekMode = !self.calendar.calendarAppearance.isWeekMode;
     
     CGFloat newHeight = 250;
+    if (isPad) {
+        newHeight = 350;
+    }
     if(self.calendar.calendarAppearance.isWeekMode){
         newHeight = 65.;
     }

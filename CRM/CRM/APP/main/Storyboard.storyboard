@@ -210,7 +210,7 @@
                     <connections>
                         <outlet property="nameTextField" destination="R7r-Kj-0ju" id="rlC-Ha-iWP"/>
                         <outlet property="priceTextField" destination="jCe-Kj-6OK" id="8NS-9O-Mmw"/>
-                        <outlet property="tableView" destination="2VJ-Bg-OC5" id="SFs-5b-7gM"/>
+                        <outlet property="tableView" destination="2VJ-Bg-OC5" id="4ZD-Ed-HCR"/>
                         <outlet property="typeTextField" destination="Ydt-m9-qsG" id="RTk-9s-mIl"/>
                     </connections>
                 </viewController>
@@ -3853,7 +3853,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="50" id="oQS-uP-uGw">
                                         <rect key="frame" x="0.0" y="50" width="320" height="50"/>
@@ -3873,38 +3873,37 @@
                                                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iWo-lb-bHk" customClass="TimStarTextField">
-                                                    <rect key="frame" x="77" y="10" width="228" height="30"/>
-                                                    <animations/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="yIu-C9-oOC"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q10-SG-DaM">
-                                                    <rect key="frame" x="0.0" y="49.5" width="320" height="0.5"/>
+                                                    <rect key="frame" x="0.0" y="49" width="320" height="0.5"/>
                                                     <animations/>
                                                     <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="0.5" id="pKG-xs-9YS"/>
                                                     </constraints>
                                                 </view>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jCG-rU-ilO" customClass="XLStarView">
+                                                    <rect key="frame" x="77" y="10" width="228" height="30"/>
+                                                    <animations/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="iRe-C5-4OC"/>
+                                                    </constraints>
+                                                </view>
                                             </subviews>
                                             <animations/>
                                             <constraints>
-                                                <constraint firstItem="iWo-lb-bHk" firstAttribute="centerY" secondItem="Itm-Sy-fPS" secondAttribute="centerY" id="4Zs-34-c3L"/>
                                                 <constraint firstItem="Q10-SG-DaM" firstAttribute="leading" secondItem="Itm-Sy-fPS" secondAttribute="leading" id="PNd-70-PGm"/>
+                                                <constraint firstItem="jCG-rU-ilO" firstAttribute="leading" secondItem="UUK-Cu-QDP" secondAttribute="trailing" constant="20" id="RAR-uD-BYs"/>
                                                 <constraint firstItem="UUK-Cu-QDP" firstAttribute="leading" secondItem="Itm-Sy-fPS" secondAttribute="leading" constant="15" id="Zxo-KL-mUf"/>
+                                                <constraint firstAttribute="trailing" secondItem="jCG-rU-ilO" secondAttribute="trailing" constant="15" id="bM9-A2-hga"/>
                                                 <constraint firstAttribute="trailing" secondItem="Q10-SG-DaM" secondAttribute="trailing" id="ko1-A5-Yp3"/>
-                                                <constraint firstItem="iWo-lb-bHk" firstAttribute="leading" secondItem="UUK-Cu-QDP" secondAttribute="trailing" constant="20" id="lyX-MD-20G"/>
                                                 <constraint firstItem="UUK-Cu-QDP" firstAttribute="centerY" secondItem="Itm-Sy-fPS" secondAttribute="centerY" id="nSo-kT-u1K"/>
+                                                <constraint firstItem="jCG-rU-ilO" firstAttribute="centerY" secondItem="Itm-Sy-fPS" secondAttribute="centerY" id="wV4-9b-Lvl"/>
                                                 <constraint firstAttribute="bottom" secondItem="Q10-SG-DaM" secondAttribute="bottom" id="y8y-5g-SOL"/>
-                                                <constraint firstAttribute="trailing" secondItem="iWo-lb-bHk" secondAttribute="trailing" constant="15" id="yzR-gL-MWR"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="50" id="5V1-Hz-XT5">
                                         <rect key="frame" x="0.0" y="100" width="320" height="50"/>
@@ -3955,7 +3954,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -3968,7 +3967,7 @@
                     <connections>
                         <outlet property="nameTextField" destination="Swb-9T-vWP" id="YM3-aN-QzN"/>
                         <outlet property="phoneTextField" destination="R1h-Jk-RUp" id="Ym4-gj-IKi"/>
-                        <outlet property="starTextField" destination="iWo-lb-bHk" id="Cag-cF-ahL"/>
+                        <outlet property="starView" destination="jCG-rU-ilO" id="06h-fz-F5b"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1CP-wg-bKC" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -2304,7 +2304,7 @@
  */
 - (BOOL)insertCTLib:(CTLib *)ctlib {
 //    \"patient_id\" integer,\n\t \"case_id\" integer ,\n\t \"ct_image\" text,\n\t \"ct_desc\" text,\n\t \"creation_date\" text"];
-    if (ctlib == nil) {
+    if (ctlib == nil || ctlib.user_id == nil) {
         return NO;
     }
     
@@ -2393,7 +2393,7 @@
 }
 
 - (BOOL)updateCTLib:(CTLib *)ctlib {
-    if (ctlib == nil) {
+    if (ctlib == nil || ctlib.user_id == nil) {
         return NO;
     }
     __block BOOL ret = NO;
