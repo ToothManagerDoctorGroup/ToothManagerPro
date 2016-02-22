@@ -20,6 +20,7 @@
 #import "XLPersonalStepOneViewController.h"
 #import "XLLoginTool.h"
 #import "CRMHttpRespondModel.h"
+#import "DBManager.h"
 
 @interface XLSignUpViewController ()<CRMHttpRequestPersonalCenterDelegate>
 
@@ -44,7 +45,6 @@
     self.title = @"注册";
     self.lisensebutton.selected = YES;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     CALayer *layer = self.validateButton.layer;
     [layer setMasksToBounds:YES];
@@ -200,60 +200,64 @@
     [SVProgressHUD dismiss];
     
     NSDictionary *resultDic = result;
-    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+    //登录成功，创建和当前登录人对应的数据库
+//    [[DBManager shareInstance] createdbFileWithUserId:[resultDic objectForKey:@"id"]];
+//    [[DBManager shareInstance] createTables];
     
-    //环信账号登录
-    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
-        
-        if (loginInfo && !error) {
-            //设置是否自动登录
-            [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+        [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+        //环信账号登录
+        [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
             
-            //获取数据库中数据
-            [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
-            
-            EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
-            //设置离线推送的样式
-            options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
-            [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
-            
-            //发送自动登陆状态通知
-            [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
-            
-            //保存最近一次登录用户名
-            [self saveLastLoginUsername];
-        }
-        else
-        {
-            switch (error.errorCode)
-            {
-                case EMErrorNotFound:
-                    TTAlertNoTitle(error.description);
-                    break;
-                case EMErrorNetworkNotConnected:
-                    TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                    break;
-                case EMErrorServerNotReachable:
-                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                    break;
-                case EMErrorServerAuthenticationFailure:
-                    TTAlertNoTitle(error.description);
-                    break;
-                case EMErrorServerTimeout:
-                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                    break;
-                default:
-                    TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
-                    break;
+            if (loginInfo && !error) {
+                //设置是否自动登录
+                [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+                
+                //获取数据库中数据
+                [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+                
+                EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+                //设置离线推送的样式
+                options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+                [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+                
+                //发送自动登陆状态通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+                
+                //保存最近一次登录用户名
+                [self saveLastLoginUsername];
             }
-        }
+            else
+            {
+                switch (error.errorCode)
+                {
+                    case EMErrorNotFound:
+                        TTAlertNoTitle(error.description);
+                        break;
+                    case EMErrorNetworkNotConnected:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                        break;
+                    case EMErrorServerNotReachable:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                        break;
+                    case EMErrorServerAuthenticationFailure:
+                        TTAlertNoTitle(error.description);
+                        break;
+                    case EMErrorServerTimeout:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                        break;
+                    default:
+                        TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
+                        break;
+                }
+            }
+            
+        } onQueue:nil];
         
-    } onQueue:nil];
-    
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
-    XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
-    oneVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:oneVc animated:YES];
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+        XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+        oneVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:oneVc animated:YES];
+        
 }
 
 #pragma  mark - 保存密码到本地

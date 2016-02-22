@@ -80,7 +80,6 @@
     [super initView];
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     
     //创建标题按钮

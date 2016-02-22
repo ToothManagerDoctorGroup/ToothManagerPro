@@ -46,7 +46,6 @@
     self.title = @"选择预约事项";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     //添加通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addTemplateAction:) name:MessageTemplateAddNotification object:nil];

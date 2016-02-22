@@ -146,7 +146,6 @@
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-        cell.backgroundColor = self.view.backgroundColor;
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
     }

@@ -14,28 +14,43 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="49.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="种植体名称" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DEG-ZK-aNf">
-                        <rect key="frame" x="8" y="10" width="156" height="30"/>
+                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="种植体名称" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DEG-ZK-aNf">
+                        <rect key="frame" x="8" y="10" width="155" height="30"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="30" id="bKr-z1-Vcf"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="material_X.png" translatesAutoresizingMaskIntoConstraints="NO" id="lAp-LH-mYa">
-                        <rect key="frame" x="181" y="18" width="11" height="14"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="material_X.png" translatesAutoresizingMaskIntoConstraints="NO" id="lAp-LH-mYa">
+                        <rect key="frame" x="178" y="18" width="11" height="14"/>
                         <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="14" id="LxJ-Mo-4Q7"/>
+                            <constraint firstAttribute="width" constant="11" id="ca6-bl-CPV"/>
+                        </constraints>
                     </imageView>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DwV-za-jgZ">
-                        <rect key="frame" x="207" y="10" width="77" height="30"/>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DwV-za-jgZ">
+                        <rect key="frame" x="204" y="10" width="80" height="30"/>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="80" id="B2u-Pi-w3K"/>
+                            <constraint firstAttribute="height" constant="30" id="MF4-KC-fFM"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                     </textField>
-                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jEm-Mp-3er">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jEm-Mp-3er">
                         <rect key="frame" x="292" y="15" width="20" height="20"/>
                         <animations/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="U41-vb-gT0"/>
+                            <constraint firstAttribute="height" constant="20" id="xJO-Bg-ioF"/>
+                        </constraints>
                         <state key="normal" backgroundImage="material_del.png"/>
                         <connections>
                             <action selector="deleteAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Aol-Y2-8mg"/>
@@ -43,6 +58,17 @@
                     </button>
                 </subviews>
                 <animations/>
+                <constraints>
+                    <constraint firstItem="DEG-ZK-aNf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="A7Z-kH-h5V"/>
+                    <constraint firstItem="DwV-za-jgZ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="LMR-94-sPl"/>
+                    <constraint firstItem="lAp-LH-mYa" firstAttribute="leading" secondItem="DEG-ZK-aNf" secondAttribute="trailing" constant="15" id="N5d-64-Vxv"/>
+                    <constraint firstItem="jEm-Mp-3er" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="YjT-rE-Wf9"/>
+                    <constraint firstAttribute="trailing" secondItem="jEm-Mp-3er" secondAttribute="trailing" constant="8" id="bzn-eZ-MRu"/>
+                    <constraint firstItem="lAp-LH-mYa" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="d7G-OH-tfc"/>
+                    <constraint firstItem="DwV-za-jgZ" firstAttribute="leading" secondItem="lAp-LH-mYa" secondAttribute="trailing" constant="15" id="p4I-nk-M3g"/>
+                    <constraint firstItem="jEm-Mp-3er" firstAttribute="leading" secondItem="DwV-za-jgZ" secondAttribute="trailing" constant="8" id="ptR-ZG-NsX"/>
+                    <constraint firstItem="DEG-ZK-aNf" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="w1W-lD-vJy"/>
+                </constraints>
             </tableViewCellContentView>
             <animations/>
             <connections>

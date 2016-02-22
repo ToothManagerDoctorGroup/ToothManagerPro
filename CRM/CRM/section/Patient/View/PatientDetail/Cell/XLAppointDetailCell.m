@@ -51,6 +51,7 @@
     contentLabel.textColor = [UIColor colorWithHex:0x333333];
     contentLabel.font = [UIFont systemFontOfSize:15];
     contentLabel.numberOfLines = 0;
+    contentLabel.textAlignment = NSTextAlignmentRight;
     self.contentLabel = contentLabel;
     [self.contentView addSubview:contentLabel];
     
@@ -63,7 +64,7 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     
-    CGFloat margin = 10;
+    CGFloat margin = 15;
     CGFloat rowH = 40;
     
     NSString *commonTitle = @"治疗项目";

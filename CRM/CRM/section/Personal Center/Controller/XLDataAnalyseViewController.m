@@ -56,7 +56,6 @@
 #pragma mark - 设置导航栏样式
 - (void)setUpNavStyle{
     self.title = @"数据分析";
-    self.view.backgroundColor = MyColor(241, 242, 243);
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }

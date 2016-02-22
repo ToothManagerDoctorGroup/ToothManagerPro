@@ -24,7 +24,6 @@
 #import "DBManager+sync.h"
 #import "CreateCaseViewController.h"
 #import "LocalNotificationCenter.h"
-#import "SelectDateViewController.h"
 #import "CRMHttpRequest+Sync.h"
 #import "IntroducerManager.h"
 #import "XLIntroducerViewController.h"
@@ -215,7 +214,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"患者详情";
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"patient_detail_menu"]];
-    self.view.backgroundColor = CommenBgColor;
     
 }
 
@@ -284,19 +282,11 @@
             _headerInfoView.introducerName = introducer.intr_name;
             _headerInfoView.introduceCanEdit = YES;
         }else{
-            //表明是网络介绍人
-            Introducer *introducer = [[DBManager shareInstance]getIntroducerByIntrid:map.intr_id];
-            NSLog(@"介绍人=%@",introducer.intr_name);
-            if (introducer == nil) {
-                //如果介绍人表中没有数据，就查询好友
-                Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:map.intr_id];
-                if (doctor != nil) {
-                    _headerInfoView.introducerName = doctor.doctor_name;
-                }
-            }else{
-                _headerInfoView.introducerName = introducer.intr_name;
+            //如果介绍人表中没有数据，就查询好友
+            Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:map.intr_id];
+            if (doctor != nil) {
+                _headerInfoView.introducerName = doctor.doctor_name;
             }
-            
         }
 
     }

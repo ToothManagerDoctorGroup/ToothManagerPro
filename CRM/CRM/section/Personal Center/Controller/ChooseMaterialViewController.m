@@ -73,7 +73,6 @@
     self.title = @"选择耗材";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"完成"];
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 #pragma mark -右侧按钮点击
 - (void)onRightButtonAction:(id)sender{

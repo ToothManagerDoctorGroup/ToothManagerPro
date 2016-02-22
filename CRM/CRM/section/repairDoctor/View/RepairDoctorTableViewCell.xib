@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,29 +14,23 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="108" placeholderIntrinsicHeight="21" text="电话号码" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AOc-MW-LkB">
-                        <rect key="frame" x="137" y="11" width="108" height="21"/>
-                        <animations/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="108" id="m3H-tX-hq9"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="52" placeholderIntrinsicHeight="21" text="就诊人数" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TL1-Fk-CTJ">
-                        <rect key="frame" x="260" y="11" width="52" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="108" placeholderIntrinsicHeight="21" text="电话号码" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AOc-MW-LkB">
+                        <rect key="frame" x="106" y="0.0" width="106.5" height="43.5"/>
                         <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" placeholderIntrinsicWidth="65" placeholderIntrinsicHeight="21" text="姓名" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mpn-9N-fMs">
-                        <rect key="frame" x="8" y="11" width="65" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="65" placeholderIntrinsicHeight="21" text="姓名" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mpn-9N-fMs">
+                        <rect key="frame" x="0.0" y="0.0" width="107" height="43.5"/>
                         <animations/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="65" id="bh9-v8-gMq"/>
-                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="52" placeholderIntrinsicHeight="21" text="就诊人数" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TL1-Fk-CTJ">
+                        <rect key="frame" x="213" y="0.0" width="107" height="43.5"/>
+                        <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -45,16 +38,18 @@
                 </subviews>
                 <animations/>
                 <constraints>
-                    <constraint firstItem="Mpn-9N-fMs" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="3" id="Evu-qH-aEY"/>
-                    <constraint firstItem="TL1-Fk-CTJ" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="K48-Kw-JqS"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="Mpn-9N-fMs" secondAttribute="bottom" constant="3" id="N02-qI-Kma"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="TL1-Fk-CTJ" secondAttribute="bottom" constant="3" id="ODe-zP-EwU"/>
-                    <constraint firstItem="TL1-Fk-CTJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="3" id="dcB-3C-DYe"/>
-                    <constraint firstItem="TL1-Fk-CTJ" firstAttribute="leading" secondItem="AOc-MW-LkB" secondAttribute="trailing" constant="15" id="hSG-2c-hy1"/>
-                    <constraint firstItem="AOc-MW-LkB" firstAttribute="leading" secondItem="Mpn-9N-fMs" secondAttribute="trailing" constant="60" id="iHW-mW-mFL"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="AOc-MW-LkB" secondAttribute="bottom" constant="3" id="nqD-Dl-kDV"/>
-                    <constraint firstItem="Mpn-9N-fMs" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="4" id="v2h-2R-lBe"/>
-                    <constraint firstItem="AOc-MW-LkB" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="3" id="ySY-P3-XVZ"/>
+                    <constraint firstItem="Mpn-9N-fMs" firstAttribute="width" secondItem="TL1-Fk-CTJ" secondAttribute="width" id="1zY-6K-o3a"/>
+                    <constraint firstItem="TL1-Fk-CTJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="1zh-Gd-N61"/>
+                    <constraint firstAttribute="trailing" secondItem="TL1-Fk-CTJ" secondAttribute="trailing" id="Iec-BB-Qc0"/>
+                    <constraint firstAttribute="bottom" secondItem="AOc-MW-LkB" secondAttribute="bottom" id="MO8-JQ-qEw"/>
+                    <constraint firstItem="AOc-MW-LkB" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Nm3-9Q-jo3"/>
+                    <constraint firstItem="AOc-MW-LkB" firstAttribute="leading" secondItem="Mpn-9N-fMs" secondAttribute="trailing" id="T2n-tx-Imx"/>
+                    <constraint firstItem="Mpn-9N-fMs" firstAttribute="width" secondItem="AOc-MW-LkB" secondAttribute="width" id="hKx-X4-loQ"/>
+                    <constraint firstItem="Mpn-9N-fMs" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="oaR-Qh-aUa"/>
+                    <constraint firstAttribute="bottom" secondItem="Mpn-9N-fMs" secondAttribute="bottom" id="t8y-Un-QxX"/>
+                    <constraint firstItem="TL1-Fk-CTJ" firstAttribute="leading" secondItem="AOc-MW-LkB" secondAttribute="trailing" id="tF2-3b-gzS"/>
+                    <constraint firstAttribute="bottom" secondItem="TL1-Fk-CTJ" secondAttribute="bottom" id="ubq-6I-Qch"/>
+                    <constraint firstItem="Mpn-9N-fMs" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="w4M-uq-JCk"/>
                 </constraints>
             </tableViewCellContentView>
             <animations/>

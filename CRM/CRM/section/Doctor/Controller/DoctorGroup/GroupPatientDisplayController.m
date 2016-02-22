@@ -14,7 +14,6 @@
 #import "PatientInfoViewController.h"
 #import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
-#import "SelectDateViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
 #import "MudItemsBar.h"
@@ -81,7 +80,6 @@
 - (void)setupView {
     self.title = @"选择患者";
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索患者"];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"添加"];

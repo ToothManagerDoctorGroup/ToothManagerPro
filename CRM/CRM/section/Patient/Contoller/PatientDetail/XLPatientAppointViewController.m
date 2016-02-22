@@ -62,7 +62,6 @@
 - (void)setUpNav{
     self.title = @"预约记录";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(238, 238, 238);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
 }

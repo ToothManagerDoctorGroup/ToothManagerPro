@@ -9,7 +9,6 @@
 #import "AddReminderViewController.h"
 #import "LocalNotificationCenter.h"
 #import "NSDate+Conversion.h"
-#import "ScheduleReminderViewController.h"
 #import "PatientInfoViewController.h"
 #import "DoctorManager.h"
 #import "AccountManager.h"
@@ -17,10 +16,8 @@
 #import "DBManager+Doctor.h"
 #import "CreateCaseViewController.h"
 #import <EventKit/EventKit.h>
-#import "HengYaViewController.h"
-#import "RuYaViewController.h"
 #import "PatientsDisplayViewController.h"
-#import "SelectYuYueDetailViewController.h"
+
 #import "ChooseAssistViewController.h"
 #import "ChooseMaterialViewController.h"
 
@@ -38,13 +35,11 @@
 #import "CRMHttpRespondModel.h"
 #import "UserInfoViewController.h"
 
-@interface AddReminderViewController ()<HengYaDeleate,RuYaDelegate,ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate,UIAlertViewDelegate>{
+@interface AddReminderViewController ()<ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate,UIAlertViewDelegate>{
     
     __weak IBOutlet UISwitch *weiXinSwitch;
     __weak IBOutlet UISwitch *duanXinSwitch;
 }
-@property (nonatomic,retain) HengYaViewController *hengYaVC;
-@property (nonatomic,retain) RuYaViewController *ruYaVC;
 @property (nonatomic,retain) NSMutableArray *clinicArray;
 @property (nonatomic,retain) NSMutableArray *clinicIdArray;
 @property (nonatomic,copy) NSString *originalClinic;
@@ -80,8 +75,6 @@
 
 - (void)dealloc
 {
-    self.hengYaVC = nil;
-    self.ruYaVC = nil;
     [self.clinicArray removeAllObjects];
     self.clinicArray = nil;
     [self.clinicIdArray removeAllObjects];
@@ -102,7 +95,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
     self.title = @"新增预约";
-    self.view.backgroundColor = [UIColor whiteColor];
     [self setExtraCellLineHidden:self.tableView];
 
     selectMatterArray = [NSArray arrayWithObjects:@"预约定方案",@"预约种植",@"预约拆线",@"预约取模",@"预约戴牙",@"根充",@"扩根",@"洗牙",@"补牙",@"拔牙",@"刮治",@"预约复查",@"预约修复",@"其它", nil];
@@ -554,11 +546,6 @@
     if ([self.yaWeiTextField isFirstResponder]){
         [self.yaWeiTextField resignFirstResponder];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-        self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"HengYaViewController"];
-        self.hengYaVC.delegate = self;
-        self.hengYaVC.hengYaString = self.yaWeiTextField.text;
-        [self.navigationController addChildViewController:self.hengYaVC];
-        [self.navigationController.view addSubview:self.hengYaVC.view];
     }else if ([self.huanzheTextField isFirstResponder]){
         [self.huanzheTextField resignFirstResponder];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
@@ -573,70 +560,13 @@
         [self.medicalPlaceTextField resignFirstResponder];
         [self.timeTextField resignFirstResponder];
         
-        SelectYuYueDetailViewController  *selectDateView = [[SelectYuYueDetailViewController alloc]init];
-        selectDateView.clinicNameArray = self.clinicArray;
-        selectDateView.clinicIdArray = self.clinicIdArray;
-        [self pushViewController:selectDateView animated:YES];
+//        SelectYuYueDetailViewController  *selectDateView = [[SelectYuYueDetailViewController alloc]init];
+//        selectDateView.clinicNameArray = self.clinicArray;
+//        selectDateView.clinicIdArray = self.clinicIdArray;
+//        [self pushViewController:selectDateView animated:YES];
     }
     flag = NO;
    
-}
-
-#pragma mark -HengYaDeleate
-
--(void)removeHengYaVC{
-    [self.hengYaVC willMoveToParentViewController:nil];
-    [self.hengYaVC.view removeFromSuperview];
-    [self.hengYaVC removeFromParentViewController];
-}
-
-- (void)queDingHengYa:(NSMutableArray *)hengYaArray toothStr:(NSString *)toothStr{
-    
-    if ([toothStr isEqualToString:@"未连续"]) {
-        self.yaWeiTextField.text = [hengYaArray componentsJoinedByString:@","];
-    }else{
-        self.yaWeiTextField.text = toothStr;
-    }
-    
-    [self removeHengYaVC];
-}
-
-- (void)queDingRuYa:(NSMutableArray *)ruYaArray toothStr:(NSString *)toothStr{
-    if ([toothStr isEqualToString:@"未连续"]) {
-        self.yaWeiTextField.text = [ruYaArray componentsJoinedByString:@","];
-    }else{
-        self.yaWeiTextField.text = toothStr;
-    }
-    [self removeRuYaVC];
-}
-
--(void)removeRuYaVC{
-    [self.ruYaVC willMoveToParentViewController:nil];
-    [self.ruYaVC.view removeFromSuperview];
-    [self.ruYaVC removeFromParentViewController];
-}
--(void)changeToRuYaVC{
-    [self removeHengYaVC];
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    self.ruYaVC = [storyboard instantiateViewControllerWithIdentifier:@"RuYaViewController"];
-    self.ruYaVC.delegate = self;
-    self.ruYaVC.ruYaString = self.yaWeiTextField.text;
-    [self.navigationController addChildViewController:self.ruYaVC];
-    [self.navigationController.view addSubview:self.ruYaVC.view];
-}
--(void)changeToHengYaVC{
-    [self removeRuYaVC];
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"HengYaViewController"];
-    self.hengYaVC.delegate = self;
-    self.hengYaVC.hengYaString = self.yaWeiTextField.text;
-    [self.navigationController addChildViewController:self.hengYaVC];
-    [self.navigationController.view addSubview:self.hengYaVC.view];
-}
-- (void)keyboardWillHidden:(CGFloat)keyboardHeight {
-
 }
 
 

@@ -44,7 +44,6 @@
     self.title = @"种植体";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     [self.searchBar moveBackgroundView];
 }

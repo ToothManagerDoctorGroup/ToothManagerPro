@@ -73,7 +73,6 @@
     [super initView];
     self.title = @"诊所详情";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     //如果是未签约的诊所信息
     if (self.unsignModel) {
         //设置右侧按钮

@@ -22,7 +22,6 @@
 #import "SDImageCache.h"
 #import "NSString+Conversion.h"
 #import "CRMMacro.h"
-#import "SelectDateViewController.h"
 #import "LocalNotificationCenter.h"
 #import "IntroducerCellMode.h"
 #import "DBManager+Doctor.h"
@@ -46,7 +45,6 @@
     self.title = @"编辑患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet.png"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     self.patientNameTextField.mode = TextFieldInputModeKeyBoard;
     self.patientNameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;

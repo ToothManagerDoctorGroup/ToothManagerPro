@@ -61,8 +61,7 @@
         self.title = @"通讯录导入修复医生";
     }
     self.tableView.allowsSelection = NO;
-    
-    self.view.backgroundColor = [UIColor whiteColor];
+
 }
 
 - (void)initData {

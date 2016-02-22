@@ -27,7 +27,6 @@
     self.title = @"意见反馈";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"发送"];
-    self.view.backgroundColor = MyColor(238, 238, 238);
 }
 
 - (void)initView{

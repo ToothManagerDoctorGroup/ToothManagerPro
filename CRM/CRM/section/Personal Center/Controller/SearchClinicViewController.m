@@ -93,7 +93,6 @@
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"zzs_zb"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     //创建标题按钮
     ClinicTitleButton *titleButton = [ClinicTitleButton buttonWithType:UIButtonTypeCustom];

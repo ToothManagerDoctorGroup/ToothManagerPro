@@ -45,7 +45,6 @@
 - (void)setUpNavBarStyle{
     self.title = @"预约信息";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(239, 239, 239);
 }
 #pragma mark -请求网络数据
 - (void)requestAppoinDetailData{

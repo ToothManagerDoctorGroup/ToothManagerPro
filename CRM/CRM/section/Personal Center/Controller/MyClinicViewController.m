@@ -61,7 +61,6 @@
     self.title = @"我的诊所";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"pic_search"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     [self.searchBar moveBackgroundView];
     
     //设置右侧按钮

@@ -27,7 +27,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"信息完善";
-    self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
     //设置控件属性

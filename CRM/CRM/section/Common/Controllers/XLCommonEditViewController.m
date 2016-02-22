@@ -38,8 +38,7 @@
 #pragma mark - 设置导航栏样式
 - (void)setUpNav{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(245, 245, 245);
-    [self setRightBarButtonWithTitle:@"完成"];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.view addGestureRecognizer:tap];

@@ -57,7 +57,6 @@
     }
     self.searchDisplayController.searchBar.placeholder = @"搜索介绍人";
     self.title = @"介绍人";
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)refreshView {

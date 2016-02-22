@@ -68,18 +68,21 @@
     _statusLabel = [[UILabel alloc] init];
     _statusLabel.font = CommenFont;
     _statusLabel.textColor = CommenColor;
+    _statusLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_statusLabel];
     
     //介绍人
     _introducerLabel = [[UILabel alloc] init];
     _introducerLabel.font = CommenFont;
     _introducerLabel.textColor = CommenColor;
+    _introducerLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_introducerLabel];
     
     //种植数量
     _numLabel = [[UILabel alloc] init];
     _numLabel.font = CommenFont;
     _numLabel.textColor = CommenColor;
+    _numLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_numLabel];
     
     //是否选中
@@ -144,17 +147,22 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     
+    CGFloat commonW = (kScreenWidth - 30) / 4;
+    if (!self.isManage) {
+        commonW = (kScreenWidth - 50) / 4;
+    }
+    
     _signImageView.frame = CGRectMake(0, (RowHeight - 20) / 2, 20, 20);
     
     //计算所有的size
-    _nameLabel.frame = CGRectMake(20, 0, 60, RowHeight); //95
+    _nameLabel.frame = CGRectMake(_signImageView.right, 0, commonW - 20, RowHeight); //95
     
-    _statusLabel.frame = CGRectMake(_nameLabel.right, 0, 80, RowHeight);
+    _statusLabel.frame = CGRectMake(_nameLabel.right, 0, commonW, RowHeight);
     
-    _introducerLabel.frame = CGRectMake(_statusLabel.right, 0, 80, RowHeight);
+    _introducerLabel.frame = CGRectMake(_statusLabel.right, 0, commonW, RowHeight);
     
     //275  320 45
-    _numLabel.frame = CGRectMake(_introducerLabel.right, 0, 40, RowHeight);
+    _numLabel.frame = CGRectMake(_introducerLabel.right, 0, commonW, RowHeight);
     
     if (!self.isManage) {
         _chooseButton.frame = CGRectMake(self.width - RowHeight - 5, 0, RowHeight + 5, RowHeight);

@@ -60,7 +60,6 @@
 - (void)setUpNav{
     self.title = @"我的预约本";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(248, 248, 248);
 }
 
 #pragma mark - 设置起始数据

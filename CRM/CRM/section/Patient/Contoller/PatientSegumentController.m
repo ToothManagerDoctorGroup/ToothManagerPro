@@ -18,7 +18,6 @@
 #import "PatientInfoViewController.h"
 #import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
-#import "SelectDateViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
 #import "MudItemsBar.h"
@@ -49,7 +48,6 @@
     
 //    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     //创建视图
     [self initSegumentController];
     

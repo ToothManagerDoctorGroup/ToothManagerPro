@@ -51,7 +51,6 @@
     UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped)];
     tapGr.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGr];
-    self.view.backgroundColor = [UIColor whiteColor];
     
 //    UUDatePicker *repairPicker = [[UUDatePicker alloc] initWithframe:CGRectMake(0, 0, kScreenWidth, 216) Delegate:self PickerStyle:UUDateStyle_YearMonthDayHourMinute]
 //    self.repairTextField.inputView = repairPicker;
@@ -256,8 +255,10 @@
         type = @"种植";
         time = self.implantTextField.text;
     }
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didChooseTime:withType:)]) {
-        [self.delegate didChooseTime:time withType:type];
+    if ([btn.currentTitle isEqualToString:@"确定"]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didChooseTime:withType:)]) {
+            [self.delegate didChooseTime:time withType:type];
+        }
     }
 }
 

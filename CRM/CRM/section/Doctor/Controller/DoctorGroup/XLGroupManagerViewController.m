@@ -191,7 +191,6 @@
         [self setRightBarButtonWithTitle:@"管理"];
         self.title = self.group.group_name;
     }
-    self.view.backgroundColor = [UIColor whiteColor];
     
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 40 - 44) style:UITableViewStylePlain];
@@ -308,12 +307,16 @@
 }
 
 -(UIView *)setUpHeaderView{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, 320, 40)];
+    
+    CGFloat commonW = (kScreenWidth - 30) / 4;
+    CGFloat commonH = 40;
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, kScreenWidth, commonH)];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"姓名" forState:UIControlStateNormal];
-    [nameButton setFrame:CGRectMake(10, 0, 40, 40)];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [nameButton addTarget:self action:@selector(nameButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -322,7 +325,7 @@
     
     UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [statusButton setTitle:@"状态" forState:UIControlStateNormal];
-    [statusButton setFrame:CGRectMake(80, 0, 40, 40)];
+    [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
     [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     statusButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [statusButton addTarget:self action:@selector(statusButtonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -330,7 +333,7 @@
     
     UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [introducerButton setTitle:@"介绍人" forState:UIControlStateNormal];
-    [introducerButton setFrame:CGRectMake(150, 0, 60, 40)];
+    [introducerButton setFrame:CGRectMake(statusButton.right, 0, commonW, commonH)];
     [introducerButton addTarget:self action:@selector(introducerButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -338,7 +341,7 @@
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"数量" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(230, 0, 40, 40)];
+    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [numberButton addTarget:self action:@selector(numberButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];

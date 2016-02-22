@@ -70,11 +70,13 @@
     }
     
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
+    self.nameTextField.clearButtonMode = UITextFieldViewModeNever;
     self.introducerTextField.mode = TextFieldInputModeExternal;
     self.introducerTextField.delegate = self;
+    self.introducerTextField.clearButtonMode = UITextFieldViewModeNever;
     self.phoneTextField.mode = TextFieldInputModeKeyBoard;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.phoneTextField.clearButtonMode = UITextFieldViewModeNever;
     
     UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped)];
     tapGr.cancelsTouchesInView = NO;

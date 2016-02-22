@@ -8,7 +8,6 @@
 
 #import "TimTabBarViewController.h"
 #import "TimFramework.h"
-#import "ScheduleReminderViewController.h"
 #import "AccountViewController.h"
 #import "PatientSegumentController.h"
 #import "MenuView.h"

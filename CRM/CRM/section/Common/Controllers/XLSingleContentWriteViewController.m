@@ -70,7 +70,6 @@
 - (void)setUpNav{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"重置"];
-    self.view.backgroundColor = MyColor(238, 238, 238);
     self.title = @"重置同步时间";
 }
 

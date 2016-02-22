@@ -47,7 +47,6 @@
 - (void)setUpNavStyle{
     self.title = @"通知管理";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(238, 238, 238);
 }
 #pragma mark - 添加通知
 - (void)addNotification{

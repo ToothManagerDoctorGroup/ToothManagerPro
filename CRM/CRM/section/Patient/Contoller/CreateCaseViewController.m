@@ -24,10 +24,7 @@
 #import "RecordTableViewCell.h"
 #import "CRMMacro.h"
 #import "RepairDoctorViewController.h"
-#import "SelectDateViewController.h"
 #import "LocalNotificationCenter.h"
-#import "HengYaViewController.h"
-#import "RuYaViewController.h"
 #import "AddReminderViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "XLSelectCalendarViewController.h"
@@ -42,8 +39,10 @@
 #import "QrCodePatientViewController.h"
 #import "DoctorTool.h"
 #import "CRMHttpRespondModel.h"
+#import "XLHengYaViewController.h"
+#import "XLRuYaViewController.h"
 
-@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,HengYaDeleate,RuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
+@interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
 @property (nonatomic,retain) MedicalCase *medicalCase;
 @property (nonatomic,retain) MedicalReserve *medicalRes;
@@ -51,8 +50,8 @@
 @property (nonatomic,retain) NSMutableArray *ctblibArray;
 @property (nonatomic,retain) NSMutableArray *expenseArray;
 @property (nonatomic,retain) NSMutableArray *recordArray;
-@property (nonatomic,retain) HengYaViewController *hengYaVC;
-@property (nonatomic,retain) RuYaViewController *ruYaVC;
+@property (nonatomic,retain) XLHengYaViewController *hengYaVC;
+@property (nonatomic,retain) XLRuYaViewController *ruYaVC;
 
 @property (nonatomic, strong)NSMutableArray *deleteRcords;//删除的病历记录
 @property (nonatomic, strong)NSMutableArray *newRecords;//新增的病历记录
@@ -98,8 +97,6 @@
     implant_time = _medicalCase.implant_time;
     repair_doctor = _medicalCase.repair_doctor;
     repair_time = _medicalCase.repair_time;
-    
-    self.view.backgroundColor = [UIColor whiteColor];
     self.tableView.backgroundColor = MyColor(248, 248, 248);
     
 }
@@ -111,7 +108,7 @@
     self.addRecordButton.layer.cornerRadius = 5.0f;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     _tableHeaderView = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseHeaderViewController"];
-    [_tableHeaderView.view setFrame:CGRectMake(0, 0, self.view.bounds.size.width, 300)];
+    [_tableHeaderView.view setFrame:CGRectMake(0, 0, kScreenWidth, 300)];
     _tableHeaderView.delegate = self;
     _tableHeaderView.tableView.scrollEnabled = NO;
     [_tableHeaderView setviewWith:_medicalCase andRes:_medicalRes];
@@ -648,8 +645,8 @@
         
     } else if ([self.tableHeaderView.casenameTextField isFirstResponder]){
         [self.tableHeaderView.casenameTextField resignFirstResponder];
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-        self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"HengYaViewController"];
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+        self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLHengYaViewController"];
         self.hengYaVC.delegate = self;
         self.hengYaVC.hengYaString = self.tableHeaderView.casenameTextField.text;
         [self.navigationController addChildViewController:self.hengYaVC];
@@ -691,8 +688,8 @@
 -(void)changeToRuYaVC{
     [self removeHengYaVC];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    self.ruYaVC = [storyboard instantiateViewControllerWithIdentifier:@"RuYaViewController"];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    self.ruYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLRuYaViewController"];
     self.ruYaVC.delegate = self;
     self.ruYaVC.ruYaString = self.tableHeaderView.casenameTextField.text;
     [self.navigationController addChildViewController:self.ruYaVC];
@@ -701,8 +698,8 @@
 -(void)changeToHengYaVC{
     [self removeRuYaVC];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"HengYaViewController"];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLHengYaViewController"];
     self.hengYaVC.delegate = self;
     self.hengYaVC.hengYaString = self.tableHeaderView.casenameTextField.text;
     [self.navigationController addChildViewController:self.hengYaVC];

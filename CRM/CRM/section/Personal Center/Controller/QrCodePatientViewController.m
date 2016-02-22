@@ -46,7 +46,6 @@
     
     self.title = @"添加患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     UserObject *userobj = [[AccountManager shareInstance] currentUser];
     [self refreshView];

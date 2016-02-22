@@ -169,7 +169,6 @@
 - (void)initSubViews{
 
     self.title = @"医生好友";
-    self.view.backgroundColor = MyColor(238, 238, 238);
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     

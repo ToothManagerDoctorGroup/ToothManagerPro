@@ -76,8 +76,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.view.backgroundColor = [UIColor whiteColor];
-    
     menuArray = [[NSArray alloc]initWithObjects:@"种植体",@"修复医生",@"我的消息",@"意见反馈",@"关于我们",@"服务协议",@"设置", nil];
     //[NSString stringWithFormat:@"版本号 v%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey]]
     menuImageArray = [[NSArray alloc]initWithObjects:@"zhongzhiti.png",@"repair doctor.png",@"feedBack.png",

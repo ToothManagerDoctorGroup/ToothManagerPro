@@ -21,7 +21,6 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"数据分析";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 

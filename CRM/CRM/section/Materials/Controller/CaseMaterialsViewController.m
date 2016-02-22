@@ -12,9 +12,9 @@
 #import "TimFramework.h"
 #import "DBTableMode.h"
 #import "DBManager+Materials.h"
-#import "MaterialsViewController.h"
+#import "XLMaterialsViewController.h"
 
-@interface CaseMaterialsViewController () <CaseMaterialsTableViewCellDelegate,MaterialsViewControllerDelegate>
+@interface CaseMaterialsViewController () <CaseMaterialsTableViewCellDelegate,XLMaterialsViewControllerDelegate>
 @property (nonatomic) NSInteger selectIndex;
 @end
 
@@ -29,7 +29,6 @@
     self.title = @"种植体编辑";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.tableView addGestureRecognizer:gestureRecognizer];
@@ -199,10 +198,10 @@
     }
     
     self.selectIndex = cell.tag - 100;
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    MaterialsViewController *materialVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
+    XLMaterialsViewController *materialVC = [[XLMaterialsViewController alloc] init];
     materialVC.delegate = self;
-    materialVC.mode = MaterialViewModeSelect;
+    materialVC.mode = XLMaterialViewModeSelect;
+    
     [self pushViewController:materialVC animated:YES];
 }
 

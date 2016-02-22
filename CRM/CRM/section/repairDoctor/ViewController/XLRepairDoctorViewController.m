@@ -145,7 +145,6 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     
     self.title = @"修复医生";
-    self.view.backgroundColor = MyColor(238, 238, 238);
     
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, self.view.height - 44) style:UITableViewStylePlain];
@@ -350,12 +349,16 @@
 }
 #pragma mark - 设置头视图
 - (UIView *)headerViewForTableView{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
+    
+    CGFloat commonW = kScreenWidth / 3;
+    CGFloat commonH = 40;
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, commonH)];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"姓名" forState:UIControlStateNormal];
-    [nameButton setFrame:CGRectMake(20, 0, 40, 40)];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:nameButton];
@@ -363,14 +366,14 @@
     
     UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [introducerButton setTitle:@"电话" forState:UIControlStateNormal];
-    [introducerButton setFrame:CGRectMake(145, 0, 60, 40)];
+    [introducerButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
     [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:introducerButton];
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"修复人数" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(255, 0, 60, 40)];
+    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:numberButton];

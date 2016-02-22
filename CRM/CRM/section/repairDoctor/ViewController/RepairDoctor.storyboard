@@ -25,14 +25,22 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FXD-70-rRn" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="99" y="11" width="213" height="30"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FXD-70-rRn" customClass="TimPickerTextField">
+                                                    <rect key="frame" x="99" y="7" width="213" height="30"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="mqA-p2-OTn"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
                                             <animations/>
+                                            <constraints>
+                                                <constraint firstItem="FXD-70-rRn" firstAttribute="leading" secondItem="6Lo-Sb-PBb" secondAttribute="leading" constant="99" id="6yn-h8-5Af"/>
+                                                <constraint firstItem="FXD-70-rRn" firstAttribute="centerY" secondItem="6Lo-Sb-PBb" secondAttribute="centerY" id="RIQ-XQ-J1H"/>
+                                                <constraint firstAttribute="trailing" secondItem="FXD-70-rRn" secondAttribute="trailing" constant="8" id="cTd-Mn-XVB"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
@@ -43,15 +51,22 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Snu-X1-0DO" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="99" y="11" width="150" height="30"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Snu-X1-0DO" customClass="TimPickerTextField">
+                                                    <rect key="frame" x="99" y="7" width="151" height="30"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="3I2-kX-d4W"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="glt-5N-0bE">
-                                                    <rect key="frame" x="268" y="5" width="30" height="30"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="glt-5N-0bE">
+                                                    <rect key="frame" x="270" y="7" width="30" height="30"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="30" id="9yj-WP-HGr"/>
+                                                        <constraint firstAttribute="height" constant="30" id="Xfk-mU-9n3"/>
+                                                    </constraints>
                                                     <state key="normal" image="phone.png">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
@@ -61,6 +76,13 @@
                                                 </button>
                                             </subviews>
                                             <animations/>
+                                            <constraints>
+                                                <constraint firstItem="glt-5N-0bE" firstAttribute="leading" secondItem="Snu-X1-0DO" secondAttribute="trailing" constant="20" id="6nW-Nz-tc1"/>
+                                                <constraint firstAttribute="trailing" secondItem="glt-5N-0bE" secondAttribute="trailing" constant="20" id="E4G-T9-Prj"/>
+                                                <constraint firstItem="Snu-X1-0DO" firstAttribute="centerY" secondItem="S0c-dz-1RY" secondAttribute="centerY" id="PGO-mz-Na0"/>
+                                                <constraint firstItem="glt-5N-0bE" firstAttribute="centerY" secondItem="S0c-dz-1RY" secondAttribute="centerY" id="mPz-rR-ZW3"/>
+                                                <constraint firstItem="Snu-X1-0DO" firstAttribute="leading" secondItem="S0c-dz-1RY" secondAttribute="leading" constant="99" id="nDJ-B3-iZv"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>

@@ -48,8 +48,7 @@
 - (void)initNavBar{
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithTitle:@"完成"];
-    self.view.backgroundColor = CommenBgColor;
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     
     //初始化数据
     [self setUp];

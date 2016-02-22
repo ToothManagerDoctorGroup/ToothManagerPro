@@ -20,6 +20,7 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
+#import "XLMaterialsViewController.h"
 
 @interface XLMaterialsViewController () <UISearchBarDelegate>
 {
@@ -120,7 +121,6 @@
     self.title = @"种植体";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, self.view.height - 44) style:UITableViewStylePlain];
     _tableView.delegate = self;
@@ -202,26 +202,29 @@
     return 40;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 320, 40)];
+    CGFloat commonW = kScreenWidth / 3;
+    CGFloat commonH = 40;
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, commonH)];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"种植体名称" forState:UIControlStateNormal];
-    [nameButton setFrame:CGRectMake(20, 0, 100, 40)];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:nameButton];
     
     UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [introducerButton setTitle:@"价格" forState:UIControlStateNormal];
-    [introducerButton setFrame:CGRectMake(160, 0, 60, 40)];
+    [introducerButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
     [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:introducerButton];
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"类型" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(255, 0, 60, 40)];
+    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:numberButton];
@@ -298,6 +301,7 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
         NewMaterialsViewController *meterialDetailVC = [storyboard instantiateViewControllerWithIdentifier:@"NewMaterialsViewController"];
         meterialDetailVC.edit = YES;
+        meterialDetailVC.showPatients = YES;
         meterialDetailVC.materialId = material.ckeyid;
         [self pushViewController:meterialDetailVC animated:YES];
     }

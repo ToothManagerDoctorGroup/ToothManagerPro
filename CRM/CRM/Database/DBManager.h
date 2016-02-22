@@ -40,6 +40,8 @@ Declare_ShareInstance(DBManager);
 - (BOOL)createdbFile;
 - (BOOL)createTables;
 
+- (BOOL)createdbFileWithUserId:(NSString *)userId;
+
 - (BOOL)opendDB;
 - (BOOL)closeDB;
 

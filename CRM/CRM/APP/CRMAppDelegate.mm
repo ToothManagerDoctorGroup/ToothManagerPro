@@ -26,7 +26,6 @@
 #import "CRMMacro.h"
 #import "UMOpus.h"
 #import "SysMsgViewController.h"
-#import "ScheduleReminderViewController.h"
 #import "AccountViewController.h"
 #import "DBManager+User.h"
 #import "MenuButtonPushManager.h"
@@ -112,9 +111,6 @@
      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignUpSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignOutSuccessNotification object:nil];
     
-    //1.准备好数据库
-    [[DBManager shareInstance] createdbFile];
-    [[DBManager shareInstance] createTables];
     
     [self configThirdPart:launchOptions];
     
@@ -123,6 +119,10 @@
     
     //通用的界面的设置
     [CRMViewAppearance setCRMAppearance];
+    
+    //准备数据库
+    [[DBManager shareInstance] createdbFile];
+    [[DBManager shareInstance] createTables];
     
     
     self.window.backgroundColor = [UIColor whiteColor];
@@ -149,6 +149,11 @@
         if (self.tabBarController == nil) {
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
+        
+        //创建数据库
+//        [[DBManager shareInstance] createdbFileWithUserId:[AccountManager currentUserid]];
+//        [[DBManager shareInstance] createTables];
+        
         //个人信息完善界面
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
         XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];

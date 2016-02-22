@@ -15,7 +15,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
         [self initView];
     }
     return self;
@@ -32,7 +31,7 @@
     starNormalView.image = [UIImage imageNamed:@"star_normal"];
     starNormalView.userInteractionEnabled = NO;
     [self addSubview:starNormalView];
-    starHighlightView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 0, self.bounds.size.height)];
+    starHighlightView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 0, self.bounds.size.height)];
     starHighlightView.image = [UIImage imageNamed:@"star_highlight"];
     starHighlightView.contentMode= UIViewContentModeLeft;
     starHighlightView.clipsToBounds = YES;

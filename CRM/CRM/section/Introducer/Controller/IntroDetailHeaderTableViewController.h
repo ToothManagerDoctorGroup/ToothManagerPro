@@ -10,10 +10,10 @@
 #import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
-@class TimPickerTextField,TimStarTextField;
+@class TimPickerTextField,TimStarTextField,XLStarView;
 @interface IntroDetailHeaderTableViewController : UITableViewController<MFMessageComposeViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nameTextField;
-@property (weak, nonatomic) IBOutlet TimStarTextField *levelTextField;
+@property (weak, nonatomic) IBOutlet XLStarView *levelView;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *phoneTextField;
 
 @property (nonatomic) NSString *ckeyId;

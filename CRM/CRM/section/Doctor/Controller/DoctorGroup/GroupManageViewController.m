@@ -13,7 +13,6 @@
 #import "PatientInfoViewController.h"
 #import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
-#import "SelectDateViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
 #import "MudItemsBar.h"
@@ -110,7 +109,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"管理"];
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索"];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     self.title = self.group.group_name;
     

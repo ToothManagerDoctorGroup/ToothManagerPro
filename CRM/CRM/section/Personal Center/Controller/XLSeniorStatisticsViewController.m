@@ -45,7 +45,6 @@
     }else{
         self.title = @"修复统计";
     }
-    self.view.backgroundColor = MyColor(241, 242, 243);
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }

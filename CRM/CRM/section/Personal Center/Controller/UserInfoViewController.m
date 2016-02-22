@@ -75,7 +75,7 @@
     [super viewDidLoad];    
     
     _jiangeCell.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    self.view.backgroundColor = [UIColor whiteColor];
+//    self.view.backgroundColor = [UIColor whiteColor];
     self.iconImageView.layer.cornerRadius = 25;
     self.iconImageView.layer.masksToBounds = YES;
     self.authTextView.placeholder = @"---";

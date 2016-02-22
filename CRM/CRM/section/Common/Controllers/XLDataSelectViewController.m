@@ -20,7 +20,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = MyColor(245, 245, 245);
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     //设置数据项
     if (self.type == XLDataSelectViewControllerSex) {
@@ -42,6 +41,10 @@
         //学历
         self.dataList = @[@"大专",@"本科",@"硕士",@"博士"];
         self.title = @"学历";
+    }else if (self.type == XLDataSelectViewControllerMaterialType){
+        //种植体类型
+        self.dataList = @[@"种植体",@"其它"];
+        self.title = @"种植体类型";
     }
 }
 

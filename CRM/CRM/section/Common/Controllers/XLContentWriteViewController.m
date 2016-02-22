@@ -26,7 +26,6 @@
 - (void)setUpNav{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
-    self.view.backgroundColor = MyColor(238, 238, 238);
 }
 
 - (void)initView{

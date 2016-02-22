@@ -17,6 +17,7 @@
 
 @interface IntroDetailHeaderTableViewController ()
 @property (nonatomic,retain) AvatarView *avatar;
+
 @end
 
 @implementation IntroDetailHeaderTableViewController
@@ -32,14 +33,10 @@
     self.phoneTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.phoneTextField setBorderStyle:UITextBorderStyleNone];
-    self.levelTextField.starLevel = 1;
-    self.levelTextField.borderStyle = UITextBorderStyleNone;
     
     _avatar = [[AvatarView alloc] initWithURLString:@""];
     _avatar.frame = CGRectMake(10, 26, 80, 80);
     [self.view addSubview:_avatar];
-//    self.introducerNameLabel.mode = TextFieldInputModeExternal;
-//    self.introducerNameLabel.borderStyle = UITextBorderStyleNone;
 
 
 }

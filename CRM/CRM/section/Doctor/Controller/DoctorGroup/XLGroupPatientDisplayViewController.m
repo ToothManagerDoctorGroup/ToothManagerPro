@@ -129,7 +129,6 @@
 
 - (void)setupView {
     self.title = @"选择患者";
-    self.view.backgroundColor = [UIColor whiteColor];
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"添加"];
@@ -258,7 +257,6 @@
     //赋值,获取患者信息
     NSInteger row = [indexPath row];
     GroupMemberModel *cellMode = [self.patientCellModeArray objectAtIndex:row];
-    
     cell.model = cellMode;
     
     return cell;
@@ -271,12 +269,16 @@
 }
 
 -(UIView *)setUpGroupViewAndButtons{
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, 320, 40)];
+    
+    CGFloat commonW = (kScreenWidth - 50) / 4;
+    CGFloat commonH = 40;
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, kScreenWidth, commonH)];
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"姓名" forState:UIControlStateNormal];
-    [nameButton setFrame:CGRectMake(10, 0, 40, 40)];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [nameButton addTarget:self action:@selector(nameButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -285,7 +287,7 @@
     
     UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [statusButton setTitle:@"状态" forState:UIControlStateNormal];
-    [statusButton setFrame:CGRectMake(80, 0, 40, 40)];
+    [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
     [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     statusButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [statusButton addTarget:self action:@selector(statusButtonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -293,7 +295,7 @@
     
     UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [introducerButton setTitle:@"介绍人" forState:UIControlStateNormal];
-    [introducerButton setFrame:CGRectMake(150, 0, 60, 40)];
+    [introducerButton setFrame:CGRectMake(statusButton.right, 0, commonW, commonH)];
     [introducerButton addTarget:self action:@selector(introducerButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -301,14 +303,14 @@
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"数量" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(230, 0, 40, 40)];
+    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [numberButton addTarget:self action:@selector(numberButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:numberButton];
     
     UIButton *chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    chooseButton.frame = CGRectMake(275, 0, 40, 40);
+    chooseButton.frame = CGRectMake(numberButton.right + 5, 0, 40, 40);
     chooseButton.selected = self.isChooseAll;
     [chooseButton setImage:[UIImage imageNamed:@"no-choose"] forState:UIControlStateNormal];
     [chooseButton setImage:[UIImage imageNamed:@"remove-blue"] forState:UIControlStateSelected];

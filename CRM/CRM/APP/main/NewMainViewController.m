@@ -13,7 +13,6 @@
 #import "DoctorLibraryViewController.h"
 #import "DoctorSquareViewController.h"
 #import "PatientsDisplayViewController.h"
-#import "ScheduleReminderViewController.h"
 #import "GDTMobBannerView.h"
 #import "CRMMacro.h"
 #import "CreateCaseViewController.h"
@@ -37,7 +36,6 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"首页";
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"personal.png"]];
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"left_navigation_icon"]];
@@ -123,8 +121,6 @@
 }
 
 - (IBAction)dateRemindClick:(UIButton *)sender {
-    ScheduleReminderViewController *scheduleReminderVC = [[ScheduleReminderViewController alloc]init];
-    [self pushViewController:scheduleReminderVC animated:YES];
 //    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
 //    LocalNotificationViewController *logcalNoti = [storyBoard instantiateViewControllerWithIdentifier:@"LocalNotificationViewController"];
 //    [self pushViewController:logcalNoti animated:YES];

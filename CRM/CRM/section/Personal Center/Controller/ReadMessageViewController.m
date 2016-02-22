@@ -55,13 +55,13 @@
 
 - (void)requstData{
     [SVProgressHUD showWithStatus:@"正在加载"];
-    [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:10 success:^(NSArray *result) {
+    [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:30 success:^(NSArray *result) {
         [SVProgressHUD dismiss];
         self.dataList = [NSMutableArray arrayWithArray:result];
         
         [self.tableView reloadData];
         
-        if (result.count < 10) {
+        if (result.count < 30) {
             [self.tableView removeFooter];
         }
         self.pageIndex++;
@@ -75,7 +75,7 @@
 }
 
 - (void)footerRefresh{
-    [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:10 success:^(NSArray *result) {
+    [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:30 success:^(NSArray *result) {
         
         if (result.count > 0) {
             [self.dataList addObjectsFromArray:result];

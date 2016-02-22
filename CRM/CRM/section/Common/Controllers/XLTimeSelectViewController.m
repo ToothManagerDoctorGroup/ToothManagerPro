@@ -23,7 +23,6 @@
     //同步间隔时间
     self.title = @"同步间隔时间";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(238, 238, 238);
     
     self.dataList = @[AutoSyncTime_Five,AutoSyncTime_Ten,AutoSyncTime_Twenty];
     

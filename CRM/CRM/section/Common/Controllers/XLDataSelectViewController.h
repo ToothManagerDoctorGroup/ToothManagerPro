@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, XLDataSelectViewControllerType) {
     XLDataSelectViewControllerHospital = 3,//医院
     XLDataSelectViewControllerProfressional = 4,//职称
     XLDataSelectViewControllerDegree = 5,//学历
+    XLDataSelectViewControllerMaterialType = 6,//种植体类型
 };
 @class XLDataSelectViewController;
 @protocol XLDataSelectViewControllerDelegate <NSObject>

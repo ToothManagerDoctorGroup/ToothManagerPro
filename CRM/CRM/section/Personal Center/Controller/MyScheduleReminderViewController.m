@@ -7,7 +7,7 @@
 //
 
 #import "MyScheduleReminderViewController.h"
-#import "ScheduleReminderCell.h"
+#import "XLScheduleReminderCell.h"
 #import "LocalNotificationCenter.h"
 #import "DBManager+Patients.h"
 #import "CRMMacro.h"
@@ -94,8 +94,7 @@
     
     
     self.title = @"日程提醒";
-    self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    
+//    self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     //设置消息按钮
     [self setUpMessageItem];
@@ -405,7 +404,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 40.0f;
+    return 44;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -437,17 +436,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ScheduleReminderCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ID"];
-    if (cell == nil) {
-        cell = [[ScheduleReminderCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ID"];
-    }
+    XLScheduleReminderCell *cell = [XLScheduleReminderCell cellWithTableView:tableView];
     LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notifi.patient_id];
     
-    cell.personLabel.text = [notifi.reserve_time substringFromIndex:11];
-    cell.statusLabel.text = patient.patient_name;
-    cell.timeLabel.text = notifi.reserve_type;
-    cell.medical_chairLabel.text = notifi.tooth_position;
+    cell.timeLabel.text = [notifi.reserve_time substringFromIndex:11];
+    cell.patientNameLabel.text = patient.patient_name;
+    cell.reserveTypeLabel.text = notifi.reserve_type;
+    cell.toothLabel.text = notifi.tooth_position;
     return cell;
 }
 

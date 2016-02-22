@@ -49,6 +49,21 @@ Realize_ShareInstance(DBManager);
     return result;
 }
 
+- (BOOL)createdbFileWithUserId:(NSString *)userId{
+    //创建db文件
+    NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *dbPath = [docPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_iscrm.db",userId]];
+    _fmDatabaseQueue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
+    
+    //打开数据库
+    __block BOOL result = NO;
+    [_fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db open];
+    }];
+    
+    return result;
+}
+
 - (BOOL)createDBTableWithTableName:(NSString *)tableName andParams:(NSString *)params {
     //参数判断
     if ([tableName isEmpty] || [params isEmpty]) {

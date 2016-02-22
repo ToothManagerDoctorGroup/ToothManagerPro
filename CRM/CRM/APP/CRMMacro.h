@@ -54,6 +54,7 @@
 #define NOtificationUpdated @"NotificationUpdated"   //更新了提醒
 #define NotificationDeleted @"NotificationDeleted"   //删除了提醒
 
+
 #define RepairDoctorCreatedNotification (@"RepairDoctorCreatedNotification") //创建了修复医生
 #define RepairDoctorEditedNotification (@"RepairDoctorEditedNotification")  //修复医生被编辑了
 

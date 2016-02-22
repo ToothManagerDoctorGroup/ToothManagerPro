@@ -15,7 +15,6 @@
 #import "PatientInfoViewController.h"
 #import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
-#import "SelectDateViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
 #import "MudItemsBar.h"
@@ -89,7 +88,6 @@
 - (void)setupView {
     self.title = @"患者";
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索患者"];
-    self.view.backgroundColor = [UIColor whiteColor];
     [self.searchBar moveBackgroundView];
 }
 
@@ -548,8 +546,7 @@
         tmpPatient.ckeyid = cellMode.patientId;
         tmpPatient.patient_name = cellMode.name;
         [LocalNotificationCenter shareInstance].selectPatient = tmpPatient;
-        SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
-        [self.navigationController pushViewController:selectDateView animated:YES];
+    
     }else if (self.isYuYuePush){
         Patient *tmpPatient = [[Patient alloc] init];
         tmpPatient.ckeyid = cellMode.patientId;

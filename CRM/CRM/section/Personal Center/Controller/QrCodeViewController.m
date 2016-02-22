@@ -54,7 +54,6 @@
     self.title = @"我的二维码";
     [self setRightBarButtonWithTitle:@"分享"];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     UserObject *userobj = [[AccountManager shareInstance] currentUser];
     [self refreshView];

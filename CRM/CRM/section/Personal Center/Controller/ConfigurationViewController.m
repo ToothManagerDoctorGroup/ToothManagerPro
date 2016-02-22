@@ -31,7 +31,6 @@
     // Do any additional setup after loading the view.
     self.title = @"设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     self.versionLabel.text = [NSString stringWithFormat:@"版本号 v%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
     [self.wifiSwitch setOn: YES
                       animated: YES];

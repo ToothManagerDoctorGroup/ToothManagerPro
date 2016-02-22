@@ -60,7 +60,6 @@
     self.title = @"我的分组";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"addgroup"]];
-    self.view.backgroundColor = MyColor(248, 248, 248);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     

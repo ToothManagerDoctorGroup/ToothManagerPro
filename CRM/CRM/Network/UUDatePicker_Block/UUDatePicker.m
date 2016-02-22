@@ -199,7 +199,6 @@
 }
 
 #pragma mark - 调整颜色
-
 //获取当前时间解析及位置
 - (NSArray *)getNowDate:(NSDate *)date
 {
@@ -263,8 +262,8 @@
 {
     if (self.datePickerStyle == UUDateStyle_YearMonthDayHourMinute){
         if (isIOS7) {
-            [self creatValuePointXs:@[@"80",@"135",@"190",@"245",@"300"]
-                          withNames:@[@"年",@"月",@"日",@"时",@"分"]];
+//            [self creatValuePointXs:@[@"90",@"145",@"200",@"255",@"310"]
+//                          withNames:@[@"年",@"月",@"日",@"时",@"分"]];
         }
         return 5;
     }
@@ -334,11 +333,11 @@
 {
     switch (self.datePickerStyle) {
         case UUDateStyle_YearMonthDayHourMinute:{
-            if (component==0) return 70;
-            if (component==1) return 50;
-            if (component==2) return 50;
-            if (component==3) return 50;
-            if (component==4) return 50;
+            if (component==0) return 75;
+            if (component==1) return 55;
+            if (component==2) return 55;
+            if (component==3) return 55;
+            if (component==4) return 55;
         }
             break;
         case UUDateStyle_YearMonthDay:{
@@ -478,24 +477,45 @@
     switch (self.datePickerStyle) {
         case UUDateStyle_YearMonthDayHourMinute:{
             if (component==0) {
-                title = yearArray[row];
                 textColor = [self returnYearColorRow:row];
+                if ([self isSelectRow:row]) {
+                    title = [NSString stringWithFormat:@"%@年",yearArray[row]];
+                }else{
+                    title = yearArray[row];
+                }
             }
             if (component==1) {
-                title = monthArray[row];
                 textColor = [self returnMonthColorRow:row];
+                if ([self isSelectRow:row]) {
+                    title = [NSString stringWithFormat:@"%@月",monthArray[row]];
+                }else{
+                    title = monthArray[row];
+                }
             }
             if (component==2) {
-                title = dayArray[row];
                 textColor = [self returnDayColorRow:row];
+                if ([self isSelectRow:row]) {
+                    title = [NSString stringWithFormat:@"%@日",dayArray[row]];
+                }else{
+                    title = dayArray[row];
+                }
             }
             if (component==3) {
-                title = hourArray[row];
                 textColor = [self returnHourColorRow:row];
+                if ([self isSelectRow:row]) {
+                    title = [NSString stringWithFormat:@"%@时",hourArray[row]];
+                }else{
+                    title = hourArray[row];
+                }
             }
             if (component==4) {
-                title = minuteArray[row];
                 textColor = [self returnMinuteColorRow:row];
+                
+                if ([self isSelectRow:row]) {
+                    title = [NSString stringWithFormat:@"%@分",minuteArray[row]];
+                }else{
+                    title = minuteArray[row];
+                }
             }
         }
             break;
@@ -679,13 +699,21 @@
         [dayArray addObject:[NSString stringWithFormat:@"%02d",i]];
     }
 }
-
+//设置字体颜色颜色
 - (UIColor *)returnYearColorRow:(NSInteger)row
 {
     if ([yearArray[row] intValue] < [minDateModel.year intValue] || [yearArray[row] intValue] > [maxDateModel.year intValue]) {
         return  UU_GRAY;
     }else{
         return UU_BLACK;
+    }
+}
+//是否是选中的row
+- (BOOL)isSelectRow:(NSInteger)row{
+    if ([yearArray[row] intValue] < [minDateModel.year intValue] || [yearArray[row] intValue] > [maxDateModel.year intValue]) {
+        return  NO;
+    }else{
+        return  YES;
     }
 }
 - (UIColor *)returnMonthColorRow:(NSInteger)row

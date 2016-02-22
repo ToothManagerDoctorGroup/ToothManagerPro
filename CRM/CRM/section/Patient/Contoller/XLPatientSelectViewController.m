@@ -18,7 +18,6 @@
 #import "UIColor+Extension.h"
 #import "CRMMacro.h"
 #import "LocalNotificationCenter.h"
-#import "SelectDateViewController.h"
 #import "PatientDetailViewController.h"
 #import "DBManager+sync.h"
 #import "DBManager+AutoSync.h"
@@ -147,7 +146,6 @@
 - (void)setupView {
     self.title = @"患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
 
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
@@ -323,13 +321,17 @@
 
 #pragma mark - 排序按钮点击
 - (UIView *)setUpGroupViewAndButtons{
+    
+    CGFloat commonW = kScreenWidth / 4;
+    CGFloat commonH = 40;
+    
     UIView *bgView = [[UIView alloc]init];
-    bgView.frame = CGRectMake(0, 44, kScreenWidth, 40);
+    bgView.frame = CGRectMake(0, 44, kScreenWidth, commonH);
     bgView.backgroundColor = MyColor(238, 238, 238);
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [nameButton setTitle:@"患者" forState:UIControlStateNormal];
-    [nameButton setFrame:CGRectMake(20, 0, 40, 40)];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [nameButton addTarget:self action:@selector(nameButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -338,7 +340,7 @@
     
     UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [statusButton setTitle:@"状态" forState:UIControlStateNormal];
-    [statusButton setFrame:CGRectMake(100, 0, 40, 40)];
+    [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
     [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     statusButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [statusButton addTarget:self action:@selector(statusButtonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -346,7 +348,7 @@
     
     UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [introducerButton setTitle:@"介绍人" forState:UIControlStateNormal];
-    [introducerButton setFrame:CGRectMake(180, 0, 60, 40)];
+    [introducerButton setFrame:CGRectMake(statusButton.right, 0, commonW,commonH)];
     [introducerButton addTarget:self action:@selector(introducerButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -354,7 +356,7 @@
     
     UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [numberButton setTitle:@"数量" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(275, 0, 40, 40)];
+    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
     [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [numberButton addTarget:self action:@selector(numberButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -553,14 +555,7 @@
     
     PatientsCellMode *cellMode = [sourceArray objectAtIndex:indexPath.row];
     
-    if (self.isScheduleReminderPush) {
-        Patient *tmpPatient = [[Patient alloc] init];
-        tmpPatient.ckeyid = cellMode.patientId;
-        tmpPatient.patient_name = cellMode.name;
-        [LocalNotificationCenter shareInstance].selectPatient = tmpPatient;
-        SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
-        [self.navigationController pushViewController:selectDateView animated:YES];
-    }else if (self.isYuYuePush){
+    if (self.isYuYuePush){
         Patient *tmpPatient = [[Patient alloc] init];
         tmpPatient.ckeyid = cellMode.patientId;
         tmpPatient.patient_name = cellMode.name;

@@ -68,7 +68,6 @@
 - (void)initView {
     [super initView];
     self.title = @"医生库";
-    self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     //    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
 }

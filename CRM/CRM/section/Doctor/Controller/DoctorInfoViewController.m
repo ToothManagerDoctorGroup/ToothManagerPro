@@ -141,7 +141,6 @@
                                      self.view.frame.size.width,
                                      self.view.frame.size.height - detailInfoView.frame.size.height)];
     myTableView.backgroundColor = [UIColor whiteColor];
-    self.view.backgroundColor = [UIColor whiteColor];
     [myTableView setDelegate:self];
     [myTableView setDataSource:self];
     //去掉多余的cell

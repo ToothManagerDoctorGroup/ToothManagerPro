@@ -64,7 +64,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     self.title = @"系统通知";
-    self.view.backgroundColor = [UIColor whiteColor];
     [self refreshData];
 }
 -(void)onRightButtonAction:(id)sender{

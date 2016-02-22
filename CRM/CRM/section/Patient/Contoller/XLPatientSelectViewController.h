@@ -12,7 +12,6 @@
 @interface XLPatientSelectViewController : TimViewController
 
 @property (nonatomic,readwrite) PatientStatus patientStatus;
-@property (nonatomic, assign) BOOL isScheduleReminderPush;
 @property (nonatomic, assign) BOOL isYuYuePush;
 @property (nonatomic,assign) BOOL isTabbarVc;
 

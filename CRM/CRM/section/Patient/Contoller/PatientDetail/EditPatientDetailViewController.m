@@ -18,6 +18,7 @@
 #import "XLDataSelectViewController.h"
 #import "CRMMacro.h"
 #import "XLCommonEditViewController.h"
+#import "UIColor+Extension.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
@@ -83,7 +84,6 @@
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"患者信息";
-    self.view.backgroundColor = CommenBgColor;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     if (self.isGroup) {
@@ -139,6 +139,12 @@
     }
     return 20;
 }
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 20)];
+    view.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
+    return view;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     

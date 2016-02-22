@@ -21,6 +21,7 @@
 #import "PatientInfoViewController.h"
 #import "DBManager+Doctor.h"
 #import "PatientDetailViewController.h"
+#import "XLStarView.h"
 
 #import "MJExtension.h"
 #import "JSONKit.h"
@@ -56,7 +57,7 @@
 }
 -(void)tapGer{
     [_tbheaderView.nameTextField resignFirstResponder];
-    [_tbheaderView.levelTextField resignFirstResponder];
+//    [_tbheaderView.levelTextField resignFirstResponder];
     [_tbheaderView.phoneTextField resignFirstResponder];
 }
 - (void)initView {
@@ -69,7 +70,7 @@
 - (void)refreshView {
     [super refreshView];
     _tbheaderView.nameTextField.text = introducer.intr_name;
-    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
+//    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
     _tbheaderView.phoneTextField.text = introducer.intr_phone;
     _tbheaderView.ckeyId = introducer.ckeyid;
     [myTableView reloadData];
@@ -132,7 +133,6 @@
                                      self.view.frame.size.width,
                                      self.view.frame.size.height - detailInfoView.frame.size.height)];
     myTableView.backgroundColor = [UIColor whiteColor];
-    self.view.backgroundColor = [UIColor whiteColor];
     [myTableView setDelegate:self];
     [myTableView setDataSource:self];
     //去掉多余的cell
@@ -140,7 +140,7 @@
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introducer" bundle:nil];
     _tbheaderView = [storyboard instantiateViewControllerWithIdentifier:@"IntroDetailHeaderTableViewController"];
-    _tbheaderView.view.frame = CGRectMake(0, 0, self.view.bounds.size.width,132);
+    _tbheaderView.view.frame = CGRectMake(0, 0, kScreenWidth,132);
     myTableView.tableHeaderView = _tbheaderView.view;
     [self.view addSubview:myTableView];
 }
@@ -148,7 +148,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     _tbheaderView.nameTextField.text = introducer.intr_name;
-    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
+//    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
+    _tbheaderView.levelView.level = introducer.intr_level;
     _tbheaderView.phoneTextField.text = introducer.intr_phone;
     _tbheaderView.ckeyId = introducer.ckeyid;
 }
@@ -156,10 +157,10 @@
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
     [self.tbheaderView.nameTextField resignFirstResponder];
-    [self.tbheaderView.levelTextField resignFirstResponder];
+//    [self.tbheaderView.levelTextField resignFirstResponder];
     [self.tbheaderView.phoneTextField resignFirstResponder];
     self.introducer.intr_name = self.tbheaderView.nameTextField.text;
-    self.introducer.intr_level = self.tbheaderView.levelTextField.starLevel;
+    self.introducer.intr_level = self.tbheaderView.levelView.level;
     self.introducer.intr_phone = self.tbheaderView.phoneTextField.text;
     BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
     if (ret) {

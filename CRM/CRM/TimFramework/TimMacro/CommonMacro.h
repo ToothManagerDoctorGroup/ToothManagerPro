@@ -57,7 +57,7 @@ static NSString * const name = @""#string;
 
 #pragma mark -------------------- Color -------------------------------------------------------
 
-#define VIEWCONTROLLER_BACKGROUNDCOLOR (0x00a0ea)
+#define VIEWCONTROLLER_BACKGROUNDCOLOR (0xF8F8F8)
 
 #pragma mark ---------------------- frame ,bounds ---------------------------------------------
 #define SELF_VIEW_BOUNDS_WIDTH   self.view.bounds.size.width

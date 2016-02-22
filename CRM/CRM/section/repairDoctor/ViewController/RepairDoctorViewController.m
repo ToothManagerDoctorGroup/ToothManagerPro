@@ -52,7 +52,6 @@
 - (void)setupView {
     self.title = @"修复医生";
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索修复医生"];
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)refreshView {

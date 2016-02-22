@@ -36,7 +36,6 @@
 - (void)initView {
     [super initView];
     self.title = @"添加好友";
-    self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
 }
 

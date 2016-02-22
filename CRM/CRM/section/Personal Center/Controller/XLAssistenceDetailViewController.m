@@ -29,7 +29,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = MyColor(248, 248, 248);
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
     [self imageScrollView];

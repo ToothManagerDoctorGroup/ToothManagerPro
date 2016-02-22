@@ -52,10 +52,11 @@
     }
     
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
+    self.nameTextField.clearButtonMode = UITextFieldViewModeNever;
     self.starTextField.bounds = self.nameTextField.bounds;
     self.phoneTextField.mode = TextFieldInputModeKeyBoard;
+    self.phoneTextField.clearButtonMode = UITextFieldViewModeNever;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)initData {

@@ -21,7 +21,9 @@
 }
 
 - (void)loadCellView{
-    float width = 120.0f;
+    
+    CGFloat commonW = kScreenWidth / 3;
+    
     float height = 30.0f;
     float mag_x = 10.0f;
     float mag_y = 7.0f;
@@ -32,28 +34,30 @@
     [self addSubview:imageView];
     
     info_lable = [[UILabel alloc]init];
-    [info_lable setFrame:CGRectMake(imageView.frame.origin.x + imageView.frame.size.width + 5,
+    [info_lable setFrame:CGRectMake(imageView.right + 5,
                                     imageView.frame.origin.y,
-                                    100,
+                                    commonW - height - mag_x - 5,
                                     height)];
     [info_lable setBackgroundColor:[UIColor clearColor]];
     [info_lable setTextColor:color];
     [self addSubview:info_lable];
     
     price_label = [[UILabel alloc]init];
-    [price_label setFrame:CGRectMake(info_lable.frame.origin.x + info_lable.frame.size.width + 30,
+    [price_label setFrame:CGRectMake(info_lable.right,
                                     imageView.frame.origin.y,
-                                    80,
+                                    commonW,
                                     height)];
     [price_label setBackgroundColor:[UIColor clearColor]];
     [price_label setTextColor:color];
+    price_label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:price_label];
     
     type_label = [[UILabel alloc]init];
-    [type_label setFrame:CGRectMake(price_label.frame.origin.x + price_label.frame.size.width + 5,
+    [type_label setFrame:CGRectMake(price_label.right,
                                      imageView.frame.origin.y,
-                                     70,
+                                     commonW,
                                      height)];
+    type_label.textAlignment = NSTextAlignmentCenter;
     [type_label setBackgroundColor:[UIColor clearColor]];
     [type_label setTextColor:color];
     [self addSubview:type_label];

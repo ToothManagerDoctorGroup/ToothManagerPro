@@ -23,7 +23,6 @@
 #import "NSString+Conversion.h"
 #import "CRMMacro.h"
 #import "DoctorLibraryViewController.h"
-#import "SelectDateViewController.h"
 #import "LocalNotificationCenter.h"
 #import "IntroducerCellMode.h"
 #import "DBManager+Doctor.h"
@@ -150,7 +149,6 @@
         [self updateIntroducerNameTextFieldState];
         
         [self.tableView setTableHeaderView:self.headerViewController.view];
-        self.view.backgroundColor = [UIColor whiteColor];
         self.tableView.dataSource = self;
         self.tableView.delegate = self;
         
@@ -367,9 +365,9 @@
 
 
 - (IBAction)createNotificationAction:(id)sender {
-    [LocalNotificationCenter shareInstance].selectPatient = _detailPatient;
-    SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
-    [self.navigationController pushViewController:selectDateView animated:YES];
+//    [LocalNotificationCenter shareInstance].selectPatient = _detailPatient;
+//    SelectDateViewController *selectDateView = [[SelectDateViewController alloc]init];
+//    [self.navigationController pushViewController:selectDateView animated:YES];
 }
 
 #pragma mark - Notifications

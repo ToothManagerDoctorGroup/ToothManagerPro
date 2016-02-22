@@ -32,7 +32,6 @@
     [super viewDidLoad];
     self.title = @"通用设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(238, 238, 238);
     
     
     self.dataList = @[@[@"自动同步",@"同步间隔时间"],@[@"显示提醒内容"],@[@"是否将患者插入通讯录",@"同步日程到系统日历"],@[@"重置同步时间"]];

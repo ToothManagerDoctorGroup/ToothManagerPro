@@ -25,14 +25,22 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QZy-rs-6vM" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="99" y="11" width="213" height="30"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QZy-rs-6vM" customClass="TimPickerTextField">
+                                                    <rect key="frame" x="99" y="7" width="213" height="30"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="EGT-lF-2gd"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
                                             <animations/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="QZy-rs-6vM" secondAttribute="trailing" constant="8" id="Mwa-ga-dxU"/>
+                                                <constraint firstItem="QZy-rs-6vM" firstAttribute="leading" secondItem="BFx-qK-wae" secondAttribute="leading" constant="99" id="cOo-Yk-Rac"/>
+                                                <constraint firstItem="QZy-rs-6vM" firstAttribute="centerY" secondItem="BFx-qK-wae" secondAttribute="centerY" id="sfR-rw-Edj"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
@@ -43,14 +51,19 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2xW-sQ-JC2" customClass="TimStarTextField">
-                                                    <rect key="frame" x="99" y="11" width="213" height="30"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Zr-Js-04W" customClass="XLStarView">
+                                                    <rect key="frame" x="99" y="0.0" width="213" height="43.5"/>
                                                     <animations/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
                                             </subviews>
                                             <animations/>
+                                            <constraints>
+                                                <constraint firstItem="5Zr-Js-04W" firstAttribute="top" secondItem="OHs-La-7rh" secondAttribute="top" id="8R4-hG-heG"/>
+                                                <constraint firstItem="5Zr-Js-04W" firstAttribute="leading" secondItem="OHs-La-7rh" secondAttribute="leading" constant="99" id="Jap-sC-JHM"/>
+                                                <constraint firstAttribute="trailing" secondItem="5Zr-Js-04W" secondAttribute="trailing" constant="8" id="SGN-bX-Qc1"/>
+                                                <constraint firstAttribute="bottom" secondItem="5Zr-Js-04W" secondAttribute="bottom" id="iLo-7d-KEq"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
@@ -61,14 +74,17 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yqq-xP-1wp" customClass="TimPickerTextField">
-                                                    <rect key="frame" x="99" y="10" width="150" height="30"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yqq-xP-1wp" customClass="TimPickerTextField">
+                                                    <rect key="frame" x="99" y="7" width="121" height="30"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="Cev-XS-DUI"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="176-AJ-8jB">
-                                                    <rect key="frame" x="257" y="7" width="30" height="30"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="176-AJ-8jB">
+                                                    <rect key="frame" x="230" y="7" width="30" height="30"/>
                                                     <animations/>
                                                     <state key="normal" image="phone.png">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -77,9 +93,13 @@
                                                         <action selector="tel:" destination="wxZ-rD-ju7" eventType="touchUpInside" id="1H8-Cj-pUd"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RM0-vG-CkZ">
-                                                    <rect key="frame" x="284" y="7" width="30" height="30"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RM0-vG-CkZ">
+                                                    <rect key="frame" x="270" y="7" width="30" height="30"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="30" id="gaw-Th-KyY"/>
+                                                        <constraint firstAttribute="height" constant="30" id="yUn-Qk-VkW"/>
+                                                    </constraints>
                                                     <state key="normal" image="message.png">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
@@ -89,6 +109,17 @@
                                                 </button>
                                             </subviews>
                                             <animations/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="RM0-vG-CkZ" secondAttribute="trailing" constant="20" id="4Ot-ip-qNx"/>
+                                                <constraint firstItem="yqq-xP-1wp" firstAttribute="centerY" secondItem="Tad-Wa-qG5" secondAttribute="centerY" id="CaS-k5-gOX"/>
+                                                <constraint firstItem="RM0-vG-CkZ" firstAttribute="leading" secondItem="176-AJ-8jB" secondAttribute="trailing" constant="10" id="FrH-hB-fbS"/>
+                                                <constraint firstItem="yqq-xP-1wp" firstAttribute="leading" secondItem="Tad-Wa-qG5" secondAttribute="leading" constant="99" id="Fum-Gu-a8s"/>
+                                                <constraint firstItem="176-AJ-8jB" firstAttribute="height" secondItem="RM0-vG-CkZ" secondAttribute="height" id="Llu-fh-K48"/>
+                                                <constraint firstItem="RM0-vG-CkZ" firstAttribute="centerY" secondItem="Tad-Wa-qG5" secondAttribute="centerY" id="bn2-mA-N37"/>
+                                                <constraint firstItem="176-AJ-8jB" firstAttribute="leading" secondItem="yqq-xP-1wp" secondAttribute="trailing" constant="10" id="dsf-om-ofe"/>
+                                                <constraint firstItem="176-AJ-8jB" firstAttribute="centerY" secondItem="RM0-vG-CkZ" secondAttribute="centerY" id="em0-o7-fN7"/>
+                                                <constraint firstItem="176-AJ-8jB" firstAttribute="width" secondItem="RM0-vG-CkZ" secondAttribute="width" id="vs2-es-Nfa"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
@@ -103,7 +134,7 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="132"/>
                     <connections>
-                        <outlet property="levelTextField" destination="2xW-sQ-JC2" id="hhL-RB-lsO"/>
+                        <outlet property="levelView" destination="5Zr-Js-04W" id="1lx-Qc-Ts0"/>
                         <outlet property="nameTextField" destination="QZy-rs-6vM" id="uKa-75-7F2"/>
                         <outlet property="phoneTextField" destination="yqq-xP-1wp" id="wvJ-MO-Rwu"/>
                     </connections>

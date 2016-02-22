@@ -126,7 +126,6 @@
 #pragma mark - 设置导航栏样式
 - (void)setUpNavStyle{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(238, 238, 238);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self setRightBarButtonWithTitle:@"保存"];
     

@@ -49,7 +49,6 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor clearColor];
     
     _versionLabel.text = [NSString stringWithFormat:@"v%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
     
@@ -152,6 +151,7 @@
             [self pushViewController:settingVc animated:YES];
             
         }else{
+            [SVProgressHUD showWithStatus:@"正在退出"];
             [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
                 if (error && error.errorCode != EMErrorServerNotLogin) {
                     if (error && error.errorCode != EMErrorServerNotLogin) {
@@ -159,6 +159,7 @@
                     }
                 }
                 else{
+                    [SVProgressHUD dismiss];
                     [[AccountManager shareInstance] logout];
 //                    [[ApplyViewController shareController] clear];
 //                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];

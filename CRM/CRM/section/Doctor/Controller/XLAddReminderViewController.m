@@ -10,8 +10,8 @@
 #import "AccountManager.h"
 #import "PatientsDisplayViewController.h"
 #import "LocalNotificationCenter.h"
-#import "HengYaViewController.h"
-#import "RuYaViewController.h"
+#import "XLHengYaViewController.h"
+#import "XLRuYaViewController.h"
 #import "XLReserveTypesViewController.h"
 #import "TimNavigationViewController.h"
 #import "DoctorManager.h"
@@ -44,7 +44,7 @@
 #define CancelReserveType @"取消预约"
 #define UpdateReserveType @"修改预约"
 
-@interface XLAddReminderViewController ()<HengYaDeleate,RuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>
+@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *patientNameLabel;//患者名称
 @property (weak, nonatomic) IBOutlet UILabel *yaweiNameLabel;//牙位
@@ -57,8 +57,8 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *therapyDoctor;
 
-@property (nonatomic,retain) HengYaViewController *hengYaVC;//恒牙
-@property (nonatomic,retain) RuYaViewController *ruYaVC;//乳牙
+@property (nonatomic,retain) XLHengYaViewController *hengYaVC;//恒牙
+@property (nonatomic,retain) XLRuYaViewController *ruYaVC;//乳牙
 @property (nonatomic, strong)LocalNotification *currentNoti;//当前需要添加的预约信息
 @property (nonatomic, strong)Doctor *currentSelectDoctor;//当前选择的治疗医生
 @property (nonatomic, strong)NSDictionary *currentSelectDic;//当前选中的时间字典
@@ -74,7 +74,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
     if (self.isEditAppointment) {
@@ -84,7 +83,6 @@
     }
     
     //显示数据
-//    [self initView];
 }
 
 - (void)dealloc{
@@ -478,11 +476,11 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 30)];
-    headerView.backgroundColor = MyColor(237, 237, 237);
+    headerView.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
     
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, kScreenWidth - 30, 30)];
     headerLabel.textColor = [UIColor colorWithHex:0x333333];
-    headerLabel.backgroundColor = MyColor(237, 237, 237);
+    headerLabel.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
     headerLabel.font = [UIFont systemFontOfSize:15];
     [headerView addSubview:headerLabel];
     
@@ -555,8 +553,8 @@
                 [self pushViewController:patientSelectVc animated:YES];
             }else if (indexPath.row == 1){
                 //选择牙位
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-                self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"HengYaViewController"];
+                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+                self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLHengYaViewController"];
                 self.hengYaVC.delegate = self;
                 self.hengYaVC.hengYaString = self.yaweiNameLabel.text;
                 [self.navigationController addChildViewController:self.hengYaVC];
@@ -622,8 +620,8 @@
 -(void)changeToRuYaVC{
     [self removeHengYaVC];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    self.ruYaVC = [storyboard instantiateViewControllerWithIdentifier:@"RuYaViewController"];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    self.ruYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLRuYaViewController"];
     self.ruYaVC.delegate = self;
     self.ruYaVC.ruYaString = self.yaweiNameLabel.text;
     [self.navigationController addChildViewController:self.ruYaVC];
@@ -632,8 +630,8 @@
 -(void)changeToHengYaVC{
     [self removeRuYaVC];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-    self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"HengYaViewController"];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLHengYaViewController"];
     self.hengYaVC.delegate = self;
     self.hengYaVC.hengYaString = self.yaweiNameLabel.text;
     [self.navigationController addChildViewController:self.hengYaVC];

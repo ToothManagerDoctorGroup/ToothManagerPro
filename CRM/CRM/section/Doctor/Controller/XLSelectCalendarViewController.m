@@ -23,7 +23,6 @@
     self.title = @"选择时间";
     [self setRightBarButtonWithTitle:@"今天"];
     
-    self.view.backgroundColor = [UIColor whiteColor];
     
     FSCalendar *calendar = [[FSCalendar alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 350)];
     calendar.dataSource = self;

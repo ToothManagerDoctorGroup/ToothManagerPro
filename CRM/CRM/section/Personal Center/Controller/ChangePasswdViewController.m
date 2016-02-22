@@ -33,7 +33,6 @@
     // Do any additional setup after loading the view.
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"更改密码";
-    self.view.backgroundColor = MyColor(238, 238, 238);
     UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(viewTapped)];
     tapGr.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGr];

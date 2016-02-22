@@ -47,7 +47,6 @@
 
 - (void)setUpNav{
     self.title = @"新的好友";
-    self.view.backgroundColor = [UIColor whiteColor];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
 }
 #pragma mark - 请求数据

@@ -32,7 +32,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     [self.tableView setAllowsSelection:NO];
-    self.view.backgroundColor = [UIColor whiteColor];
     if (self.edit) {
         self.title = @"编辑修复医生";
     } else {
@@ -42,7 +41,6 @@
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
     self.phoneTextField.mode = TextFieldInputModeKeyBoard;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)initData {

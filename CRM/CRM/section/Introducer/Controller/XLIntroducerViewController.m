@@ -164,11 +164,11 @@
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     }
-    self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"介绍人";
     
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44 - 44) style:UITableViewStylePlain];
+    _tableView.contentInset = UIEdgeInsetsMake(0, 0, 10, 0);
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
@@ -411,7 +411,7 @@
     if (cell == nil) {
         cell = [[IntroducerTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ideString];
         //cell的背景颜色
-        [cell.contentView setBackgroundColor:self.view.backgroundColor];
+        [cell.contentView setBackgroundColor:[UIColor whiteColor]];
         //设置选中之后的颜色
         cell.selectedBackgroundView = [[UIView alloc]initWithFrame:cell.frame];
         [cell.selectedBackgroundView setBackgroundColor:seleColor];
