@@ -126,9 +126,20 @@
             //新增患者
             [SVProgressHUD showWithStatus:@"正在获取患者数据..."];
             //请求患者数据
-            [MyPatientTool getPatientAllInfosWithPatientId:msgModel.message_id doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
-                //请求成功后缓存患者信息
-                [self savePatientDataWithModel:results[0] messageModel:msgModel];
+            [MyPatientTool getPatientAllInfosWithPatientId:msgModel.message_id doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+                if ([respond.code integerValue] == 200) {
+                    NSMutableArray *arrayM = [NSMutableArray array];
+                    for (NSDictionary *dic in respond.result) {
+                        XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                        [arrayM addObject:model];
+                    }
+                    //请求成功后缓存患者信息
+                    [self savePatientDataWithModel:arrayM[0] messageModel:msgModel];
+                }else{
+                    [self setMessageReadWithModel:msgModel noOperate:YES];
+                    [SVProgressHUD showErrorWithStatus:respond.result];
+                }
+                
             } failure:^(NSError *error) {
                 [SVProgressHUD showErrorWithStatus:@"患者信息获取失败"];
                 if (error) {
@@ -138,7 +149,7 @@
             
         }else{
             //将消息设置为已读
-            [self setMessageReadWithModel:msgModel];
+            [self setMessageReadWithModel:msgModel noOperate:NO];
         }
         
     }else if([msgModel.message_type isEqualToString:AttainNewFriend]){
@@ -185,44 +196,45 @@
             [[DBManager shareInstance] deleteLocalNotification_Sync:localNoti];
         }
         //设置消息已读
-        [self setMessageReadWithModel:msgModel];
+        [self setMessageReadWithModel:msgModel noOperate:NO];
         
     }
 }
 #pragma mark - 设置消息已读
-- (void)setMessageReadWithModel:(SysMessageModel *)model {
+- (void)setMessageReadWithModel:(SysMessageModel *)model noOperate:(BOOL)noOperate{
     //将消息设置为已读
     [SysMessageTool setMessageReadedWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
         [SVProgressHUD dismiss];
         //重新请求数据
         [self requestData];
-        if ([model.message_type isEqualToString:AttainNewPatient]) {
-            //跳转到新的患者详情页面
-            PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
-            cellModel.patientId = model.message_id;
-            PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-            detailVc.patientsCellMode = cellModel;
-            detailVc.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:detailVc animated:YES];
-        }else if ([model.message_type isEqualToString:CancelReserveRecord]){
-            // 2.跳转到患者预约列表
-            XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
-            appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
-            [self.navigationController pushViewController:appointVc animated:YES];
-            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationDeleted object:nil];
-            
-        }else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
-            
-            LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
-            //跳转到预约详情页面
-            XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
-            detailVc.localNoti = local;
-            [self.navigationController pushViewController:detailVc animated:YES];
+        if (!noOperate) {
+            if ([model.message_type isEqualToString:AttainNewPatient]) {
+                //跳转到新的患者详情页面
+                PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+                cellModel.patientId = model.message_id;
+                PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+                detailVc.patientsCellMode = cellModel;
+                detailVc.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailVc animated:YES];
+            }else if ([model.message_type isEqualToString:CancelReserveRecord]){
+                // 2.跳转到患者预约列表
+                XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
+                appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
+                [self.navigationController pushViewController:appointVc animated:YES];
+                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationDeleted object:nil];
+                
+            }else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
+                
+                LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
+                //跳转到预约详情页面
+                XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+                detailVc.localNoti = local;
+                [self.navigationController pushViewController:detailVc animated:YES];
+            }
         }
-        
         //发送通知
         [[NSNotificationCenter defaultCenter] postNotificationName:ReadUnReadMessageSuccessNotification object:nil];
     } failure:^(NSError *error) {
@@ -244,9 +256,18 @@
         Patient *patient = [[DBManager shareInstance] getPatientCkeyid:local.patient_id];
         if (patient == nil) {
             //获取所有的患者信息，同时保存到本地
-            [MyPatientTool getPatientAllInfosWithPatientId:local.patient_id doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
-                //请求成功后缓存患者信息
-                [self savePatientDataWithModel:results[0] messageModel:msgModel];
+            [MyPatientTool getPatientAllInfosWithPatientId:local.patient_id doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+                if ([respond.code integerValue] == 200) {
+                    NSMutableArray *arrayM = [NSMutableArray array];
+                    for (NSDictionary *dic in respond.result) {
+                        XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                        [arrayM addObject:model];
+                    }
+                    //请求成功后缓存患者信息
+                    [self savePatientDataWithModel:arrayM[0] messageModel:msgModel];
+                }else{
+                    [SVProgressHUD showErrorWithStatus:respond.result];
+                }
             } failure:^(NSError *error) {
                 if (error) {
                     NSLog(@"error:%@",error);
@@ -254,7 +275,7 @@
             }];
         }else{
             //设置已读
-            [self setMessageReadWithModel:msgModel];
+            [self setMessageReadWithModel:msgModel noOperate:NO];
             
         }
     } failure:^(NSError *error) {
@@ -354,7 +375,7 @@
     }
     if (total == current) {
         //设置已读
-        [self setMessageReadWithModel:msgModel];
+        [self setMessageReadWithModel:msgModel noOperate:NO];
     }else{
         [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
     }

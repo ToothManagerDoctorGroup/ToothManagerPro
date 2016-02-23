@@ -130,11 +130,10 @@
             }
             cellMode.phone = patientTmp.patient_phone;
             cellMode.introducerName = patientTmp.intr_name;
-            
-            
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
             cellMode.status = patientTmp.patient_status;
-            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+//            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            cellMode.countMaterial = patientTmp.expense_num;
             Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
             if ([doc.doctor_name isNotEmpty]) {
                 cellMode.isTransfer = YES;
@@ -375,7 +374,6 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isNotEmpty]) {
-//        searchResults = [NSMutableArray arrayWithArray:[ChineseSearchEngine resultArraySearchPatientsOnArray:self.patientCellModeArray withSearchText:searchText]];
         NSArray *results = [[DBManager shareInstance] getPatientWithKeyWords:searchText];
         [self.searchController.resultsSource removeAllObjects];
         for (Patient *patient in results) {
@@ -392,7 +390,7 @@
             cellMode.introducerName = patientTmp.intr_name;
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
             cellMode.status = patientTmp.patient_status;
-            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+            cellMode.countMaterial = patientTmp.expense_num;
             
             [self.searchController.resultsSource addObject:cellMode];
         }

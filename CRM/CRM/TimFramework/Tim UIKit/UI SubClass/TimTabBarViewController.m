@@ -188,16 +188,16 @@ static NSString *kConversationChatter = @"ConversationChatter";
     
     
     //获取配置项
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSString *isShowedKey = @"isShowedKey";
-    BOOL isShowed = [userDefaults boolForKey:isShowedKey];
-    if (!isShowed) {
-        XLGuideView *guideView = [XLGuideView new];
-        guideView.delegate = self;
-        guideView.step = XLGuideViewStepOne;
-        guideView.type = XLGuideViewTypePatient;
-        [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
-    }
+//    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+//    NSString *isShowedKey = @"isShowedKey";
+//    BOOL isShowed = [userDefaults boolForKey:isShowedKey];
+//    if (!isShowed) {
+//        XLGuideView *guideView = [XLGuideView new];
+//        guideView.delegate = self;
+//        guideView.step = XLGuideViewStepOne;
+//        guideView.type = XLGuideViewTypePatient;
+//        [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
+//    }
 }
 
 -(void)click:(id)sender{
@@ -574,6 +574,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     }
 }
 
+/*
 #pragma mark - XLGuideViewDelegate
 - (void)guideView:(XLGuideView *)guideView didClickView:(UIView *)view step:(XLGuideViewStep)step{
     //第一步跳到第二步
@@ -595,6 +596,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [(UINavigationController *)self.selectedViewController pushViewController:qrVC animated:YES];
     }
     
-}
+}*/
 
 @end

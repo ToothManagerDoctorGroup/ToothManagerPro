@@ -126,11 +126,11 @@ NSString * const Repaired = @"已修复";
 //            return NuoBeiEr;
 //            break;
     switch (type) {
-        case MaterialTypeMaterial:
-            return MaterialStr;
+        case MaterialTypeOther:
+            return OtherStr;
             break;
         default:
-            return OtherStr;
+            return MaterialStr;
             break;
     }
 }
@@ -267,7 +267,17 @@ NSString * const Repaired = @"已修复";
     }
     return self;
 }
-
++ (Patient *)patientWithMixResult:(FMResultSet *)result{
+    Patient * patient = [[Patient alloc]init];
+    patient.ckeyid = [result stringForColumn:@"ckeyid"];
+    patient.patient_name = [result stringForColumn:@"patient_name"];
+    patient.patient_phone = [result stringForColumn:@"patient_phone"];
+    patient.patient_status = [result intForColumn:@"patient_status"];
+    patient.intr_name = [result stringForColumn:@"intr_name"];
+    patient.expense_num = [result intForColumn:@"expense_num"];
+    patient.nickName = [result stringForColumn:@"nickName"];
+    return patient;
+}
 + (Patient *)patientlWithResult:(FMResultSet *)result {
     Patient * patient = [[Patient alloc]init];
     patient.ckeyid = [result stringForColumn:@"ckeyid"];

@@ -21,6 +21,7 @@
 #import "DBManager+AutoSync.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "CRMUserDefalut.h"
 
 @interface CreatePatientViewController () <UITextFieldDelegate,RequestIntroducerDelegate,XLIntroducerViewControllerDelegate,CreateCaseViewControllerDelegate>
 {
@@ -188,46 +189,8 @@
                 UIAlertView * alertview;
                 alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病历", nil];
                 [alertview show];
-//                [alertview setDelegate:self];
-                //把新建的患者倒入手机本地联系人
-                
-                // 初始化一个ABAddressBookRef对象，使用完之后需要进行释放，
-                // 这里使用CFRelease进行释放
-                // 相当于通讯录的一个引用
-                ABAddressBookRef addressBook = ABAddressBookCreate();
-                // 新建一个联系人
-                // ABRecordRef是一个属性的集合，相当于通讯录中联系人的对象
-                // 联系人对象的属性分为两种：
-                // 只拥有唯一值的属性和多值的属性。
-                // 唯一值的属性包括：姓氏、名字、生日等。
-                // 多值的属性包括:电话号码、邮箱等。
-                ABRecordRef person = ABPersonCreate();
-                // 保存到联系人对象中，每个属性都对应一个宏，例如：kABPersonFirstNameProperty
-                // 设置firstName属性
-                NSString *nameStr = self.nameTextField.text;
-                CFStringRef nameRef = (__bridge CFStringRef)nameStr;
-                NSString *phoneStr = self.phoneTextField.text;
-                CFStringRef phoneRef = (__bridge CFStringRef)phoneStr;
-                
-                
-                ABRecordSetValue(person, kABPersonFirstNameProperty,nameRef, NULL);
-                // ABMultiValueRef类似是Objective-C中的NSMutableDictionary
-                // 添加电话号码与其对应的名称内容
-                ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-                ABMultiValueAddValueAndLabel(multiPhone, phoneRef, kABPersonPhoneMainLabel, NULL);
-                // 设置phone属性
-                ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, NULL);
-                // 释放该数组
-                CFRelease(multiPhone);
-                // 将新建的联系人添加到通讯录中
-                ABAddressBookAddRecord(addressBook, person, NULL);
-                // 保存通讯录数据
-                ABAddressBookSave(addressBook, NULL);
-                // 释放通讯录对象的引用
-                if (addressBook) {
-                    CFRelease(addressBook);
-                }
-                
+                //将患者插入手机通讯录
+                [self savePatientPhontToAddressBook];
             }
         } else {
             if (self.edit) {  //如果是编辑患者界面
@@ -318,6 +281,59 @@
 }
 -(void)postPatientIntroducerMapFailed:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
+
+#pragma mark - 将新建的患者保存到通讯录
+- (void)savePatientPhontToAddressBook{
+    //判断设置里面的开关是否打开
+    NSString *open = [CRMUserDefalut objectForKey:PatientToAddressBookKey];
+    if (open == nil) {
+        //默认开启
+        open = Auto_Action_Open;
+        [CRMUserDefalut setObject:open forKey:PatientToAddressBookKey];
+    }
+    
+    if ([open isEqualToString:Auto_Action_Open]) {
+        //把新建的患者倒入手机本地联系人
+        // 初始化一个ABAddressBookRef对象，使用完之后需要进行释放，
+        // 这里使用CFRelease进行释放
+        // 相当于通讯录的一个引用
+        ABAddressBookRef addressBook = ABAddressBookCreate();
+        // 新建一个联系人
+        // ABRecordRef是一个属性的集合，相当于通讯录中联系人的对象
+        // 联系人对象的属性分为两种：
+        // 只拥有唯一值的属性和多值的属性。
+        // 唯一值的属性包括：姓氏、名字、生日等。
+        // 多值的属性包括:电话号码、邮箱等。
+        ABRecordRef person = ABPersonCreate();
+        // 保存到联系人对象中，每个属性都对应一个宏，例如：kABPersonFirstNameProperty
+        // 设置firstName属性
+        NSString *nameStr = self.nameTextField.text;
+        CFStringRef nameRef = (__bridge CFStringRef)nameStr;
+        NSString *phoneStr = self.phoneTextField.text;
+        CFStringRef phoneRef = (__bridge CFStringRef)phoneStr;
+        
+        
+        ABRecordSetValue(person, kABPersonFirstNameProperty,nameRef, NULL);
+        // ABMultiValueRef类似是Objective-C中的NSMutableDictionary
+        // 添加电话号码与其对应的名称内容
+        ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+        ABMultiValueAddValueAndLabel(multiPhone, phoneRef, kABPersonPhoneMainLabel, NULL);
+        // 设置phone属性
+        ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, NULL);
+        // 释放该数组
+        CFRelease(multiPhone);
+        // 将新建的联系人添加到通讯录中
+        ABAddressBookAddRecord(addressBook, person, NULL);
+        // 保存通讯录数据
+        ABAddressBookSave(addressBook, NULL);
+        // 释放通讯录对象的引用
+        if (addressBook) {
+            CFRelease(addressBook);
+        }
+    }
+
 }
 
 @end

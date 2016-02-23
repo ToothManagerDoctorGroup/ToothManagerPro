@@ -81,8 +81,6 @@
     }else{
         self.title = @"添加预约";
     }
-    
-    //显示数据
 }
 
 - (void)dealloc{
@@ -270,13 +268,16 @@
     if ([self.localNoti.doctor_id isEqualToString:[AccountManager currentUserid]]) {
          [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
     }
-    
-    [SVProgressHUD showSuccessWithStatus:@"预约修改成功"];
-    //发送通知
-    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
     //向本地保存一条预约信息
     if([[LocalNotificationCenter shareInstance] addLocalNotification:self.currentNoti]){
+        //更新所有病历的下次预约时间
+        [self updateNextReserveTimeWithPatientId:self.currentNoti.patient_id time:self.currentNoti.reserve_time];
+        
+        [SVProgressHUD showSuccessWithStatus:@"预约修改成功"];
+        //发送通知
+        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
+        
         if (self.delegate && [self.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
             [self.delegate addReminderViewController:self didUpdateReserveRecord:self.currentNoti];
         }
@@ -300,7 +301,7 @@
                     [self transferPatientSuccessWithResult:result];
                 } failure:^(NSError *error) {
                     if (self.isEditAppointment) {
-                        [SVProgressHUD showErrorWithStatus:@"添加预约失败,转诊失败"];
+                        [SVProgressHUD showErrorWithStatus:@"修改预约失败,转诊失败"];
                     }else {
                         [SVProgressHUD showErrorWithStatus:@"添加预约失败,转诊失败"];
                     }
@@ -312,6 +313,9 @@
                 //添加一条本地预约数据
                 BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:noti];
                 if (ret) {
+                    //修改所有病历的下次预约信息
+                    [self updateNextReserveTimeWithPatientId:noti.patient_id time:noti.reserve_time];
+                    
                     [SVProgressHUD showSuccessWithStatus:@"预约添加成功"];
                     //判断微信发送是否打开
                     if (self.weixinSendSwitch.isOn) {
@@ -373,6 +377,9 @@
         //添加一条本地预约数据
         BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:self.currentNoti];
         if (ret) {
+            //修改所有病历的下次预约时间
+            [self updateNextReserveTimeWithPatientId:self.currentNoti.patient_id time:self.currentNoti.reserve_time];
+            
             //发送转诊成功的通知
             [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
             
@@ -680,6 +687,22 @@
 }
 
 
+#pragma mark - 添加预约成功之后，更新所有的病历数据中的下次预约时间
+- (void)updateNextReserveTimeWithPatientId:(NSString *)patient_id time:(NSString *)time{
+    //根据患者id获取病历数据
+    NSArray *medicalCases = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:patient_id];
+    for (MedicalCase *mCase in medicalCases) {
+        //更新所有的病历数据的下次预约时间
+        mCase.next_reserve_time = time;
+        //更新数据库中的数据
+        BOOL ret = [[DBManager shareInstance] updateMedicalCase:mCase];
+        if (ret) {
+            //自动更新数据
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalCase postType:Update dataEntity:[mCase.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -15,11 +15,12 @@
 #import "XLRepairDoctorViewController.h"
 #import "MyDateTool.h"
 #import "DBTableMode.h"
+#import "XLDoctorLibraryViewController.h"
 
 #define CommonTextColor [UIColor colorWithHex:0x333333]
 #define CommonTextFont [UIFont systemFontOfSize:15]
 
-@interface XLSeniorStatisticsHeaderView ()<TimPickerTextFieldDelegate,XLRepairDoctorViewControllerDelegate>
+@interface XLSeniorStatisticsHeaderView ()<TimPickerTextFieldDelegate,XLDoctorLibraryViewControllerDelegate>
 
 @property (nonatomic, weak)UILabel *repairTimeTitle;//修复时间标题
 @property (nonatomic, weak)TimPickerTextField *startTime;//开始时间
@@ -31,7 +32,7 @@
 
 @property (nonatomic, weak)UIButton *searchBtn;//查询按钮
 
-@property (nonatomic, strong)RepairDoctor *selectDoc;//当前选中的修复医生
+@property (nonatomic, strong)Doctor *selectDoc;//当前选中的修复医生
 
 @end
 
@@ -235,16 +236,21 @@
 #pragma mark - 选择修复医生
 - (void)tapAction:(UITapGestureRecognizer *)tap{
     //跳转界面
-    XLRepairDoctorViewController *repairdoctorVC = [[XLRepairDoctorViewController alloc] init];
-    repairdoctorVC.delegate = self;
-    [self.viewController.navigationController pushViewController:repairdoctorVC animated:YES];
+//    XLRepairDoctorViewController *repairdoctorVC = [[XLRepairDoctorViewController alloc] init];
+//    repairdoctorVC.delegate = self;
+//    [self.viewController.navigationController pushViewController:repairdoctorVC animated:YES];
+    
+    //选择治疗医生
+    XLDoctorLibraryViewController *docLibrary = [[XLDoctorLibraryViewController alloc] init];
+    docLibrary.isTherapyDoctor = YES;
+    docLibrary.delegate = self;
+    [self.viewController.navigationController pushViewController:docLibrary animated:YES];
 }
 
-#pragma mark - RepairDoctorViewControllerDelegate
-- (void)didSelectedRepairDoctor:(RepairDoctor *)doctor{
+#pragma mark - XLDoctorLibraryViewControllerDelegate
+- (void)doctorLibraryVc:(XLDoctorLibraryViewController *)doctorLibraryVc didSelectDoctor:(Doctor *)doctor{
     self.selectDoc = doctor;
     self.repairDoctor.text = doctor.doctor_name;
 }
-
 
 @end

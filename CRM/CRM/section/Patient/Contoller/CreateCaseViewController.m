@@ -309,18 +309,23 @@
             if (_expenseArray.count < 1) {
                 return  YES;
             }
-            expenseRet = [[DBManager shareInstance] deleteMedicalExpenseWithCaseId:caseid];
-            if (expenseRet == NO) {
-                return NO;
-            }
+
             //获取所有的种植体信息
             NSArray *deleteArray = [[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:caseid];
             for (MedicalExpense *expense in deleteArray) {
                 //删除所有之前的种植体信息
                 //添加自动同步数据
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
-                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                if([[DBManager shareInstance] insertInfoWithInfoAutoSync:info]){
+                    //删除本地的耗材数据
+                    [[DBManager shareInstance] deleteMedicalExpenseWithId_sync:expense.ckeyid];
+                }
             }
+            
+//            expenseRet = [[DBManager shareInstance] deleteMedicalExpenseWithCaseId:caseid];
+//            if (expenseRet == NO) {
+//                return NO;
+//            }
             
             for (MedicalExpense *expenseTmp in _expenseArray) {
                 if ([NSString isEmptyString:expenseTmp.mat_id] || expenseTmp.expense_num <=0) {

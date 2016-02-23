@@ -31,4 +31,24 @@
         }
     }
 }
+
+- (void)changeCancelButtonTitle:(NSString *)title{
+    for (UIView *view in [[self.subviews lastObject] subviews]) {
+        if ([view isKindOfClass:[UIButton class]]) {
+            UIButton *cancelBtn = (UIButton *)view;
+            [cancelBtn setTitle:title forState:UIControlStateNormal];
+        }
+    }
+}
+
+- (NSString *)currentTitle{
+    NSString *title;
+    for (UIView *view in [[self.subviews lastObject] subviews]) {
+        if ([view isKindOfClass:[UIButton class]]) {
+            UIButton *cancelBtn = (UIButton *)view;
+            title = cancelBtn.currentTitle;
+        }
+    }
+    return title;
+}
 @end

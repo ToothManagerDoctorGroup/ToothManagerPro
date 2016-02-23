@@ -64,11 +64,13 @@
 #pragma mark - 添加通知
 - (void)addNotificationObserver{
     [self addObserveNotificationWithName:MaterialEditedNotification];
+    [self addObserveNotificationWithName:UIKeyboardWillShowNotification];
 }
 
 #pragma mark - 移除通知
 - (void)removeNotificationObserver{
     [self removeObserverNotificationWithName:MaterialEditedNotification];
+    [self removeObserverNotificationWithName:UIKeyboardWillShowNotification];
 }
 
 #pragma mark - 处理通知
@@ -79,6 +81,16 @@
         self.nameTextField.text = _material.mat_name;
         self.priceTextField.text = [NSString stringWithFormat:@"%d",(int)_material.mat_price];
         self.typeTextField.text = [Material typeStringWith:_material.mat_type];
+    }else if ([notifacation.name isEqualToString:UIKeyboardWillShowNotification]){
+        if ([self.typeTextField isFirstResponder]) {
+            [self.typeTextField resignFirstResponder];
+            
+            XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            dataSelectVc.type = XLDataSelectViewControllerMaterialType;
+            dataSelectVc.currentContent = self.typeTextField.text;
+            dataSelectVc.delegate = self;
+            [self pushViewController:dataSelectVc animated:YES];
+        }
     }
 }
 
@@ -134,7 +146,7 @@
     }
     
     
-   NSArray *patientArray = [[DBManager shareInstance]getPatientByMaterialId:self.materialId];
+   NSArray *patientArray = [[DBManager shareInstance] getPatientByMaterialId:self.materialId];
     patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
     for (NSInteger i = 0; i < patientArray.count; i++) {
         Patient *patientTmp = [patientArray objectAtIndex:i];
@@ -167,7 +179,6 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Button Action
@@ -306,19 +317,6 @@
     PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
     detailVc.patientsCellMode = cellMode;
     [self pushViewController:detailVc animated:YES];
-}
-
-#pragma mark - Notification
-- (void)keyboardWillShow:(CGFloat)keyboardHeight{
-    if ([self.typeTextField isFirstResponder]) {
-        [self.typeTextField resignFirstResponder];
-        
-        XLDataSelectViewController *dataSelectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
-        dataSelectVc.type = XLDataSelectViewControllerMaterialType;
-        dataSelectVc.currentContent = self.typeTextField.text;
-        dataSelectVc.delegate = self;
-        [self pushViewController:dataSelectVc animated:YES];
-    }
 }
 
 #pragma mark - XLDataSelectViewControllerDelegate

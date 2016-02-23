@@ -29,7 +29,7 @@
  *  @param success   成功回调
  *  @param failure   失败回调
  */
-+ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(NSArray *results))success failure:(void(^)(NSError *error))failure;
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 
 /**
  *  获取患者是否绑定微信

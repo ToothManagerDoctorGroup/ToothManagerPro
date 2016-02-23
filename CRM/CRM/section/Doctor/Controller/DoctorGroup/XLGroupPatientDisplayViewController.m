@@ -17,7 +17,7 @@
 #import "EditPatientDetailViewController.h"
 #import "MJRefresh.h"
 
-@interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -35,14 +35,14 @@
  */
 @property (nonatomic, assign)BOOL isChooseAll; //是否全选
 @property (nonatomic, weak)UIButton *chooseButton;//全选的按钮
-/**
- *  判断是否是UISearchDisplayController
- */
-@property (nonatomic, assign)BOOL isSearchDisplayController;
-/**
- *  保存UISearchDisplayController的tableView
- */
-@property (nonatomic, weak)UITableView *searchResultTableView;
+///**
+// *  判断是否是UISearchDisplayController
+// */
+//@property (nonatomic, assign)BOOL isSearchDisplayController;
+///**
+// *  保存UISearchDisplayController的tableView
+// */
+//@property (nonatomic, weak)UITableView *searchResultTableView;
 @property (nonatomic, assign)int postNum;//上传总数
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
@@ -52,6 +52,16 @@
 @property (nonatomic, assign)int pageIndex;//分页的页数
 @property (nonatomic, copy)NSString *sortFieldText;//用于排序查询
 @property (nonatomic, assign)BOOL isAsc;//是否是正序还是倒序
+
+
+/**
+ *  判断是否是UISearchDisplayController
+ */
+@property (nonatomic, assign)BOOL isSearchDisplayController;
+/**
+ *  保存UISearchDisplayController的tableView
+ */
+@property (nonatomic, weak)UITableView *searchResultTableView;
 
 @end
 
@@ -71,6 +81,7 @@
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
         _searchBar.delegate = self;
         _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
+        [_searchBar changeCancelButtonTitle:@"搜索"];
         [_searchBar moveBackgroundView];
     }
     return _searchBar;
@@ -82,6 +93,7 @@
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
+        _searchController.delegate = self;
         
         __weak XLGroupPatientDisplayViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
@@ -207,9 +219,14 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
+    [self addPatientToGroupWithArray:self.patientCellModeArray];
+}
+
+#pragma mark - 添加患者
+- (void)addPatientToGroupWithArray:(NSArray *)result{
     int index = 0;
     NSMutableArray *selectMemberArr = [NSMutableArray array];
-    for (GroupMemberModel *model in self.patientCellModeArray) {
+    for (GroupMemberModel *model in result) {
         if (model.isChoose && !model.isMember) {
             index++;
             //新增患者
@@ -406,10 +423,49 @@
     [_tableView.header beginRefreshing];
 }
 
+#pragma mark - GroupPatientCellDelegate
+- (void)didChooseCell:(GroupPatientCell *)cell withChooseStatus:(BOOL)status{
+    if (self.isSearchDisplayController) {
+        NSIndexPath *indexPath = [self.searchResultTableView indexPathForCell:cell];
+        GroupMemberModel *model = self.searchController.resultsSource[indexPath.row];
+        model.isChoose = status;
+        
+        BOOL isChoose = false;
+        for (GroupMemberModel *model in self.searchController.resultsSource) {
+            if (model.isChoose) {
+                isChoose = YES;
+            }
+        }
+        if (isChoose) {
+            [self.searchController.searchBar changeCancelButtonTitle:@"完成"];
+        }else{
+            [self.searchController.searchBar changeCancelButtonTitle:@"取消"];
+        }
+        
+        
+    }else{
+        //获取当前对应的数据模型
+        NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
+        GroupMemberModel *model = self.patientCellModeArray[indexPath.row];
+        model.isChoose = status;
+        //获取所有的模型的点击状态
+        int index = 0;
+        for (GroupMemberModel *model in self.patientCellModeArray) {
+            if (model.isChoose && !model.isMember) {
+                index++;
+            }
+        }
+        //表示当前全选
+        self.isChooseAll = index == self.patientCellModeArray.count;
+        self.chooseButton.selected = self.isChooseAll;
+    }
+}
+
 #pragma mark - UISearchBar Delegates
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
     [searchBar setShowsCancelButton:YES animated:YES];
+    NSLog(@"searchBarShouldBeginEditing");
     return YES;
 }
 
@@ -428,61 +484,51 @@
                 NSLog(@"error:%@",error);
             }
         }];
-        
-        
+    }else{
+        NSString *title = [searchBar currentTitle];
+        if ([title isEqualToString:@"完成"]) {
+            [searchBar changeCancelButtonTitle:@"取消"];
+        }
     }
 }
-
 - (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
 {
+    NSLog(@"searchBarShouldEndEditing");
     return YES;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+    NSLog(@"searchBarSearchButtonClicked");
     [searchBar resignFirstResponder];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    searchBar.text = @"";
-    [searchBar resignFirstResponder];
-    [searchBar setShowsCancelButton:NO animated:YES];
-}
-
-
-#pragma mark - GroupPatientCellDelegate
-- (void)didChooseCell:(GroupPatientCell *)cell withChooseStatus:(BOOL)status{
-    
-    //获取当前对应的数据模型
-    if (self.isSearchDisplayController) {
-        NSIndexPath *indexPath = [self.searchResultTableView indexPathForCell:cell];
-        GroupMemberModel *model = self.searchController.resultsSource[indexPath.row];
-        model.isChoose = status;
-        
-        for (GroupMemberModel *temp in self.patientCellModeArray) {
-            if ([model.ckeyid isEqualToString:temp.ckeyid]) {
-                temp.isChoose = model.isChoose;
-            }
-        }
+    //判断是完成还是取消
+    NSString *title = [searchBar currentTitle];
+    if ([title isEqualToString:@"完成"]) {
+        //将选中的数据添加到分组中
+        [self addPatientToGroupWithArray:self.searchController.resultsSource];
     }else{
-        NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
-        GroupMemberModel *model = self.patientCellModeArray[indexPath.row];
-        model.isChoose = status;
+        //取消
+        searchBar.text = @"";
+        [searchBar resignFirstResponder];
+        [searchBar setShowsCancelButton:NO animated:YES];
     }
     
-    //获取所有的模型的点击状态
-    int index = 0;
-    for (GroupMemberModel *model in self.patientCellModeArray) {
-        if (model.isChoose && !model.isMember) {
-            index++;
-        }
-    }
-    //表示当前全选
-    self.isChooseAll = index == self.patientCellModeArray.count;
-    self.chooseButton.selected = self.isChooseAll;
 }
 
+
+#pragma mark - UISearchDisplayDelegate
+- (void) searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller NS_DEPRECATED_IOS(3_0,8_0){
+    //相对于上面的接口，这个接口可以动画的改变statusBar的前景色
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+- (void) searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller NS_DEPRECATED_IOS(3_0,8_0){
+    //相对于上面的接口，这个接口可以动画的改变statusBar的前景色
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView{
     self.isSearchDisplayController = YES;

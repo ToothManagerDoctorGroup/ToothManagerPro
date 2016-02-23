@@ -22,6 +22,7 @@
 #import "MyPatientTool.h"
 #import "AccountManager.h"
 #import "MJRefresh.h"
+#import "XLPatientTotalInfoModel.h"
 
 @interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource>{
     BOOL ifNameBtnSelected;
@@ -367,18 +368,29 @@
     }else {
         //根据患者id去服务器获取数据保存到本地
         [SVProgressHUD showWithStatus:@"正在获取患者数据"];
-        [MyPatientTool getPatientAllInfosWithPatientId:model.ckeyid doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
-            [SVProgressHUD dismiss];
-            BOOL ret = [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:results[0]];
-           if (ret) {
-               PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
-               cellModel.patientId = patient.ckeyid;
-               //跳转到新的患者详情页面
-               PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-               detailVc.patientsCellMode = cellModel;
-               detailVc.hidesBottomBarWhenPushed = YES;
-               [self pushViewController:detailVc animated:YES];
-           }
+        [MyPatientTool getPatientAllInfosWithPatientId:model.ckeyid doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                NSMutableArray *arrayM = [NSMutableArray array];
+                for (NSDictionary *dic in respond.result) {
+                    XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                    [arrayM addObject:model];
+                }
+                
+                [SVProgressHUD dismiss];
+                BOOL ret = [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:arrayM[0]];
+                if (ret) {
+                    PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+                    cellModel.patientId = patient.ckeyid;
+                    //跳转到新的患者详情页面
+                    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+                    detailVc.patientsCellMode = cellModel;
+                    detailVc.hidesBottomBarWhenPushed = YES;
+                    [self pushViewController:detailVc animated:YES];
+                }
+            }else{
+                [SVProgressHUD showErrorWithStatus:respond.result];
+            }
+            
        } failure:^(NSError *error) {
            [SVProgressHUD showWithStatus:@"患者数据获取失败"];
            if (error) {

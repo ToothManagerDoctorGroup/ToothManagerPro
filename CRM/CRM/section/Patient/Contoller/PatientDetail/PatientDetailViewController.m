@@ -504,9 +504,19 @@
     }else if (selectedIndex == 4){
         //更新当前患者的所有数据
         [SVProgressHUD showWithStatus:@"正在下载CT片"];
-        [MyPatientTool getPatientAllInfosWithPatientId:self.detailPatient.ckeyid doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
-            //保存数据到数据库
-            [self savePatientDataWithModel:[results lastObject]];
+        [MyPatientTool getPatientAllInfosWithPatientId:self.detailPatient.ckeyid doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                NSMutableArray *arrayM = [NSMutableArray array];
+                for (NSDictionary *dic in respond.result) {
+                    XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                    [arrayM addObject:model];
+                }
+                //保存数据到数据库
+                [self savePatientDataWithModel:[arrayM lastObject]];
+            }else{
+                [SVProgressHUD showErrorWithStatus:respond.result];
+            }
+            
         } failure:^(NSError *error) {
             [SVProgressHUD showErrorWithStatus:@"患者CT片更新失败"];
             if (error) {

@@ -291,12 +291,12 @@
 
 
 
--(Doctor *)getDoctorNameByPatientIntroducerMapWithPatientId:(NSString *)patientId withIntrId:(NSString *)intrId{
+- (Doctor *)getDoctorNameByPatientIntroducerMapWithPatientId:(NSString *)patientId withIntrId:(NSString *)intrId{
     if ([patientId isEmpty]) {
         return nil;
     }
     
-    NSString *sqlStr = [NSString stringWithFormat:@"select d.doctor_name from %@ m,%@ d where m.doctor_id=d.doctor_id and m.patient_id=\"%@\" and m.intr_id=\"%@\" and d.user_id =\"%@\"",PatIntrMapTableName,DoctorTableName,patientId,intrId,intrId];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ m,%@ d where m.doctor_id=d.doctor_id and m.patient_id=\"%@\" and m.intr_id=\"%@\" and d.user_id =\"%@\"",PatIntrMapTableName,DoctorTableName,patientId,intrId,intrId];
     __block Doctor *doctor = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;

@@ -41,13 +41,12 @@
     
     //请求数据
     [self refreshData];
-    
-    
 }
 
 - (void)setUpNav{
     self.title = @"新的好友";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
 }
 #pragma mark - 请求数据
 - (void)requestDataList{

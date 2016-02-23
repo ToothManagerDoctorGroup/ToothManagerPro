@@ -152,10 +152,11 @@
     [self.opQueue addOperation:downOp];
 }
 
+/*
 #pragma mark - XLGuideViewDelegate
 - (void)guideView:(XLGuideView *)guideView didClickView:(UIView *)view step:(XLGuideViewStep)step{
     
 }
-
+*/
 
 @end

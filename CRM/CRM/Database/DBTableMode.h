@@ -123,7 +123,6 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *sync_time;  //同步时间
 @property (nonatomic,copy) NSString *case_update_time;
 @property (nonatomic,copy) NSString *intr_name;
-
 //新增患者字段
 @property (nonatomic, copy)NSString *patient_allergy;//患者过敏史
 @property (nonatomic, copy)NSString *patient_remark;//医生给患者的备注信息
@@ -132,7 +131,10 @@ typedef CGFloat Money;
 @property (nonatomic, copy)NSString *anamnesis;//既往病史（原有字段是Anamnesis）
 @property (nonatomic, copy)NSString *nickName;//昵称(原有字段NickName)
 
+//本地所用字段，与服务器无关
+@property (nonatomic, assign)NSInteger expense_num;//种植体数量
 
++ (Patient *)patientWithMixResult:(FMResultSet *)result;//只用于患者列表信息
 + (Patient *)patientlWithResult:(FMResultSet *)result;
 + (NSString *)statusStrWithIntegerStatus:(PatientStatus)status;
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat;

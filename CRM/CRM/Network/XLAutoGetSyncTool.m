@@ -21,6 +21,7 @@
 #import "PatientManager.h"
 #import "MyPatientTool.h"
 #import "XLPatientTotalInfoModel.h"
+#import "CRMHttpRespondModel.h"
 
 #define Sync_Get_Doctor_Url [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx?action=getdoctor",DomainName,Method_His_Crm]
 #define Sync_Get_Material_Url [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=material",DomainName,Method_His_Crm]
@@ -308,40 +309,47 @@ NSInteger curTimeMCNum_mr01 = 0;
         }
     }
     //请求网络数据
-    [MyPatientTool getPatientAllInfosWithPatientId:strPatientId doctorID:[AccountManager currentUserid] success:^(NSArray *results) {
-        
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            for (XLPatientTotalInfoModel *infoModel in results) {
-                if([self savePatientDataWithModel:infoModel]){
-                    //单条数据请求成功
-                    NSString *patientId = infoModel.baseInfo[@"ckeyid"];
-                    if ([curPatients01 containsObject:patientId]) {
-                        [curPatients01 removeObject:patientId];
-                        [downloadPatients01 removeObject:patientId];
-                    }
-                }
+    [MyPatientTool getPatientAllInfosWithPatientId:strPatientId doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+        if ([respond.code integerValue] == 200) {
+            NSMutableArray *results = [NSMutableArray array];
+            for (NSDictionary *dic in respond.result) {
+                XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                [results addObject:model];
             }
-            if (curPatients01.count == 0) {
-                if (downloadPatients01.count > 0) {
-                    if ([downloadPatients01 count] <= curPatientsNum01) {
-                        for (int i=0; i < [downloadPatients01 count]; i++) {
-                            [curPatients01 addObject:[downloadPatients01 objectAtIndex:i]];
-                        }
-                    } else {
-                        for (int i=0; i < curPatientsNum01; i++) {
-                            [curPatients01 addObject:[downloadPatients01 objectAtIndex:i]];
+            
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                for (XLPatientTotalInfoModel *infoModel in results) {
+                    if([self savePatientDataWithModel:infoModel]){
+                        //单条数据请求成功
+                        NSString *patientId = infoModel.baseInfo[@"ckeyid"];
+                        if ([curPatients01 containsObject:patientId]) {
+                            [curPatients01 removeObject:patientId];
+                            [downloadPatients01 removeObject:patientId];
                         }
                     }
-                    [self getPatientAllInfo];
-                }else{
-                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-                    [NSThread sleepForTimeInterval:1.0];
-                    [SVProgressHUD dismiss];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
                 }
-            }
-        });
+                if (curPatients01.count == 0) {
+                    if (downloadPatients01.count > 0) {
+                        if ([downloadPatients01 count] <= curPatientsNum01) {
+                            for (int i=0; i < [downloadPatients01 count]; i++) {
+                                [curPatients01 addObject:[downloadPatients01 objectAtIndex:i]];
+                            }
+                        } else {
+                            for (int i=0; i < curPatientsNum01; i++) {
+                                [curPatients01 addObject:[downloadPatients01 objectAtIndex:i]];
+                            }
+                        }
+                        [self getPatientAllInfo];
+                    }else{
+                        [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                        [NSThread sleepForTimeInterval:1.0];
+                        [SVProgressHUD dismiss];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+                    }
+                }
+            });
         
+        }
         
     } failure:^(NSError *error) {
         //请求失败，重新请求

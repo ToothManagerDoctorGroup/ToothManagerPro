@@ -11,11 +11,11 @@
 /**
  *  高级统计头视图
  */
-@class XLSeniorStatisticsHeaderView,RepairDoctor;
+@class XLSeniorStatisticsHeaderView,Doctor;
 @protocol XLSeniorStatisticsHeaderViewDelegate <NSObject>
 
 @optional
-- (void)seniorStatisticsHeaderView:(XLSeniorStatisticsHeaderView *)headerView didSearchWithStartTime:(NSString *)startTime endTime:(NSString *)endTime repairDoctor:(RepairDoctor *)repairDoctor;
+- (void)seniorStatisticsHeaderView:(XLSeniorStatisticsHeaderView *)headerView didSearchWithStartTime:(NSString *)startTime endTime:(NSString *)endTime repairDoctor:(Doctor *)repairDoctor;
 
 @end
 

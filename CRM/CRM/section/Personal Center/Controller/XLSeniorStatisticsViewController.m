@@ -87,7 +87,7 @@
 }
 
 #pragma mark - XLSeniorStatisticsHeaderViewDelegate
-- (void)seniorStatisticsHeaderView:(XLSeniorStatisticsHeaderView *)headerView didSearchWithStartTime:(NSString *)startTime endTime:(NSString *)endTime repairDoctor:(RepairDoctor *)repairDoctor{
+- (void)seniorStatisticsHeaderView:(XLSeniorStatisticsHeaderView *)headerView didSearchWithStartTime:(NSString *)startTime endTime:(NSString *)endTime repairDoctor:(Doctor *)repairDoctor{
     
     //判断是哪种搜索
     if (self.type == SeniorStatisticsViewControllerPlant) {

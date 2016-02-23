@@ -90,6 +90,8 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    
+    /*
     //判断是否显示引导页
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSString *isShowedKey = @"isShowedKey";
@@ -101,7 +103,7 @@
         guideView.step = XLGuideViewStepThree;
         guideView.type = XLGuideViewTypePatient;
         [guideView showInView:[UIApplication sharedApplication].keyWindow maskViewFrame:CGRectMake(5, 350 + 64, 100, 45)];
-    }
+    }*/
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -156,6 +158,7 @@
     [self.opQueue addOperation:downOp];
 }
 
+/*
 #pragma mark - XLGuideViewDelegate
 - (void)guideView:(XLGuideView *)guideView didClickView:(UIView *)view step:(XLGuideViewStep)step{
     if (step == XLGuideViewStepThree) {
@@ -170,7 +173,7 @@
         [self pushViewController:newPatientVC animated:YES];
         
     }
-}
+}*/
 
 
 @end
