@@ -12,8 +12,6 @@
 #import "PatientSegumentController.h"
 #import "MenuView.h"
 #import "MenuButtonPushManager.h"
-#import "SigninViewController.h"
-#import "SignUpViewController.h"
 #import "ChatViewController.h"
 #import "MyScheduleReminderViewController.h"
 #import "AutoSyncManager.h"
@@ -23,6 +21,7 @@
 #import "XLIntroducerViewController.h"
 #import "XLGuideView.h"
 #import "QrCodePatientViewController.h"
+#import "XLGuideImageView.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -198,6 +197,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 //        guideView.type = XLGuideViewTypePatient;
 //        [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
 //    }
+    
 }
 
 -(void)click:(id)sender{

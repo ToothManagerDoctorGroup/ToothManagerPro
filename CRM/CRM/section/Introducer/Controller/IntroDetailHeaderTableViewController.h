@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
+#import "TimViewController.h"
 
 @class TimPickerTextField,TimStarTextField,XLStarView,IntroDetailHeaderTableViewController;
 @protocol IntroDetailHeaderTableViewControllerDelegate <NSObject>
@@ -19,7 +20,7 @@
 @end
 
 
-@interface IntroDetailHeaderTableViewController : UITableViewController<MFMessageComposeViewControllerDelegate>
+@interface IntroDetailHeaderTableViewController : TimViewController<MFMessageComposeViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nameTextField;
 @property (weak, nonatomic) IBOutlet XLStarView *levelView;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *phoneTextField;

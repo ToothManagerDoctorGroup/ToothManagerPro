@@ -44,7 +44,7 @@
 - (void)setLevel:(NSInteger)level{
     _level = level;
     
-    self.starView.frame = CGRectMake((self.width - 75) / 2, (self.height - 15) / 2, 75, 15);
+    self.starView.frame = CGRectMake((kScreenWidth - 75) / 2, (self.height - 15) / 2, 75, 15);
     self.starView.scale = level;
 }
 

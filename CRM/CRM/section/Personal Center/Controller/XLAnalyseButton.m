@@ -59,7 +59,7 @@
     [self addSubview:arrowView];
     
     UIView *dividerView = [[UIView alloc] init];
-    dividerView.backgroundColor = [UIColor colorWithHex:0xdddddd];
+    dividerView.backgroundColor = [UIColor colorWithHex:0xcccccc];
     self.dividerView = dividerView;
     [self addSubview:dividerView];
     
@@ -103,7 +103,7 @@
     self.nameLabel.frame = CGRectMake(nameX, nameY, nameW, nameH);
     
     CGFloat dividerW = self.width;
-    CGFloat dividerH = 1;
+    CGFloat dividerH = .5;
     CGFloat dividerX = 0;
     CGFloat dividerY = self.height - dividerH;
     self.dividerView.frame = CGRectMake(dividerX, dividerY, dividerW, dividerH);

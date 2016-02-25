@@ -177,10 +177,11 @@
 - (MedicalCase *)getMedicalCaseWithCaseId:(NSString *)caseid;
 
 - (BOOL)deleteMedicalCaseWithCaseId:(NSString *)caseid;
-
 - (BOOL)deleteMedicalCaseWithPatientId:(NSString *)patientId;
 - (BOOL)deleteMedicalCaseWithPatientId_sync:(NSString *)patientId;
 - (BOOL)deleteMedicalExpenseWithCaseId_sync:(NSString *)caseid;
+//删除本地数据库中的病历数据（包括CT，耗材信息，病情描述信息）
+- (BOOL)deleteMedicalCaseWithCase_AutoSync:(MedicalCase *)mCase;
 
 /**
  *  插入一条MedicalReserve
@@ -316,6 +317,8 @@
 - (BOOL)deleteCTlibWithPatientId:(NSString *)patientId;
 
 - (BOOL)deleteCTlibWithLibId_sync:(NSString *)libid;
+//删除一条ct数据，然后自动上传
+- (BOOL)deleteCTlibWithCTLib_AutoSync:(CTLib *)ctLib;
 
 - (CTLib *)getCTLibWithCKeyId:(NSString *)ckeyId;
 

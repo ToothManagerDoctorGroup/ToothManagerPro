@@ -15,6 +15,8 @@
 #import "DBTableMode.h"
 #import "XLQueryModel.h"
 #import "GroupMemberModel.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
 
 #define userIdParam @"userid"
 #define requestActionParam @"action"
@@ -42,6 +44,44 @@
         }
     }];
 }
++ (void)updateUserInfoWithDoctorInfoModel:(DoctorInfoModel *)doctorInfo ckeyId:(NSString *)ckeyId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx?action=edit",DomainName,Method_His_Crm];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionary];
+    [dataEntity setObject:doctorInfo.doctor_id forKey:@"doctor_id"];
+    [dataEntity setObject:doctorInfo.doctor_name forKey:@"doctor_name"];
+    [dataEntity setObject:doctorInfo.doctor_dept forKey:@"doctor_dept"];
+    [dataEntity setObject:doctorInfo.doctor_phone forKey:@"doctor_phone"];
+    [dataEntity setObject:doctorInfo.doctor_hospital forKey:@"doctor_hospital"];
+    [dataEntity setObject:doctorInfo.doctor_position forKey:@"doctor_position"];
+    [dataEntity setObject:doctorInfo.doctor_degree forKey:@"doctor_degree"];
+    [dataEntity setObject:doctorInfo.doctor_image forKey:@"doctor_image"];
+    [dataEntity setObject:@"0" forKey:@"doctor_is_verified"];
+    [dataEntity setObject:@"" forKey:@"doctor_verify_reason"];
+    [dataEntity setObject:doctorInfo.doctor_certificate forKey:@"doctor_certificate"];
+    [dataEntity setObject:doctorInfo.doctor_birthday forKey:@"doctor_birthday"];
+    [dataEntity setObject:doctorInfo.doctor_gender forKey:@"doctor_gender"];
+    [dataEntity setObject:doctorInfo.doctor_cv forKey:@"doctor_cv"];
+    [dataEntity setObject:doctorInfo.doctor_skill forKey:@"doctor_skill"];
+    
+    [dataEntity setObject:[NSString stringWithFormat:@"%@",doctorInfo.is_open] forKey:@"is_open"];
+    
+    NSString *jsonString = [dataEntity JSONString];
+    [paramDic setObject:ckeyId forKey:@"keyid"];
+    [paramDic setObject:jsonString forKey:@"DataEntity"];
+    
+    [CRMHttpTool POST:urlStr parameters:paramDic success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 
 + (void)composeTeacherHeadImg:(UIImage *)image userId:(NSString *)userId success:(void (^)())success failure:(void (^)(NSError *))failure{
     
@@ -266,6 +306,29 @@
             success(arrayM);
         }
     
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)sendAdviceWithDoctorId:(NSString *)doctor_id content:(NSString *)content success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    //ttp://localhost/his.crm/ashx/CustomerFeedbackHandler.ashx?action=Insert&DataEntity={"doctor_id":971,"content":"复苏动力科技"}
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CustomerFeedbackHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionary];
+    dataEntity[@"doctor_id"] = doctor_id;
+    dataEntity[@"content"] = content;
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = @"Insert";
+    param[@"DataEntity"] = [dataEntity JSONString];
+    
+    [CRMHttpTool POST:urlStr parameters:param success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);

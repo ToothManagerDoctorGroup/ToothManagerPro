@@ -97,6 +97,13 @@
         [self setRightBarButtonWithTitle:@"保存"];
     }
 }
+- (void)onBackButtonAction:(id)sender{
+    __weak typeof(self) weakSelf = self;
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"提示" message:@"是否放弃此次编辑?" cancelHandler:^{} comfirmButtonHandlder:^{
+        [weakSelf popViewControllerAnimated:YES];
+    }];
+    [alertView show];
+}
 
 - (void)onRightButtonAction:(id)sender{
     
@@ -150,30 +157,15 @@
     
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
-            editVc.title = @"姓名";
-            editVc.placeHolder = @"请填写姓名";
-            editVc.delegate = self;
-            editVc.content = self.patientNameField.text;
-            [self pushViewController:editVc animated:YES];
+            [self jumpToEditPageWithTitle:@"姓名" placeHolder:@"请填写姓名" content:self.patientNameField.text showBtn:NO];
         }else if (indexPath.row == 1){
-            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
-            editVc.title = @"电话";
-            editVc.placeHolder = @"请填写电话";
-            editVc.delegate = self;
-            editVc.content = self.patientPhoneField.text;
-            [self pushViewController:editVc animated:YES];
+            [self jumpToEditPageWithTitle:@"电话" placeHolder:@"请填写电话" content:self.patientPhoneField.text showBtn:NO];
         }
     }
     
     if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
-            editVc.title = @"备注名";
-            editVc.placeHolder = @"请填写备注名";
-            editVc.delegate = self;
-            editVc.content = self.remarkNameLabel.text;
-            [self pushViewController:editVc animated:YES];
+            [self jumpToEditPageWithTitle:@"备注名" placeHolder:@"请填写备注名" content:self.remarkNameLabel.text showBtn:NO];
         }
     }
     if (indexPath.section == 2) {
@@ -185,30 +177,12 @@
             selectVc.delegate = self;
             [self pushViewController:selectVc animated:YES];
         }else if (indexPath.row == 1) {
-            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
-            editVc.title = @"年龄";
-            editVc.placeHolder = @"请填写年龄";
-            editVc.delegate = self;
-            editVc.content = self.patientAgeField.text;
-            editVc.keyboardType = UIKeyboardTypeNumberPad;
-            [self pushViewController:editVc animated:YES];
+            [self jumpToEditPageWithTitle:@"年龄" placeHolder:@"请填写年龄" content:self.patientAgeField.text showBtn:NO];
         }
         else if (indexPath.row == 2){
-            //选择地址跳转
-            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
-            editVc.title = @"家庭住址";
-            editVc.placeHolder = @"请填写详细地址";
-            editVc.showBtn = YES;
-            editVc.delegate = self;
-            editVc.content = self.patientAddressLabel.text;
-            [self pushViewController:editVc animated:YES];
+            [self jumpToEditPageWithTitle:@"家庭住址" placeHolder:@"请填写详细地址" content:self.patientAddressLabel.text showBtn:YES];
         }else if (indexPath.row == 3){
-            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
-            editVc.title = @"身份证号";
-            editVc.placeHolder = @"请填写身份证号";
-            editVc.delegate = self;
-            editVc.content = self.patientIdCardField.text;
-            [self pushViewController:editVc animated:YES];
+            [self jumpToEditPageWithTitle:@"身份证号" placeHolder:@"请填写身份证号" content:self.patientIdCardField.text showBtn:NO];
         }
         
     }else if (indexPath.section == 3) {
@@ -239,6 +213,18 @@
     }
     
     return path;
+}
+
+#pragma mark - 跳转到编辑页面
+- (void)jumpToEditPageWithTitle:(NSString *)title placeHolder:(NSString *)placeHolder content:(NSString *)content showBtn:(BOOL)showBtn{
+    XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
+    editVc.title = title;
+    editVc.placeHolder = placeHolder;
+    editVc.delegate = self;
+    editVc.content = content;
+    editVc.rightButtonTitle = @"完成";
+    editVc.showBtn = showBtn;
+    [self pushViewController:editVc animated:YES];
 }
 
 #pragma mark - EditAllergyViewControllerDelegate

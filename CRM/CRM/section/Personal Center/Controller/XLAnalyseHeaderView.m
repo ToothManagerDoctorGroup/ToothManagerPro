@@ -68,7 +68,7 @@
     self.patientCountLabel = patientCountLabel;
     
     UIView *divider = [[UIView alloc] init];
-    divider.backgroundColor = [UIColor colorWithHex:0xdddddd];
+    divider.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
     self.divider = divider;
     [self addSubview:divider];
     
@@ -124,7 +124,7 @@
     }
     
     CGFloat dividerW = kScreenWidth;
-    CGFloat dividerH = 1;
+    CGFloat dividerH = .5;
     CGFloat dividerX = 0;
     CGFloat dividerY = self.height - dividerH;
     self.divider.frame = CGRectMake(dividerX, dividerY, dividerW, dividerH);

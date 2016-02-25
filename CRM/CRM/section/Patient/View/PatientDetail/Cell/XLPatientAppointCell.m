@@ -92,7 +92,7 @@
     [self.contentView addSubview:arrowImageView];
     
     UIView *lineView = [[UIView alloc] init];
-    lineView.backgroundColor = MyColor(238, 238, 238);
+    lineView.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
     self.lineView = lineView;
     [self.contentView addSubview:lineView];
 }
@@ -128,6 +128,13 @@
     CGSize typeSize = [type sizeWithFont:CommonFont];
     self.reserveTypeLabel.frame = CGRectMake(kScreenWidth - typeSize.width - marginX * 2 - 13, (self.height - commonH) / 2, typeSize.width, commonH);
     self.reserveTypeLabel.text = self.localNoti.reserve_type;
+    
+    //添加两条分割线
+    for (int i = 0; i < 2; i++) {
+        UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(0, i * (self.height - 10 - 0.5), kScreenWidth, 0.5)];
+        divider.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
+        [self.contentView addSubview:divider];
+    }
     
     self.lineView.frame = CGRectMake(0, self.height - 10, kScreenWidth, 10);
     

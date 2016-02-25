@@ -29,16 +29,6 @@
     __weak IBOutlet UITableViewCell *_jiangeCell;
     
 }
-@property (weak, nonatomic) IBOutlet UIImageView *iconArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *auTxtArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *sexArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *departmentArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *professionArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *degreeArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *descArrow;
-@property (weak, nonatomic) IBOutlet UIImageView *skillArrow;
-
-
 @property (nonatomic, strong)Doctor *currentDoctor;//当前登录的医生
 
 /**
@@ -81,7 +71,6 @@
     self.authTextView.placeholder = @"---";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     if (self.doctor) {
-        [self hideArrow];
         self.title = [NSString stringWithFormat:@"%@的资料",self.doctor.doctor_name];
         self.departmentTextField.enabled = NO;
         self.phoneTextField.enabled = NO;
@@ -106,8 +95,6 @@
             [self refreshView];
         }
     } else {
-        [self showArrow];
-        
         self.title = @"我的资料";
         [self setRightBarButtonWithTitle:@"保存"];
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
@@ -152,7 +139,6 @@
 - (void)initData {
     [super initData];
 }
-
 
 - (void)refreshView {
     [super refreshView];
@@ -573,30 +559,6 @@
         self.titleTextField.text = content;
     }
 }
-
-#pragma mark - 隐藏和显示箭头
-- (void)hideArrow{
-    self.iconArrow.hidden = YES;
-    self.auTxtArrow.hidden = YES;
-    self.sexArrow.hidden = YES;
-    self.departmentArrow.hidden = YES;
-    self.professionArrow.hidden = YES;
-    self.degreeArrow.hidden = YES;
-    self.descArrow.hidden = YES;
-    self.skillArrow.hidden = YES;
-}
-
-- (void)showArrow{
-    self.iconArrow.hidden = NO;
-    self.auTxtArrow.hidden = NO;
-    self.sexArrow.hidden = NO;
-    self.departmentArrow.hidden = NO;
-    self.professionArrow.hidden = NO;
-    self.degreeArrow.hidden = NO;
-    self.descArrow.hidden = NO;
-    self.skillArrow.hidden = NO;
-}
-
 
 - (void)downloadImageWithImageUrl:(NSString *)imageStr{
     

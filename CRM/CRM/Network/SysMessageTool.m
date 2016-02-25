@@ -172,13 +172,14 @@
     }];
 }
 
-+ (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content success:(void (^)())success failure:(void (^)(NSError *error))failure{
++ (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content doctorId:(NSString *)doctor_id success:(void (^)())success failure:(void (^)(NSError *error))failure{
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SendMsgHandler.ashx",DomainName,Method_Weixin];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"to_patient";
     params[@"patient_id"] = patient_id;
     params[@"content_type"] = content_type;
     params[@"send_content"] = send_content;
+    params[@"doctor_id"] = doctor_id;
     
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {

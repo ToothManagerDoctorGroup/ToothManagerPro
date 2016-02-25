@@ -13,6 +13,14 @@
 
 /*获取医生的详细信息*/
 + (void)requestDoctorInfoWithDoctorId:(NSString *)doctorId success:(void(^)(DoctorInfoModel *dcotorInfo))success failure:(void(^)(NSError *error))failure;
+/**
+ *  更新医生的个人信息
+ *
+ *  @param doctorInfo 医生模型
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)updateUserInfoWithDoctorInfoModel:(DoctorInfoModel *)doctorInfo ckeyId:(NSString *)ckeyId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 
 /**
  *  上传用户头像
@@ -99,4 +107,13 @@
  *  @param failure          失败回调
  */
 + (void)queryRepairPatientsWithDoctorId:(NSString *)doctor_id beginDate:(NSString *)begin_date endDate:(NSString *)end_date repairDoctorId:(NSString *)repair_doctor_id success:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
+/**
+ *  发送意见反馈
+ *
+ *  @param doctor_id 医生id
+ *  @param content   反馈内容
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)sendAdviceWithDoctorId:(NSString *)doctor_id content:(NSString *)content success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 @end

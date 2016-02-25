@@ -135,14 +135,16 @@
         }else{
             self.title = @"编辑种植体";
             self.tableView.hidden = YES;
-            [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+//            [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+            [self setRightBarButtonWithTitle:@"保存"];
         }
         
     } else {
         _material = [[Material alloc] init];
         self.tableView.hidden = YES;
         self.title = @"新建种植体";
-        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+//        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+        [self setRightBarButtonWithTitle:@"保存"];
     }
     
     

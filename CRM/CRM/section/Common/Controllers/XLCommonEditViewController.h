@@ -28,6 +28,8 @@
 
 @property (nonatomic, assign)UIKeyboardType keyboardType;//键盘类型
 
+@property (nonatomic, copy)NSString *rightButtonTitle;//右侧按钮文字
+
 @property (nonatomic, weak)id<XLCommonEditViewControllerDelegate> delegate;
 
 @end

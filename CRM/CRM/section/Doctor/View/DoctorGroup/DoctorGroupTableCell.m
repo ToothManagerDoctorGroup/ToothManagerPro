@@ -12,6 +12,7 @@
 #define commenColor MyColor(51, 51, 51)
 #define Margin 10
 #define RowHeight 44
+#define DividerHeight 0.5
 
 @interface DoctorGroupTableCell (){
     UILabel *_groupName;//分组的名称
@@ -74,6 +75,6 @@
     _groupNum.frame = CGRectMake(kScreenWidth - Margin - numSize.width, 0, numSize.width, RowHeight);
     _groupNum.text = numStr;
     
-    _divider.frame = CGRectMake(0, RowHeight - 1, kScreenWidth, 1);
+    _divider.frame = CGRectMake(0, RowHeight - DividerHeight, kScreenWidth, DividerHeight);
 }
 @end

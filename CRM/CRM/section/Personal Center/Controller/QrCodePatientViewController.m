@@ -120,7 +120,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = [NSString stringWithFormat:@"Hi，我是%@医生，请关注我的种牙管家微信平台",[AccountManager shareInstance].currentUser.name];
         mode.message = @"关注后，您将通过种牙管家微信公众号获得预约通知和诊疗医嘱";
-        mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainName,Method_Weixin,[[AccountManager shareInstance] currentUser].userid];
+        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",Method_Weixin,[[AccountManager shareInstance] currentUser].userid];
         mode.image = self.QrCodeImageView.image;
         [Share shareToPlatform:weixin WithMode:mode];
     }

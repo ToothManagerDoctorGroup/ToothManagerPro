@@ -64,7 +64,8 @@
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+    [self setRightBarButtonWithTitle:@"保存"];
     [self loadTableView];
 }
 

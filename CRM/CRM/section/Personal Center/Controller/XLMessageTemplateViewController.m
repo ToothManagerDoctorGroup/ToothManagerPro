@@ -39,7 +39,7 @@
     //设置导航栏样式
     [self setUpNavStyle];
     //获取用户的消息模板
-    [self requestData];
+    [self requestDataIsRefresh:NO];
     //添加通知
     [self addNotification];
 }
@@ -57,57 +57,41 @@
 }
 #pragma mark - 刷新数据
 - (void)refreshLocalData{
-    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        [self.messageTemplates removeAllObjects];
-        //对数据进行分组
-        NSMutableArray *group1 = [NSMutableArray array];
-        NSMutableArray *group2 = [NSMutableArray array];
-        for (XLMessageTemplateModel *model in result) {
-            if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"] ||
-                [model.message_name isEqualToString:@"转诊后通知"] ||
-                [model.message_name isEqualToString:@"成为介绍人通知"]) {
-                [group1 addObject:model];
-            }else{
-                [group2 addObject:model];
-            }
-        }
-        
-        [self.messageTemplates addObject:group1];
-        [self.messageTemplates addObject:group2];
-        
-        [self.tableView reloadData];
-        
-    } failure:^(NSError *error) {
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+    [self requestDataIsRefresh:YES];
 }
 #pragma mark - 请求网络数据
-- (void)requestData{
-    [SVProgressHUD showWithStatus:@"正在加载"];
+- (void)requestDataIsRefresh:(BOOL)isRefresh{
+    if (!isRefresh) [SVProgressHUD showWithStatus:@"正在加载"];
+    
     [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
         [self.messageTemplates removeAllObjects];
         //对数据进行分组
         NSMutableArray *group1 = [NSMutableArray array];
         NSMutableArray *group2 = [NSMutableArray array];
+        NSMutableArray *group3 = [NSMutableArray array];
+        NSMutableArray *group4 = [NSMutableArray array];
         for (XLMessageTemplateModel *model in result) {
-            if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"] ||
-                [model.message_name isEqualToString:@"转诊后通知"] ||
-                [model.message_name isEqualToString:@"成为介绍人通知"]) {
+            if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"]) {
                 [group1 addObject:model];
-            }else{
+            }else if([model.message_name isEqualToString:@"转诊后通知"]){
                 [group2 addObject:model];
+            }else if ([model.message_name isEqualToString:@"成为介绍人通知"]){
+                [group3 addObject:model];
+            }else{
+                [group4 addObject:model];
             }
         }
         
         [self.messageTemplates addObject:group1];
         [self.messageTemplates addObject:group2];
-        [SVProgressHUD dismiss];
+        [self.messageTemplates addObject:group3];
+        [self.messageTemplates addObject:group4];
+        
+        if (!isRefresh) [SVProgressHUD dismiss];
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        if (!isRefresh) [SVProgressHUD dismiss];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -125,19 +109,23 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 1) {
-        return 50;
-    }
-    return 0;
+    if (section != 3) return 10;
+    return 30;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 10;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 50)];
-    view.backgroundColor = MyColor(238, 238, 238);
+    if(section != 3) return nil;
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 30)];
+    view.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
     
     NSString *title = @"预约通知";
     CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:15]];
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, titleSize.width, titleSize.height)];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, (30 - titleSize.height) / 2, titleSize.width, titleSize.height)];
     titleLabel.text = title;
     titleLabel.textColor = [UIColor colorWithHex:0x333333];
     titleLabel.font = [UIFont systemFontOfSize:15];
@@ -147,7 +135,7 @@
     [addBtn setTitle:@"添加" forState:UIControlStateNormal];
     [addBtn setTitleColor:[UIColor colorWithHex:0x00a0ea] forState:UIControlStateNormal];
     addBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-    addBtn.frame = CGRectMake(kScreenWidth - 50 - 10, 20, 50, 20);
+    addBtn.frame = CGRectMake(kScreenWidth - 30 - 10, 5, 30, 20);
     [addBtn addTarget:self action:@selector(addBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [view addSubview:addBtn];
     
@@ -180,7 +168,7 @@
     XLTemplateDetailViewController *detailVc = [[XLTemplateDetailViewController alloc] initWithStyle:UITableViewStylePlain];
     detailVc.model = model;
     detailVc.isEdit = YES;
-    if (indexPath.section == 0) {
+    if (indexPath.section != 3) {
         detailVc.isSystem = YES;
     }
     [self pushViewController:detailVc animated:YES];

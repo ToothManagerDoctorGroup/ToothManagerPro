@@ -18,7 +18,6 @@
 #import "XLStarSelectViewController.h"
 
 @interface IntroDetailHeaderTableViewController ()<XLStarSelectViewControllerDelegate>
-@property (nonatomic,retain) AvatarView *avatar;
 
 @end
 
@@ -26,7 +25,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.tableView.allowsSelection = NO;
+//    self.tableView.allowsSelection = NO;
+    self.view.backgroundColor = [UIColor whiteColor];
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
     self.nameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.nameTextField setBorderStyle:UITextBorderStyleNone];
@@ -36,9 +36,6 @@
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.phoneTextField setBorderStyle:UITextBorderStyleNone];
     
-    _avatar = [[AvatarView alloc] initWithURLString:@""];
-    _avatar.frame = CGRectMake(10, 26, 80, 80);
-    [self.view addSubview:_avatar];
     
     [self.levelView addTarget:self action:@selector(clickAction) forControlEvents:UIControlEventTouchUpInside];
 
@@ -94,19 +91,6 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
 }
 - (IBAction)message:(id)sender {
     if( [MFMessageComposeViewController canSendText] ){
-        
-       /*
-        NSString *string = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.userid,self.ckeyId];
-    
-       NSString *string1 = [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        [[IntroducerManager shareInstance]longUrlToShortUrl:@"2625560236" withAccessToken:[AccountManager shareInstance].currentUser.accesstoken withLongUrl:string1 successBlock:^{
-         
-        } failedBlock:^(NSError *error){
-           
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
-*/
-
         MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
         
         if(![NSString isEmptyString:self.phoneTextField.text]){
@@ -115,15 +99,11 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
             
             controller.messageComposeDelegate = self;
             
-            [self presentModalViewController:controller animated:YES];
-            
+            [self presentViewController:controller animated:YES completion:nil];
             [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
         }else{
             [SVProgressHUD showImage:nil status:@"未找到介绍人电话,不能发送信息。"];
         }
-        
-         
-         
     }
     else{
         [self alertWithTitle:@"提示信息" msg:@"设备没有短信功能"];
@@ -132,7 +112,7 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
 }
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
     
-    [controller dismissModalViewControllerAnimated:NO];//关键的一句   不能为YES
+    [controller dismissViewControllerAnimated:NO completion:nil];//关键的一句   不能为YES
     
     switch ( result ) {
         case MessageComposeResultCancelled:
@@ -162,8 +142,6 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
     [alert show];  
     
 }
-
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

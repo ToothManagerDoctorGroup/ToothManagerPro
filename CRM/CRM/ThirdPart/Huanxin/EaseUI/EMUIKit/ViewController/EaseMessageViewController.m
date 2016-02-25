@@ -14,6 +14,7 @@
 #import "EaseMessageReadManager.h"
 #import "SysMessageTool.h"
 #import "JSONKit.h"
+#import "AccountManager.h"
 
 #define KHintAdjustY    50
 
@@ -1389,7 +1390,7 @@
             EMTextMessageBody *textBody = (EMTextMessageBody *)body;
             NSLog(@"EMTextMessageBody%@",textBody.text);
             type = @"text";
-            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:textBody.text success:^{} failure:^(NSError *error) {}];
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:textBody.text doctorId:[AccountManager currentUserid] success:nil failure:nil];
             
         }else if ([body isKindOfClass:[EMVoiceMessageBody class]]){
             EMVoiceMessageBody *voiceBody = (EMVoiceMessageBody *)body;
@@ -1399,7 +1400,7 @@
             params[@"url"] = voiceBody.remotePath;
             params[@"suffix"] = [voiceBody.localPath componentsSeparatedByString:@"."][1];
             
-            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] success:^{} failure:^(NSError *error) {}];
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] doctorId:[AccountManager currentUserid] success:nil failure:nil];
 
         }else if ([body isKindOfClass:[EMImageMessageBody class]]){
             EMImageMessageBody *imageBody = (EMImageMessageBody *)body;
@@ -1410,7 +1411,7 @@
             params[@"suffix"] = [imageBody.localPath componentsSeparatedByString:@"."][1];
             
             //调用接口把信息存到数据库
-            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] success:^{} failure:^(NSError *error) {}];
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] doctorId:[AccountManager currentUserid] success:nil failure:nil];
         }
         
         if (_delegate && [_delegate respondsToSelector:@selector(messageViewController:didSendMessageModel:)]) {

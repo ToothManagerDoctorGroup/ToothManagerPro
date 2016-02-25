@@ -9,7 +9,6 @@
 #import "XLSignInViewController.h"
 #import "UIColor+Extension.h"
 #import "CommonMacro.h"
-#import "SignUpViewController.h"
 #import "AccountManager.h"
 #import "SVProgressHUD.h"
 #import <QuartzCore/QuartzCore.h>

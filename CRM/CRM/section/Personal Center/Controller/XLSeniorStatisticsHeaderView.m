@@ -20,6 +20,9 @@
 #define CommonTextColor [UIColor colorWithHex:0x333333]
 #define CommonTextFont [UIFont systemFontOfSize:15]
 
+#define PlantType @"plant"
+#define RepairType @"repair"
+
 @interface XLSeniorStatisticsHeaderView ()<TimPickerTextFieldDelegate,XLDoctorLibraryViewControllerDelegate>
 
 @property (nonatomic, weak)UILabel *repairTimeTitle;//修复时间标题
@@ -168,7 +171,7 @@
     CGFloat dividerH = 2;
     
     NSString *timeTitle;
-    if ([self.type isEqualToString:@"plant"]) {
+    if ([self.type isEqualToString:PlantType]) {
         timeTitle = @"种植时间：";
     }else{
         timeTitle = @"修复时间：";
@@ -195,7 +198,7 @@
     CGFloat btnW = 200;
     CGFloat btnX = (kScreenWidth - btnW) / 2;
     CGFloat btnY;
-    if ([self.type isEqualToString:@"repair"]) {
+    if ([self.type isEqualToString:RepairType]) {
         [self repairDoctorSuperView];
         btnY = _repairDoctorSuperView.bottom + (commonH - btnH) / 2;
     }else{
@@ -212,19 +215,44 @@
 
 #pragma mark - 搜索按钮点击
 - (void)searchBtnClick{
-    if (![self.startTime.text isNotEmpty]) {
-        [SVProgressHUD showImage:nil status:@"请输入起始时间"];
-        return;
+    if ([self.type isEqualToString:RepairType]) {
+        //修复统计
+        if ([self.repairDoctor.text isNotEmpty]) {
+            if ([self.startTime.text isNotEmpty] && ![self.endTime.text isNotEmpty]) {
+                [SVProgressHUD showImage:nil status:@"请选择终止时间"];
+                return;
+            }else if (![self.startTime.text isNotEmpty] && [self.endTime.text isNotEmpty]){
+                [SVProgressHUD showImage:nil status:@"请选择起始时间"];
+                return;
+            }
+        }else{
+            if (![self.startTime.text isNotEmpty]) {
+                [SVProgressHUD showImage:nil status:@"请输入起始时间"];
+                return;
+            }
+            if (![self.endTime.text isNotEmpty]){
+                [SVProgressHUD showImage:nil status:@"请输入终止时间"];
+                return;
+            }
+        }
+    }else{
+        if (![self.startTime.text isNotEmpty]) {
+            [SVProgressHUD showImage:nil status:@"请输入起始时间"];
+            return;
+        }
+        if (![self.endTime.text isNotEmpty]){
+            [SVProgressHUD showImage:nil status:@"请输入终止时间"];
+            return;
+        }
     }
-    if (![self.endTime.text isNotEmpty]){
-        [SVProgressHUD showImage:nil status:@"请输入终止时间"];
-        return;
-    }
-    //比较两个日期的大小
-    NSComparisonResult result = [MyDateTool compareStartDateStr:self.startTime.text endDateStr:self.endTime.text];
-    if (result == NSOrderedDescending) {
-        [SVProgressHUD showImage:nil status:@"起始时间不能大于终止时间"];
-        return;
+    
+    if ([self.startTime.text isNotEmpty] && [self.endTime.text isNotEmpty]) {
+        //比较两个日期的大小
+        NSComparisonResult result = [MyDateTool compareStartDateStr:self.startTime.text endDateStr:self.endTime.text];
+        if (result == NSOrderedDescending) {
+            [SVProgressHUD showImage:nil status:@"起始时间不能大于终止时间"];
+            return;
+        }
     }
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(seniorStatisticsHeaderView:didSearchWithStartTime:endTime:repairDoctor:)]) {

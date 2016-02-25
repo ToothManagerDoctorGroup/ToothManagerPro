@@ -111,7 +111,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = @"分享种牙管家医生二维码";
         mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
-        mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainName,Method_Weixin,userobj.userid];
+        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",Method_Weixin,userobj.userid];
         mode.image = self.QrCodeImageView.image;
         [Share shareToPlatform:weixin WithMode:mode];
     }

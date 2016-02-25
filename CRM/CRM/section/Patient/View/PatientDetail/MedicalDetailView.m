@@ -13,6 +13,12 @@
 #import "MJPhotoBrowser.h"
 #import "MJPhoto.h"
 #import "CRMMacro.h"
+#import "DBManager+AutoSync.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+Materials.h"
+#import "PatientDetailViewController.h"
+#import "UIView+WXViewController.h"
 
 #define Margin 5
 #define CommenTitleColor MyColor(69, 69, 70)
@@ -189,9 +195,9 @@
             imageView.layer.masksToBounds = YES;
             imageView.frame = CGRectMake(i * imageViewW, 0, imageViewW, imageViewH);
             //添加长按事件
-//            UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
-//            longPress.minimumPressDuration = 1.0f;
-//            [imageView addGestureRecognizer:longPress];
+            UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
+            longPress.minimumPressDuration = 1.0f;
+            [imageView addGestureRecognizer:longPress];
             //显示图片
             if ([ct.ckeyid isEqualToString:@"-100"]) {
                 imageView.image = [UIImage imageNamed:ct.ct_image];
@@ -239,38 +245,67 @@
 #pragma mark -长按事件
 - (void)longPressAction:(UILongPressGestureRecognizer *)longPress{
     if(longPress.state == UIGestureRecognizerStateBegan){
-//        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确认删除病历吗?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
-//        [alertView show];
         
+        __weak typeof(self) weakSelf = self;
         TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
             NSLog(@"取消删除");
         } comfirmButtonHandlder:^{
+            //删除数据
+            [weakSelf deleteMedicalCase];
             
-            for (CTLib *lib in self.cTLibs) {
-                if(![lib.ckeyid isEqualToString:@"-100"]){
-                    [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
-                }
-            }
-            
-            BOOL ret = [[DBManager shareInstance] deleteMedicalCaseWithCaseId:self.medicalCase.ckeyid];
-            if (ret) {
-                NSLog(@"删除成功");
-                //发送一个通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:MedicalCaseCancleSuccessNotification object:nil];
-            } else {
-                [SVProgressHUD showImage:nil status:@"删除失败"];
-            }
         }];
         [alertView show];
     }
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 1) {
-        NSLog(@"确认");
+#pragma mark - 删除病历数据
+- (void)deleteMedicalCase{
+    //删除本地的缓存图片
+    for (CTLib *lib in self.cTLibs) {
+        if(![lib.ckeyid isEqualToString:@"-100"]){
+            [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
+        }
+    }
+    //删除CT数据
+    NSArray *cts = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid];
+    //删除病历记录数据
+    NSArray *medicalRecords = [[DBManager shareInstance] getMedicalRecordWithCaseId:self.medicalCase.ckeyid];
+    //删除耗材数据
+    NSArray *expenses = [[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:self.medicalCase.ckeyid];
+    
+    //设置
+    BOOL ret = [[DBManager shareInstance] deleteMedicalCaseWithCaseId:self.medicalCase.ckeyid];
+    if (ret) {
+        //创建自动上传消息
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalCase postType:Delete dataEntity:[self.medicalCase.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        
+        for (CTLib *ct in cts) {
+            //创建自动上传消息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[ct.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+        
+        for (MedicalRecord *record in medicalRecords) {
+            //创建自动上传消息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Delete dataEntity:[record.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+        
+        for (MedicalExpense *expense in expenses) {
+            //创建自动上传消息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+        //删除病历成功
+        PatientDetailViewController *detailVc =  (PatientDetailViewController *)self.viewController;
+        [detailVc refreshData];
+    } else {
+        [SVProgressHUD showImage:nil status:@"删除失败"];
     }
 }
 
+#pragma mark - 通用方法
 - (NSString *)dateStrFromatter:(NSString *)dateStr{
     NSString *tempStr = [dateStr componentsSeparatedByString:@" "][0];
     return tempStr;

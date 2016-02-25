@@ -27,12 +27,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    //初始化视图
+    [self setUpView];
+    //初始化数据
+    [self setUpData];
+}
+#pragma mark - 初始化
+- (void)setUpView{
     self.view.backgroundColor = [UIColor blackColor];
     self.view.alpha = .8;
-    
     self.tableView.contentInset = UIEdgeInsetsMake(-54, 0, 0, 0);
-    
+}
+- (void)setUpData{
     ruYaArray = [[NSMutableArray alloc]initWithCapacity:0];
     
     shangHeArray = [[NSMutableArray alloc]initWithObjects:@"51",@"52",@"53",@"54",@"55",@"61",@"62",@"63",@"64",@"65", nil];
@@ -46,6 +52,10 @@
         [self xhClick:xiaHeBtn];
     }else if ([self.ruYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
+    }else if (self.ruYaString.length > 0 && [self isShuZi:self.ruYaString] && ![self.ruYaString isContainsString:@","]){
+        UIButton *button = (UIButton *)[_ruyaCell.contentView viewWithTag:[self.ruYaString integerValue]];
+        button.selected = YES;
+        [ruYaArray addObject:self.ruYaString];
     }else if(self.ruYaString.length > 0 && [self.ruYaString isContainsString:@","]){
         if(self.ruYaString.length > 0 && ![self isShuZi:self.ruYaString]){
             NSArray *ru = [self.ruYaString componentsSeparatedByString:@","];
@@ -57,6 +67,8 @@
         }
     }
 }
+
+#pragma mark - 判断是否是数字
 -(BOOL)isShuZi:(NSString *)str {
     NSRange range = NSMakeRange(0, 1);
     NSString *subString = [str substringWithRange:range];

@@ -11,6 +11,9 @@
 #import "TimPickerTextField.h"
 
 @class SAMTextView,Doctor,UserObject;
+/**
+ *  好友详细信息
+ */
 @interface UserInfoViewController : TimTableViewController <CRMHttpRequestPersonalCenterDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UIActionSheetDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *nicknameTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *departmentTextField;

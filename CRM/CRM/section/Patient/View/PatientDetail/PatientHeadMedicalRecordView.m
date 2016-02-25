@@ -110,6 +110,12 @@
 
 - (void)setMedicalCases:(NSArray *)medicalCases{
     _medicalCases = medicalCases;
+    //重新绘制
+    [self setNeedsLayout];
+}
+
+- (void)layoutSubviews{
+    [super layoutSubviews];
     
     //病历标题的大小
     CGFloat medicalButtonW = 60;
@@ -129,16 +135,26 @@
     self.addMedicalButton.frame = CGRectMake(self.width - addMedicalButtonW - Margin * 0.3, Margin * 0.3, addMedicalButtonW, addMedicalButtonH);
     self.medicalButtonScrollView.frame = CGRectMake(0, 45, medicalButtonScrollViewW, medicalButtonScrollViewH);
     if (self.medicalCases.count > 0) {
+        
+        self.medicalButtonScrollView.hidden = NO;
+        self.editMedicalButton.hidden = NO;
+        
         self.medicalButtonScrollView.medicalCases = self.medicalCases;
         
         self.editMedicalButton.frame = CGRectMake(self.width - editMedicalButtonW - Margin * .3, 47.5, editMedicalButtonW, editMedicalButtonH);
+    }else{
+        self.medicalButtonScrollView.hidden = YES;
+        self.editMedicalButton.hidden = YES;
     }
     
     //设置数据
     self.medicalDetailView.frame = CGRectMake(0, self.medicalButtonScrollView.bottom + 1, self.width, self.height - self.medicalButtonScrollView.bottom - 1);
     
     if (self.medicalCases.count > 0) {
+        self.medicalDetailView.hidden = NO;
         self.medicalDetailView.medicalCase = self.medicalCases[0];
+    }else{
+        self.medicalDetailView.hidden = YES;
     }
 }
 

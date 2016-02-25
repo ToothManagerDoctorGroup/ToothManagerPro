@@ -21,7 +21,6 @@
     
     [manager GET:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
-        
         if (success) {
             success(responseObject);
         }

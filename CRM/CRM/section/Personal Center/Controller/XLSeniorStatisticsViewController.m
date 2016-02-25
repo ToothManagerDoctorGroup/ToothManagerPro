@@ -106,10 +106,11 @@
             }
         }];
     }else{
-        //ttp://118.244.234.207/his.crm/ashx/PatientHandler.ashx?action=listpatientbyrepairtime&doctor_id=156&begin_date=2015-01-01&end_date=2016-01-16&repair_doctor_id=156_20141204083956
         //修复搜索
+        NSString *starStr = startTime == nil ? @"" : startTime;
+        NSString *endStr = endTime == nil ? @"" : endTime;
         [SVProgressHUD showWithStatus:@"正在查询"];
-        [DoctorTool queryRepairPatientsWithDoctorId:[AccountManager currentUserid] beginDate:startTime endDate:endTime repairDoctorId:repairDoctor.ckeyid success:^(NSArray *array) {
+        [DoctorTool queryRepairPatientsWithDoctorId:[AccountManager currentUserid] beginDate:starStr endDate:endStr repairDoctorId:repairDoctor.ckeyid success:^(NSArray *array) {
             [SVProgressHUD dismiss];
             [self.dataList removeAllObjects];
             [self.dataList addObjectsFromArray:array];

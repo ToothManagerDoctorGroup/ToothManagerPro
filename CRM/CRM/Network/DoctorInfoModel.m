@@ -20,5 +20,9 @@ MJCodingImplementation
     return instance;
 }
 
++ (NSDictionary *)replacedKeyFromPropertyName{
+    return @{@"keyID" : @"KeyID"};
+}
+
 
 @end

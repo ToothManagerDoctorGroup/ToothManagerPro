@@ -29,7 +29,7 @@
 
 - (void)setUp{
     CGFloat timeW = 50;
-    CGFloat commonH = 44;
+    CGFloat commonH = 50;
     CGFloat commonW = (kScreenWidth - 20 * 2 - 50 - 10 * 3) / 3;
     CGFloat margin = 10;
     

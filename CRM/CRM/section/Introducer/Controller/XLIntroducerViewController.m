@@ -159,15 +159,17 @@
 - (void)initSubViews{
     if (self.isHome) {
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-//        [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     }else{
         [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
         [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     }
     self.title = @"介绍人";
     
+    //添加标题视图
+    [self.view addSubview:[self setUpGroupViewAndButtons]];
+    
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44 - 44) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 44 - 40) style:UITableViewStylePlain];
     _tableView.contentInset = UIEdgeInsetsMake(0, 0, 10, 0);
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -258,6 +260,44 @@
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
     }
 }
+#pragma mark - 设置标题栏视图
+- (UIView *)setUpGroupViewAndButtons{
+    
+    CGFloat commonW = kScreenWidth / 3;
+    CGFloat commonH = 40;
+    
+    UIView *bgView = [[UIView alloc]init];
+    bgView.frame = CGRectMake(0, 44, kScreenWidth, commonH);
+    bgView.backgroundColor = MyColor(238, 238, 238);
+    
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39.5, kScreenWidth, 0.5)];
+    label.backgroundColor = [UIColor colorWithHex:0xcccccc];
+    [bgView addSubview:label];
+    
+    UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [nameButton setTitle:@"介绍人" forState:UIControlStateNormal];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
+    [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:nameButton];
+    
+    UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [statusButton setTitle:@"数量" forState:UIControlStateNormal];
+    [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
+    [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    statusButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:statusButton];
+    
+    UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [introducerButton setTitle:@"星级评分" forState:UIControlStateNormal];
+    [introducerButton setFrame:CGRectMake(statusButton.right, 0, commonW, commonH)];
+    [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:introducerButton];
+    
+    return bgView;
+}
+
 #pragma mark - 按介绍人数量进行排序
 - (void)sortByIntroCount{
     NSArray *lastArray = [NSArray arrayWithArray:self.introducerCellModeArray];
@@ -362,7 +402,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 44;
+    return 50;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

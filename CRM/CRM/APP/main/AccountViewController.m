@@ -42,6 +42,7 @@
 #import "XLDataAnalyseViewController.h"
 #import "XLMessageTemplateTool.h"
 #import "XLMessageTemplateViewController.h"
+#import "XLPersonInfoViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
     
@@ -234,16 +235,20 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     if(section == 0){
-        return 0;
+        return 20;
     }
-    return 20;
+    return 10;
 }
 
-- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
-    view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    return view;
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 10;
 }
+
+//- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
+//    view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    return nil;
+//}
 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -323,7 +328,7 @@
     if(indexPath.section == 0){
         if(indexPath.row == 0){
             UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
+            XLPersonInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonInfoViewController"];
             userInfoVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:userInfoVC animated:YES];
         }
@@ -347,7 +352,7 @@
             materialsVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:materialsVC animated:YES];
         }else if (indexPath.row == 1){
-            XLMessageTemplateViewController *templateVc = [[XLMessageTemplateViewController alloc] initWithStyle:UITableViewStylePlain];
+            XLMessageTemplateViewController *templateVc = [[XLMessageTemplateViewController alloc] initWithStyle:UITableViewStyleGrouped];
             templateVc.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:templateVc animated:YES];
         }
@@ -435,7 +440,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = @"牙医新生活倡导者：年种植上千颗不是梦";
         mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
-        mode.url = [NSString stringWithFormat:@"%@%@/view/InviteFriends.aspx?doctorId=%@",DomainName,Method_Weixin,userobj.userid];
+        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/InviteFriends.aspx?doctorId=%@",Method_Weixin,userobj.userid];
         mode.image = [UIImage imageNamed:@"crm_logo"];
         [Share shareToPlatform:weixin WithMode:mode];
     }

@@ -37,21 +37,23 @@ static void setLastCellSeperatorToLeft(UITableViewCell* cell)
 }
 
 - (void)setupView {
-    _nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 0,80, 30)];
+    _nameLabel = [[UILabel alloc] init];
     _nameLabel.textColor = [UIColor blackColor];
     _nameLabel.font = [UIFont systemFontOfSize:16.0f];
     _nameLabel.backgroundColor = [UIColor clearColor];
+    _nameLabel.textAlignment = NSTextAlignmentCenter;
     _nameLabel.adjustsFontSizeToFitWidth = YES;
     [self.contentView addSubview:_nameLabel];
     
-    _countLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 0,80, 30)];
+    _countLabel = [[UILabel alloc] init];
     _countLabel.textColor = [UIColor blackColor];
     _countLabel.font = [UIFont systemFontOfSize:16.0f];
     _countLabel.backgroundColor = [UIColor clearColor];
     _countLabel.textAlignment = NSTextAlignmentCenter;
+    _countLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_countLabel];
     
-    _starView = [[TimStarView alloc]initWithFrame:CGRectMake(0, 0, 75, 14)];
+    _starView = [[TimStarView alloc] init];
     [self.contentView addSubview:_starView];
 }
 
@@ -75,9 +77,16 @@ static void setLastCellSeperatorToLeft(UITableViewCell* cell)
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _nameLabel.frame = CGRectMake(10, 0, 80, self.bounds.size.height);
-    _countLabel.frame = CGRectMake(self.bounds.size.width/2.0f-40,0, 80, self.bounds.size.height);
-    _starView.frame = CGRectMake(self.bounds.size.width-85, (self.bounds.size.height-14)/2, 75, 14);
+    CGFloat commonW = kScreenWidth / 3;
+    
+    _nameLabel.frame = CGRectMake(0, 0, commonW, self.bounds.size.height);
+    _countLabel.frame = CGRectMake(_nameLabel.right,0, commonW, self.bounds.size.height);
+    
+    CGFloat starW = 75;
+    CGFloat starH = 14;
+    CGFloat starX = _countLabel.right + (commonW - starW) / 2;
+    CGFloat starY = (self.height - starH) / 2;
+    _starView.frame = CGRectMake(starX,starY,starW,starH);
 }
 
 - (void)awakeFromNib

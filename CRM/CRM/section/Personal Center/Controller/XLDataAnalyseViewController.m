@@ -84,8 +84,8 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.textLabel.font = [UIFont systemFontOfSize:15];
         
-        UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(0, 43, kScreenWidth, 1)];
-        divider.backgroundColor = [UIColor colorWithHex:0xdddddd];
+        UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(0, 43.5, kScreenWidth, 0.5)];
+        divider.backgroundColor = [UIColor colorWithHex:0xcccccc];
         [cell.contentView addSubview:divider];
     }
     

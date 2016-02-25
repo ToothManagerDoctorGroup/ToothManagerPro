@@ -29,18 +29,20 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //初始化视图
+    [self setUpView];
     
-    self.view.backgroundColor = [UIColor blackColor];
-    self.view.alpha = .8;
-    
-    self.tableView.contentInset = UIEdgeInsetsMake(-54, 0, 0, 0);
-    
+    //初始化数据
+    [self setUpData];
+}
+#pragma mark - 初始化
+- (void)setUpData{
     hengYaArray = [[NSMutableArray alloc]initWithCapacity:0];
     
     shangHeArray = [[NSMutableArray alloc]initWithObjects:@"11",@"12",@"13",@"14",@"15",@"16",@"17",@"18",@"21",@"22",@"23",@"24",@"25",@"26",@"27",@"28", nil];
     xiaHeArray = [[NSMutableArray alloc]initWithObjects:@"31",@"32",@"33",@"34",@"35",@"36",@"37",@"38",@"41",@"42",@"43",@"44",@"45",@"46",@"47",@"48", nil];
     quanKouArray = [[NSMutableArray alloc]initWithObjects:@"11",@"12",@"13",@"14",@"15",@"16",@"17",@"18",@"21",@"22",@"23",@"24",@"25",@"26",@"27",@"28",@"31",@"32",@"33",@"34",@"35",@"36",@"37",@"38",@"41",@"42",@"43",@"44",@"45",@"46",@"47",@"48", nil];
-
+    //显示已有数据
     if ([self.hengYaString isEqualToString:@"无"]) {
         return;
     }else if ([self.hengYaString isEqualToString:@"上颌"]) {
@@ -49,6 +51,10 @@
         [self xhClick:xiaHeBtn];
     }else if ([self.hengYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
+    }else if (self.hengYaString.length > 0 && [self isShuZi:self.hengYaString] && ![self.hengYaString isContainsString:@","]){
+        UIButton *button = (UIButton *)[_henyaCell.contentView viewWithTag:[self.hengYaString integerValue]];
+        button.selected = YES;
+        [hengYaArray addObject:self.hengYaString];
     }else if(self.hengYaString.length > 0 && [self.hengYaString isContainsString:@","]){
         if(self.hengYaString.length > 0 && [self isShuZi:self.hengYaString]){
             NSArray *hen = [self.hengYaString componentsSeparatedByString:@","];
@@ -60,7 +66,14 @@
         }
     }
 }
+- (void)setUpView{
+    self.view.backgroundColor = [UIColor blackColor];
+    self.view.alpha = .8;
+    self.tableView.contentInset = UIEdgeInsetsMake(-54, 0, 0, 0);
+}
 
+
+#pragma mark - 判断是否是数字
 -(BOOL)isShuZi:(NSString *)str {
     NSRange range = NSMakeRange(0, 1);
     NSString *subString = [str substringWithRange:range];

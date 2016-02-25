@@ -8,6 +8,7 @@
 
 #import "SysMessageCell.h"
 #import "SysMessageModel.h"
+#import "UIColor+Extension.h"
 
 #define TitleFont [UIFont systemFontOfSize:15]
 #define TitleColor [UIColor blackColor]
@@ -69,7 +70,7 @@
     
     //分割线
     UIView *divider = [[UIView alloc] init];
-    divider.backgroundColor = MyColor(225, 225, 226);
+    divider.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
     self.divider = divider;
     [self.contentView addSubview:divider];
 }
@@ -109,7 +110,7 @@
     CGSize contentSize = [self.model.message_content sizeWithFont:CommenFont constrainedToSize:CGSizeMake(kScreenWidth - margin * 2, MAXFLOAT)];
     self.contentLabel.frame = CGRectMake(margin, self.titleLabel.bottom + margin, kScreenWidth - margin * 2, contentSize.height);
     
-    self.divider.frame = CGRectMake(0, self.height - 1, kScreenWidth, 1);
+    self.divider.frame = CGRectMake(0, self.height - 0.5, kScreenWidth, 0.5);
 }
 
 ////tableView的侧滑是从右往左滑。而抽屉是从左往右滑。 解决方法刚刚找到了，判断滑动的视图。

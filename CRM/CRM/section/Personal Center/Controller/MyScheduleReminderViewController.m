@@ -39,6 +39,8 @@
 #import "AutoSyncGetManager.h"
 #import "XLAppointDetailViewController.h"
 #import "CRMHttpRequest+Sync.h"
+#import "XLGuideImageView.h"
+#import "CRMUserDefalut.h"
 
 @interface MyScheduleReminderViewController ()<PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -195,6 +197,17 @@
         self.isHide = YES;
     }
     
+    //获取配置项
+    NSString *isShowed = [CRMUserDefalut objectForKey:Schedule_IsShowedKey];
+    if (isShowed == nil) {
+        isShowed = Auto_Action_Open;
+        [CRMUserDefalut setObject:isShowed forKey:Schedule_IsShowedKey];
+    }
+    if ([isShowed isEqualToString:Auto_Action_Open]) {
+        [CRMUserDefalut setObject:Auto_Action_Close forKey:Schedule_IsShowedKey];
+        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alert"]];
+        [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
+    }
 }
 
 -(void)onLeftButtonAction:(id)sender{
@@ -404,7 +417,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 44;
+    return 50;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {

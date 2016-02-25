@@ -44,7 +44,8 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"编辑患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet.png"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet.png"]];
+    [self setRightBarButtonWithTitle:@"保存"];
     
     self.patientNameTextField.mode = TextFieldInputModeKeyBoard;
     self.patientNameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;

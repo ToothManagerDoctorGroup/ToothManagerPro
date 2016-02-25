@@ -63,9 +63,7 @@
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    
     [self loadTableView];
-    
 }
 
 - (void)refreshView {
@@ -126,11 +124,19 @@
     [self removeNotificationObserver];
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    if (self.isEdit) {
+        [self.tbheaderView.nameTextField becomeFirstResponder];
+    }
+}
+
 #pragma mark - Private API
 - (void)loadTableView
 {
     myTableView = [[UITableView alloc]init];
-    [myTableView setFrame:CGRectMake(0,132,kScreenWidth,kScreenHeight - 64 - 132)];
+    [myTableView setFrame:CGRectMake(0,90,kScreenWidth,kScreenHeight - 64 - 90)];
     myTableView.backgroundColor = [UIColor whiteColor];
     [myTableView setDelegate:self];
     [myTableView setDataSource:self];
@@ -141,12 +147,13 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introducer" bundle:nil];
     _tbheaderView = [storyboard instantiateViewControllerWithIdentifier:@"IntroDetailHeaderTableViewController"];
     _tbheaderView.delegate = self;
-    _tbheaderView.view.frame = CGRectMake(0, 0, kScreenWidth,132);
+    _tbheaderView.view.frame = CGRectMake(0, 0, kScreenWidth,90);
     [self.view addSubview:_tbheaderView.view];
     
     if (self.isEdit) {
         //编辑模式
-        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+//        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+        [self setRightBarButtonWithTitle:@"保存"];
         myTableView.hidden = YES;
          self.title = @"编辑介绍人";
     }else{
@@ -158,15 +165,6 @@
     }
     
     [self refreshView];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-//    _tbheaderView.nameTextField.text = introducer.intr_name;
-////    _tbheaderView.levelTextField.starLevel = introducer.intr_level;
-//    _tbheaderView.levelView.level = introducer.intr_level;
-//    _tbheaderView.phoneTextField.text = introducer.intr_phone;
-//    _tbheaderView.ckeyId = introducer.ckeyid;
 }
 
 #pragma mark - Button Action
@@ -247,6 +245,54 @@
     return [patientArray count];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 40;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    CGFloat commonW = kScreenWidth / 4;
+    CGFloat commonH = 40;
+    
+    UIView *bgView = [[UIView alloc]init];
+    bgView.frame = CGRectMake(0, 0, kScreenWidth, commonH);
+    bgView.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
+    
+    UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [nameButton setTitle:@"患者" forState:UIControlStateNormal];
+    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
+    [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:nameButton];
+    
+    
+    UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [statusButton setTitle:@"状态" forState:UIControlStateNormal];
+    [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
+    [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    statusButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:statusButton];
+    
+    UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [introducerButton setTitle:@"介绍人" forState:UIControlStateNormal];
+    [introducerButton setFrame:CGRectMake(statusButton.right, 0, commonW,commonH)];
+    [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:introducerButton];
+    
+    UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [numberButton setTitle:@"数量" forState:UIControlStateNormal];
+    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
+    [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [bgView addSubview:numberButton];
+    
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39.5, kScreenWidth, 0.5)];
+    lineView.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
+    [bgView addSubview:lineView];
+    
+    return bgView;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellID = @"PatientcellIdentifier";
@@ -262,7 +308,6 @@
     [cell configCellWithCellMode:cellMode];
     return cell;
 }
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

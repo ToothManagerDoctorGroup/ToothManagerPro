@@ -11,7 +11,7 @@
 
 @interface DoctorInfoModel : NSObject<MJKeyValue,MJCoding>
 
-@property (nonatomic, copy)NSString *KeyID;
+@property (nonatomic, copy)NSString *keyID;
 @property (nonatomic, copy)NSString *doctor_id;
 @property (nonatomic, copy)NSString *doctor_name;
 @property (nonatomic, copy)NSString *doctor_gender;
@@ -36,7 +36,7 @@
 @property (nonatomic, copy)NSString *sync_time;
 @property (nonatomic, copy)NSString *template_id;
 @property (nonatomic, copy)NSString *star_level;
-
+@property (nonatomic, assign)int patient_count;
 
 + (instancetype)shareDcotorInfo;
 

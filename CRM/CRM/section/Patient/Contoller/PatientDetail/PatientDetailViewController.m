@@ -700,25 +700,21 @@
     [super addNotificationObserver];
     [self addObserveNotificationWithName:MedicalCaseEditedNotification];
     [self addObserveNotificationWithName:MedicalCaseCancleSuccessNotification];
-    // [self addObserveNotificationWithName:PatientTransferNotification];
 }
 
 - (void)removeNotificationObserver {
     [super removeNotificationObserver];
     [self removeObserverNotificationWithName:MedicalCaseEditedNotification];
-    //  [self removeObserverNotificationWithName:PatientTransferNotification];
+    [self removeObserverNotificationWithName:MedicalCaseCancleSuccessNotification];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
     [super handNotification:notifacation];
     if ([notifacation.name isEqualToString:MedicalCaseEditedNotification]
-        || [notifacation.name isEqualToString:MedicalCaseEditedNotification]) {
+        || [notifacation.name isEqualToString:MedicalCaseCancleSuccessNotification]) {
         [self refreshData];
         [self refreshView];
-    }else if ([notifacation.name isEqualToString:MedicalCaseCancleSuccessNotification]){
-        [self refreshData];
     }
-    
 }
 
 #pragma mark - PatientDetailHeadInfoViewDelegate

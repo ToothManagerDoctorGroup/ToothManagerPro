@@ -82,9 +82,10 @@
  *  @param patient_id   患者的环信id
  *  @param content_type 发送的类型
  *  @param send_content 发送的内容
+ *  @param doctor_id    发送者的id
  *  @param success      成功回调
  *  @param failure      失败回调
  */
-+ (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content success:(void (^)())success failure:(void (^)(NSError *error))failure;
++ (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content doctorId:(NSString *)doctor_id success:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 @end

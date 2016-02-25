@@ -5,10 +5,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <scenes>
-        <!--Intro Detail Header Table View Controller-->
+        <!--Table View Controller-->
         <scene sceneID="zQK-Fa-xp1">
             <objects>
-                <tableViewController storyboardIdentifier="IntroDetailHeaderTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="wxZ-rD-ju7" customClass="IntroDetailHeaderTableViewController" sceneMemberID="viewController">
+                <tableViewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="wxZ-rD-ju7" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="23" sectionFooterHeight="22" id="doy-R7-HOD">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="132"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -174,10 +174,127 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KKP-UM-lcn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="355" y="382"/>
+            <point key="canvasLocation" x="398" y="367"/>
+        </scene>
+        <!--Intro Detail Header Table View Controller-->
+        <scene sceneID="MTS-pd-25U">
+            <objects>
+                <viewController storyboardIdentifier="IntroDetailHeaderTableViewController" id="IXN-Vp-a79" customClass="IntroDetailHeaderTableViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="2AO-FC-ob8"/>
+                        <viewControllerLayoutGuide type="bottom" id="9p3-Z8-KtA"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="W0M-WF-bd4">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="90"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UHU-bI-OOw">
+                                <rect key="frame" x="0.0" y="89.5" width="320" height="0.5"/>
+                                <animations/>
+                                <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="0.5" id="qlk-Rl-xmb"/>
+                                </constraints>
+                            </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="introducer_head.png" translatesAutoresizingMaskIntoConstraints="NO" id="EeL-vM-ipY">
+                                <rect key="frame" x="25" y="15" width="60" height="60"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="O0D-mV-3Xk"/>
+                                    <constraint firstAttribute="height" constant="60" id="aag-oP-zAc"/>
+                                </constraints>
+                            </imageView>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="患者姓名" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="d7I-eD-E5Z" customClass="TimPickerTextField">
+                                <rect key="frame" x="90" y="15" width="125" height="30"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="FBH-am-DHG"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="15365666666" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Ny-Cj-Rjy" customClass="TimPickerTextField">
+                                <rect key="frame" x="90" y="45" width="125" height="30"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="ep9-Mk-dBr"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DA6-p7-AJI" customClass="XLStarView">
+                                <rect key="frame" x="220" y="15" width="75" height="30"/>
+                                <animations/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="Nev-Gy-lCB"/>
+                                    <constraint firstAttribute="width" constant="75" id="bHD-JE-2dY"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w6Y-B3-e8C">
+                                <rect key="frame" x="270" y="47" width="25" height="25"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="8PF-N5-2te"/>
+                                    <constraint firstAttribute="height" constant="25" id="wPC-Zq-Vkl"/>
+                                </constraints>
+                                <state key="normal" image="introducer_massage.png"/>
+                                <connections>
+                                    <action selector="message:" destination="IXN-Vp-a79" eventType="touchUpInside" id="fZQ-HX-YT3"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hHb-Py-OXP">
+                                <rect key="frame" x="220" y="47" width="25" height="25"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25" id="4PF-ki-kmd"/>
+                                    <constraint firstAttribute="width" constant="25" id="hKc-zh-Ybu"/>
+                                </constraints>
+                                <state key="normal" image="introducer_phone.png"/>
+                                <connections>
+                                    <action selector="tel:" destination="IXN-Vp-a79" eventType="touchUpInside" id="VhS-oD-zdh"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="1Ny-Cj-Rjy" firstAttribute="top" secondItem="d7I-eD-E5Z" secondAttribute="bottom" id="5yu-Xp-21U"/>
+                            <constraint firstItem="hHb-Py-OXP" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="6rj-OL-RH9"/>
+                            <constraint firstAttribute="trailing" secondItem="DA6-p7-AJI" secondAttribute="trailing" constant="25" id="7JM-DA-lIl"/>
+                            <constraint firstItem="hHb-Py-OXP" firstAttribute="leading" secondItem="1Ny-Cj-Rjy" secondAttribute="trailing" constant="5" id="GbZ-Ra-mPi"/>
+                            <constraint firstItem="DA6-p7-AJI" firstAttribute="leading" secondItem="d7I-eD-E5Z" secondAttribute="trailing" constant="5" id="OCO-0S-0Zj"/>
+                            <constraint firstItem="EeL-vM-ipY" firstAttribute="top" secondItem="W0M-WF-bd4" secondAttribute="top" constant="15" id="OdL-5T-lTI"/>
+                            <constraint firstItem="EeL-vM-ipY" firstAttribute="leading" secondItem="W0M-WF-bd4" secondAttribute="leading" constant="25" id="bmH-Gh-PJV"/>
+                            <constraint firstItem="d7I-eD-E5Z" firstAttribute="top" secondItem="W0M-WF-bd4" secondAttribute="top" constant="15" id="cT6-kH-JHc"/>
+                            <constraint firstItem="UHU-bI-OOw" firstAttribute="leading" secondItem="W0M-WF-bd4" secondAttribute="leading" id="eqg-U4-c88"/>
+                            <constraint firstItem="1Ny-Cj-Rjy" firstAttribute="leading" secondItem="EeL-vM-ipY" secondAttribute="trailing" constant="5" id="hAX-SI-WWG"/>
+                            <constraint firstItem="9p3-Z8-KtA" firstAttribute="top" secondItem="UHU-bI-OOw" secondAttribute="bottom" id="idz-Rb-Q1e"/>
+                            <constraint firstItem="d7I-eD-E5Z" firstAttribute="leading" secondItem="EeL-vM-ipY" secondAttribute="trailing" constant="5" id="kWW-sn-XQ2"/>
+                            <constraint firstItem="DA6-p7-AJI" firstAttribute="top" secondItem="W0M-WF-bd4" secondAttribute="top" constant="15" id="kpZ-hm-u0M"/>
+                            <constraint firstAttribute="trailing" secondItem="UHU-bI-OOw" secondAttribute="trailing" id="lS9-EI-lxf"/>
+                            <constraint firstItem="w6Y-B3-e8C" firstAttribute="leading" secondItem="hHb-Py-OXP" secondAttribute="trailing" constant="25" id="mGC-ep-4gk"/>
+                            <constraint firstAttribute="trailing" secondItem="w6Y-B3-e8C" secondAttribute="trailing" constant="25" id="t67-zO-F0u"/>
+                            <constraint firstItem="w6Y-B3-e8C" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="tSi-zE-O5m"/>
+                        </constraints>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="90"/>
+                    <connections>
+                        <outlet property="levelView" destination="DA6-p7-AJI" id="sZg-db-duV"/>
+                        <outlet property="nameTextField" destination="d7I-eD-E5Z" id="5yE-Y7-7Q2"/>
+                        <outlet property="phoneTextField" destination="1Ny-Cj-Rjy" id="wnq-Ou-9Tc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PsF-NQ-9Wm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="398" y="598"/>
         </scene>
     </scenes>
     <resources>
+        <image name="introducer_head.png" width="60" height="60"/>
+        <image name="introducer_massage.png" width="25" height="25"/>
+        <image name="introducer_phone.png" width="25" height="25"/>
         <image name="message.png" width="18" height="13"/>
         <image name="phone.png" width="16" height="16"/>
     </resources>

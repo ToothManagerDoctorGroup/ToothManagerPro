@@ -48,8 +48,8 @@
 - (void)initNavBar{
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
-    
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+    [self setRightBarButtonWithTitle:@"完成"];
     //初始化数据
     [self setUp];
 }

@@ -38,7 +38,12 @@
 #pragma mark - 设置导航栏样式
 - (void)setUpNav{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+    if (self.rightButtonTitle) {
+        [self setRightBarButtonWithTitle:self.rightButtonTitle];
+    }else{
+        [self setRightBarButtonWithTitle:@"保存"];
+    }
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.view addGestureRecognizer:tap];
@@ -47,11 +52,10 @@
 
 #pragma mark - 设置子视图
 - (void)setUpSubViews{
-    _editSuperView = [[UIView alloc] initWithFrame:CGRectMake(10, 20, kScreenWidth - 20, 44)];
-    _editSuperView.layer.cornerRadius = 4;
-    _editSuperView.layer.masksToBounds = YES;
+    _editSuperView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, kScreenWidth, 44)];
     _editSuperView.layer.borderColor = [UIColor colorWithHex:0xcccccc].CGColor;
-    _editSuperView.layer.borderWidth = 1;
+    _editSuperView.backgroundColor = [UIColor whiteColor];
+    _editSuperView.layer.borderWidth = 0.5;
     [self.view addSubview:_editSuperView];
     
     _editField = [[UITextField alloc] initWithFrame:CGRectMake(10, 0, _editSuperView.width - 20, 44)];

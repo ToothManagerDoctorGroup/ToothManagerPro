@@ -295,7 +295,7 @@
     if ([NSString isEmptyString:patientId]) {
         return 0;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"select expense_num from %@ e join %@ m on m.ckeyid = e.[mat_id] and m.mat_type = 1 and e.patient_id = \"%@\" and e.user_id = \"%@\" and e.creation_date_sync > datetime('%@')",MedicalExpenseTableName,MaterialTableName,patientId,[AccountManager currentUserid],[NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select expense_num from %@ e join %@ m on m.ckeyid = e.[mat_id] and m.mat_type = 2 and e.patient_id = \"%@\" and e.user_id = \"%@\" and e.creation_date_sync > datetime('%@')",MedicalExpenseTableName,MaterialTableName,patientId,[AccountManager currentUserid],[NSString defaultDateString]];
     __block FMResultSet *result = nil;
     __block NSInteger count = 0;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {

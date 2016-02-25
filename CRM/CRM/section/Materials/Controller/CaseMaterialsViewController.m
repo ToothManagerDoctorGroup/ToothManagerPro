@@ -28,7 +28,8 @@
     [super initView];
     self.title = @"种植体编辑";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+    [self setRightBarButtonWithTitle:@"保存"];
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.tableView addGestureRecognizer:gestureRecognizer];

@@ -379,7 +379,7 @@ Realize_ShareInstance(AutoSyncManager);
                 [[XLAutoSyncTool shareInstance] deleteAllNeedSyncMedical_case:medicalCase success:^(CRMHttpRespondModel *respond) {
                     //上传成功
                     if([self updateSuccessWithRespondModel:respond infoModel:info]){
-                        [[DBManager shareInstance] deleteMedicalCaseWithPatientId_sync:medicalCase.ckeyid];
+                        [[DBManager shareInstance] deleteMedicalCaseWithCase_AutoSync:medicalCase];
                     }
                 } failure:^(NSError *error) {
                     //上传失败

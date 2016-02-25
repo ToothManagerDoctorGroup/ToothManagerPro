@@ -1470,6 +1470,19 @@
     return ret;
 }
 
+- (BOOL)deleteMedicalCaseWithCase_AutoSync:(MedicalCase *)mCase{
+    if (![mCase.ckeyid isNotEmpty]) {
+        return NO;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = \"%@\"",MedicalCaseTableName,mCase.ckeyid];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
+    
+    return ret;
+}
+
 /**
  *  插入一条MedicalReserve
  */
@@ -2465,11 +2478,31 @@
         return NO;
     }
     
-    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = ‘%@’",CTLibTableName,libid];
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = \"%@\"",CTLibTableName,libid];
     __block BOOL ret = NO;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
     }];
+    
+    
+    return ret;
+}
+
+- (BOOL)deleteCTlibWithCTLib_AutoSync:(CTLib *)ctLib{
+    if ([NSString isEmptyString:ctLib.ckeyid]) {
+        return NO;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = \"%@\"",CTLibTableName,ctLib.ckeyid];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
+    if (ret) {
+        //添加一条自动同步信息
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    }
     return ret;
 }
 

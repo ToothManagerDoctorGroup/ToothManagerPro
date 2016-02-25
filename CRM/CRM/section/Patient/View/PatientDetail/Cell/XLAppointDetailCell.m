@@ -56,7 +56,7 @@
     [self.contentView addSubview:contentLabel];
     
     UIView *lineView = [[UIView alloc] init];
-    lineView.backgroundColor = MyColor(238, 238, 238);
+    lineView.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
     self.lineView = lineView;
     [self.contentView addSubview:lineView];
 }
@@ -86,7 +86,7 @@
     
     self.contentLabel.text = content;
     
-    self.lineView.frame = CGRectMake(0, self.height - 1, kScreenWidth, 1);
+    self.lineView.frame = CGRectMake(0, self.height - 0.5, kScreenWidth, 0.5);
 }
 
 @end

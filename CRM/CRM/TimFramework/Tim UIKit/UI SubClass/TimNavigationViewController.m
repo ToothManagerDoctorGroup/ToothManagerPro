@@ -13,9 +13,6 @@
 #import "PatientSegumentController.h"
 #import "MenuView.h"
 #import "MenuButtonPushManager.h"
-#import "SigninViewController.h"
-#import "SignUpViewController.h"
-
 
 @interface TimNavigationViewController ()
 @end
