@@ -274,7 +274,9 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_phone = '%@' and creation_date > datetime('%@') and doctor_id = '%@'",PatientTableName,phone, [NSString defaultDateString],[AccountManager currentUserid]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from (select * from %@ where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from %@ where creation_date > datetime('%@')  and ckeyid in (select patient_id from %@ where doctor_id=\"%@\" or intr_id=\"%@\")) p where p.patient_phone = \"%@\"",PatientTableName,[NSString defaultDateString],[AccountManager currentUserid],PatientTableName,[NSString defaultDateString],PatIntrMapTableName,[AccountManager currentUserid],[AccountManager currentUserid],phone];
+    
+//    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_phone = '%@' and creation_date > datetime('%@') and doctor_id = '%@'",PatientTableName,phone, [NSString defaultDateString],[AccountManager currentUserid]];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -689,7 +691,7 @@
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-  NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc limit %i,%i",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName,page * PageCount,PageCount];
+         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc limit %i,%i",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName,page * PageCount,PageCount];
       //join %@ m on m.ckeyid=e.[mat_id] and m.mat_type = 1
          result = [db executeQuery:sqlString];
          while ([result next])
@@ -711,14 +713,8 @@
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         
-        // NSString *sqlString = [NSString stringWithFormat:@"select * from %@ where doctor_id = \"%@\" and creation_date > datetime('%@')",PatientTableName,userid,[NSString defaultDateString]];
-         
-        NSString *sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,userid,[AccountManager currentUserid]];
-         //         NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where key_id in
-         //                                 (select max(reserve_time) from (select * from %@ ORDER BY reserve_time DESC) group by patient_id)",];
+         NSString *sqlString = [NSString stringWithFormat:@"select * from %@ where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from %@ where creation_date > datetime('%@')  and ckeyid in (select patient_id from %@ where doctor_id=\"%@\" or intr_id=\"%@\")",PatientTableName,[NSString defaultDateString],userid,PatientTableName,[NSString defaultDateString],PatIntrMapTableName,userid,userid];
          result = [db executeQuery:sqlString];
-         //         NSLog(@"sqlString:%@",sqlString);
          while ([result next])
          {
              Patient * patient = [Patient patientlWithResult:result];
@@ -727,35 +723,44 @@
          [result close];
      }];
     
-    //    NSArray *untreatArr = [self getPatientsWithStatus:PatientStatusUntreatment];
-    //    [resultArray addObjectsFromArray:untreatArr];
-    
     return resultArray;
 }
 
 - (NSArray *)getAllPatientWIthID:(NSString *)userid type:(NSString *)type{
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
-    
-    
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         
-         NSString *sqlString;
+         NSString *doctor_id = nil;
+         NSString *intr_id = nil;
+         NSString *sqlString,*sqlExtension;
          if ([type isEqualToString:@"from"]) {
              //我转给别人的
-             sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,userid,[AccountManager currentUserid]];
+             doctor_id = userid;
+             intr_id = [AccountManager currentUserid];
+             sqlExtension = [NSString stringWithFormat:@"(select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" and intr_id=\"%@\"))",[NSString defaultDateString],doctor_id,intr_id];
+//             sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,userid,[AccountManager currentUserid]];
          }else if([type isEqualToString:@"to"]){
+             doctor_id = [AccountManager currentUserid];
+             intr_id = userid;
+             sqlExtension = [NSString stringWithFormat:@"(select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" and intr_id=\"%@\"))",[NSString defaultDateString],doctor_id,intr_id];
              //别人转给我的
-             sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,[AccountManager currentUserid],userid];
+//             sqlString = [NSString stringWithFormat:@"select * from %@ where ckeyid in(select patient_id from %@ where doctor_id=\"%@\" and intr_id=\"%@\")",PatientTableName,PatIntrMapTableName,[AccountManager currentUserid],userid];
          }else{
+             doctor_id = [AccountManager currentUserid];
+             intr_id = userid;
+             sqlExtension = [NSString stringWithFormat:@"(select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select distinct patient_id from %@ where repair_doctor = \"%@\"))",[NSString defaultDateString],MedicalCaseTableName,userid];
              //我修复的
-             sqlString = [NSString stringWithFormat:@"select * from '%@'  where ckeyid in ( select distinct patient_id from '%@' where repair_doctor= '%@') and user_id = '%@' and creation_date > datetime('%@')",PatientTableName,MedicalCaseTableName,userid,[AccountManager currentUserid],[NSString defaultDateString]];
+//             sqlString = [NSString stringWithFormat:@"select * from '%@'  where ckeyid in ( select distinct patient_id from '%@' where repair_doctor= '%@') and user_id = '%@' and creation_date > datetime('%@')",PatientTableName,MedicalCaseTableName,userid,[AccountManager currentUserid],[NSString defaultDateString]];
          }
+         
+        sqlString = [NSString stringWithFormat:@"select * from (select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from %@ a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc)",sqlExtension,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName];
+         
          result = [db executeQuery:sqlString];
          while ([result next])
          {
-             Patient * patient = [Patient patientlWithResult:result];
+//             Patient *patient = [Patient patientlWithResult:result];
+             Patient * patient = [Patient patientWithMixResult:result];
              [resultArray addObject:patient];
          }
          [result close];
@@ -798,11 +803,8 @@
 
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         
          NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@')  and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id where a.[patient_name] like '%%%@%%' or a.[nickname] like '%%%@%%' or patient_phone like '%%%@%%' group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc",[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName,keyWord,keyWord,keyWord];
-         
-
-         
+        
          result = [db executeQuery:sqlString];
 
          while ([result next])
@@ -826,22 +828,21 @@
 - (NSArray *)getPatientsWithStatus:(PatientStatus )status page:(int)page{
     __block FMResultSet* result = nil;
     
+    NSString *sqlExtension;
     if (status == PatientStatuspeAll) {
-        return [self getAllPatientWithPage:page];
+        sqlExtension = @"";
+    }else if (status == PatientStatusUntreatUnPlanted){
+        sqlExtension = [NSString stringWithFormat:@" and patient_status <= %ld and patient_status >= %ld ",(long)PatientStatusUnplanted,(long)PatientStatusUntreatment];
+    }else {
+        sqlExtension = [NSString stringWithFormat:@" and patient_status = %ld",(long)status];
     }
     
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         NSString * sqlString = nil;
-         if (status == PatientStatuspeAll) {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount];
-         } else if (status == PatientStatusUntreatUnPlanted) {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status <= %ld and patient_status >= %ld and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(long)PatientStatusUnplanted,(long)PatientStatusUntreatment,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
-         } else {
-             sqlString = [NSString stringWithFormat:@"select * from %@ where patient_status = %d and user_id = \"%@\" and creation_date > datetime('%@') ORDER BY update_date DESC limit %i,%i",PatientTableName,(int)status,[AccountManager currentUserid],[NSString defaultDateString],page * PageCount,PageCount];
-         }
+         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@') %@ and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') %@ and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc limit %i,%i",[NSString defaultDateString],sqlExtension,[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],sqlExtension,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName,page * PageCount,PageCount];
+         
          result = [db executeQuery:sqlString];
          while ([result next])
          {

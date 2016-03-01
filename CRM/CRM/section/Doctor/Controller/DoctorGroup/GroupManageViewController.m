@@ -530,7 +530,7 @@
         if (buttonIndex == 0) return;
         //删除组员
         [SVProgressHUD showWithStatus:@"正在删除"];
-        [DoctorGroupTool deleteGroupMemberWithCkId:self.selectModel.ckeyid success:^(CRMHttpRespondModel *respondModel) {
+        [DoctorGroupTool deleteGroupMemberWithCkId:self.selectModel.ckeyid groupId:self.group.ckeyid success:^(CRMHttpRespondModel *respondModel) {
             if ([respondModel.code integerValue] == 200) {
                 //重新请求数据
                 [self requestGroupMemberData];

@@ -75,6 +75,7 @@
         UILabel *repairDoctor = [[UILabel alloc] initWithFrame:CGRectMake(repairDocX, repairDocY, repairDocW, repairDocH)];
         repairDoctor.textColor = CommonTextColor;
         repairDoctor.font = CommonTextFont;
+        repairDoctor.textAlignment = NSTextAlignmentRight;
         self.repairDoctor = repairDoctor;
         [repairDoctorSuperView addSubview:repairDoctor];
         
@@ -110,6 +111,7 @@
     //开始时间
     TimPickerTextField *startTime = [[TimPickerTextField alloc] init];
     startTime.placeholder = @"起始时间";
+    startTime.text = [MyDateTool getMonthBeginWith:[NSDate date]];
     startTime.textAlignment = NSTextAlignmentCenter;
     startTime.textColor = CommonTextColor;
     startTime.font = [UIFont systemFontOfSize:15];
@@ -124,10 +126,12 @@
     startTime.actiondelegate = self;
     self.startTime = startTime;
     [self addSubview:startTime];
+    
 
     //结束时间
     TimPickerTextField *endTime = [[TimPickerTextField alloc] init];
     endTime.placeholder = @"终止时间";
+    endTime.text = [MyDateTool stringWithDateNoTime:[NSDate date]];
     endTime.textColor = CommonTextColor;
     endTime.font = [UIFont systemFontOfSize:15];
     endTime.textAlignment = NSTextAlignmentCenter;

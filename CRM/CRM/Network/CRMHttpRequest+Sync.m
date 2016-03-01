@@ -3606,7 +3606,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
     }
-    
+    strCaseId = strCaseId == nil ? @"" : strCaseId;
     [paramDic setObject:strCaseId forKey:@"case_id"];
     [paramDic setObject:libServLastSyncDate forKey:@"sync_time"];
     
@@ -3648,7 +3648,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
     }
-    
+    strPatientId = strPatientId == nil ? @"" : strPatientId;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
     
@@ -3689,7 +3689,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
         }
     }
 
-    
+    strCaseId = strCaseId == nil ? @"" : strCaseId;
     [paramDic setObject:strCaseId forKey:@"case_id"];
     [paramDic setObject:expServLastSyncDate forKey:@"sync_time"];
     
@@ -3728,7 +3728,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
     }
-
+    strCaseId = strCaseId == nil ? @"" : strCaseId;
     [paramDic setObject:strCaseId forKey:@"case_id"];
     [paramDic setObject:recServLastSyncDate forKey:@"sync_time"];
     
@@ -3768,7 +3768,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
     }
-    
+    strPatientId = strPatientId == nil ? @"" : strPatientId;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
     
@@ -3804,7 +3804,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
     }
-    
+    strCaseId = strCaseId == nil ? @"" : strCaseId;
     [paramDic setObject:strCaseId forKey:@"case_id"];
     [paramDic setObject:resvServLastSyncDate forKey:@"sync_time"];
     

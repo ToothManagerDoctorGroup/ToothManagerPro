@@ -133,6 +133,6 @@
  *  @param success 成功回调
  *  @param failure 失败回调
  */
-+ (void)deleteGroupMemberWithCkId:(NSString *)ckId success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure;
++ (void)deleteGroupMemberWithCkId:(NSString *)ckId groupId:(NSString *)groupid success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure;
 
 @end

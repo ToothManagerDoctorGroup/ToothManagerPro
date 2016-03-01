@@ -66,9 +66,7 @@
     self.sexCount = 1;
     self.menButton.selected = YES;
     
-    NSMutableArray  *selectRepeatArray = [NSMutableArray arrayWithObjects:@"大专",@"本科",@"硕士",@"博士", nil];
-    self.academicField.mode = TextFieldInputModePicker;
-    self.academicField.pickerDataSource = selectRepeatArray;
+    self.academicField.mode = TextFieldInputModeExternal;
     
     //添加手势
     self.headImageView.userInteractionEnabled = YES;

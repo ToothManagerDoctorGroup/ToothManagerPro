@@ -189,7 +189,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UHU-bI-OOw">
-                                <rect key="frame" x="0.0" y="89.5" width="320" height="0.5"/>
+                                <rect key="frame" x="0.0" y="89" width="320" height="0.5"/>
                                 <animations/>
                                 <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -214,10 +214,10 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="15365666666" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Ny-Cj-Rjy" customClass="TimPickerTextField">
-                                <rect key="frame" x="90" y="45" width="125" height="30"/>
+                                <rect key="frame" x="90" y="45" width="110" height="30"/>
                                 <animations/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="ep9-Mk-dBr"/>
+                                    <constraint firstAttribute="height" constant="30" id="tcw-0H-ChQ"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -231,51 +231,65 @@
                                     <constraint firstAttribute="width" constant="75" id="bHD-JE-2dY"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w6Y-B3-e8C">
-                                <rect key="frame" x="270" y="47" width="25" height="25"/>
-                                <animations/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="25" id="8PF-N5-2te"/>
-                                    <constraint firstAttribute="height" constant="25" id="wPC-Zq-Vkl"/>
-                                </constraints>
-                                <state key="normal" image="introducer_massage.png"/>
-                                <connections>
-                                    <action selector="message:" destination="IXN-Vp-a79" eventType="touchUpInside" id="fZQ-HX-YT3"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hHb-Py-OXP">
-                                <rect key="frame" x="220" y="47" width="25" height="25"/>
+                                <rect key="frame" x="200" y="47" width="25" height="25"/>
                                 <animations/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="4PF-ki-kmd"/>
-                                    <constraint firstAttribute="width" constant="25" id="hKc-zh-Ybu"/>
+                                    <constraint firstAttribute="width" constant="25" id="Od4-E4-lGw"/>
+                                    <constraint firstAttribute="height" constant="25" id="sfq-4n-3El"/>
                                 </constraints>
                                 <state key="normal" image="introducer_phone.png"/>
                                 <connections>
                                     <action selector="tel:" destination="IXN-Vp-a79" eventType="touchUpInside" id="VhS-oD-zdh"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i2G-M2-IOF">
+                                <rect key="frame" x="270" y="47" width="25" height="25"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="0GV-bt-Cn9"/>
+                                    <constraint firstAttribute="height" constant="25" id="rWL-uG-CWq"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="intr_weixin_green.png"/>
+                                <connections>
+                                    <action selector="weixinShare:" destination="IXN-Vp-a79" eventType="touchUpInside" id="pmi-Sa-X9Y"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w6Y-B3-e8C">
+                                <rect key="frame" x="235" y="47" width="25" height="25"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25" id="Osp-nC-czC"/>
+                                    <constraint firstAttribute="width" constant="25" id="X8d-6o-oRY"/>
+                                </constraints>
+                                <state key="normal" image="introducer_massage.png"/>
+                                <connections>
+                                    <action selector="message:" destination="IXN-Vp-a79" eventType="touchUpInside" id="fZQ-HX-YT3"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="1Ny-Cj-Rjy" firstAttribute="top" secondItem="d7I-eD-E5Z" secondAttribute="bottom" id="5yu-Xp-21U"/>
-                            <constraint firstItem="hHb-Py-OXP" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="6rj-OL-RH9"/>
                             <constraint firstAttribute="trailing" secondItem="DA6-p7-AJI" secondAttribute="trailing" constant="25" id="7JM-DA-lIl"/>
-                            <constraint firstItem="hHb-Py-OXP" firstAttribute="leading" secondItem="1Ny-Cj-Rjy" secondAttribute="trailing" constant="5" id="GbZ-Ra-mPi"/>
+                            <constraint firstItem="1Ny-Cj-Rjy" firstAttribute="top" secondItem="d7I-eD-E5Z" secondAttribute="bottom" id="7kV-9X-kC8"/>
+                            <constraint firstAttribute="trailing" secondItem="i2G-M2-IOF" secondAttribute="trailing" constant="25" id="Ldj-wv-Mru"/>
                             <constraint firstItem="DA6-p7-AJI" firstAttribute="leading" secondItem="d7I-eD-E5Z" secondAttribute="trailing" constant="5" id="OCO-0S-0Zj"/>
                             <constraint firstItem="EeL-vM-ipY" firstAttribute="top" secondItem="W0M-WF-bd4" secondAttribute="top" constant="15" id="OdL-5T-lTI"/>
+                            <constraint firstItem="i2G-M2-IOF" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="Or8-nK-1kQ"/>
                             <constraint firstItem="EeL-vM-ipY" firstAttribute="leading" secondItem="W0M-WF-bd4" secondAttribute="leading" constant="25" id="bmH-Gh-PJV"/>
+                            <constraint firstItem="hHb-Py-OXP" firstAttribute="leading" secondItem="1Ny-Cj-Rjy" secondAttribute="trailing" id="cLa-2G-Frw"/>
                             <constraint firstItem="d7I-eD-E5Z" firstAttribute="top" secondItem="W0M-WF-bd4" secondAttribute="top" constant="15" id="cT6-kH-JHc"/>
+                            <constraint firstItem="w6Y-B3-e8C" firstAttribute="leading" secondItem="hHb-Py-OXP" secondAttribute="trailing" constant="10" id="dRR-eh-xdf"/>
+                            <constraint firstItem="i2G-M2-IOF" firstAttribute="leading" secondItem="w6Y-B3-e8C" secondAttribute="trailing" constant="10" id="eAD-qs-zFE"/>
                             <constraint firstItem="UHU-bI-OOw" firstAttribute="leading" secondItem="W0M-WF-bd4" secondAttribute="leading" id="eqg-U4-c88"/>
-                            <constraint firstItem="1Ny-Cj-Rjy" firstAttribute="leading" secondItem="EeL-vM-ipY" secondAttribute="trailing" constant="5" id="hAX-SI-WWG"/>
                             <constraint firstItem="9p3-Z8-KtA" firstAttribute="top" secondItem="UHU-bI-OOw" secondAttribute="bottom" id="idz-Rb-Q1e"/>
+                            <constraint firstItem="1Ny-Cj-Rjy" firstAttribute="leading" secondItem="EeL-vM-ipY" secondAttribute="trailing" constant="5" id="iy1-WU-Av5"/>
                             <constraint firstItem="d7I-eD-E5Z" firstAttribute="leading" secondItem="EeL-vM-ipY" secondAttribute="trailing" constant="5" id="kWW-sn-XQ2"/>
                             <constraint firstItem="DA6-p7-AJI" firstAttribute="top" secondItem="W0M-WF-bd4" secondAttribute="top" constant="15" id="kpZ-hm-u0M"/>
                             <constraint firstAttribute="trailing" secondItem="UHU-bI-OOw" secondAttribute="trailing" id="lS9-EI-lxf"/>
-                            <constraint firstItem="w6Y-B3-e8C" firstAttribute="leading" secondItem="hHb-Py-OXP" secondAttribute="trailing" constant="25" id="mGC-ep-4gk"/>
-                            <constraint firstAttribute="trailing" secondItem="w6Y-B3-e8C" secondAttribute="trailing" constant="25" id="t67-zO-F0u"/>
-                            <constraint firstItem="w6Y-B3-e8C" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="tSi-zE-O5m"/>
+                            <constraint firstItem="hHb-Py-OXP" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="oSK-zk-7Qw"/>
+                            <constraint firstItem="w6Y-B3-e8C" firstAttribute="top" secondItem="DA6-p7-AJI" secondAttribute="bottom" constant="2" id="sX1-n9-8sp"/>
                         </constraints>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -288,10 +302,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PsF-NQ-9Wm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="398" y="598"/>
+            <point key="canvasLocation" x="398" y="547"/>
         </scene>
     </scenes>
     <resources>
+        <image name="intr_weixin_green.png" width="25" height="25"/>
         <image name="introducer_head.png" width="60" height="60"/>
         <image name="introducer_massage.png" width="25" height="25"/>
         <image name="introducer_phone.png" width="25" height="25"/>

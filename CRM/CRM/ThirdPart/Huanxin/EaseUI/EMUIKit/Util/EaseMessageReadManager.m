@@ -119,7 +119,7 @@ static EaseMessageReadManager *detailInstance = nil;
     if (imageArray && [imageArray count] > 0) {
         NSMutableArray *photoArray = [NSMutableArray array];
         for (id object in imageArray) {
-            MWPhoto *photo;
+            MWPhoto *photo = nil;
             if ([object isKindOfClass:[UIImage class]]) {
                 photo = [MWPhoto photoWithImage:object];
             }

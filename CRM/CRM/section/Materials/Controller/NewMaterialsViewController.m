@@ -18,7 +18,7 @@
 #import "DBManager+AutoSync.h"
 #import "PatientDetailViewController.h"
 #import "XLDataSelectViewController.h"
-
+#import "DBManager+Doctor.h"
 
 //TIMUIKIT_EXTERN NSString * const ITI;
 //TIMUIKIT_EXTERN NSString * const DENTIS;
@@ -155,11 +155,23 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        cellMode.name = patientTmp.patient_name;
+        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+            cellMode.name = patientTmp.nickName;
+        }else{
+            cellMode.name = patientTmp.patient_name;
+        }
         cellMode.phone = patientTmp.patient_phone;
-        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
+        cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-        cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+        cellMode.status = patientTmp.patient_status;
+        //            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+        cellMode.countMaterial = patientTmp.expense_num;
+        Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
+        if ([doc.doctor_name isNotEmpty]) {
+            cellMode.isTransfer = YES;
+        }else{
+            cellMode.isTransfer = NO;
+        }
         [patientCellModeArray addObject:cellMode];
     }
     

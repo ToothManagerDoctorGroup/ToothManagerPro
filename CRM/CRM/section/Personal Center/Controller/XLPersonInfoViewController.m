@@ -16,6 +16,8 @@
 #import "CRMHttpRespondModel.h"
 #import "XLCommonEditViewController.h"
 #import "DBManager+User.h"
+#import "PatientManager.h"
+
 
 @interface XLPersonInfoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate,XLCommonEditViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;//头像
@@ -32,21 +34,9 @@
 
 @property (nonatomic, strong)DoctorInfoModel *currentDoctor;
 
-/**
- *  线程队列,创建子线程
- */
-@property (nonatomic, strong)NSOperationQueue *opQueue;
-
 @end
 
 @implementation XLPersonInfoViewController
-
-- (NSOperationQueue *)opQueue{
-    if (!_opQueue) {
-        _opQueue = [[NSOperationQueue alloc] init];
-    }
-    return _opQueue;
-}
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
@@ -80,8 +70,7 @@
 //显示数据
 - (void)setUpViewDataWithDoctor:(DoctorInfoModel *)doctorInfo{
     //显示数据
-    self.iconImageView.image = [UIImage imageNamed:@"user_icon"];
-    [self downloadImageWithImageUrl:doctorInfo.doctor_image];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctorInfo.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
     
     self.userName.text = doctorInfo.doctor_name;
     self.userSex.text = [doctorInfo.doctor_gender isEqualToString:@"0"] ? @"女" : @"男";
@@ -243,6 +232,8 @@
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"上传中..."];
     [DoctorTool composeTeacherHeadImg:tempImage userId:[[AccountManager shareInstance] currentUser].userid success:^{
+        //清空缓存中的用户头像
+        [[SDImageCache sharedImageCache] removeImageForKey:[AccountManager shareInstance].currentUser.img];
         weakSelf.iconImageView.image = tempImage;
         [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
         
@@ -279,7 +270,7 @@
         self.currentDoctor.doctor_hospital = content;
     }else if ([title isEqualToString:@"个人简介"]){
         self.currentDoctor.doctor_cv = content;
-    }else if ([title isEqualToString:@"职业技能"]){
+    }else if ([title isEqualToString:@"擅长项目"]){
         self.currentDoctor.doctor_skill = content;
     }
     
@@ -340,7 +331,7 @@
         }];
     }];
     // 2.必须将任务添加到队列中才能执行
-    [self.opQueue addOperation:downOp];
+//    [self.opQueue addOperation:downOp];
 }
 
 - (void)didReceiveMemoryWarning {

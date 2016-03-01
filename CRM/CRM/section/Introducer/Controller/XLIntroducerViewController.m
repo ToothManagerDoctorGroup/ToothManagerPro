@@ -449,7 +449,7 @@
     
     IntroducerTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:ideString];
     if (cell == nil) {
-        cell = [[IntroducerTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ideString];
+        cell = [[IntroducerTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ideString];
         //cell的背景颜色
         [cell.contentView setBackgroundColor:[UIColor whiteColor]];
         //设置选中之后的颜色

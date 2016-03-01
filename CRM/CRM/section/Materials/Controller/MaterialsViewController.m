@@ -225,7 +225,7 @@
     
     UIGraphicsEndImageContext();
     
-    UIImage * roundImage = [[UIImage alloc]init];
+    UIImage * roundImage = nil;
     UIImage * roundAndNumImage = nil;
     //画圆
     UIGraphicsBeginImageContext(CGSizeMake(width, width));

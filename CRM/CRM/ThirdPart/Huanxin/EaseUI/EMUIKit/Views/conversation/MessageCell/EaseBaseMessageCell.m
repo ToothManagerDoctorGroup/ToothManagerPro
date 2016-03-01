@@ -216,7 +216,7 @@
     [super setModel:model];
     
     if (model.avatarURLPath) {
-        [self.avatarView sd_setImageWithURL:[NSURL URLWithString:model.avatarURLPath] placeholderImage:model.avatarImage];
+        [self.avatarView sd_setImageWithURL:[NSURL URLWithString:model.avatarURLPath] placeholderImage:model.avatarImage options:SDWebImageRefreshCached];
     } else {
         self.avatarView.image = model.avatarImage;
     }

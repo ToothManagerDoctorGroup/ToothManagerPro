@@ -41,6 +41,7 @@
 #import "CRMHttpRespondModel.h"
 #import "XLHengYaViewController.h"
 #import "XLRuYaViewController.h"
+#import "AddressBoolTool.h"
 
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
@@ -251,10 +252,7 @@
                     InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Insert dataEntity:[tempCTLib.keyValues JSONString] syncStatus:@"0"];
                     [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 }
-                
-            
             }
-            
             //存储预约记录
             _medicalRes.case_id = caseid;
             _medicalRes.patient_id = _medicalCase.patient_id;
@@ -407,10 +405,24 @@
         //获取患者数据
         Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
         if (patient != nil) {
-            //添加一条删除ct片的自动同步数据
             InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         }
+        //获取ct片
+        if (self.ctblibArray.count > 0) {
+            //保存患者的头像
+            BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+            if (!isExist) {
+                [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+            }
+            
+            CTLib *ctLib = [self.ctblibArray lastObject];
+            UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
+            UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
+            [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
+        }
+        
+        //发送通知
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
         
         if (self.isNewPatient) {

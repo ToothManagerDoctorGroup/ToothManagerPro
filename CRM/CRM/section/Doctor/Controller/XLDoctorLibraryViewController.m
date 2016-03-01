@@ -239,8 +239,8 @@
 }
 #pragma mark - 排序
 -(void)orderedByNumber{
-    NSArray *lastArray = [NSArray arrayWithArray:self.searchHistoryArray];
-    lastArray = [self.searchHistoryArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+
+    NSArray *lastArray = [self.searchHistoryArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         Doctor *doctor1 = (Doctor *)obj1;
         Doctor *doctor2 = (Doctor *)obj2;
         NSInteger count1 = [[DBManager shareInstance] getAllPatientWithID:doctor1.ckeyid].count;

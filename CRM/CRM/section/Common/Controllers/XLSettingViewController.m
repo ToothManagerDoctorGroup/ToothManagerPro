@@ -13,10 +13,12 @@
 #import "UIColor+Extension.h"
 #import "DBManager.h"
 #import "XLSingleContentWriteViewController.h"
-
+#import "AddressBoolTool.h"
+#import "DBManager+Patients.h"
+#import "DBTableMode.h"
 
 #define Patient_AutoSync_Time_Key [NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]
-@interface XLSettingViewController ()<XLSingleContentWriteViewControllerDelegate>
+@interface XLSettingViewController ()<XLSingleContentWriteViewControllerDelegate,UIAlertViewDelegate>
 
 @property (nonatomic, strong)NSArray *dataList;
 
@@ -33,8 +35,8 @@
     self.title = @"通用设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
-    
-    self.dataList = @[@[@"自动同步",@"同步间隔时间"],@[@"显示提醒内容"],@[@"是否将患者插入通讯录",@"同步日程到系统日历"],@[@"重置同步时间"]];
+//    self.dataList = @[@[@"一键将患者导入通讯录"],@[@"显示提醒内容"],@[@"是否将患者插入通讯录",@"同步日程到系统日历"],@[@"重置同步时间"]];
+    self.dataList = @[@[@"同步预约日程到系统日历",@"添加预约时显示提醒内容"],@[@"同步所有患者到通讯录",@"同步手工录入患者到通讯录"],@[@"重置同步时间"]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshData) name:AutoSyncTimeChangeNotification object:nil];
     
@@ -58,21 +60,6 @@
     return [self.dataList[section] count];
 }
 
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-//    if (indexPath.section == 0) {
-//        if (indexPath.row == 1) {
-//            return indexPath;
-//        }else{
-//            return nil;
-//        }
-//    }else if(indexPath.section == 3){
-//        return indexPath;
-//    }else{
-//        return nil;
-//    }
-//    return indexPath;
-//}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     static NSString *ID = @"setting_cell";
@@ -87,78 +74,6 @@
     if (indexPath.section == 0) {
         cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
         if (indexPath.row == 0) {
-            
-            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
-            [switchView addTarget:self action:@selector(switchAction:) forControlEvents:UIControlEventValueChanged];
-            
-            NSString *isOpen = [CRMUserDefalut objectForKey:AutoSyncOpenKey];
-            if (isOpen == nil) {
-                switchView.on = YES;
-                [CRMUserDefalut setObject:Auto_Action_Open forKey:AutoSyncOpenKey];
-                
-            }else{
-                if ([isOpen isEqualToString:Auto_Action_Close]) {
-                    switchView.on = NO;
-                }else{
-                    switchView.on = YES;
-                }
-            }
-            cell.accessoryView = switchView;
-            cell.detailTextLabel.text = @"";
-        }else{
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            
-            NSString *autoTime = [CRMUserDefalut objectForKey:AutoSyncTimeKey];
-            if (autoTime == nil) {
-                cell.detailTextLabel.text = AutoSyncTime_Five;
-                [CRMUserDefalut setObject:autoTime forKey:AutoSyncTimeKey];
-            }else{
-                cell.detailTextLabel.text = autoTime;
-            }
-            
-        }
-    }else if (indexPath.section == 1){
-        cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
-        if (indexPath.row == 0) {
-            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
-            [switchView addTarget:self action:@selector(switchAlertAction:) forControlEvents:UIControlEventValueChanged];
-    
-            NSString *autoAlert = [CRMUserDefalut objectForKey:AutoAlertKey];
-            if (autoAlert == nil) {
-                switchView.on = YES;
-                [CRMUserDefalut setObject:Auto_Action_Open forKey:AutoAlertKey];
-            }else{
-                if ([autoAlert isEqualToString:Auto_Action_Open]) {
-                    switchView.on = YES;
-                }else {
-                    switchView.on = NO;
-                }
-            }
-            cell.accessoryView = switchView;
-            cell.detailTextLabel.text = @"";
-        }
-    }else if (indexPath.section == 2){
-        cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
-        if (indexPath.row == 0) {
-            //将患者插入通讯录
-            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
-            [switchView addTarget:self action:@selector(switchAddressAction:) forControlEvents:UIControlEventValueChanged];
-            NSString *patientToAddress = [CRMUserDefalut objectForKey:PatientToAddressBookKey];
-            if (patientToAddress == nil) {
-                switchView.on = YES;
-                [CRMUserDefalut setObject:Auto_Action_Open forKey:PatientToAddressBookKey];
-            }else{
-                if ([patientToAddress isEqualToString:Auto_Action_Open]) {
-                    switchView.on = YES;
-                }else {
-                    switchView.on = NO;
-                }
-            }
-            cell.accessoryView = switchView;
-            cell.detailTextLabel.text = @"";
-            
-            
-        }else if (indexPath.row == 1) {
             UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
             [switchView addTarget:self action:@selector(switchReserveAction:) forControlEvents:UIControlEventValueChanged];
             
@@ -175,58 +90,102 @@
             }
             cell.accessoryView = switchView;
             cell.detailTextLabel.text = @"";
+        }else{
+            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
+            [switchView addTarget:self action:@selector(switchAlertAction:) forControlEvents:UIControlEventValueChanged];
+            
+            NSString *autoAlert = [CRMUserDefalut objectForKey:AutoAlertKey];
+            if (autoAlert == nil) {
+                switchView.on = YES;
+                [CRMUserDefalut setObject:Auto_Action_Open forKey:AutoAlertKey];
+            }else{
+                if ([autoAlert isEqualToString:Auto_Action_Open]) {
+                    switchView.on = YES;
+                }else {
+                    switchView.on = NO;
+                }
+            }
+            cell.accessoryView = switchView;
+            cell.detailTextLabel.text = @"";
         }
-    }else if (indexPath.section == 3){
+        
+    }else if (indexPath.section == 1){
+        cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
+        if (indexPath.row == 0) {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.detailTextLabel.text = @"";
+        }else{
+            //将患者插入通讯录
+            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
+            [switchView addTarget:self action:@selector(switchAddressAction:) forControlEvents:UIControlEventValueChanged];
+            NSString *patientToAddress = [CRMUserDefalut objectForKey:PatientToAddressBookKey];
+            if (patientToAddress == nil) {
+                switchView.on = YES;
+                [CRMUserDefalut setObject:Auto_Action_Open forKey:PatientToAddressBookKey];
+            }else{
+                if ([patientToAddress isEqualToString:Auto_Action_Open]) {
+                    switchView.on = YES;
+                }else {
+                    switchView.on = NO;
+                }
+            }
+            cell.accessoryView = switchView;
+            cell.detailTextLabel.text = @"";
+        }
+    }else if (indexPath.section == 2){
         cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        if (indexPath.row == 0) {
-            NSString *resetAutoSyncTime = [CRMUserDefalut objectForKey:Patient_AutoSync_Time_Key];
-            if (resetAutoSyncTime == nil) {
-                resetAutoSyncTime = @"1970-01-01 08:00:00";
-                
-                [CRMUserDefalut setObject:resetAutoSyncTime forKey:Patient_AutoSync_Time_Key];
-            }
-            cell.detailTextLabel.text = resetAutoSyncTime;
+        NSString *resetAutoSyncTime = [CRMUserDefalut objectForKey:Patient_AutoSync_Time_Key];
+        if (resetAutoSyncTime == nil) {
+            resetAutoSyncTime = @"1970-01-01 08:00:00";
+            
+            [CRMUserDefalut setObject:resetAutoSyncTime forKey:Patient_AutoSync_Time_Key];
         }
+        cell.detailTextLabel.text = resetAutoSyncTime;
     }
-    
     return cell;
-    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    
-    if (indexPath.section == 0) {
-        if (indexPath.row == 1) {
-            //跳转到时间选择页面
-            XLTimeSelectViewController *timeVC = [[XLTimeSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
-            [self pushViewController:timeVC animated:YES];
-        }
-    }else if (indexPath.section == 3){
+    if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            NSString *resetAutoSyncTimeKey = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]];
-            XLSingleContentWriteViewController *singleVc = [[XLSingleContentWriteViewController alloc] init];
-            singleVc.delegate = self;
-            singleVc.currentTime = resetAutoSyncTimeKey;
-            [self pushViewController:singleVc animated:YES];
+            //获取所有患者的个数
+            int total = [[DBManager shareInstance] getPatientsCountWithStatus:PatientStatuspeAll];
+            NSString *message = [NSString stringWithFormat:@"是否将%d个患者导入通讯录?",total];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"导入患者" message:message delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+            [alertView show];
         }
+        
+    }else if (indexPath.section == 2){
+        NSString *resetAutoSyncTimeKey = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]];
+        XLSingleContentWriteViewController *singleVc = [[XLSingleContentWriteViewController alloc] init];
+        singleVc.delegate = self;
+        singleVc.currentTime = resetAutoSyncTimeKey;
+        [self pushViewController:singleVc animated:YES];
     }
-    
 }
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    if (section == 0) {
+        return @"预约";
+    }else if(section == 1){
+        return @"通讯录";
+    }
+    return @"同步";
+}
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+    if (section == 0) {
+        return @"关闭后，新建预约保存时将不再弹窗显示提醒内容";
+    }else if (section == 1){
+        return @"关闭后，手工录入患者将不再插入到手机通讯录";
+    }
+    return @"设置后点击首页同步按钮，可以重新下载设置时间之后的所有数据";
+}
+
 
 #pragma mark - Switch Action
-- (void)switchAction:(UISwitch *)switchBtn{
-    if (switchBtn.isOn) {
-        [CRMUserDefalut setObject:Auto_Action_Open forKey:AutoSyncOpenKey];
-    }else{
-        [CRMUserDefalut setObject:Auto_Action_Close forKey:AutoSyncOpenKey];
-    }
-    //发送通知
-    [[NSNotificationCenter defaultCenter] postNotificationName:AutoSyncStateChangeNotification object:nil];
-}
-
 - (void)switchAlertAction:(UISwitch *)switchBtn{
     if (switchBtn.isOn) {
         [CRMUserDefalut setObject:Auto_Action_Open forKey:AutoAlertKey];
@@ -254,6 +213,24 @@
 #pragma mark - XLSingleContentWriteViewControllerDelegate
 - (void)singleContentViewController:(XLSingleContentWriteViewController *)singleVC didChangeSyncTime:(NSString *)syncTime{
     [self.tableView reloadData];
+}
+
+#pragma mark - UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) return;
+    //完成通讯录导入
+    [SVProgressHUD showWithStatus:@"正在导入"];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSArray *patients = [[DBManager shareInstance] getAllPatientWithID:[AccountManager currentUserid]];
+        for (Patient *p in patients) {
+            BOOL ret = [[AddressBoolTool shareInstance] getContactsWithName:p.patient_name phone:p.patient_phone];
+            if (!ret) {
+                //如果不存在，将患者导入通讯录
+                [[AddressBoolTool shareInstance] addContactToAddressBook:p];
+            }
+        }
+        [SVProgressHUD showSuccessWithStatus:@"导入完成"];
+    });
 }
 
 

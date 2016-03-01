@@ -16,6 +16,9 @@
 #import "CRMHttpRequest+Introducer.h"
 #import "XLStarView.h"
 #import "XLStarSelectViewController.h"
+#import "WXApi.h"
+#import "ShareMode.h"
+#import "Share.h"
 
 @interface IntroDetailHeaderTableViewController ()<XLStarSelectViewControllerDelegate>
 
@@ -67,10 +70,11 @@
             NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
         }
+    }else if (alertView.tag == 102) {
+        if (buttonIndex == 1) {
+            [self shareAction];
+        }
     }
-
-    
-   
 }
 
 /*
@@ -142,6 +146,35 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
     [alert show];  
     
 }
+- (IBAction)weixinShare:(id)sender {
+    [self showShareActionChoose];
+}
+
+
+//分享选择
+- (void)showShareActionChoose{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"分享" message:@"确认打开微信进行分享吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+    alertView.tag = 102;
+    [alertView show];
+}
+
+//分享
+- (void)shareAction{
+    if(![WXApi isWXAppInstalled]){
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alertView show];
+    }else{
+        ShareMode *mode = [[ShareMode alloc]init];
+        mode.title = @"完善信息";
+        mode.message = [NSString stringWithFormat:@"请点击以下链接,完善您信息,以便后续就诊"];
+        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+        
+        mode.image = [UIImage imageNamed:@"crm_logo"];
+        [Share shareToPlatform:weixin WithMode:mode];
+    }
+    
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

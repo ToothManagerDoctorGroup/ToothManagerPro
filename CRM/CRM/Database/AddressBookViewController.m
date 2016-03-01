@@ -112,6 +112,9 @@
         }
     }
     
+    //释放内存
+    CFRelease(addressBook);
+    
     //按姓名排序
     self.tableViewDataSource = [NSMutableArray arrayWithArray:[self.tableViewDataSource sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         NSComparisonResult result;

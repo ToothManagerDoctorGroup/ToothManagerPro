@@ -221,13 +221,14 @@
         return nil;
     }
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSString * sqlString = [NSString stringWithFormat:@"select * from %@  where ckeyid in(select patient_id from %@ where mat_id='%@') and creation_date > datetime('%@')",PatientTableName,MedicalExpenseTableName,materialId, [NSString defaultDateString]];
+    NSString *sqlString = [NSString stringWithFormat:@"select * from (select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from %@ where mat_id='%@')) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc)",[NSString defaultDateString],MedicalExpenseTableName,materialId,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName];
+    
     __block Patient *patient = nil;
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         result = [db executeQuery:sqlString];
         while ([result next]) {
-            patient = [Patient patientlWithResult:result];
+            patient = [Patient patientWithMixResult:result];
             [resultArray addObject:patient];
         }
         [result close];

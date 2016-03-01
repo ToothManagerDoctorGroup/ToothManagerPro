@@ -98,6 +98,8 @@
 
 }
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
     [self refreshData];
     [self refreshView];
 }

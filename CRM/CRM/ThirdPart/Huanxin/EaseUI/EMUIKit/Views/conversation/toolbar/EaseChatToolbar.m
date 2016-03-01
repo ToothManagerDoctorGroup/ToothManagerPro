@@ -180,7 +180,7 @@
     [self.faceButton setImage:[UIImage imageNamed:@"EaseUIResource.bundle/chatBar_faceSelected"] forState:UIControlStateHighlighted];
     [self.faceButton setImage:[UIImage imageNamed:@"EaseUIResource.bundle/chatBar_keyboard"] forState:UIControlStateSelected];
     [self.faceButton addTarget:self action:@selector(faceButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    EaseChatToolbarItem *faceItem = [[EaseChatToolbarItem alloc] initWithButton:self.faceButton withView:self.faceView];
+//    EaseChatToolbarItem *faceItem = [[EaseChatToolbarItem alloc] initWithButton:self.faceButton withView:self.faceView];
     
     //更多
     self.moreButton = [[UIButton alloc] init];

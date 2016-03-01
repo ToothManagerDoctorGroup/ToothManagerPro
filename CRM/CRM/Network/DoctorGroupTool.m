@@ -43,7 +43,7 @@
 }
 
 + (void)getGroupPatientsWithDoctorId:(NSString *)doctorId groupId:(NSString *)groupId queryModel:(XLQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    //ht://118.244.234.207/his.crm/ashx/GroupPatientMapHandler.ashx?action=CanAddMemberByPage&group_id=971_20160113212334&doctor_id=971&query_info={"KeyWord":"","SortField":"姓名","IsAsc":true,"PageIndex":1,"PageSize":5}
+    //htp://118.244.234.207/his.crm/ashx/GroupPatientMapHandler.ashx?action=CanAddMemberByPage&group_id=971_20160113212334&doctor_id=971&query_info={"KeyWord":"","SortField":"姓名","IsAsc":true,"PageIndex":1,"PageSize":5}
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/GroupPatientMapHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"CanAddMemberByPage";
@@ -332,12 +332,13 @@
     }];
 }
 
-+ (void)deleteGroupMemberWithCkId:(NSString *)ckId success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure{
++ (void)deleteGroupMemberWithCkId:(NSString *)ckId groupId:(NSString *)groupid success:(void (^)(CRMHttpRespondModel *respondModel))success failure:(void (^)(NSError *error))failure{
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/GroupPatientMapHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"delete";
+    params[@"action"] = @"newdelete";
     params[@"ckeyid"] = ckId;
+    params[@"groupid"] = groupid;
     
     [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
         

@@ -18,7 +18,7 @@
         self.doctor_id = doctorId;
         self.patient_id = patientId;
         self.patient_name = patientName;
-        self.ckeyid = ckeyId;
+        self.ckeyid = @"";
         self.sync_time = @"1970-01-01 00:00:00";
         self.creation_time = [MyDateTool stringWithDateWithSec:[NSDate date]];
         self.data_flag = 1;

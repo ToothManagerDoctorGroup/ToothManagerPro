@@ -16,7 +16,7 @@
     if(pat == nil){
         return;
     }
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
+//    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
     
     NSMutableDictionary *subParamDic = [NSMutableDictionary dictionaryWithCapacity:10];
     

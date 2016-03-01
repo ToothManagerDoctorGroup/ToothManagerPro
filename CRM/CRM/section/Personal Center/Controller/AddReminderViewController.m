@@ -545,7 +545,7 @@
     flag = YES;
     if ([self.yaWeiTextField isFirstResponder]){
         [self.yaWeiTextField resignFirstResponder];
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+       
     }else if ([self.huanzheTextField isFirstResponder]){
         [self.huanzheTextField resignFirstResponder];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];

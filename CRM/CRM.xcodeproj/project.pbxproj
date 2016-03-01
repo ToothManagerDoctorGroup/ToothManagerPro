@@ -844,6 +844,8 @@
 		3D3C04251C7C7EEF006A5410 /* icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04221C7C7EEF006A5410 /* icon_120.png */; };
 		3D3C04261C7C7EEF006A5410 /* icon76.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04231C7C7EEF006A5410 /* icon76.png */; };
 		3D3C04271C7C7EEF006A5410 /* icon152.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04241C7C7EEF006A5410 /* icon152.png */; };
+		3D3E9E211C806A22008FC970 /* AddressBoolTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3E9E201C806A22008FC970 /* AddressBoolTool.m */; };
+		3D3E9E231C8073E7008FC970 /* draw_bg_black.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3E9E221C8073E7008FC970 /* draw_bg_black.png */; };
 		3D5B4F8B1C2CE1C100E37140 /* patient_bianji.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D5B4F881C2CE1C100E37140 /* patient_bianji.png */; };
 		3D5B4F8C1C2CE1C100E37140 /* patient_bianji@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D5B4F891C2CE1C100E37140 /* patient_bianji@2x.png */; };
 		3D5B4F8D1C2CE1C100E37140 /* patient_bianji@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D5B4F8A1C2CE1C100E37140 /* patient_bianji@3x.png */; };
@@ -1044,6 +1046,10 @@
 		3DE2DD591C06BC45005F7832 /* MXPullDownMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD581C06BC45005F7832 /* MXPullDownMenu.m */; };
 		3DE2DD621C06C980005F7832 /* MyYuyueTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */; };
 		3DE2DD651C06D157005F7832 /* MenuTitleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */; };
+		3DE3C4B21C8434B900D3EEB9 /* XLBaseSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B11C8434B900D3EEB9 /* XLBaseSettingViewController.m */; };
+		3DE3C4B61C845A0D00D3EEB9 /* intr_weixin_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B31C845A0D00D3EEB9 /* intr_weixin_green.png */; };
+		3DE3C4B71C845A0D00D3EEB9 /* intr_weixin_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B41C845A0D00D3EEB9 /* intr_weixin_green@2x.png */; };
+		3DE3C4B81C845A0D00D3EEB9 /* intr_weixin_green@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B51C845A0D00D3EEB9 /* intr_weixin_green@3x.png */; };
 		3DE3DB581C20F7AD00424A67 /* ReadMessageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3DB571C20F7AD00424A67 /* ReadMessageViewController.m */; };
 		3DE3DB5B1C20F7CC00424A67 /* UnReadMessageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3DB5A1C20F7CC00424A67 /* UnReadMessageViewController.m */; };
 		3DE3DB5E1C21047F00424A67 /* SysMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3DB5D1C21047F00424A67 /* SysMessageCell.m */; };
@@ -2623,8 +2629,8 @@
 		3D2851CA1C34F41700C88917 /* AutoSyncGetManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoSyncGetManager.m; sourceTree = "<group>"; };
 		3D2851E11C350AC300C88917 /* XLAutoGetSyncTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLAutoGetSyncTool.h; sourceTree = "<group>"; };
 		3D2851E21C350AC300C88917 /* XLAutoGetSyncTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAutoGetSyncTool.m; sourceTree = "<group>"; };
-		3D2851E41C35202400C88917 /* XLSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLSettingViewController.h; sourceTree = "<group>"; };
-		3D2851E51C35202400C88917 /* XLSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSettingViewController.m; sourceTree = "<group>"; };
+		3D2851E41C35202400C88917 /* XLSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XLSettingViewController.h; path = ../../Common/Controllers/XLSettingViewController.h; sourceTree = "<group>"; };
+		3D2851E51C35202400C88917 /* XLSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XLSettingViewController.m; path = ../../Common/Controllers/XLSettingViewController.m; sourceTree = "<group>"; };
 		3D2851E71C352B5F00C88917 /* XLTimeSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTimeSelectViewController.h; sourceTree = "<group>"; };
 		3D2851E81C352B5F00C88917 /* XLTimeSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTimeSelectViewController.m; sourceTree = "<group>"; };
 		3D286F561C2E6469003A561D /* XLTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTestViewController.h; sourceTree = "<group>"; };
@@ -2769,6 +2775,9 @@
 		3D3C04221C7C7EEF006A5410 /* icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_120.png; sourceTree = "<group>"; };
 		3D3C04231C7C7EEF006A5410 /* icon76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon76.png; sourceTree = "<group>"; };
 		3D3C04241C7C7EEF006A5410 /* icon152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon152.png; sourceTree = "<group>"; };
+		3D3E9E1F1C806A22008FC970 /* AddressBoolTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBoolTool.h; sourceTree = "<group>"; };
+		3D3E9E201C806A22008FC970 /* AddressBoolTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBoolTool.m; sourceTree = "<group>"; };
+		3D3E9E221C8073E7008FC970 /* draw_bg_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = draw_bg_black.png; sourceTree = "<group>"; };
 		3D5B4F881C2CE1C100E37140 /* patient_bianji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = patient_bianji.png; sourceTree = "<group>"; };
 		3D5B4F891C2CE1C100E37140 /* patient_bianji@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "patient_bianji@2x.png"; sourceTree = "<group>"; };
 		3D5B4F8A1C2CE1C100E37140 /* patient_bianji@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "patient_bianji@3x.png"; sourceTree = "<group>"; };
@@ -2789,8 +2798,8 @@
 		3D7961741C16E70900453EB4 /* search@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "search@3x.png"; sourceTree = "<group>"; };
 		3D79618D1C16E9B200453EB4 /* CustomAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomAlertView.h; sourceTree = "<group>"; };
 		3D79618E1C16E9B200453EB4 /* CustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomAlertView.m; sourceTree = "<group>"; };
-		3D7F19F51C07280000BE79ED /* MyDateTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDateTool.h; sourceTree = "<group>"; };
-		3D7F19F61C07280000BE79ED /* MyDateTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDateTool.m; sourceTree = "<group>"; };
+		3D7F19F51C07280000BE79ED /* MyDateTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyDateTool.h; path = ../Network/MyDateTool.h; sourceTree = "<group>"; };
+		3D7F19F61C07280000BE79ED /* MyDateTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyDateTool.m; path = ../Network/MyDateTool.m; sourceTree = "<group>"; };
 		3D8C38A31C72F68E0052DB74 /* XLCommonEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLCommonEditViewController.h; sourceTree = "<group>"; };
 		3D8C38A41C72F68E0052DB74 /* XLCommonEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLCommonEditViewController.m; sourceTree = "<group>"; };
 		3D8C38AA1C72FF0E0052DB74 /* AreaObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AreaObject.h; sourceTree = "<group>"; };
@@ -3048,6 +3057,11 @@
 		3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyYuyueTitleView.m; sourceTree = "<group>"; };
 		3DE2DD631C06D157005F7832 /* MenuTitleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTitleViewController.h; sourceTree = "<group>"; };
 		3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTitleViewController.m; sourceTree = "<group>"; };
+		3DE3C4B01C8434B900D3EEB9 /* XLBaseSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLBaseSettingViewController.h; sourceTree = "<group>"; };
+		3DE3C4B11C8434B900D3EEB9 /* XLBaseSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLBaseSettingViewController.m; sourceTree = "<group>"; };
+		3DE3C4B31C845A0D00D3EEB9 /* intr_weixin_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = intr_weixin_green.png; sourceTree = "<group>"; };
+		3DE3C4B41C845A0D00D3EEB9 /* intr_weixin_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "intr_weixin_green@2x.png"; sourceTree = "<group>"; };
+		3DE3C4B51C845A0D00D3EEB9 /* intr_weixin_green@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "intr_weixin_green@3x.png"; sourceTree = "<group>"; };
 		3DE3DB561C20F7AD00424A67 /* ReadMessageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReadMessageViewController.h; sourceTree = "<group>"; };
 		3DE3DB571C20F7AD00424A67 /* ReadMessageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReadMessageViewController.m; sourceTree = "<group>"; };
 		3DE3DB591C20F7CC00424A67 /* UnReadMessageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnReadMessageViewController.h; sourceTree = "<group>"; };
@@ -3172,8 +3186,8 @@
 		3DF26FFB1C5B7DB200849631 /* ic_list_set@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_list_set@3x.png"; sourceTree = "<group>"; };
 		3DF6714F1BF70A0F00527B49 /* ClinicTitleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicTitleButton.h; sourceTree = "<group>"; };
 		3DF671501BF70A0F00527B49 /* ClinicTitleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClinicTitleButton.m; sourceTree = "<group>"; };
-		3DF671541BF70A9900527B49 /* UIViewExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewExt.h; sourceTree = "<group>"; };
-		3DF671551BF70A9900527B49 /* UIViewExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewExt.m; sourceTree = "<group>"; };
+		3DF671541BF70A9900527B49 /* UIViewExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIViewExt.h; path = ../Network/UIViewExt/UIViewExt.h; sourceTree = "<group>"; };
+		3DF671551BF70A9900527B49 /* UIViewExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIViewExt.m; path = ../Network/UIViewExt/UIViewExt.m; sourceTree = "<group>"; };
 		3DF671581BF70B4400527B49 /* UIImage+LBImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LBImage.h"; sourceTree = "<group>"; };
 		3DF671591BF70B4400527B49 /* UIImage+LBImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LBImage.m"; sourceTree = "<group>"; };
 		3DF6715C1BF7136E00527B49 /* ClinicPopMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicPopMenu.h; sourceTree = "<group>"; };
@@ -6136,7 +6150,6 @@
 			isa = PBXGroup;
 			children = (
 				3D1EB5491C7EAEF1006B9F7E /* ThirdPart */,
-				3DF671571BF70B2000527B49 /* Catory */,
 			);
 			name = XLCommonTools;
 			path = ../Network;
@@ -6257,6 +6270,20 @@
 				3D1661C91C29288B0062009D /* XLForgetPasswordViewController.m */,
 			);
 			name = "Login（登录）";
+			sourceTree = "<group>";
+		};
+		3D3E9E1B1C80698C008FC970 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				3DF671571BF70B2000527B49 /* Catory */,
+				3D7F19F51C07280000BE79ED /* MyDateTool.h */,
+				3D7F19F61C07280000BE79ED /* MyDateTool.m */,
+				3DF671541BF70A9900527B49 /* UIViewExt.h */,
+				3DF671551BF70A9900527B49 /* UIViewExt.m */,
+				3D3E9E1F1C806A22008FC970 /* AddressBoolTool.h */,
+				3D3E9E201C806A22008FC970 /* AddressBoolTool.m */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		3D5B4F8F1C2D3FA800E37140 /* PatientConsultation */ = {
@@ -6896,8 +6923,6 @@
 				3D8C38A91C72FED10052DB74 /* AddressBook(日期选择) */,
 				3DDF0E1D1C31438200358EDD /* XLDataSelectViewController.h */,
 				3DDF0E1E1C31438200358EDD /* XLDataSelectViewController.m */,
-				3D2851E41C35202400C88917 /* XLSettingViewController.h */,
-				3D2851E51C35202400C88917 /* XLSettingViewController.m */,
 				3D2851E71C352B5F00C88917 /* XLTimeSelectViewController.h */,
 				3D2851E81C352B5F00C88917 /* XLTimeSelectViewController.m */,
 				3D18CD5B1C3E4B0600BDDE5C /* XLContentWriteViewController.h */,
@@ -7026,6 +7051,25 @@
 			children = (
 				3DE2DD631C06D157005F7832 /* MenuTitleViewController.h */,
 				3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		3DE3C4AE1C84346D00D3EEB9 /* Setting（设置） */ = {
+			isa = PBXGroup;
+			children = (
+				3DE3C4AF1C84347D00D3EEB9 /* Controllers */,
+			);
+			name = "Setting（设置）";
+			sourceTree = "<group>";
+		};
+		3DE3C4AF1C84347D00D3EEB9 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				3D2851E41C35202400C88917 /* XLSettingViewController.h */,
+				3D2851E51C35202400C88917 /* XLSettingViewController.m */,
+				3DE3C4B01C8434B900D3EEB9 /* XLBaseSettingViewController.h */,
+				3DE3C4B11C8434B900D3EEB9 /* XLBaseSettingViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -7200,19 +7244,9 @@
 			name = "PersonalInfo（我的空间）";
 			sourceTree = "<group>";
 		};
-		3DF671531BF70A9900527B49 /* UIViewExt */ = {
-			isa = PBXGroup;
-			children = (
-				3DF671541BF70A9900527B49 /* UIViewExt.h */,
-				3DF671551BF70A9900527B49 /* UIViewExt.m */,
-			);
-			path = UIViewExt;
-			sourceTree = "<group>";
-		};
 		3DF671571BF70B2000527B49 /* Catory */ = {
 			isa = PBXGroup;
 			children = (
-				3DF671531BF70A9900527B49 /* UIViewExt */,
 				3DE1276D1C1A6975009C1663 /* NSString+TTMAddtion.h */,
 				3DE1276E1C1A6975009C1663 /* NSString+TTMAddtion.m */,
 				3DE127571C1A6475009C1663 /* UIImage+TTMAddtion.h */,
@@ -7225,8 +7259,6 @@
 				3D0BE5E01BF99F680023D3FA /* UIView+WXViewController.m */,
 				3DF671581BF70B4400527B49 /* UIImage+LBImage.h */,
 				3DF671591BF70B4400527B49 /* UIImage+LBImage.m */,
-				3D7F19F51C07280000BE79ED /* MyDateTool.h */,
-				3D7F19F61C07280000BE79ED /* MyDateTool.m */,
 				3DE5844F1C0C2CE200B509C1 /* NSString+MyString.h */,
 				3DE584501C0C2CE200B509C1 /* NSString+MyString.m */,
 				3DE584531C0C2D2F00B509C1 /* NSDate+MyDate.h */,
@@ -7239,6 +7271,7 @@
 				3DEBEDF71C3FCD25009DC18D /* NSString+XLValidate.m */,
 			);
 			name = Catory;
+			path = ../Network;
 			sourceTree = "<group>";
 		};
 		3DF6715B1BF7133600527B49 /* PopMenu */ = {
@@ -7427,6 +7460,7 @@
 		6436DC1B19B8C48000DC667E /* General */ = {
 			isa = PBXGroup;
 			children = (
+				3D3E9E1B1C80698C008FC970 /* Utils */,
 				3D1EB5561C7EDA1E006B9F7E /* View */,
 				5BFC3DBC19F69E8A009E0007 /* AutoSync */,
 				6436DC2419B8C48000DC667E /* Database */,
@@ -7705,6 +7739,9 @@
 		6436DD1F19B8C48100DC667E /* Introducer */ = {
 			isa = PBXGroup;
 			children = (
+				3DE3C4B31C845A0D00D3EEB9 /* intr_weixin_green.png */,
+				3DE3C4B41C845A0D00D3EEB9 /* intr_weixin_green@2x.png */,
+				3DE3C4B51C845A0D00D3EEB9 /* intr_weixin_green@3x.png */,
 				3D1DAC411C7DAB2900E6A817 /* introducer_bianji.png */,
 				3D1DAC421C7DAB2900E6A817 /* introducer_bianji@2x.png */,
 				3D1DAC431C7DAB2900E6A817 /* introducer_bianji@3x.png */,
@@ -8433,6 +8470,7 @@
 				3DE2DD5B1C06C91D005F7832 /* MyYuyue（我的预约） */,
 				3D0AE7C61C043BBB00DCD4A0 /* MyReminderInfo（耗材选择） */,
 				3DEAF5821C0317FA00445C20 /* PersonalInfo（我的空间） */,
+				3DE3C4AE1C84346D00D3EEB9 /* Setting（设置） */,
 				3DAA115F1BF5BF9E00FD8149 /* MyBill（我的账单） */,
 				3D23A62E1BF2D8F50029943D /* MyClinic（我的诊所） */,
 				2DEE02D11B33AB880045BD35 /* QrCodeViewController.h */,
@@ -8538,6 +8576,7 @@
 		64E7C87D1A6416FE00099063 /* Patients */ = {
 			isa = PBXGroup;
 			children = (
+				3D3E9E221C8073E7008FC970 /* draw_bg_black.png */,
 				3D1EB5411C7E9C9F006B9F7E /* patient_line_blue.png */,
 				3D1EB5421C7E9C9F006B9F7E /* patient_line_blue@2x.png */,
 				3D1EB5431C7E9C9F006B9F7E /* patient_line_blue@3x.png */,
@@ -9141,6 +9180,7 @@
 				3D1B60C21C18082B0032D949 /* chatBar_recordBg@2x.png in Resources */,
 				3D1B60D51C18082B0032D949 /* chatBar_more_cameraSelected.png in Resources */,
 				3D1BAB2D1C7AE7EE00DA5E8A /* icon@2x.png in Resources */,
+				3DE3C4B71C845A0D00D3EEB9 /* intr_weixin_green@2x.png in Resources */,
 				3D5B4F8D1C2CE1C100E37140 /* patient_bianji@3x.png in Resources */,
 				3D1B606C1C18082B0032D949 /* VoiceSearchFeedback001@2x.png in Resources */,
 				3D37D0271C28175C00C595F4 /* login_background1@2x.png in Resources */,
@@ -9216,6 +9256,7 @@
 				3D1B606E1C18082B0032D949 /* VoiceSearchFeedback002@2x.png in Resources */,
 				3DDDB87A1BFDEFA4004AD4AC /* medical_add@2x.png in Resources */,
 				64E7C8841A6416FE00099063 /* copyfile@2x.png in Resources */,
+				3D3E9E231C8073E7008FC970 /* draw_bg_black.png in Resources */,
 				3D1B60B41C18082B0032D949 /* chatBar_face@2x.png in Resources */,
 				3D1B603C1C18082B0032D949 /* chatBar_face@2x.png in Resources */,
 				3DF26FD41C5B7B8000849631 /* ic_tixing@3x.png in Resources */,
@@ -9261,6 +9302,7 @@
 				3D1DAC3D1C7DA6CA00E6A817 /* star_highlight@3x.png in Resources */,
 				6436DE8419B8C48100DC667E /* aboutUs@2x.png in Resources */,
 				3DDDB8751BFDEFA4004AD4AC /* 微信－灰@3x.png in Resources */,
+				3DE3C4B61C845A0D00D3EEB9 /* intr_weixin_green.png in Resources */,
 				2DFE7E601B4A20A80088B119 /* umeng_fb_audio_dialog_content@2x.png in Resources */,
 				3D1B60DB1C18082B0032D949 /* chatBar_more_photo.png in Resources */,
 				3D1B606A1C18082B0032D949 /* chatListCellHead@2x.png in Resources */,
@@ -9478,6 +9520,7 @@
 				3D1B60CD1C18082B0032D949 /* chatBar_colorMore_photo@2x.png in Resources */,
 				3D5B4F8B1C2CE1C100E37140 /* patient_bianji.png in Resources */,
 				3D1B60F71C18082B0032D949 /* titleBar@2x.png in Resources */,
+				3DE3C4B81C845A0D00D3EEB9 /* intr_weixin_green@3x.png in Resources */,
 				3D1B61011C18082B0032D949 /* newFriends@2x.png in Resources */,
 				3DDDB87B1BFDEFA4004AD4AC /* medical_add@3x.png in Resources */,
 				3D18A53D1C4E61470016CABE /* Default.png in Resources */,
@@ -10127,6 +10170,7 @@
 				64B2B33019D3F7BB00DFA1E2 /* CornerButton.m in Sources */,
 				3D1B5FD91C18082B0032D949 /* MWGridCell.m in Sources */,
 				3D1B60271C18082B0032D949 /* EaseChatBarMoreView.m in Sources */,
+				3D3E9E211C806A22008FC970 /* AddressBoolTool.m in Sources */,
 				3D0AE7D31C0442D100DCD4A0 /* ChooseAssistCell.m in Sources */,
 				64BD7C7619BAF28C0015D47F /* DBManager+User.m in Sources */,
 				3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */,
@@ -10190,6 +10234,7 @@
 				6436DF3019B8C48100DC667E /* NSString+Conversion.m in Sources */,
 				3D1B5FD01C18082B0032D949 /* MJRefreshGifFooter.m in Sources */,
 				3D0BE5DE1BF99A260023D3FA /* PayedBillViewController.m in Sources */,
+				3DE3C4B21C8434B900D3EEB9 /* XLBaseSettingViewController.m in Sources */,
 				3D2A00661C05E55600B1EF65 /* PMPeriod.m in Sources */,
 				3DDE7FCB1C1E8AD9006053DA /* JTCalendarMenuView.m in Sources */,
 				3D9C84771C0D7126007B2CD2 /* UIImageView+DownLoadImage.m in Sources */,

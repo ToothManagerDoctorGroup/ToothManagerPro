@@ -43,6 +43,9 @@
 #import "XLMessageTemplateTool.h"
 #import "XLMessageTemplateViewController.h"
 #import "XLPersonInfoViewController.h"
+#import "AddressBoolTool.h"
+#import "XLBaseSettingViewController.h"
+#import "XLPersonalStepOneViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate>{
     
@@ -70,21 +73,11 @@
 
 @property (nonatomic, assign)BOOL isSign; //是否签约
 
-/**
- *  线程队列,创建子线程
- */
-@property (nonatomic, strong)NSOperationQueue *opQueue;
+
 
 @end
 
 @implementation AccountViewController
-
-- (NSOperationQueue *)opQueue{
-    if (!_opQueue) {
-        _opQueue = [[NSOperationQueue alloc] init];
-    }
-    return _opQueue;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -92,6 +85,8 @@
     //如果是测试环境
     if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
         [self setRightBarButtonWithTitle:@"测试"];
+    }else{
+//        [self setRightBarButtonWithTitle:@"存在"];
     }
     
     self.title = @"我的空间";
@@ -115,7 +110,7 @@
     iconImageView.layer.masksToBounds = YES;
     iconImageView.userInteractionEnabled = YES;
     //设置头像的默认图片
-    [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+//    [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [iconImageView addGestureRecognizer:tap];
     
@@ -125,13 +120,7 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-//    [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-//        
-//    } failure:^(NSError *error) {
-//        if (error) {
-//            NSLog(@"error:%@",error);
-//        }
-//    }];
+    //判断联系人是否存在
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -158,7 +147,8 @@
             
             if (obj.img.length > 0) {
                 //下载图片
-                [self downloadImageWithImageUrl:obj.img];
+//                [self downloadImageWithImageUrl:obj.img];
+                [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
             }
             
             self.isSign = [dic[@"is_sign"] intValue] == 1 ? YES : NO;
@@ -243,12 +233,6 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
     return 10;
 }
-
-//- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-//    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
-//    view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-//    return nil;
-//}
 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -340,9 +324,9 @@
             [self pushViewController:doctorLibrary animated:YES];
             
         }else if (indexPath.row == 1){
-            XLRepairDoctorViewController *repairDocVc = [[XLRepairDoctorViewController alloc] init];
-            repairDocVc.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:repairDocVc animated:YES];
+//            XLRepairDoctorViewController *repairDocVc = [[XLRepairDoctorViewController alloc] init];
+//            repairDocVc.hidesBottomBarWhenPushed = YES;
+//            [self pushViewController:repairDocVc animated:YES];
             
         }
     }
@@ -391,9 +375,12 @@
         }
         if(indexPath.section == 5){
             if(indexPath.row == 0){
-                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
-                set.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:set animated:YES];
+                XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                baseSetting.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:baseSetting animated:YES];
+//                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
+//                set.hidesBottomBarWhenPushed = YES;
+//                [self.navigationController pushViewController:set animated:YES];
                 
             }
             
@@ -410,9 +397,13 @@
         }
         if(indexPath.section == 4){
             if(indexPath.row == 0){
-                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
-                set.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:set animated:YES];
+                XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                baseSetting.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:baseSetting animated:YES];
+                
+//                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
+//                set.hidesBottomBarWhenPushed = YES;
+//                [self.navigationController pushViewController:set animated:YES];
             }
         }
     }
@@ -488,7 +479,7 @@
         }];
     }];
     // 2.必须将任务添加到队列中才能执行
-    [self.opQueue addOperation:downOp];
+//    [self.opQueue addOperation:downOp];
     
 }
 

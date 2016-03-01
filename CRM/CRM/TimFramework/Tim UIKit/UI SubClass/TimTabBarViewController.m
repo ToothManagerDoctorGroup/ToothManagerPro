@@ -22,6 +22,7 @@
 #import "XLGuideView.h"
 #import "QrCodePatientViewController.h"
 #import "XLGuideImageView.h"
+#import "DBManager+Patients.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -370,6 +371,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 - (void)showNotificationWithMessage:(EMMessage *)message
 {
+    NSLog(@"我被调用了");
     EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
     //发送本地推送
     UILocalNotification *notification = [[UILocalNotification alloc] init];
@@ -407,7 +409,14 @@ static NSString *kConversationChatter = @"ConversationChatter";
                 break;
         }
         
-        NSString *title = @"xuxiaolong";
+        NSString *title;
+        Patient *patient = [[DBManager shareInstance] getPatientCkeyid:message.from];
+        if (patient != nil) {
+            title = patient.patient_name;
+        }else{
+            title = @"未知";
+        }
+        
         if (message.messageType == eMessageTypeGroupChat) {
             NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
             for (EMGroup *group in groupArray) {
@@ -464,7 +473,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 - (void)jumpToChatList
 {
     if ([self.navigationController.topViewController isKindOfClass:[ChatViewController class]]) {
-        ChatViewController *chatController = (ChatViewController *)self.navigationController.topViewController;
+//        ChatViewController *chatController = (ChatViewController *)self.navigationController.topViewController;
     }
     else if(_patientVc)
     {
@@ -499,7 +508,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     if (userInfo)
     {
         if ([self.navigationController.topViewController isKindOfClass:[ChatViewController class]]) {
-            ChatViewController *chatController = (ChatViewController *)self.navigationController.topViewController;
+//            ChatViewController *chatController = (ChatViewController *)self.navigationController.topViewController;
             //            [chatController hideImagePicker];
         }
         
