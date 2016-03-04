@@ -8,6 +8,7 @@
 
 #import "UIImage+TTMAddtion.h"
 #import "NSString+TTMAddtion.h"
+#import "UIColor+Extension.h"
 
 #import <Accelerate/Accelerate.h>
 
@@ -268,6 +269,50 @@
     UIGraphicsEndImageContext();
     
     return smallImage;
+}
+
++ (UIImage *)drowRoundImageWithContent:(NSInteger)num{
+    
+    NSString * numString = nil; //圆圈里面的数字
+    if (num + 1 < 10){  //需求里面是个位数的时候，前面要补0
+        numString = [NSString stringWithFormat:@"0%d",(int)num];
+    }else{
+        numString = [NSString stringWithFormat:@"%d",(int)num];
+    }
+    
+    double width = 80.0f;
+    //圆的背景颜色
+    UIColor * color=[UIColor whiteColor];
+    //中间字的颜色
+    UIColor * color1 = [UIColor colorWithHex:0x00a0ea];
+    
+    UIGraphicsEndImageContext();
+    
+    UIImage * roundImage = nil;
+    UIImage * roundAndNumImage = nil;
+    //画圆
+    UIGraphicsBeginImageContextWithOptions (CGSizeMake(width, width), NO , 0.0 );
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(ctx, color.CGColor);
+    CGContextSetLineWidth(ctx, 2);
+    CGContextSetStrokeColorWithColor(ctx, color1.CGColor);
+    UIFont * font = [UIFont systemFontOfSize:40.0f];
+    CGContextAddArc(ctx, width/2, width/2, width/2.5, 0, 6.3, 0);
+    CGContextDrawPath(ctx, kCGPathFillStroke);
+    //取得图片
+    roundImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    //在画好的圆圈中写中间的数字
+    UIGraphicsBeginImageContext(roundImage.size);
+    CGContextRef ctx1 = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(ctx1, color1.CGColor);
+    [roundImage drawAtPoint:CGPointZero];
+    [numString drawAtPoint:CGPointMake(roundImage.size.width / 5, roundImage.size.height / 5) withFont:font];
+    roundAndNumImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return roundAndNumImage;
 }
 
 @end

@@ -238,7 +238,7 @@
     [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:dataArray];
 }
 
--(UIImage *)drawRoundWithNum:(NSInteger)row
+- (UIImage *)drawRoundWithNum:(NSInteger)row
 {
     NSString * numString = nil; //圆圈里面的数字
     if (row + 1 < 10){  //需求里面是个位数的时候，前面要补0

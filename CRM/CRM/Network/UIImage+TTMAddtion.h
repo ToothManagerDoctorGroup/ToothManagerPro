@@ -78,4 +78,16 @@
 
 - (UIImage *)maskImage:(UIColor *)maskColor;
 
+/**
+ *  绘制一张圆形图片，里面带有数字
+ *
+ *  @param content 数字
+ *  @param color   颜色
+ *  @param font    字体大小
+ *  @param radius  半径
+ *
+ *  @return 绘制好的圆
+ */
++ (UIImage *)drowRoundImageWithContent:(NSInteger)num;
+
 @end

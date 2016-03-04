@@ -265,7 +265,7 @@
         UIImage *normalImage = [[UIImage imageNamed:@"baritem_normal_bg"] stretchableImageWithLeftCapWidth:2.5 topCapHeight:2.5];
         UIImage *selectImage = [[UIImage imageNamed:@"baritem_select_bg"] stretchableImageWithLeftCapWidth:2.5 topCapHeight:2.5];
         MudItemBarItem *itemAddressBook = [[MudItemBarItem alloc]init];
-        itemAddressBook.text = @"新建患者";
+        itemAddressBook.text = @"手工录入";
         itemAddressBook.iteImage = [UIImage imageNamed:@"file"];
         [itemAddressBook setBackgroundImage:normalImage forState:UIControlStateNormal];
         [itemAddressBook setBackgroundImage:selectImage forState:UIControlStateHighlighted];

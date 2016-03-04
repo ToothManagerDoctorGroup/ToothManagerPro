@@ -48,7 +48,10 @@ typedef NS_ENUM(NSInteger, CustomAlertViewType) {
  *  提醒事项
  */
 @property (nonatomic, copy)NSString *tipContent;
-
+/**
+ *  输入框默认文字
+ */
+@property (nonatomic, copy)NSString *placeHolder;
 
 /**
  *  设置确定按钮的颜色

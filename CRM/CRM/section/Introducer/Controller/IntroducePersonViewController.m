@@ -136,7 +136,7 @@
     if (menuView == nil) {
         menuView = [[TimNavigationBarMenuView alloc]initWithFrame:CGRectMake(self.navigationController.view.bounds.size.width-160,64, 150, 80)];
         menuView.delegate = self;
-        menuView.menuArray = @[@"通讯录导入",@"新建介绍人"];
+        menuView.menuArray = @[@"通讯录导入",@"手工录入"];
         [self.navigationController.view addSubview:menuView];
          menuView.hidden = YES;
     }

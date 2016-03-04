@@ -237,8 +237,6 @@
 
         //为控件赋值
     _headerMedicalView.medicalCases = array;
-    
-    
 }
 
 - (void)refreshView {

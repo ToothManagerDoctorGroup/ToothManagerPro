@@ -118,14 +118,16 @@
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
     
-    if(self.phoneTextField.text.length != 11){
-        [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
-        return;
-    }
     if(self.nameTextField.text.length == 0){
         [SVProgressHUD showImage:nil status:@"请输入患者姓名"];
         return;
     }
+    
+    if(self.phoneTextField.text.length != 11){
+        [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
+        return;
+    }
+    
     
     [_nameTextField resignFirstResponder];
     [_introducerTextField resignFirstResponder];

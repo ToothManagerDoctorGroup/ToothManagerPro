@@ -90,6 +90,7 @@
     _contentField = [[UITextField alloc] init];
     _contentField.font = ContentFont;
     _contentField.placeholder = @"请输入分组名称";
+    _contentField.returnKeyType = UIReturnKeyDone;
     [_bottomView addSubview:_contentField];
     
     //内容为Label模式
@@ -194,6 +195,11 @@
     _certainButton.backgroundColor = certainColor;
 }
 
+- (void)setPlaceHolder:(NSString *)placeHolder{
+    _placeHolder = placeHolder;
+    
+    _contentField.placeholder = placeHolder;
+}
 
 - (void)show{
     //创建蒙板

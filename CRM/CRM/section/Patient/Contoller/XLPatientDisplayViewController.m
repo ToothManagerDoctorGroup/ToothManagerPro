@@ -35,6 +35,7 @@
 #import "DBManager+sync.h"
 #import "MJRefresh.h"
 #import "DBManager+Doctor.h"
+#import "XLPatientDetailViewController.h"
 
 @interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,PatientDetailViewControllerDelegate>{
     BOOL ifNameBtnSelected;
@@ -261,10 +262,15 @@
     
     PatientsCellMode *model = self.patientCellModeArray[indexPath.row];
     //跳转到新的患者详情页面
-    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+//    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+//    detailVc.patientsCellMode = model;
+//    detailVc.hidesBottomBarWhenPushed = YES;
+//    detailVc.delegate = self;
+//    [self.navigationController pushViewController:detailVc animated:YES];
+    
+    XLPatientDetailViewController *detailVc = [[XLPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
     detailVc.patientsCellMode = model;
     detailVc.hidesBottomBarWhenPushed = YES;
-    detailVc.delegate = self;
     [self.navigationController pushViewController:detailVc animated:YES];
 }
 
