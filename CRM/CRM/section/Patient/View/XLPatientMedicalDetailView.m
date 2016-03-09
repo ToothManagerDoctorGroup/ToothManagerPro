@@ -15,6 +15,9 @@
 #import "UIView+WXViewController.h"
 #import "XLTreatPlanViewController.h"
 #import "XLDiseaseRecordViewController.h"
+#import "XLMaterialExpendViewController.h"
+#import "ChatViewController.h"
+#import "XLPatientAppointViewController.h"
 
 #define CommonTextColor [UIColor colorWithHex:0x333333]
 #define CommonTextFont [UIFont systemFontOfSize:15]
@@ -165,16 +168,26 @@
     self.medicalImageView.medicalCase = medicalCase;
 }
 
+- (void)setMemberNum:(NSInteger)memberNum{
+    _memberNum = memberNum;
+    
+    self.serverTeamButton.memberNum = memberNum;
+}
+
 #pragma mark - 菜单按钮点击事件
 - (void)teamBtnAction:(XLTeamButton *)button{
     if (button.tag == 100) {
         //治疗方案
         XLTreatPlanViewController *treatVc = [[XLTreatPlanViewController alloc] initWithStyle:UITableViewStylePlain];
+        treatVc.mCase = self.medicalCase;
         [self.viewController.navigationController pushViewController:treatVc animated:YES];
         NSLog(@"治疗方案");
     }else if (button.tag == 101){
         //预约记录
         NSLog(@"预约记录");
+        XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
+        appointVc.patient_id = self.medicalCase.patient_id;
+        [self.viewController.navigationController pushViewController:appointVc animated:YES];
     }else if (button.tag == 102){
         //病程记录
         XLDiseaseRecordViewController *diseaseVc = [[XLDiseaseRecordViewController alloc] initWithStyle:UITableViewStylePlain];
@@ -183,11 +196,18 @@
     }else if (button.tag == 103){
         //所用耗材
         NSLog(@"所用耗材");
+        XLMaterialExpendViewController *expendVc = [[XLMaterialExpendViewController alloc] init];
+        expendVc.medicalCase_id = self.medicalCase.ckeyid;
+        [self.viewController.navigationController pushViewController:expendVc animated:YES];
     }
 }
 
 - (void)serverTeamButtonAction{
     NSLog(@"服务团队");
+    ChatViewController *chatVc = [[ChatViewController alloc] initWithConversationChatter:self.medicalCase.hxGroupId conversationType:eConversationTypeGroupChat];
+    chatVc.title = self.medicalCase.case_name;
+    chatVc.mCase = self.medicalCase;
+    [self.viewController.navigationController pushViewController:chatVc animated:YES];
 }
 
 

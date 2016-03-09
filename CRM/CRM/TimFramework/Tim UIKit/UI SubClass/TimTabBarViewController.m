@@ -24,6 +24,9 @@
 #import "XLGuideImageView.h"
 #import "DBManager+Patients.h"
 
+#import "CRMAppDelegate.h"
+#import "Reachability.h"
+
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static NSString *kMessageType = @"MessageType";
@@ -43,7 +46,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 @property (strong, nonatomic) NSDate *lastPlaySoundDate;//最后一次响铃的时间
 
 @property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
-@property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
+//@property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
 
 @end
 
@@ -53,6 +56,9 @@ static NSString *kConversationChatter = @"ConversationChatter";
 - (void)dealloc
 {
     [self unregisterNotifications];
+    //移除kvo
+    CRMAppDelegate *delegateTmp = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
+    [delegateTmp removeObserver:self forKeyPath:@"connectionStatus"];
     //移除通知
 //    [[NSNotificationCenter defaultCenter] removeObserver:self name:AutoSyncTimeChangeNotification object:nil];
 //    [[NSNotificationCenter defaultCenter] removeObserver:self name:AutoSyncStateChangeNotification object:nil];
@@ -60,11 +66,16 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+    CRMAppDelegate *delegateTmp = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
+    [delegateTmp addObserver:self forKeyPath:@"connectionStatus" options:NSKeyValueObservingOptionNew context:nil];
+    NetworkStatus status = [delegateTmp.conn currentReachabilityStatus];
     //创建一个定时器(NSTimer)
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
-    //将定时器添加到主队列中
-    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    if (status != NotReachable) {
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+        //将定时器添加到主队列中
+        [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    }
     
     
     //判断当前自动同步是否打开
@@ -90,11 +101,30 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [self makeMainView];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
+    if ([keyPath isEqualToString:@"connectionStatus"]) {
+       NetworkStatus status = [[change valueForKey:NSKeyValueChangeNewKey] integerValue];
+        if (status == NotReachable) {
+            [self.timer invalidate];
+            self.timer = nil;
+        }else{
+            if (self.timer == nil) {
+                //创建一个定时器(NSTimer)
+                self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+                //将定时器添加到主队列中
+                [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+            }
+        }
+        
+    }
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
 #pragma mark - 当自动下载时间改变时
+/*
 - (void)syncGetTimeChange:(NSNotification *)noti{
     //创建自动下载定时器
     [self createSyncGetTimer];
@@ -133,11 +163,13 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
     }
 }
+ 
 
 #pragma mark - 定时器，自动下载
 - (void)autoSyncGetAction:(NSTimer *)timer{
     [[AutoSyncGetManager shareInstance] startSyncGet];
 }
+ */
 
 #pragma mark - 定时器,自动上传
 - (void)autoSyncAction:(NSTimer *)timer{
@@ -167,7 +199,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     //我的空间
     _account = [storyboard instantiateViewControllerWithIdentifier:@"AccountViewController"];
     TimNavigationViewController* ncViewController4=[[TimNavigationViewController alloc]initWithRootViewController:_account];
-    [self setTabbarItemState:_account withTitle:@"我的空间" withImage1:@"ic_tabbar_me" withImage2:@"ic_tabbar_me_active"];
+    [self setTabbarItemState:_account withTitle:@"我" withImage1:@"ic_tabbar_me" withImage2:@"ic_tabbar_me_active"];
     
     UIViewController *vc3 = [[UIViewController alloc]init];
     TimNavigationViewController* nc3=[[TimNavigationViewController alloc]initWithRootViewController:vc3];

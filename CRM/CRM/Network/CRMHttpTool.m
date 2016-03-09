@@ -10,49 +10,60 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "AFHTTPRequestOperationManager+Synchronous.h"
 
-@implementation CRMHttpTool
+@interface CRMHttpTool ()
 
-+ (void)GET:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+@property (nonatomic, strong)AFHTTPRequestOperationManager *manager;
+
+@end
+@implementation CRMHttpTool
+Realize_ShareInstance(CRMHttpTool);
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _manager = [AFHTTPRequestOperationManager manager];
+        //    manager.requestSerializer = [AFJSONRequestSerializer serializer];//请求
+        //    manager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
+        _manager.requestSerializer.timeoutInterval = 40.f; //设置请求超时时间
+    }
+    return self;
+}
+
+- (void)GET:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//    manager.requestSerializer = [AFJSONRequestSerializer serializer];//请求
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
-    manager.requestSerializer.timeoutInterval = 40.f; //设置请求超时时间
-    
-    [manager GET:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [self.manager GET:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
         if (success) {
             success(responseObject);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
         if (failure) {
             failure(error);
         }
     }];
 }
 
-+ (void)POST:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer.timeoutInterval = 40.f; //设置请求超时时间
-    [manager POST:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+- (void)POST:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    [self.manager POST:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
         if (success) {
             success(responseObject);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
         if (failure) {
             failure(error);
         }
     }];
 }
 
-+ (void)POST:(NSString *)URLString
+- (void)POST:(NSString *)URLString
   parameters:(id)parameters
  uploadParam:(MyUploadParam *)uploadParam
      success:(void (^)(id responseObject))success
      failure:(void (^)(NSError *error))failure{
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer.timeoutInterval = 60.f; //设置请求超时时间
-    [manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+    [self.manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:uploadParam.data name:uploadParam.name fileName:uploadParam.fileName mimeType:uploadParam.mimeType];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (success) {
@@ -66,10 +77,9 @@
 }
 
 
-+ (void)Upload:(NSString *)URLString parameters:(id)parameters uploadParam:(MyUploadParam *)uploadParam success:(void (^)())success failure:(void (^)(NSError *))failure{
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+- (void)Upload:(NSString *)URLString parameters:(id)parameters uploadParam:(MyUploadParam *)uploadParam success:(void (^)())success failure:(void (^)(NSError *))failure{
     
-    [manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+    [self.manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:uploadParam.data name:uploadParam.name fileName:uploadParam.fileName mimeType:uploadParam.mimeType];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (success) {
@@ -83,24 +93,24 @@
     }];
 }
 
-+ (id)SyncPOST:(NSString *)URLString
+- (id)SyncPOST:(NSString *)URLString
       parameters:(id)parameters
          success:(void (^)(id responseObject))success
          failure:(void (^)(NSError *error))failure{
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer.timeoutInterval = 30.f; //设置请求超时时间
     NSError *error = nil;
-    return [manager syncPOST:URLString parameters:parameters operation:NULL error:&error];
+    return [self.manager syncPOST:URLString parameters:parameters operation:NULL error:&error];
 }
 
-+ (id)SyncGET:(NSString *)URLString
+- (id)SyncGET:(NSString *)URLString
    parameters:(id)parameters
       success:(void (^)(id responseObject))success
       failure:(void (^)(NSError *error))failure{
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer.timeoutInterval = 30.f; //设置请求超时时间
     NSError *error = nil;
-    return [manager syncGET:URLString parameters:parameters operation:NULL error:&error];
+    return [self.manager syncGET:URLString parameters:parameters operation:NULL error:&error];
+}
+
+- (void)cancelAllOperation{
+    [self.manager.operationQueue cancelAllOperations];
 }
 
 @end

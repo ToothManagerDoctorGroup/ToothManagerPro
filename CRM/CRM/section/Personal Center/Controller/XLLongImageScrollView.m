@@ -69,7 +69,7 @@
                                    _image.size.height * scale * self.currentScale);
     
     // 对图片进行缩放
-    self.imageView.image = [_image imageCompressForSize:_image targetSize:targetSize];
+    self.imageView.image = [UIImage imageCompressForSize:_image targetSize:targetSize];
     
 }
 

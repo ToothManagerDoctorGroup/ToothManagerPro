@@ -12,4 +12,6 @@
  */
 @interface XLServerTeamButton : UIControl
 
+@property (nonatomic, assign)NSInteger memberNum;
+
 @end

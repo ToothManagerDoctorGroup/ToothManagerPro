@@ -27,6 +27,11 @@
 #import "CRMHttpRequest+Sync.h"
 #import "PatientManager.h"
 #import "DBManager+Materials.h"
+#import "XLTeamTool.h"
+#import "XLTeamMemberParam.h"
+#import "DBManager+AutoSync.h"
+#import "JSONKit.h"
+#import "MyDateTool.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -138,7 +143,12 @@
     if (self.medicalCases.count > 0) {
         _medicalDetailView.hidden = NO;
         _medicalDetailView.medicalCase = self.medicalCases[0];
+        
+        //查询团队下成员
+        MedicalCase *mCase = self.medicalCases[0];
+        [self queryTeamMemberByCaseId:mCase.ckeyid];
     }
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -353,19 +363,31 @@
 
 #pragma mark - XLMedicalButtonScrollViewDelegate
 - (void)medicalButtonScrollView:(XLMedicalButtonScrollView *)scrollView didSelectButtonWithIndex:(NSUInteger)index{
+    MedicalCase *mCase = self.medicalCases[index];
     //切换病历
-    _medicalDetailView.medicalCase = self.medicalCases[index];
+    _medicalDetailView.medicalCase = mCase;
     
-    //查询网络
-    //方式2.initWithView
-//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:_medicalDetailView animated:YES];
-//    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-//        
-//        sleep(3.0);
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [hud hideAnimated:YES];
-//        });
-//    });
+    //查询团队成员
+    [self queryTeamMemberByCaseId:mCase.ckeyid];
+    
+}
+
+#pragma mark - 查询团队成员
+- (void)queryTeamMemberByCaseId:(NSString *)caseId{
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:_medicalDetailView animated:YES];
+    [XLTeamTool queryMedicalCaseMembersWithCaseId:caseId success:^(NSArray *result) {
+        [hud hideAnimated:YES];
+        if (result.count == 0) {
+            _medicalDetailView.memberNum = 0;
+        }else{
+            _medicalDetailView.memberNum = result.count;
+        }
+    } failure:^(NSError *error) {
+        [hud hideAnimated:YES];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 #pragma mark - 添加病历按钮点击
@@ -383,13 +405,37 @@
         return;
     }
     //创建病历
+    MedicalCase *mCase = [[MedicalCase alloc] init];
+    mCase.case_name = content;
+    mCase.patient_id = self.detailPatient.ckeyid;
+    mCase.case_status = 1;
+    mCase.implant_time = @"";
+    mCase.next_reserve_time = @"";
+    mCase.repair_time = @"";
+    mCase.creation_date = [MyDateTool stringWithDateWithSec:[NSDate date]];
+    
+    [SVProgressHUD showWithStatus:@"正在创建"];
+    [XLTeamTool addMedicalCaseWithMCase:mCase success:^(MedicalCase *resultCase) {
+        [SVProgressHUD showSuccessWithStatus:@"创建成功"];
+        [[DBManager shareInstance] insertMedicalCase:resultCase];
+        
+        self.medicalCases = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
+        //刷新当前数据
+        _buttonScrollView.medicalCases = self.medicalCases;
+        _medicalDetailView.hidden = NO;
+        _medicalDetailView.medicalCase = [self.medicalCases firstObject];
+        [self queryTeamMemberByCaseId:[[self.medicalCases firstObject] ckeyid]];
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"创建失败"];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    
-    
 }
 
 

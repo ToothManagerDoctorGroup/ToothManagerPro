@@ -78,6 +78,8 @@ typedef CGFloat Money;
  *  介绍患者的数量，只在好友列表里用
  */
 @property (nonatomic, copy)NSString *patient_count;
+@property (nonatomic, assign)BOOL isSelect;
+
 
 +(Doctor *)doctorlWithResult:(FMResultSet *)result;
 + (Doctor *)DoctorFromDoctorResult:(NSDictionary *)dic;
@@ -188,6 +190,10 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *sync_time;  //同步时间
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
 
+@property (nonatomic, copy)NSString *tooth_position;//病历对应牙位
+@property (nonatomic, copy)NSString *team_notice;//团队注意事项
+@property (nonatomic, copy)NSString *hxGroupId;//环信群组的id
+
 + (MedicalCase *)medicalCaseWithResult:(FMResultSet *)result;
 + (MedicalCase *)MedicalCaseFromPatientMedicalCase:(NSDictionary *)medcas;
 
@@ -205,6 +211,11 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
 @property (nonatomic,copy)  NSString *creation_date;      //创建日期
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
+
+/**
+ *  材料名称，只做显示用，不涉及数据库操作
+ */
+@property (nonatomic, copy)NSString *mat_name;
 
 
 + (MedicalExpense *)expenseWithResult:(FMResultSet *)result;

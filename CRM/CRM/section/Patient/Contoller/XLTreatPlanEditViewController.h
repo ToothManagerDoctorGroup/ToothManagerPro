@@ -8,6 +8,9 @@
 
 #import "TimTableViewController.h"
 
+@class MedicalCase;
 @interface XLTreatPlanEditViewController : TimTableViewController
+
+@property (nonatomic, strong)MedicalCase *mCase;
 
 @end

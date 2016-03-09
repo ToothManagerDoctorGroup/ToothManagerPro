@@ -50,9 +50,7 @@
     _medicalCases = medicalCases;
     
     //先移除所有的子视图
-    for (UILabel *btn in self.subviews) {
-        [btn removeFromSuperview];
-    }
+    [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
     CGFloat buttonH = 40;
     //设置scrollView的偏移量

@@ -74,7 +74,7 @@
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:subParamDic];
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENT_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENT_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -100,7 +100,7 @@
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:subParamDic];
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MATERIAL_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MATERIAL_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -141,7 +141,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_INTRODUCER_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_INTRODUCER_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -165,7 +165,7 @@
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
     [paramDic setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENT_INTRODUCERMAP_INSERT parameters:[self addCommenParams:paramDic] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENT_INTRODUCERMAP_INSERT parameters:[self addCommenParams:paramDic] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -232,7 +232,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICALCASE_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALCASE_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -279,7 +279,7 @@
         upLoadParam.name = @"uploadfile";
         upLoadParam.fileName = ct_lib.ct_image;
         upLoadParam.mimeType = @"image/png,image/jpeg,image/pjpeg";
-        [CRMHttpTool POST:POST_CTLIB_INSERT parameters:[self addCommenParams:params] uploadParam:upLoadParam success:^(id responseObject) {
+        [[CRMHttpTool shareInstance] POST:POST_CTLIB_INSERT parameters:[self addCommenParams:params] uploadParam:upLoadParam success:^(id responseObject) {
             CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
             if (success) {
                 success(model);
@@ -292,7 +292,7 @@
 
     }else{
         //没有图片数据
-        [CRMHttpTool POST:POST_CTLIB_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+        [[CRMHttpTool shareInstance] POST:POST_CTLIB_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
             CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
             if (success) {
                 success(model);
@@ -335,7 +335,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICALEXPENSE_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALEXPENSE_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -375,7 +375,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICALRECORD_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALRECORD_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -414,7 +414,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_RESERVERECORD_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_RESERVERECORD_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -453,7 +453,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_REPAIRDOCTOR_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_REPAIRDOCTOR_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -497,7 +497,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENT_CONSULTATION_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENT_CONSULTATION_INSERT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

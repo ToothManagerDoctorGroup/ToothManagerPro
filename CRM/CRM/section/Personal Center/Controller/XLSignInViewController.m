@@ -126,6 +126,7 @@
                 } failedBlock:^(NSError *error) {
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
                 }];
+
                 //环信账号登录
                 [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
                     
@@ -147,32 +148,8 @@
                         //保存最近一次登录用户名
                         [self saveLastLoginUsername];
                     }
-                    else
-                    {
-                        switch (error.errorCode)
-                        {
-                            case EMErrorNotFound:
-                                TTAlertNoTitle(error.description);
-                                break;
-                            case EMErrorNetworkNotConnected:
-                                TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                                break;
-                            case EMErrorServerNotReachable:
-                                TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                                break;
-                            case EMErrorServerAuthenticationFailure:
-                                TTAlertNoTitle(error.description);
-                                break;
-                            case EMErrorServerTimeout:
-                                TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                                break;
-                            default:
-                                TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
-                                break;
-                        }
-                    }
-                    
                 } onQueue:nil];
+            
         }else{
             [SVProgressHUD showErrorWithStatus:respond.result];
         }
@@ -183,31 +160,6 @@
         }
         [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
     }];
-//    [[AccountManager shareInstance] loginWithNickName:self.userNameField.text passwd:self.passwordField.text successBlock:^{
-//        [SVProgressHUD showWithStatus:@"正在登录..."];
-//        
-//        if (!check)
-//        {
-//            NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
-//            [user setObject:nil forKey:@"Name"];
-//            [user setObject:nil forKey:@"Password"];
-//            
-//            [user removeObjectForKey:@"Name"];
-//            [user removeObjectForKey:@"Password"];
-//            
-//        }else
-//        {
-//            NSString *name = self.userNameField.text;
-//            NSString *password = self.passwordField.text;
-//            NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
-//            [user setObject:name forKey:@"Name"];
-//            [user setObject:password forKey:@"Password"];
-//            [user synchronize];
-//        }
-//        
-//    } failedBlock:^(NSError *error) {
-//        [SVProgressHUD showTextWithStatus:[error localizedDescription]];
-//    }];
 }
 #pragma  mark - 保存密码到本地
 - (void)saveLastLoginUsername

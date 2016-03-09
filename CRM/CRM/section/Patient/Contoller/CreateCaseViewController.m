@@ -671,6 +671,7 @@
     }
     flag = NO;
 }
+
 -(void)removeHengYaVC{
     [self.hengYaVC willMoveToParentViewController:nil];
     [self.hengYaVC.view removeFromSuperview];

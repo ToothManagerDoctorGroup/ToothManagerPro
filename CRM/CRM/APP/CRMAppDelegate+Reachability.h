@@ -12,4 +12,7 @@
  */
 @interface CRMAppDelegate (Reachability)
 
+- (void)addNetWorkNotification;
+
+- (void)removeNetWorkNotification;
 @end

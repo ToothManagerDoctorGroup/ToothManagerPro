@@ -26,37 +26,37 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
-       
+        [self setUp];
     }
     return self;
 }
 
 - (void)awakeFromNib {
     if (self) {
-        self.userInteractionEnabled = YES;
-        _avatarButton = [CornerButton buttonWithType:UIButtonTypeCustom];
-        [_avatarButton setImage:[UIImage imageNamed:@"user_icon"] forState:UIControlStateNormal];
-        _avatarButton.layer.borderWidth = 1;
-        _avatarButton.layer.borderColor = [UIColor colorWithHex:0xCCCCCC].CGColor;
-        [self addSubview:_avatarButton];
-        _titleLabel = [[UILabel alloc]init];
-        _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.font = [UIFont systemFontOfSize:16.0f];
-        _titleLabel.textColor = [UIColor whiteColor];
-        [self addSubview:_titleLabel];
-        _contentLabel = [[UILabel alloc]init];
-        _contentLabel.backgroundColor = [UIColor clearColor];
-        _contentLabel.font = [UIFont systemFontOfSize:14.0f];
-        _contentLabel.textColor = [UIColor whiteColor];
-        [self addSubview:_contentLabel];
+        [self setUp];
     }
+}
+#pragma mark - 初始化
+- (void)setUp{
+    self.userInteractionEnabled = YES;
+    _avatarButton = [CornerButton buttonWithType:UIButtonTypeCustom];
+    [_avatarButton setImage:[UIImage imageNamed:@"user_icon"] forState:UIControlStateNormal];
+    [self addSubview:_avatarButton];
+    _titleLabel = [[UILabel alloc]init];
+    _titleLabel.backgroundColor = [UIColor clearColor];
+    _titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    _titleLabel.textColor = [UIColor whiteColor];
+    [self addSubview:_titleLabel];
+    _contentLabel = [[UILabel alloc]init];
+    _contentLabel.backgroundColor = [UIColor clearColor];
+    _contentLabel.font = [UIFont systemFontOfSize:14.0f];
+    _contentLabel.textColor = [UIColor whiteColor];
+    [self addSubview:_contentLabel];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.avatarButton.frame = CGRectMake(1,1,self.bounds.size.height - 2, self.bounds.size.height - 2);
-//    self.layer.cornerRadius = self.bounds.size.height/2.0f;
     self.backgroundColor = [UIColor clearColor];
     
     if ([NSString isNotEmptyString:self.title] && [NSString isEmptyString:self.content]) {
@@ -111,6 +111,7 @@
 
 - (void)setUrlStr:(NSString *)urlStr {
     _urlStr = urlStr;
+    
     [self.avatarButton sd_setImageWithURL:[NSURL URLWithString:urlStr] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
 }
 

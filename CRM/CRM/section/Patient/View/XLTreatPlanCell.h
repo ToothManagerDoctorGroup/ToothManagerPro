@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+@class XLCureProjectModel;
 @interface XLTreatPlanCell : UITableViewCell
 
-@property (nonatomic, copy)NSString *step;//步骤
+@property (nonatomic, strong)XLCureProjectModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

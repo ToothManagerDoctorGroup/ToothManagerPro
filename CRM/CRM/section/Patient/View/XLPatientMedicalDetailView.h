@@ -13,4 +13,6 @@
 
 @property (nonatomic, strong)MedicalCase *medicalCase;
 
+@property (nonatomic, assign)NSInteger memberNum;
+
 @end

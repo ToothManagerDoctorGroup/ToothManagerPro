@@ -9,8 +9,9 @@
 #import "XLImageSelectView.h"
 #import "ZYQAssetPickerController.h"
 #import "UIView+WXViewController.h"
+#import "UIImage+TTMAddtion.h"
 
-@interface XLImageSelectView ()<ZYQAssetPickerControllerDelegate,UINavigationControllerDelegate>
+@interface XLImageSelectView ()<ZYQAssetPickerControllerDelegate,UINavigationControllerDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate>
 
 @property (nonatomic, weak)UIImageView *addImageView;//添加按钮
 
@@ -120,6 +121,48 @@
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
     
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"拍照",@"从手机相册选择", nil];
+    [sheet showInView:self.viewController.view];
+    
+    
+}
+
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0) {
+        //拍照
+        [self getImageFromCamera];
+    }else if (buttonIndex == 1){
+        //相册选择
+        [self getImagesFromAlbum];
+    }
+}
+
+#pragma mark - 手机拍照
+- (void)getImageFromCamera{
+    UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+    picker.delegate = self;
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self.viewController presentViewController:picker animated:YES completion:^{
+    }];
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    [picker dismissViewControllerAnimated:YES completion:^() {
+        //压缩图片
+        UIImage *resultImage = [UIImage imageCompressForSize:[info objectForKey:UIImagePickerControllerOriginalImage] targetSize:CGSizeMake(60, 60)];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(imageSelectView:didChooseImages:)]) {
+            [self.delegate imageSelectView:self didChooseImages:@[resultImage]];
+        }
+    }];
+}
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:^{}];
+}
+
+#pragma mark - 相册选择照片
+- (void)getImagesFromAlbum{
     ZYQAssetPickerController *picker = [[ZYQAssetPickerController alloc] init];
     picker.maximumNumberOfSelection = 9;
     picker.assetsFilter = [ALAssetsFilter allPhotos];
@@ -139,6 +182,8 @@
 
 #pragma mark - ZYQAssetPickerController Delegate
 -(void)assetPickerController:(ZYQAssetPickerController *)picker didFinishPickingAssets:(NSArray *)assets{
+    
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray *array = [NSMutableArray array];
         for (int i=0; i<assets.count; i++) {
@@ -147,8 +192,8 @@
             [array addObject:tempImg];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.delegate && [self.delegate respondsToSelector:@selector(imageSelectView:didChooseImages:)]) {
-                [self.delegate imageSelectView:self didChooseImages:array];
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(imageSelectView:didChooseImages:)]) {
+                [weakSelf.delegate imageSelectView:weakSelf didChooseImages:array];
             }
         });
     });

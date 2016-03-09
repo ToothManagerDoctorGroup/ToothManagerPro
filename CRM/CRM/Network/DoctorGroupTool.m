@@ -23,7 +23,7 @@
     params[@"action"] = @"listpatientbydoctorid";
     params[@"doctor_id"] = doctorId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -51,7 +51,7 @@
     params[@"doctor_id"] = doctorId;
     params[@"query_info"] = [queryModel.keyValues JSONString];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -78,7 +78,7 @@
     params[@"sync_time"] = @"1970-01-01 00:00:00";
     params[@"doctor_id"] = doctorId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
 
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -104,7 +104,7 @@
     params[@"sync_time"] = @"1970-01-01 00:00:00";
     params[@"doctor_id"] = doctorId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -131,7 +131,7 @@
     params[@"sync_time"] = @"1970-01-01 00:00:00";
     params[@"patient_id"] = patientIdStr;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
 //        NSMutableArray *arrayM = [NSMutableArray array];
 //        if ([responseObject[@"Code"] intValue] == 200) {
@@ -157,7 +157,7 @@
     params[@"doctor_id"] = doctorId;
     params[@"ckeyid"] = ckId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -183,7 +183,7 @@
     params[@"action"] = @"add";
     params[@"DataEntity"] = [dataEntity.keyValues JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respondModel = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -203,7 +203,7 @@
     params[@"action"] = @"edit";
     params[@"DataEntity"] = [dataEntity.keyValues JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respondModel = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -222,7 +222,7 @@
     params[@"action"] = @"delete";
     params[@"ckeyid"] = ckId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respondModel = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -242,7 +242,7 @@
     params[@"action"] = @"GroupListByCkeyId";
     params[@"ckeyid"] = ckId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -268,7 +268,7 @@
     params[@"ckeyid"] = ckId;
     params[@"query_info"] = [queryModel.keyValues JSONString];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -294,7 +294,7 @@
     params[@"doctor_id"] = doctorId;
     params[@"patient_id"] = patientId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -319,7 +319,7 @@
     params[@"action"] = @"add";
     params[@"DataEntity"] = [dataEntitys JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respondModel = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -340,7 +340,7 @@
     params[@"ckeyid"] = ckId;
     params[@"groupid"] = groupid;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respondModel = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {

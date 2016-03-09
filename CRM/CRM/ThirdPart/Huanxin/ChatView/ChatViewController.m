@@ -16,6 +16,7 @@
 //#import "ContactListSelectViewController.h"
 #import "AccountManager.h"
 #import "DBManager+Patients.h"
+#import "XLTreateGroupViewController.h"
 
 @interface ChatViewController ()<UIAlertViewDelegate, EaseMessageViewControllerDelegate, EaseMessageViewControllerDataSource>
 {
@@ -96,8 +97,11 @@
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:clearButton];
     }
     else{//群聊
+        if (self.mCase == nil) {
+            return;
+        }
         UIButton *detailButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
-        [detailButton setImage:[UIImage imageNamed:@"group_detail"] forState:UIControlStateNormal];
+        [detailButton setImage:[UIImage imageNamed:@"team_team_white"] forState:UIControlStateNormal];
         [detailButton addTarget:self action:@selector(showGroupDetailAction) forControlEvents:UIControlEventTouchUpInside];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:detailButton];
     }
@@ -294,15 +298,11 @@
 - (void)showGroupDetailAction
 {
     [self.view endEditing:YES];
-//    if (self.conversation.conversationType == eConversationTypeGroupChat) {
-//        ChatGroupDetailViewController *detailController = [[ChatGroupDetailViewController alloc] initWithGroupId:self.conversation.chatter];
-//        [self.navigationController pushViewController:detailController animated:YES];
-//    }
-//    else if (self.conversation.conversationType == eConversationTypeChatRoom)
-//    {
-//        ChatroomDetailViewController *detailController = [[ChatroomDetailViewController alloc] initWithChatroomId:self.conversation.chatter];
-//        [self.navigationController pushViewController:detailController animated:YES];
-//    }
+    //查看群组成员
+    XLTreateGroupViewController *groupMemberVc = [[XLTreateGroupViewController alloc] initWithStyle:UITableViewStylePlain];
+    groupMemberVc.mCase = self.mCase;
+    [self.navigationController pushViewController:groupMemberVc animated:YES];
+    
 }
 
 - (void)deleteAllMessages:(id)sender

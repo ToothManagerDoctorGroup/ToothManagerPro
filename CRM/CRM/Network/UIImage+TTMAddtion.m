@@ -148,7 +148,7 @@
     return returnImage;
 }
 
-- (UIImage *)imageCompressForSize:(UIImage *)sourceImage targetSize:(CGSize)size {
++ (UIImage *)imageCompressForSize:(UIImage *)sourceImage targetSize:(CGSize)size {
     UIImage *newImage = nil;
     CGSize imageSize = sourceImage.size;
     CGFloat width = imageSize.width;

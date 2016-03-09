@@ -1233,6 +1233,9 @@
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"creation_date_sync"]; //创建时间用于，同步那边使用
         [columeArray addObject:@"repair_doctor_name"];
+        [columeArray addObject:@"tooth_position"];
+        [columeArray addObject:@"team_notice"];
+        [columeArray addObject:@"hxGroupId"];
         
         [valueArray addObject:medicalCase.ckeyid];
         [valueArray addObject:medicalCase.case_name];
@@ -1257,7 +1260,26 @@
         }else{
             [valueArray addObject:medicalCase.repair_doctor_name];
         }
+        if (medicalCase.tooth_position ==nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.tooth_position];
+        }
+        if (medicalCase.team_notice == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.team_notice];
+        }
+        if (medicalCase.hxGroupId == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.hxGroupId];
+        }
         
+        
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -1318,6 +1340,9 @@
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"creation_date"];
         [columeArray addObject:@"repair_doctor_name"];
+        [columeArray addObject:@"tooth_position"];
+        [columeArray addObject:@"team_notice"];
+        [columeArray addObject:@"hxGroupId"];
         
         [valueArray addObject:medicalCase.case_name];
         [valueArray addObject:medicalCase.patient_id];
@@ -1346,6 +1371,14 @@
             [valueArray addObject:@""];
         }else{
             [valueArray addObject:medicalCase.repair_doctor_name];
+        }
+        
+        [valueArray addObject:medicalCase.tooth_position];
+        [valueArray addObject:medicalCase.team_notice];
+        if (medicalCase.hxGroupId == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.hxGroupId];
         }
 
         

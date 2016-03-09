@@ -26,7 +26,7 @@
     params[ActionParam] = @"getPatientKeyIdByCkeyId";
     params[@"ckeyid"] = ckeyid;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -47,7 +47,7 @@
     params[@"patient_id"] = patientId;
     params[@"doctor_id"] = doctorId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
 //        NSMutableArray *arrayM = [NSMutableArray array];
 //        for (NSDictionary *dic in responseObject[@"Result"]) {
@@ -75,7 +75,7 @@
     params[ActionParam] = @"weixinBind";
     params[Patient_IdParam] = patientId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -120,7 +120,7 @@
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx?action=appoint",DomainName,Method_His_Crm];
     
-    [CRMHttpTool POST:urlStr parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {

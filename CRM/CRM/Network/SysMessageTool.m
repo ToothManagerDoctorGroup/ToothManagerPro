@@ -19,7 +19,7 @@
     params[@"action"] = @"getUnReadMsg";
     params[@"doctor_id"] = doctorId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
 
@@ -47,7 +47,7 @@
     params[@"pageIndex"] = @(pageIndex);
     params[@"pageSize"] = @(pageSize);
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         if ([responseObject[@"Code"] intValue] == 200) {
@@ -72,7 +72,7 @@
     params[@"action"] = @"deleteMsg";
     params[@"keyId"] = @(messageId);
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -91,7 +91,7 @@
     params[@"action"] = @"setMsgReaded";
     params[@"keyId"] = @(messageId);
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -125,7 +125,7 @@
         params[@"reserve_entity"] = [dataEntityParams JSONString];
     }
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {
             success();
         }
@@ -142,7 +142,7 @@
     params[@"action"] = @"updatereservestatus";
     params[@"reserve_id"] = reserve_id;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -160,7 +160,7 @@
     params[@"action"] = @"getreservebyckeyid";
     params[@"ckeyid"] = reserve_id;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -181,7 +181,7 @@
     params[@"send_content"] = send_content;
     params[@"doctor_id"] = doctor_id;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {
             success();
         }

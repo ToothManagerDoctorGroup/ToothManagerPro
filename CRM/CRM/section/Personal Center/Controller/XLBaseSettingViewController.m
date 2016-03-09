@@ -117,6 +117,7 @@
             [self.navigationController pushViewController:aboutVC animated:YES];
         }
     }else if (indexPath.section == 3){
+
         [SVProgressHUD showWithStatus:@"正在退出"];
         [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
             if (error && error.errorCode != EMErrorServerNotLogin) {

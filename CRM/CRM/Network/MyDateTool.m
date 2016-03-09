@@ -185,6 +185,16 @@
         return NO;
     }
 }
++ (BOOL)lateThanToday:(NSString *)targetDateStr{
+    NSDate *targetDate = [self dateWithStringNoSec:targetDateStr];
+    NSComparisonResult result = [targetDate compare:[self dateWithStringNoSec:[self stringWithDateNoSec:[NSDate date]]]];
+    if (result == NSOrderedDescending) {
+        //targetDate < [NSDate date]
+        return YES;
+    }else{
+        return NO;
+    }
+}
 
 + (NSString *)getMonthEndWith:(NSString *)dateStr{
     

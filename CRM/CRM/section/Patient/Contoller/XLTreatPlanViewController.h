@@ -10,6 +10,9 @@
 /**
  *  治疗方案
  */
+@class MedicalCase;
 @interface XLTreatPlanViewController : TimTableViewController
+
+@property (nonatomic, strong)MedicalCase *mCase;
 
 @end

@@ -12,7 +12,9 @@
 @implementation PatientManager
 
 + (NSString *)pathImageSaveToDisk:(UIImage *)image withKey:(NSString *)key {
-    
+   
+    @autoreleasepool {
+        
     NSData *imageData = UIImageJPEGRepresentation(image, 0);
     UIImage *storeImage = [UIImage imageWithData:imageData];
     [[SDImageCache sharedImageCache] storeImage:storeImage forKey:key toDisk:YES];
@@ -24,6 +26,7 @@
 //        return filepath;
 //    }
 //    return nil;
+    }
     return key;
 }
 

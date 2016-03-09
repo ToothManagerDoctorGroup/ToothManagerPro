@@ -34,39 +34,9 @@ Realize_ShareInstance(AutoSyncManager);
  *  开始自动同步
  */
 - (void)startAutoSync{
-    // 检测网络连接状态
-    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
-    // 连接状态回调处理
-    /* AFNetworking的Block内使用self须改为weakSelf, 避免循环强引用, 无法释放 */
-    __weak typeof(self) weakSelf = self;
-    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
-     {
-         switch (status)
-         {
-             case AFNetworkReachabilityStatusUnknown:
-                 // 未知状态
-                 NSLog(@"未知");
-                 break;
-             case AFNetworkReachabilityStatusNotReachable:
-                 // 无网络
-                 NSLog(@"无网络");
-                 break;
-             case AFNetworkReachabilityStatusReachableViaWWAN:
-                 // 手机自带网络
-                 [weakSelf autoSyncUpdate];
-                 [weakSelf autoSyncInsert];
-                 [weakSelf autoSyncDelete];
-                 break;
-             case AFNetworkReachabilityStatusReachableViaWiFi:
-                 // 当有wifi情况下自动进行同步
-                 [weakSelf autoSyncUpdate];
-                 [weakSelf autoSyncInsert];
-                 [weakSelf autoSyncDelete];
-                 break;
-             default:
-                 break;
-         }
-     }];
+    [self autoSyncUpdate];
+    [self autoSyncInsert];
+    [self autoSyncDelete];
 }
 #pragma mark - 将json字符串转换为字典
 - (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr{

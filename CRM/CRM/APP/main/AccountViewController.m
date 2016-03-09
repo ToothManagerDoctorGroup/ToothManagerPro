@@ -47,6 +47,8 @@
 #import "XLBaseSettingViewController.h"
 #import "XLPersonalStepOneViewController.h"
 
+#import "XLJoinTeamSegumentController.h"
+
 @interface AccountViewController ()<UIAlertViewDelegate>{
     
     __weak IBOutlet UITableView *_tableView;
@@ -89,7 +91,7 @@
 //        [self setRightBarButtonWithTitle:@"存在"];
     }
     
-    self.title = @"我的空间";
+    self.title = @"我";
     
     _tableView.delegate=self;
     _tableView.dataSource=self;
@@ -324,9 +326,9 @@
             [self pushViewController:doctorLibrary animated:YES];
             
         }else if (indexPath.row == 1){
-//            XLRepairDoctorViewController *repairDocVc = [[XLRepairDoctorViewController alloc] init];
-//            repairDocVc.hidesBottomBarWhenPushed = YES;
-//            [self pushViewController:repairDocVc animated:YES];
+            XLJoinTeamSegumentController *segumentVc = [[XLJoinTeamSegumentController alloc] init];
+            segumentVc.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:segumentVc animated:YES];
             
         }
     }

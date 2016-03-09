@@ -142,7 +142,7 @@
                 <outlet property="professionalLable" destination="fEh-7B-9Ib" id="egs-9k-5Wf"/>
                 <outlet property="refuseButton" destination="Kyh-mu-WY6" id="CrQ-Er-met"/>
             </connections>
-            <point key="canvasLocation" x="227" y="335"/>
+            <point key="canvasLocation" x="169" y="250"/>
         </tableViewCell>
     </objects>
     <resources>

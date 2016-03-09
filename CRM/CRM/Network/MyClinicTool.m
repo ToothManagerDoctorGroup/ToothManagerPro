@@ -36,7 +36,7 @@
     params[requestActionParam] = @"getClinic";
     params[doctorIdParam] = doctocId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，试用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -64,7 +64,7 @@
     params[doctorIdParam] = doctorId;
     params[clinicNameParam] = clinicName;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -91,7 +91,7 @@
     params[clinicIdParam] = clinicId;
     params[accessTokenParam] = accessToken;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         //将数据转换成模型对象，试用MJExtention
         ClinicDetailModel *model = [ClinicDetailModel objectWithKeyValues:responseObject[@"Result"]];
         
@@ -114,7 +114,7 @@
     params[requestActionParam] = @"getList";
     params[areacodeParam] = areacode;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -141,7 +141,7 @@
     params[@"clinicname"] = clinicName;
     params[@"clinicarea"] = areacode;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -168,7 +168,7 @@
     params[doctorIdParam] = doctorId;
     params[clinic_idParam] = clinicId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {
             success(responseObject[@"Result"],responseObject[@"Code"]);
         }
@@ -186,7 +186,7 @@
     params[requestActionParam] = @"getList";
     params[clinicIdParam] = clinicId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -215,7 +215,7 @@
     params[clinicIdParam] = clinicId;
     params[mat_typeParam] = type;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];

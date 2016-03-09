@@ -95,16 +95,22 @@
     CGFloat arrowX = self.width - margin - arrowW;
     self.arrowView.frame = CGRectMake(arrowX, arrowY, arrowW, arrowH);
     
+}
+
+- (void)setMemberNum:(NSInteger)memberNum{
+    _memberNum = memberNum;
+    
+    CGFloat arrowX = self.width - 10 - 13;
     //团队成员数
-    NSString *teamCount = @"5人";
+    NSString *teamCount = [NSString stringWithFormat:@"%ld人",(long)self.memberNum];
     CGSize teamCountSize = [teamCount sizeWithFont:CommonFont];
     CGFloat teamCountW = teamCountSize.width;
     CGFloat teamCountH = teamCountSize.height;
-    CGFloat teamCountX = arrowX - margin - teamCountW;
+    CGFloat teamCountX = arrowX - 10 - teamCountW;
     CGFloat teamCountY = (self.height - DividerHeight * 2 - teamCountSize.height) / 2;
     self.teamCoutLabel.frame = CGRectMake(teamCountX, teamCountY, teamCountW, teamCountH);
     self.teamCoutLabel.text = teamCount;
-    
+//    self.teamCoutLabel.text = [NSString stringWithFormat:@"%ld人",(long)memberNum];
 }
 
 @end

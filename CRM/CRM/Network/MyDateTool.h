@@ -37,6 +37,8 @@
 
 + (BOOL)earlyThanToday:(NSString *)targetDateStr;
 
++ (BOOL)lateThanToday:(NSString *)targetDateStr;
+
 + (NSString *)getMonthEndWith:(NSString *)dateStr;
 + (NSString *)getMonthBeginWith:(NSDate *)date;
 

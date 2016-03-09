@@ -30,6 +30,7 @@
 #import "CRMMacro.h"
 #import "DoctorManager.h"
 #import "MyDateTool.h"
+#import "XLDoctorDetailViewController.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
     UITableView *_tableView;
@@ -208,12 +209,11 @@
 
 #pragma mark - 请求网络数据
 - (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
-    if (isHeader) {
-        [self.searchHistoryArray removeAllObjects];
-    }
     //请求网络数据
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
-        [SVProgressHUD dismiss];
+        if (isHeader) {
+            [self.searchHistoryArray removeAllObjects];
+        }
         //将数据添加到数组中
         [self.searchHistoryArray addObjectsFromArray:array];
         
@@ -390,10 +390,10 @@
                 //将此医生信息保存到本地
                 [[DBManager shareInstance] insertDoctorWithDoctor:doctor];
             }
-            DoctorInfoViewController *doctorinfoVC = [[DoctorInfoViewController alloc]init];
-            doctorinfoVC.repairDoctorID = doctor.ckeyid;
-            doctorinfoVC.ifDoctorInfo = YES;
-            [self pushViewController:doctorinfoVC animated:YES];
+            
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Team" bundle:nil];
+            XLDoctorDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLDoctorDetailViewController"];
+            [self pushViewController:detailVc animated:YES];
         }
     }
 }

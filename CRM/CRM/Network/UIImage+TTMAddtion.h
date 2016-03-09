@@ -64,7 +64,7 @@
  
  @result 返回压缩后的UIImage
  */
-- (UIImage *)imageCompressForSize:(UIImage *)sourceImage targetSize:(CGSize)size;
++ (UIImage *)imageCompressForSize:(UIImage *)sourceImage targetSize:(CGSize)size;
 
 /**
  *  对图片指定宽度按比例缩放

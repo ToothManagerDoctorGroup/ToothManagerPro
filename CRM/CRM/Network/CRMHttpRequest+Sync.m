@@ -4150,12 +4150,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
                     
                     if (![PatientManager IsImageExisting:ctlib.ct_image]) {
                         NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+                       @autoreleasepool {
                         UIImage *image = [self getImageFromURL:urlImage];
                         if (nil != image) {
                             
                             NSString *key = [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
                             NSLog(@"图片下载完成:%@ --- %@----key:%@",urlImage,[NSThread currentThread],key);
                         }
+                     }
                     }
 
                     //下载网络图片
@@ -4238,7 +4240,6 @@ NSMutableArray *autoSync_Update_Patients = nil;
         // do something like a log:
         NSLog(@"%@", aKey);
         NSLog(@"value %@", [result valueForKey:aKey]);
-        
     }
     
     
@@ -4273,7 +4274,6 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 
                 [[DBManager shareInstance] insertMedicalCase:medicalCase];
                 //稍后条件判断是否成功的代码
-                
                 
                 if (NSNotFound == [downloadMedicalCasesCT indexOfObject:medicalCase.ckeyid]) {
                     [downloadMedicalCasesCT addObject:medicalCase.ckeyid];

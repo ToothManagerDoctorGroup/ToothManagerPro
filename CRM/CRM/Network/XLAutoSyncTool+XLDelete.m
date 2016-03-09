@@ -58,7 +58,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENT_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENT_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -99,7 +99,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MATERIAL_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MATERIAL_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -140,7 +140,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_INTRODUCER_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_INTRODUCER_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -173,7 +173,7 @@
     }
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICALCASE_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALCASE_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -207,7 +207,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_CTLIB_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_CTLIB_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -241,7 +241,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICAL_EXPENSE_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICAL_EXPENSE_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -275,7 +275,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICAL_RECORD_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICAL_RECORD_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -310,7 +310,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_RESERVE_RECORD_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_RESERVE_RECORD_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -344,7 +344,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_REPAIRDOCTOR_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_REPAIRDOCTOR_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -379,7 +379,7 @@
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENT_CONSULTATION_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENT_CONSULTATION_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

@@ -37,7 +37,7 @@
     
     NSLog(@"%@",params);
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -63,7 +63,7 @@
     params[requestActionParam] = @"getBillDetail";
     params[billIdParam] = billId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         BillDetailModel *detailModel = [BillDetailModel objectWithKeyValues:responseObject[@"Result"]];
         
@@ -87,7 +87,7 @@
     params[requestActionParam] = @"cancelreserve";
     params[@"keyid"] = appointId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         if (success) {
             success(responseObject[@"Result"],responseObject[@"Code"]);
@@ -107,7 +107,7 @@
     params[requestActionParam] = @"pay";
     params[dataEntityParam] = [self dictionaryToJson:payParam.keyValues];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);

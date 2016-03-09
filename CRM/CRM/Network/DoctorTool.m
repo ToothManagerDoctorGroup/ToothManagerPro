@@ -31,7 +31,7 @@
     params[userIdParam] = doctorId;
     
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         DoctorInfoModel *doctorInfo = [DoctorInfoModel objectWithKeyValues:[responseObject[@"Result"] lastObject]];
         if (success) {
@@ -70,7 +70,7 @@
     [paramDic setObject:ckeyId forKey:@"keyid"];
     [paramDic setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:urlStr parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -99,7 +99,7 @@
     params[@"Action"] = @"avatar";
     params[@"KeyId"] = userId;
     
-    [CRMHttpTool Upload:urlStr parameters:params uploadParam:uploadParam success:^{
+    [[CRMHttpTool shareInstance] Upload:urlStr parameters:params uploadParam:uploadParam success:^{
         if (success) {
             success();
         }
@@ -121,7 +121,7 @@
     dataEntity[@"intr_id"] = introId;
     params[@"DataEntity"] = [dataEntity JSONString];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -152,7 +152,7 @@
     
     params[@"DataEntity"] = [dataEntity JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         
         if (success) {
@@ -172,7 +172,7 @@
     params[@"action"] = @"getintroducer";
     params[@"uid"] = doctorId;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSLog(@"我的类型:%@",[responseObject class]);
         
@@ -209,7 +209,7 @@
     
     [params setObject:[dataEntity JSONString] forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -230,7 +230,7 @@
     params[@"sync_time"] = sync_time;
     params[@"query_info"] = [info.keyValues JSONString];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         NSArray *array = responseObject[@"Result"];
@@ -260,7 +260,7 @@
     params[@"begin_date"] = begin_date;
     params[@"end_date"] = end_date;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         NSArray *array = responseObject[@"Result"];
@@ -291,7 +291,7 @@
     params[@"end_date"] = end_date;
     params[@"repair_doctor_id"] = repair_doctor_id;
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         NSArray *array = responseObject[@"Result"];
@@ -324,7 +324,7 @@
     param[@"action"] = @"Insert";
     param[@"DataEntity"] = [dataEntity JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:param success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);

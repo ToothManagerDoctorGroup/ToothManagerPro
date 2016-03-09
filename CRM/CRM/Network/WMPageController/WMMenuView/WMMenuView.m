@@ -10,6 +10,7 @@
 #import "WMMenuItem.h"
 #import "WMProgressView.h"
 #import "WMFooldView.h"
+#import "UIColor+Extension.h"
 
 #define kItemWidth   60
 #define kTagGap      6250

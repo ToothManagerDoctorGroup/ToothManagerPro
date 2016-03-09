@@ -291,7 +291,7 @@
 - (void)handNotification:(NSNotification *)notifacation {
     if ([notifacation.name isEqualToString:UIKeyboardWillShowNotification]) {
         [self keyboardWillShow];
-    } if ([notifacation.name isEqualToString:UITextFieldTextDidBeginEditingNotification]) {
+    }else if ([notifacation.name isEqualToString:UITextFieldTextDidBeginEditingNotification]) {
         
     }
 }

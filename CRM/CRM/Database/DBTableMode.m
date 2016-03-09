@@ -166,6 +166,10 @@ NSString * const Repaired = @"已修复";
     medicalCase.doctor_id = [result stringForColumn:@"doctor_id"];
     medicalCase.creation_date_sync = [result stringForColumn:@"creation_date_sync"];
     
+    medicalCase.tooth_position = [result stringForColumn:@"tooth_position"];
+    medicalCase.team_notice = [result stringForColumn:@"team_notice"];
+    medicalCase.hxGroupId = [result stringForColumn:@"hxGroupId"];
+    
     return medicalCase;
 }
 
@@ -186,6 +190,11 @@ NSString * const Repaired = @"已修复";
     tmpMedicalCase.sync_time = [medcas stringForKey:@"sync_time"];
     tmpMedicalCase.doctor_id = [medcas stringForKey:@"doctor_id"];
     tmpMedicalCase.creation_date = [medcas stringForKey:@"creation_time"];
+    
+    tmpMedicalCase.tooth_position = [medcas stringForKey:@"tooth_position"];
+    tmpMedicalCase.team_notice = [medcas stringForKey:@"team_notice"];
+    tmpMedicalCase.hxGroupId = [medcas stringForKey:@"HxGroupId"];
+    
     return tmpMedicalCase;
 
 }

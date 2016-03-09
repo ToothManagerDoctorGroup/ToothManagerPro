@@ -97,7 +97,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"uid"];
     [paramDic setObject:docServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_Doctor_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_Doctor_Url parameters:paramDic success:^(id responseObject) {
         
         NSArray *docArray = [responseObject objectForKey:@"Result"];
         NSLog(@"当前获取到的好友医生的个数:%ld",(unsigned long)docArray.count);
@@ -142,7 +142,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
     [paramDic setObject:matServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_Material_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_Material_Url parameters:paramDic success:^(id responseObject) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             NSArray *matArray = [responseObject objectForKey:@"Result"];
             for (int i=0; i<[matArray count]; i++) {
@@ -185,7 +185,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
     [paramDic setObject:intServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_Introducer_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_Introducer_Url parameters:paramDic success:^(id responseObject) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             NSArray *inteArray = [responseObject objectForKey:@"Result"];
             
@@ -233,7 +233,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
     [paramDic setObject:patServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_Patient_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_Patient_Url parameters:paramDic success:^(id responseObject) {
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             if (nil == downloadPatients01) {
@@ -473,7 +473,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
     [paramDic setObject:rcServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_ReserveRecord_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_ReserveRecord_Url parameters:paramDic success:^(id responseObject) {
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             NSArray *reserveRecordArray = [responseObject objectForKey:@"Result"];
@@ -521,7 +521,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"uid"];
     [paramDic setObject:patInServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_PatientIntroMap_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_PatientIntroMap_Url parameters:paramDic success:^(id responseObject) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             NSArray *patientIntroducerArray = [responseObject objectForKey:@"Result"];
             
@@ -565,7 +565,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
     [paramDic setObject:reDocInServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_RepairDoctor_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_RepairDoctor_Url parameters:paramDic success:^(id responseObject) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             NSArray *repairDoctorArray = [responseObject objectForKey:@"Result"];
             
@@ -628,7 +628,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:strCaseId forKey:@"case_id"];
     [paramDic setObject:libServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_CTLib_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_CTLib_Url parameters:paramDic success:^(id responseObject) {
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             
@@ -729,7 +729,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_MedicalExpense_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_MedicalExpense_Url parameters:paramDic success:^(id responseObject) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             
             NSArray *medicalExArray = [responseObject objectForKey:@"Result"];
@@ -838,7 +838,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_MedicalCase_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_MedicalCase_Url parameters:paramDic success:^(id responseObject) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             
             if (nil == downloadMedicalCasesCT01) {
@@ -983,7 +983,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:strCaseId forKey:@"case_id"];
     [paramDic setObject:recServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_MedicalRecord_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_MedicalRecord_Url parameters:paramDic success:^(id responseObject) {
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             
@@ -1099,7 +1099,7 @@ NSInteger curTimeMCNum_mr01 = 0;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
     
-    [CRMHttpTool GET:Sync_Get_PatientConsultation_Url parameters:paramDic success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:Sync_Get_PatientConsultation_Url parameters:paramDic success:^(id responseObject) {
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             

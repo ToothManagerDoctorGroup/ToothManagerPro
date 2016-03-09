@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "MyUploadParam.h"
+#import "CommonMacro.h"
 
 @interface CRMHttpTool : NSObject
-
+Declare_ShareInstance(CRMHttpTool);
 /**
  *  GET请求
  *
@@ -19,7 +20,7 @@
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (void)GET:(NSString *)URLString
+- (void)GET:(NSString *)URLString
  parameters:(id)parameters
     success:(void (^)(id responseObject))success
     failure:(void (^)(NSError *error))failure;
@@ -31,7 +32,7 @@
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (void)POST:(NSString *)URLString
+- (void)POST:(NSString *)URLString
   parameters:(id)parameters
      success:(void (^)(id responseObject))success
      failure:(void (^)(NSError *error))failure;
@@ -43,7 +44,7 @@
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (void)POST:(NSString *)URLString
+- (void)POST:(NSString *)URLString
   parameters:(id)parameters
  uploadParam:(MyUploadParam *)uploadParam
      success:(void (^)(id responseObject))success
@@ -58,7 +59,7 @@
  *  @param success     成功回调
  *  @param failure     失败回调
  */
-+ (void)Upload:(NSString *)URLString
+- (void)Upload:(NSString *)URLString
     parameters:(id)parameters
    uploadParam:(MyUploadParam *)uploadParam
        success:(void (^)())success
@@ -72,7 +73,7 @@
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (id)SyncPOST:(NSString *)URLString
+- (id)SyncPOST:(NSString *)URLString
   parameters:(id)parameters
      success:(void (^)(id responseObject))success
      failure:(void (^)(NSError *error))failure;
@@ -85,9 +86,13 @@
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (id)SyncGET:(NSString *)URLString
+- (id)SyncGET:(NSString *)URLString
  parameters:(id)parameters
     success:(void (^)(id responseObject))success
     failure:(void (^)(NSError *error))failure;
+/**
+ *  移除所有的未发送的网络请求
+ */
+- (void)cancelAllOperation;
 
 @end

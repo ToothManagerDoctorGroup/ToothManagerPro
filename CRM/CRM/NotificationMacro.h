@@ -58,4 +58,14 @@
 #define MessageTemplateEditNotification @"MessageTemplateEditNotification"//修改
 #define MessageTemplateDeleteNotification @"MessageTemplateDeleteNotification"//删除
 
+
+/**********************治疗方案****************************/
+#define TreatePlanAddNotification @"TreatePlanAddNotification" //添加治疗方案
+#define TreatePlanEditNotification @"TreatePlanEditNotification" //修改治疗方案
+#define TreatePlanDeleteNotification @"TreatePlanDeleteNotification" //删除治疗方案
+/**********************服务团队****************************/
+#define TeamMemberAddSuccessNotification @"TeamMemberAddSuccessNotification"//团队成员添加成功
+#define TeamMemberDeleteSuccessNotification @"TeamMemberDeleteSuccessNotification"//团队成员删除成功
+
+
 #endif /* NotificationMacro_h */

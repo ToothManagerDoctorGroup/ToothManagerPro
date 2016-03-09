@@ -11,7 +11,7 @@
 #import "MMDrawerController.h"
 #import "BaiduMapHeader.h"
 #import "TimTabBarViewController.h"
-
+#import "Reachability.h"
 
 @interface CRMAppDelegate : UIResponder <UIApplicationDelegate,WXApiDelegate>{
     BMKMapManager* _mapManager; //百度地图定位
@@ -23,5 +23,9 @@
 - (NSURL *)applicationDocumentsDirectory;
 
 @property (strong,nonatomic) TimTabBarViewController *tabBarController;
+
+@property (nonatomic, strong)Reachability *conn;
+
+@property (nonatomic, assign)NetworkStatus connectionStatus;//网络状态
 
 @end

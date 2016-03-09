@@ -132,6 +132,12 @@ typedef NS_ENUM(NSInteger, kUMessageError) {
  */
 + (void)setChannel:(NSString *)channel;
 
+/** 设置设备的唯一ID，目前友盟这边设备的唯一ID是OpenUdid，如果你们可以采集到更合适的唯一ID，可以采用这个ID来替换OpenUdid
+ @warning 用户可以设置uniqueId方便以后扩展，我们短时间内在服务区端任然会采取OpenUdid作为唯一标记。
+ @param uniqueId 唯一ID名称
+ */
++ (void)setUniqueID:(NSString *)uniqueId;
+
 /** 为某个消息发送点击事件
  @warning 请注意不要对同一个消息重复调用此方法，可能导致你的消息打开率飚升，此方法只在需要定制 Alert 框时调用
  @param userInfo 消息体的NSDictionary，此Dictionary是
@@ -185,6 +191,14 @@ typedef NS_ENUM(NSInteger, kUMessageError) {
  @param handle block返回数据，error为获取失败时的信息，responseObject为成功返回的数据
  */
 + (void)addAlias:(NSString *)name type:(NSString *)type response:(void (^)(id responseObject,NSError *error))handle;
+
+/** 绑定一个别名至设备（含账户，和平台类型）,并解绑这个别名曾今绑定过的设备。
+ @warning 添加Alias的先决条件是已经成功获取到device_token，否则失败(kUMessageErrorDependsErr)
+ @param name 账户，例如email
+ @param type 平台类型，参见本文件头部的`kUMessageAliasType...`，例如：kUMessageAliasTypeSina
+ @param handle block返回数据，error为获取失败时的信息，responseObject为成功返回的数据
+ */
++ (void)setAlias:(NSString *)name type:(NSString *)type response:(void (^)(id responseObject,NSError *error))handle;
 
 /** 删除一个设备的别名绑定
  @warning 删除Alias的先决条件是已经成功获取到device_token，否则失败(kUMessageErrorDependsErr)

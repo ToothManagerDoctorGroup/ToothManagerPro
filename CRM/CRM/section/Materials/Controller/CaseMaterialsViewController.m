@@ -64,9 +64,7 @@
 - (void)onBackButtonAction:(id)sender {
     //隐藏当前编辑框
     [self.view endEditing:YES];
-    [self dismissViewControllerAnimated:YES completion:^{
-        
-    }];
+    [self popViewControllerAnimated:YES];
 }
 
 - (void)onRightButtonAction:(id)sender {
@@ -76,6 +74,7 @@
         CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         MedicalExpense *expense = self.materialsArray[i];
         expense.expense_num = [cell.materialNum.text integerValue];
+        expense.mat_name = [[DBManager shareInstance] getMaterialWithId:expense.mat_id].mat_name;
     }
     
     
@@ -85,7 +84,7 @@
     if ([self.delegate respondsToSelector:@selector(didSelectedMaterialsArray:)]) {
         [self.delegate didSelectedMaterialsArray:self.materialsArray];
     }
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self popViewControllerAnimated:YES];
 }
 
 - (void)addLineAction:(id)sender {

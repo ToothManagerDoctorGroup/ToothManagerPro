@@ -102,7 +102,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     }
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENT_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENT_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -141,7 +141,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MATERIAL_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MATERIAL_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -182,7 +182,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_INTRODUCER_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_INTRODUCER_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -249,7 +249,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_MEDICALCASE_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALCASE_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -289,7 +289,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     
     [params setObject:jsonString forKey:@"DataEntity"];
     //没有图片数据
-    [CRMHttpTool POST:POST_CTLIB_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_CTLIB_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -332,7 +332,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [params setObject:jsonString forKey:@"DataEntity"];
     
     //没有图片数据
-    [CRMHttpTool POST:POST_MEDICALEXPENSE_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALEXPENSE_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -372,7 +372,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [params setObject:jsonString forKey:@"DataEntity"];
     
     //没有图片数据
-    [CRMHttpTool POST:POST_MEDICALRECORD_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_MEDICALRECORD_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -421,7 +421,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_RESERVERECORD_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_RESERVERECORD_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -460,7 +460,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_REPAIRDOCTOR_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_REPAIRDOCTOR_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -503,7 +503,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     }
     [params setObject:jsonString forKey:@"DataEntity"];
     
-    [CRMHttpTool POST:POST_PATIENTCONSULTATION_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_PATIENTCONSULTATION_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

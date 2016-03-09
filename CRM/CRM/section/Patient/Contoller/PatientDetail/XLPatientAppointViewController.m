@@ -63,9 +63,7 @@
     self.title = @"预约记录";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
 }
-
 
 #pragma mark - UITableViewDelegate / DataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{

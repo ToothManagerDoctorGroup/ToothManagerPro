@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "TimFramework.h"
 
-
 @interface SyncManager : NSObject 
 
 Declare_ShareInstance(SyncManager);

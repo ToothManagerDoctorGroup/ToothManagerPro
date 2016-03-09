@@ -23,7 +23,7 @@
     params[@"uid"] = doctor_id;
     params[@"templateid"] = @"U_DIY";
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         NSMutableArray *arrayM = [NSMutableArray array];
         NSArray *array = responseObject[@"Result"];
@@ -47,7 +47,7 @@
     params[@"action"] = @"add";
     params[@"DataEntity"] = [param.keyValues JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -65,7 +65,7 @@
     params[@"action"] = @"edit";
     params[@"DataEntity"] = [param.keyValues JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -83,7 +83,7 @@
     params[@"action"] = @"delete";
     params[@"DataEntity"] = [param.keyValues JSONString];
     
-    [CRMHttpTool POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

@@ -34,6 +34,7 @@
 #import "XLAdvertisementViewController.h"
 #import "XLAdvertisementView.h"
 #import "UIImageView+WebCache.h"
+#import "CRMAppDelegate+Reachability.h"
 
 @interface CRMAppDelegate ()
 
@@ -81,7 +82,6 @@
     }
     //注册通知，可以接收环信消息
     [self registerEaseMobNotification];
-    
 /******************************环信集成End*************************************/
     //百度地图启动类
     _mapManager = [[BMKMapManager alloc]init];
@@ -112,7 +112,8 @@
     [self configThirdPart:launchOptions];
     
     //开启设备网络状态监控
-     [[SyncManager shareInstance] opendSync];
+//     [[SyncManager shareInstance] opendSync];
+    [self addNetWorkNotification];
     
     //通用的界面的设置
     [CRMViewAppearance setCRMAppearance];
@@ -134,8 +135,6 @@
 //    [self.window addSubview:self.adImageView];
 //    [self.window bringSubviewToFront:self.adImageView];
 //    self.adImageView.completeBlock = ^(){};
-    
-
 
     return YES;
 }
@@ -162,8 +161,10 @@
             if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
                 self.window.rootViewController = self.tabBarController;
             }else{
-                
+                //如果未填写个人信息  直接跳转到登录界面
+//                [[AccountManager shareInstance] logout];
                 self.window.rootViewController = nav;
+                
             }
         }else{
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
@@ -172,6 +173,7 @@
             if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
                 guideController.forwardController = self.tabBarController;
             }else{
+//                [[AccountManager shareInstance] logout];
                 guideController.forwardController = nav;
             }
             self.window.rootViewController = guideController;
@@ -231,6 +233,7 @@
     TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:signinVC];
     //比较版本号
     if ([newVersion isEqualToString:oldVersion]) {
+        
         self.window.rootViewController = nav;
     }else{
         TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
@@ -384,7 +387,9 @@
      */
 }
 
-
+- (void)dealloc{
+    [self removeNetWorkNotification];
+}
 #pragma mark - Application's Documents directory
 // Returns the URL to the application's Documents directory.
 - (NSURL *)applicationDocumentsDirectory

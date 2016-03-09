@@ -205,6 +205,8 @@
     
     NSData *myData = [NSData dataWithBytes:(const void *)bufferPtr length:(NSUInteger)movedBytes];
     NSString *result = [GTMBase64 stringByEncodingData:myData];
+    free(bufferPtr);
+    
     return result;
 }
 
@@ -285,7 +287,7 @@
     }
     else //加密
     {
-        NSData* data = [plainText dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *data = [plainText dataUsingEncoding:NSUTF8StringEncoding];
         plainTextBufferSize = [data length];
         vplainText = (const void *)[data bytes];
     }
@@ -336,6 +338,8 @@
         NSData *myData = [NSData dataWithBytes:(const void *)bufferPtr length:(NSUInteger)movedBytes];
         result = [GTMBase64 stringByEncodingData:myData];
     }
+    
+    free(bufferPtr);
     
     return result;
 }

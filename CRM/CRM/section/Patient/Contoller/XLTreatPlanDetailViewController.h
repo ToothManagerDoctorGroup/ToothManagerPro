@@ -10,7 +10,9 @@
 /**
  *  治疗方案详情
  */
+@class XLCureProjectModel;
 @interface XLTreatPlanDetailViewController : TimTableViewController
 
+@property (nonatomic, strong)XLCureProjectModel *model;
 
 @end
