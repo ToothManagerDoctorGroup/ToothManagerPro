@@ -16,6 +16,7 @@
 //#import "ContactListSelectViewController.h"
 #import "AccountManager.h"
 #import "DBManager+Patients.h"
+#import "DBManager+Doctor.h"
 #import "XLTreateGroupViewController.h"
 
 @interface ChatViewController ()<UIAlertViewDelegate, EaseMessageViewControllerDelegate, EaseMessageViewControllerDataSource>
@@ -249,17 +250,29 @@
     id<IMessageModel> model = nil;
     model = [[EaseMessageModel alloc] initWithMessage:message];
     model.avatarImage = [UIImage imageNamed:@"patient_head"];//默认头像
-    if (model.isSender) {
-        model.avatarURLPath = [[AccountManager shareInstance] currentUser].img;//头像网络地址
-        model.nickname = [[AccountManager shareInstance] currentUser].name;//用户昵称
-    }else{
-        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:message.from];
-        if (patient != nil) {
-            model.nickname = patient.patient_name;
+    
+    if (message.messageType == eMessageTypeChat) {
+        if (model.isSender) {
+            model.avatarURLPath = [[AccountManager shareInstance] currentUser].img;//头像网络地址
+            model.nickname = [[AccountManager shareInstance] currentUser].name;//用户昵称
+        }else{
+            Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:message.from];
+            if (patient != nil) {
+                model.nickname = patient.patient_name;
+            }
+        }
+    }else if (message.messageType == eMessageTypeGroupChat){
+        if (model.isSender) {
+            model.avatarURLPath = [[AccountManager shareInstance] currentUser].img;//头像网络地址
+            model.nickname = [[AccountManager shareInstance] currentUser].name;//用户昵称
+        }else {
+            Doctor *doc = [[DBManager shareInstance] getDoctorWithCkeyId:message.groupSenderName];
+            if (doc != nil) {
+                model.avatarURLPath = doc.doctor_image;
+                model.nickname = doc.doctor_name;
+            }
         }
     }
-    
-    
     return model;
 }
 

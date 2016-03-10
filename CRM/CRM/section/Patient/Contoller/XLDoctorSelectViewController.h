@@ -22,4 +22,6 @@ typedef NS_ENUM(NSInteger,DoctorSelectType){
 
 @property (nonatomic, strong)MedicalCase *mCase;
 
+@property (nonatomic, strong)NSArray *existMembers;//当前存在的成员
+
 @end

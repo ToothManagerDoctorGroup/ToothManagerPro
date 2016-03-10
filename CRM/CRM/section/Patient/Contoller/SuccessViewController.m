@@ -17,7 +17,6 @@
 #import "CommonMacro.h"
 #import "DBManager+Patients.h"
 
-
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 
@@ -160,11 +159,13 @@
 {
     EaseConversationModel *model = [[EaseConversationModel alloc] initWithConversation:conversation];
     if (model.conversation.conversationType == eConversationTypeChat) {
-        
         Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:conversation.chatter];
         if (patient != nil) {
             model.title = patient.patient_name;
         }
+    }else if (model.conversation.conversationType == eConversationTypeGroupChat){
+        
+        model.title = @"未知群";
     }
     return model;
 }

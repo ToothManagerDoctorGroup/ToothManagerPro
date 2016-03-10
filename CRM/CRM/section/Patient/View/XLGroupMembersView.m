@@ -100,6 +100,7 @@
         XLDoctorSelectViewController *selectVc = [[XLDoctorSelectViewController alloc] init];
         selectVc.type = DoctorSelectTypeRemove;
         selectVc.mCase = self.mCase;
+        selectVc.existMembers = self.members;
         [self.viewController.navigationController pushViewController:selectVc animated:YES];
         NSLog(@"删除成员");
     }else if (tag == self.targetList.count - 2 + 100){
@@ -107,6 +108,7 @@
         XLDoctorSelectViewController *selectVc = [[XLDoctorSelectViewController alloc] init];
         selectVc.type = DoctorSelectTypeAdd;
         selectVc.mCase = self.mCase;
+        selectVc.existMembers = self.members;
         [self.viewController.navigationController pushViewController:selectVc animated:YES];
     }
 }

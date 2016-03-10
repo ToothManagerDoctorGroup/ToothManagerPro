@@ -821,9 +821,6 @@
 		3D29060C1C8E7DD00090AC6C /* XLDoctorSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D29060B1C8E7DD00090AC6C /* XLDoctorSelectViewController.m */; };
 		3D2906121C8E826C0090AC6C /* XLDoctorSelectCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2906111C8E826C0090AC6C /* XLDoctorSelectCell.m */; };
 		3D2906141C8E827D0090AC6C /* XLDoctorSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D2906131C8E827D0090AC6C /* XLDoctorSelectCell.xib */; };
-		3D29061E1C8EAA010090AC6C /* remove_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D29061B1C8EAA010090AC6C /* remove_red.png */; };
-		3D29061F1C8EAA010090AC6C /* remove_red@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D29061C1C8EAA010090AC6C /* remove_red@2x.png */; };
-		3D2906201C8EAA010090AC6C /* remove_red@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D29061D1C8EAA010090AC6C /* remove_red@3x.png */; };
 		3D2906241C8EB1E90090AC6C /* XLJoinTeamSegumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2906231C8EB1E90090AC6C /* XLJoinTeamSegumentController.m */; };
 		3D2906271C8EB4D10090AC6C /* XLJoinConsultationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2906261C8EB4D10090AC6C /* XLJoinConsultationController.m */; };
 		3D2906331C8EB7050090AC6C /* XLWaitHandleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2906321C8EB7050090AC6C /* XLWaitHandleViewController.m */; };
@@ -838,6 +835,9 @@
 		3D29064F1C8EDCBA0090AC6C /* XLTreatePatientCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D29064D1C8EDCBA0090AC6C /* XLTreatePatientCell.m */; };
 		3D2906501C8EDCBA0090AC6C /* XLTreatePatientCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3D29064E1C8EDCBA0090AC6C /* XLTreatePatientCell.xib */; };
 		3D2955A51C48E95000804676 /* XLQueryModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D2955A41C48E95000804676 /* XLQueryModel.m */; };
+		3D296C331C9019E400378B9B /* remove_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D296C301C9019E400378B9B /* remove_red.png */; };
+		3D296C341C9019E400378B9B /* remove_red@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D296C311C9019E400378B9B /* remove_red@2x.png */; };
+		3D296C351C9019E400378B9B /* remove_red@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D296C321C9019E400378B9B /* remove_red@3x.png */; };
 		3D29FE601C3CABBD0064D4D8 /* UUDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D29FE5D1C3CABBD0064D4D8 /* UUDatePicker.m */; };
 		3D29FE611C3CABBD0064D4D8 /* UUDatePicker_DateModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D29FE5F1C3CABBD0064D4D8 /* UUDatePicker_DateModel.m */; };
 		3D29FE7A1C3CDE070064D4D8 /* LBBaseSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D29FE671C3CDE070064D4D8 /* LBBaseSettingViewController.m */; };
@@ -2834,9 +2834,6 @@
 		3D2906101C8E826C0090AC6C /* XLDoctorSelectCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLDoctorSelectCell.h; sourceTree = "<group>"; };
 		3D2906111C8E826C0090AC6C /* XLDoctorSelectCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLDoctorSelectCell.m; sourceTree = "<group>"; };
 		3D2906131C8E827D0090AC6C /* XLDoctorSelectCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = XLDoctorSelectCell.xib; sourceTree = "<group>"; };
-		3D29061B1C8EAA010090AC6C /* remove_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = remove_red.png; sourceTree = "<group>"; };
-		3D29061C1C8EAA010090AC6C /* remove_red@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "remove_red@2x.png"; sourceTree = "<group>"; };
-		3D29061D1C8EAA010090AC6C /* remove_red@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "remove_red@3x.png"; sourceTree = "<group>"; };
 		3D2906221C8EB1E90090AC6C /* XLJoinTeamSegumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLJoinTeamSegumentController.h; sourceTree = "<group>"; };
 		3D2906231C8EB1E90090AC6C /* XLJoinTeamSegumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLJoinTeamSegumentController.m; sourceTree = "<group>"; };
 		3D2906251C8EB4D10090AC6C /* XLJoinConsultationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLJoinConsultationController.h; sourceTree = "<group>"; };
@@ -2862,6 +2859,9 @@
 		3D29064E1C8EDCBA0090AC6C /* XLTreatePatientCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = XLTreatePatientCell.xib; sourceTree = "<group>"; };
 		3D2955A31C48E95000804676 /* XLQueryModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLQueryModel.h; sourceTree = "<group>"; };
 		3D2955A41C48E95000804676 /* XLQueryModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLQueryModel.m; sourceTree = "<group>"; };
+		3D296C301C9019E400378B9B /* remove_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = remove_red.png; sourceTree = "<group>"; };
+		3D296C311C9019E400378B9B /* remove_red@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "remove_red@2x.png"; sourceTree = "<group>"; };
+		3D296C321C9019E400378B9B /* remove_red@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "remove_red@3x.png"; sourceTree = "<group>"; };
 		3D29FE5C1C3CABBD0064D4D8 /* UUDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UUDatePicker.h; sourceTree = "<group>"; };
 		3D29FE5D1C3CABBD0064D4D8 /* UUDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UUDatePicker.m; sourceTree = "<group>"; };
 		3D29FE5E1C3CABBD0064D4D8 /* UUDatePicker_DateModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UUDatePicker_DateModel.h; sourceTree = "<group>"; };
@@ -4804,9 +4804,9 @@
 		3D1B36EE1C85AA8F008CB6E0 /* Team */ = {
 			isa = PBXGroup;
 			children = (
-				3D29061B1C8EAA010090AC6C /* remove_red.png */,
-				3D29061C1C8EAA010090AC6C /* remove_red@2x.png */,
-				3D29061D1C8EAA010090AC6C /* remove_red@3x.png */,
+				3D296C301C9019E400378B9B /* remove_red.png */,
+				3D296C311C9019E400378B9B /* remove_red@2x.png */,
+				3D296C321C9019E400378B9B /* remove_red@3x.png */,
 				3D2C9AFC1C891EED0016025D /* team_plus.png */,
 				3D2C9AFD1C891EED0016025D /* team_plus@2x.png */,
 				3D2C9AFE1C891EED0016025D /* team_plus@3x.png */,
@@ -9533,8 +9533,8 @@
 				3DF26FE01C5B7C8500849631 /* ic_list_doctor@3x.png in Resources */,
 				3D1B60321C18082B0032D949 /* chatBar_colorMore_camera@2x.png in Resources */,
 				3D15404D1C4D0E8A002B12C9 /* guide_circle@2x.png in Resources */,
-				3D29061E1C8EAA010090AC6C /* remove_red.png in Resources */,
 				3D5B4F961C2D7BEB00E37140 /* group_gray.png in Resources */,
+				3D296C331C9019E400378B9B /* remove_red.png in Resources */,
 				81DA09B41A89FC2200763EBC /* leftArrow@xx.png in Resources */,
 				3DDDB8341BFD6363004AD4AC /* kj_zd@3x.png in Resources */,
 				3D18A51E1C4E1C180016CABE /* guide_kuang3@3x.png in Resources */,
@@ -9912,8 +9912,8 @@
 				3D1B606A1C18082B0032D949 /* chatListCellHead@2x.png in Resources */,
 				3D1BAB291C7AE7EE00DA5E8A /* icon-Small-50@2x.png in Resources */,
 				3D1540411C4D076F002B12C9 /* guide_arrow@2x.png in Resources */,
+				3D296C351C9019E400378B9B /* remove_red@3x.png in Resources */,
 				2DC829091BA3F83A001CA6A4 /* ic_tabbar_message@2x.png in Resources */,
-				3D2906201C8EAA010090AC6C /* remove_red@3x.png in Resources */,
 				3D18A4FE1C4DCC260016CABE /* guide_arrow2.png in Resources */,
 				3DDF0E0F1C313CD200358EDD /* patient_address@2x.png in Resources */,
 				3D1B607A1C18082B0032D949 /* VoiceSearchFeedback008@2x.png in Resources */,
@@ -10167,8 +10167,8 @@
 				3DDDB8791BFDEFA4004AD4AC /* medical_add.png in Resources */,
 				3D15214A1C4386F800650969 /* no-choose.png in Resources */,
 				3D1B60EA1C18082B0032D949 /* chat_sender_audio_playing_003@2x.png in Resources */,
+				3D296C341C9019E400378B9B /* remove_red@2x.png in Resources */,
 				3D1B60EE1C18082B0032D949 /* account.png in Resources */,
-				3D29061F1C8EAA010090AC6C /* remove_red@2x.png in Resources */,
 				3D1B61041C18082B0032D949 /* tabbar_chatsHL.png in Resources */,
 				3DEAF5791C02F15800445C20 /* weixin_gray@2x.png in Resources */,
 				3D1B605B1C18082B0032D949 /* VoiceSearchFeedback015@2x.png in Resources */,

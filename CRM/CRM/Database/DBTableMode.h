@@ -75,11 +75,11 @@ typedef CGFloat Money;
 @property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
 
 /**
- *  介绍患者的数量，只在好友列表里用
+ *  临时字段，不做数据库的存储操作
  */
 @property (nonatomic, copy)NSString *patient_count;
-@property (nonatomic, assign)BOOL isSelect;
-
+@property (nonatomic, assign)BOOL isSelect;//是否选中
+@property (nonatomic, assign)BOOL isExist;//是否存在
 
 +(Doctor *)doctorlWithResult:(FMResultSet *)result;
 + (Doctor *)DoctorFromDoctorResult:(NSDictionary *)dic;

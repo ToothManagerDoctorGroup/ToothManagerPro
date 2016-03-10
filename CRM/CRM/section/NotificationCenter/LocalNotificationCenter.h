@@ -12,12 +12,13 @@
 
 @class FMResultSet;
 @interface LocalNotification : DBTableMode
+
 @property (nonatomic,copy) NSString *reserve_time;
 @property (nonatomic,copy) NSString *reserve_content;  //提醒内容
 @property (nonatomic, copy) NSString *reserve_type;
 @property (nonatomic,copy) NSString *medical_place;   //就诊地点
 @property (nonatomic,copy) NSString *medical_chair;   //椅位
-@property (nonatomic, copy) NSString  *patient_id;
+@property (nonatomic, copy) NSString *patient_id;
 @property (nonatomic,copy) NSString *creation_date;
 @property (nonatomic,copy) NSString *sync_time;
 @property (nonatomic,copy) NSString *update_date;
@@ -30,6 +31,8 @@
 
 @property (nonatomic, copy)NSString *therapy_doctor_id;//修复医生的id
 @property (nonatomic, copy)NSString *therapy_doctor_name;//修复医生的姓名
+
+@property (nonatomic, copy)NSString *case_id;//病历id
 
 /**
  *  本地使用

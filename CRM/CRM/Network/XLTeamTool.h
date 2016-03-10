@@ -65,6 +65,14 @@
  */
 + (void)removeTeamMemberWithMemberId:(NSNumber *)member_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 /**
+ *  批量移除治疗团队成员
+ *
+ *  @param ids     团队成员的id，中间以“,”隔开
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)removeTeamMemberWithIds:(NSString *)ids success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
+/**
  *  修改昵称
  *
  *  @param param   参数模型

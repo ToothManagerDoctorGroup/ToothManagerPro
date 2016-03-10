@@ -38,6 +38,7 @@
     self.iconImageView.layer.borderWidth = 1;
     self.iconImageView.layer.cornerRadius = self.iconImageView.bounds.size.width / 2;
     self.iconImageView.layer.masksToBounds = YES;
+    
 }
 
 - (void)setDoctor:(Doctor *)doctor{
@@ -46,7 +47,13 @@
     [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
     self.doctorNameLabel.text = doctor.doctor_name;
     self.doctorDetailLabel.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
-    self.selectButton.selected = doctor.isSelect;
+    if (doctor.isExist) {
+        self.selectButton.enabled = NO;
+    }else{
+        self.selectButton.enabled = YES;
+        self.selectButton.selected = doctor.isSelect;
+    }
+    
 }
 
 

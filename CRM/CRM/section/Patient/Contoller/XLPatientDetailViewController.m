@@ -73,6 +73,8 @@
 #pragma mark - 初次加载
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self addNotificationObserver];
     //初始化导航栏样式
     [self setUpNavStyle];
     //初始化视图
@@ -81,6 +83,9 @@
     [self setUpData];
 }
 
+- (void)dealloc{
+    [self removeNotificationObserver];
+}
 #pragma mark - 初始化
 #pragma mark --初始化导航栏样式
 - (void)setUpNavStyle{
@@ -133,6 +138,7 @@
 }
 #pragma mark --初始化数据
 - (void)setUpData{
+    
     _detailPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
     if (_detailPatient == nil) {
         [SVProgressHUD showImage:nil status:@"患者不存在"];
@@ -432,6 +438,25 @@
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+#pragma mark - 通知
+- (void)addNotificationObserver{
+    [self addObserveNotificationWithName:TeamMemberAddSuccessNotification];
+    [self addObserveNotificationWithName:TeamMemberDeleteSuccessNotification];
+}
+
+- (void)removeNotificationObserver{
+    [self removeObserverNotificationWithName:TeamMemberAddSuccessNotification];
+    [self removeObserverNotificationWithName:TeamMemberDeleteSuccessNotification];
+}
+
+- (void)handNotification:(NSNotification *)notifacation{
+    if ([notifacation.name isEqualToString:TeamMemberAddSuccessNotification] || [notifacation.name isEqualToString:TeamMemberDeleteSuccessNotification]) {
+        //移除成员后
+        NSString *case_id = notifacation.object;
+        [self queryTeamMemberByCaseId:case_id];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

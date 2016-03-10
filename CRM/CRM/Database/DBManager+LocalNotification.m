@@ -75,7 +75,7 @@
         [columeArray addObject:@"therapy_doctor_id"];
         [columeArray addObject:@"therapy_doctor_name"];
         [columeArray addObject:@"reserve_status"];
-        
+        [columeArray addObject:@"case_id"];
         
         [valueArray addObject:notification.ckeyid];
         [valueArray addObject:notification.user_id];
@@ -110,9 +110,14 @@
         }else{
             [valueArray addObject:notification.reserve_status];
         }
+        if (notification.case_id == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:notification.case_id];
+        }
         
         
-        
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -188,7 +193,7 @@
         [columeArray addObject:@"therapy_doctor_id"];
         [columeArray addObject:@"therapy_doctor_name"];
         [columeArray addObject:@"reserve_status"];
-        
+        [columeArray addObject:@"case_id"];
         
         [valueArray addObject:notification.patient_id];
         [valueArray addObject:notification.reserve_type];
@@ -225,7 +230,11 @@
         }else{
             [valueArray addObject:notification.reserve_status];
         }
-        
+        if (notification.case_id == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:notification.case_id];
+        }
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", LocalNotificationTableName, [columeArray componentsJoinedByString:@"=?,"],notification.ckeyid];

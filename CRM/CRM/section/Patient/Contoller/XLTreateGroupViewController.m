@@ -73,13 +73,15 @@
 #pragma mark - 通知
 - (void)addNotificationObserver{
     [self addObserveNotificationWithName:TeamMemberAddSuccessNotification];
+    [self addObserveNotificationWithName:TeamMemberDeleteSuccessNotification];
 }
 - (void)removeNotificationObserver{
     [self removeObserverNotificationWithName:TeamMemberAddSuccessNotification];
+    [self removeObserverNotificationWithName:TeamMemberDeleteSuccessNotification];
 }
 
 - (void)handNotification:(NSNotification *)notifacation{
-    if ([notifacation.name isEqualToString:TeamMemberAddSuccessNotification]) {
+    if ([notifacation.name isEqualToString:TeamMemberAddSuccessNotification] || [notifacation.name isEqualToString:TeamMemberDeleteSuccessNotification]) {
         [self requestDataWithCaseId:self.mCase.ckeyid];
     }
 }

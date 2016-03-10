@@ -154,8 +154,30 @@
     params[@"KeyId"] = member_id;
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respondTmp = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respondTmp);
+        }
         
-        
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)removeTeamMemberWithIds:(NSString *)ids success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"batchdelete";
+    params[@"KeyIds"] = ids;
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respondTmp = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respondTmp);
+        }
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);

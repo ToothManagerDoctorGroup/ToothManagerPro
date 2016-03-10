@@ -48,6 +48,8 @@ NSString * const RepeatIntervalNone = @"不重复";
     notification.therapy_doctor_id = localNoti.therapy_doctor_id;
     notification.therapy_doctor_name = localNoti.therapy_doctor_name;
     
+    notification.case_id = localNoti.case_id;
+    
     return notification;
 
 }
@@ -75,7 +77,7 @@ NSString * const RepeatIntervalNone = @"不重复";
     notification.therapy_doctor_id = [result stringForColumn:@"therapy_doctor_id"];
     notification.therapy_doctor_name = [result stringForColumn:@"therapy_doctor_name"];
     
-    
+    notification.case_id = [result stringForColumn:@"case_id"];
     
     return notification;
 }
@@ -102,7 +104,7 @@ NSString * const RepeatIntervalNone = @"不重复";
     
     tempLN.therapy_doctor_id = [lnRe stringForKey:@"therapy_doctor_id"];
     tempLN.therapy_doctor_name = [lnRe stringForKey:@"therapy_doctor_name"];
-
+    tempLN.case_id = [lnRe stringForKey:@"case_id"];
 
     return tempLN;
 }

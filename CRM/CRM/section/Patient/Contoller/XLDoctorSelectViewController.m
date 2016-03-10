@@ -25,6 +25,7 @@
 #import "CRMHttpRespondModel.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
+#import "XLTeamMemberModel.h"
 
 @interface XLDoctorSelectViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,XLDoctorSelectCell,UISearchDisplayDelegate>{
     UITableView *_tableView;
@@ -99,7 +100,7 @@
         }];
         
         [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return 68.f;
+            return 60;
         }];
         
         [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
@@ -119,7 +120,9 @@
     //加载数据
     [self initSubViews];
     
-    [_tableView.header beginRefreshing];
+    if (self.type == DoctorSelectTypeAdd) {
+        [_tableView.header beginRefreshing];
+    }
 }
 
 - (void)initSubViews{
@@ -137,12 +140,15 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
-    //添加上拉刷新和下拉加载
-    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
-    _tableView.header.updatedTimeHidden = YES;
-    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
-    _tableView.footer.hidden = YES;
-    
+    if (self.type == DoctorSelectTypeAdd) {
+        //添加上拉刷新和下拉加载
+        [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+        _tableView.header.updatedTimeHidden = YES;
+        [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
+        _tableView.footer.hidden = YES;
+    }else{
+        [self requestLocalData];
+    }
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
@@ -171,6 +177,16 @@
         //将数据添加到数组中
         [self.searchHistoryArray addObjectsFromArray:array];
         
+        //判断是否存在
+        for (Doctor *doc in self.searchHistoryArray) {
+            for (XLTeamMemberModel *model in self.existMembers) {
+                if ([doc.ckeyid isEqualToString:[model.member_id stringValue]]) {
+                    doc.isExist = YES;
+                    break;
+                }
+            }
+        }
+        
         if (self.searchHistoryArray.count < 50) {
             [_tableView removeFooter];
         }else{
@@ -191,6 +207,17 @@
         }
     }];
 }
+#pragma mark - 请求本地数据
+- (void)requestLocalData{
+    for (XLTeamMemberModel *member in self.existMembers) {
+       Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:[member.member_id stringValue]];
+        if (doctor != nil) {
+            [self.searchHistoryArray addObject:doctor];
+        }
+    }
+    [_tableView reloadData];
+}
+
 #pragma mark - 排序
 -(void)orderedByNumber{
     
@@ -222,33 +249,73 @@
 
 #pragma mark - 添加成员
 - (void)addGroupMemberWithArray:(NSArray *)result{
+    
+    __weak typeof(self) weakSelf = self;
     int index=0;
     NSMutableArray *selectArray = [NSMutableArray array];
-    for (Doctor *doc in result) {
-        if (doc.isSelect) {
-            XLTeamMemberParam *param = [[XLTeamMemberParam alloc] initWithCaseId:self.mCase.ckeyid patientId:self.mCase.patient_id teamNickName:@"" memberId:@([doc.ckeyid integerValue]) nickName:@"" memberName:doc.doctor_name isConsociation:YES createUserId:@([[AccountManager currentUserid] integerValue])];
-            [selectArray addObject:param.keyValues];
-            index++;
+    
+    if (self.type == DoctorSelectTypeAdd) {
+        for (Doctor *doc in result) {
+            if (doc.isSelect) {
+                XLTeamMemberParam *param = [[XLTeamMemberParam alloc] initWithCaseId:self.mCase.ckeyid patientId:self.mCase.patient_id teamNickName:@"" memberId:@([doc.ckeyid integerValue]) nickName:@"" memberName:doc.doctor_name isConsociation:NO createUserId:@([[AccountManager currentUserid] integerValue])];
+                [selectArray addObject:param.keyValues];
+                index++;
+            }
         }
-    }
-    //添加成员
-    [SVProgressHUD showWithStatus:@"正在添加"];
-    [XLTeamTool addTeamMemberWithArray:selectArray success:^(CRMHttpRespondModel *respond) {
-        if ([respond.code integerValue] == 200) {
-            [SVProgressHUD showSuccessWithStatus:@"添加成功"];
-            //发送通知
-            [self postNotificationName:TeamMemberAddSuccessNotification object:nil];
-            //退出当前控制器
-            [self popViewControllerAnimated:YES];
-        }else{
+        //添加成员
+        [SVProgressHUD showWithStatus:@"正在添加"];
+        [XLTeamTool addTeamMemberWithArray:selectArray success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                [SVProgressHUD showSuccessWithStatus:@"添加成功"];
+                //发送通知
+                [weakSelf postNotificationName:TeamMemberAddSuccessNotification object:self.mCase.ckeyid];
+                //退出当前控制器
+                [weakSelf popViewControllerAnimated:YES];
+            }else{
+                [SVProgressHUD showSuccessWithStatus:@"添加失败"];
+            }
+        } failure:^(NSError *error) {
             [SVProgressHUD showSuccessWithStatus:@"添加失败"];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }else{
+        NSMutableArray *existDoc = [NSMutableArray array];
+        for (Doctor *doc in result) {
+            if (doc.isSelect) {
+                [existDoc addObject:doc];
+            }
         }
-    } failure:^(NSError *error) {
-        [SVProgressHUD showSuccessWithStatus:@"添加失败"];
-        if (error) {
-            NSLog(@"error:%@",error);
+        NSMutableString *ids = [NSMutableString string];
+        for (XLTeamMemberModel *model in self.existMembers) {
+            for (Doctor *doc in existDoc) {
+                if ([doc.ckeyid isEqualToString:[model.member_id stringValue]]) {
+                    [ids appendFormat:@",%@",[model.keyId stringValue]];
+                    break;
+                }
+            }
         }
-    }];
+        NSString *newStr = [ids substringFromIndex:1];
+        
+        [SVProgressHUD showSuccessWithStatus:@"正在移除"];
+        [XLTeamTool removeTeamMemberWithIds:newStr success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                [SVProgressHUD showSuccessWithStatus:@"移除成功"];
+                //发送通知
+                [weakSelf postNotificationName:TeamMemberDeleteSuccessNotification object:self.mCase.ckeyid];
+                //退出当前控制器
+                [weakSelf popViewControllerAnimated:YES];
+            }else{
+                [SVProgressHUD showSuccessWithStatus:@"移除失败"];
+            }
+        } failure:^(NSError *error) {
+            [SVProgressHUD showSuccessWithStatus:@"移除失败"];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
     
 }
 
@@ -285,7 +352,6 @@
 #pragma mark -设置单元格点击事件
 - (void)selectTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
 }
 
 #pragma mark - XLDoctorSelectCell
@@ -327,18 +393,38 @@
 {
     
     if ([searchText isNotEmpty]) {
-        //请求网络数据
-        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
-        [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
+        if (self.type == DoctorSelectTypeAdd) {
+            //请求网络数据
+            XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
+            [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
+                
+                //判断是否存在
+                for (Doctor *doc in array) {
+                    for (XLTeamMemberModel *model in self.existMembers) {
+                        if ([doc.ckeyid isEqualToString:[model.member_id stringValue]]) {
+                            doc.isExist = YES;
+                            break;
+                        }
+                    }
+                }
+                
+                [self.searchController.resultsSource removeAllObjects];
+                [self.searchController.resultsSource addObjectsFromArray:array];
+                [self.searchController.searchResultsTableView reloadData];
+            } failure:^(NSError *error) {
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }else{
+            //查询本地数组
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"doctor_name CONTAINS %@", searchText]; //predicate只能是对象
+            NSArray *filteredArray = [self.searchHistoryArray filteredArrayUsingPredicate:predicate];
             
             [self.searchController.resultsSource removeAllObjects];
-            [self.searchController.resultsSource addObjectsFromArray:array];
+            [self.searchController.resultsSource addObjectsFromArray:filteredArray];
             [self.searchController.searchResultsTableView reloadData];
-        } failure:^(NSError *error) {
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];
+        }
     }else{
         NSString *title = [searchBar currentTitle];
         if ([title isEqualToString:@"完成"]) {

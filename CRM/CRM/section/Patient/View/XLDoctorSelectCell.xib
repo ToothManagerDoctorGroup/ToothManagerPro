@@ -40,6 +40,7 @@
                             <constraint firstAttribute="height" constant="60" id="hCj-L3-j0F"/>
                         </constraints>
                         <state key="normal" image="no-choose.png"/>
+                        <state key="disabled" image="choose-grey.png"/>
                         <state key="selected" image="choose-blue.png"/>
                         <connections>
                             <action selector="selectAction:" destination="xy9-En-zEK" eventType="touchUpInside" id="cTP-Kd-pER"/>
@@ -82,6 +83,7 @@
     </objects>
     <resources>
         <image name="choose-blue.png" width="26" height="26"/>
+        <image name="choose-grey.png" width="26" height="26"/>
         <image name="no-choose.png" width="26" height="26"/>
     </resources>
 </document>
