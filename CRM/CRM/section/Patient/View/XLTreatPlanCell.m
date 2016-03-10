@@ -13,6 +13,7 @@
 #import "UIImage+TTMAddtion.h"
 #import "CommonMacro.h"
 #import "XLTreatePlanDetailView.h"
+#import "XLCureProjectModel.h"
 
 @interface XLTreatPlanCell ()
 
@@ -74,7 +75,7 @@
     CGFloat stepX = 5;
     CGFloat stepY = margin;
     self.stepImageView.frame = CGRectMake(stepX, stepY, stepW, stepH);
-    self.stepImageView.image = [UIImage drowRoundImageWithContent:2];
+    self.stepImageView.image = [UIImage drowRoundImageWithContent:model.step];
     
     self.stepLine.frame = CGRectMake(stepX + stepW / 2, 0, 1, CellHeight);
     

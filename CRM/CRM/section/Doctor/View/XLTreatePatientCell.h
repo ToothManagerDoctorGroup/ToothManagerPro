@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+@class XLTeamPatientModel;
 @interface XLTreatePatientCell : UITableViewCell
+
+@property (nonatomic, strong)XLTeamPatientModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

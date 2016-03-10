@@ -15,6 +15,9 @@
 #import "XLMaterialExpenseCell.h"
 #import "DBManager+Materials.h"
 #import "CaseMaterialsViewController.h"
+#import "XLTeamTool.h"
+#import "MJRefresh.h"
+#import "XLMaterialExpendEditViewController.h"
 
 @interface XLMaterialExpendViewController ()<UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,CaseMaterialsViewControllerDelegate>{
     UITableView *_tableView;
@@ -31,10 +34,7 @@
 
 - (NSArray *)expenses{
     if (!_expenses) {
-        _expenses = [[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:self.medicalCase_id];
-        for (MedicalExpense *temp in _expenses) {
-            temp.mat_name = [[DBManager shareInstance] getMaterialWithId:temp.mat_id].mat_name;
-        }
+        _expenses = [NSArray array];
     }
     return _expenses;
 }
@@ -61,9 +61,31 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
+    //添加下拉刷新
+    [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    _tableView.header.updatedTimeHidden = YES;
+    
     [self setUpTitleView];
     
+    [_tableView.header beginRefreshing];
+    
 }
+
+#pragma mark - 请求网络数据
+- (void)headerRefreshAction{
+    [XLTeamTool queryAllExpensesWithCaseId:self.medicalCase_id success:^(NSArray *result) {
+        self.expenses = result;
+        [_tableView reloadData];
+        [_tableView.header endRefreshing];
+        
+    } failure:^(NSError *error) {
+        [_tableView.header endRefreshing];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
 //设置标题视图
 - (void)setUpTitleView{
     CGFloat commonW = kScreenWidth / 2;
@@ -89,7 +111,7 @@
     if (!_searchBar) {
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
         _searchBar.delegate = self;
-        _searchBar.placeholder = @"患者姓名、备注名、手机号";
+        _searchBar.placeholder = @"材料名称";
         [_searchBar moveBackgroundView];
     }
     
@@ -132,12 +154,10 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    //跳转界面
-    CaseMaterialsViewController *caseMaterialVC = [[CaseMaterialsViewController alloc]initWithStyle:UITableViewStylePlain];
-    caseMaterialVC.materialsArray = [NSMutableArray arrayWithCapacity:0];
-    [caseMaterialVC.materialsArray addObjectsFromArray:self.expenses];
-    caseMaterialVC.delegate = self;
-    [self pushViewController:caseMaterialVC animated:YES];
+    
+    XLMaterialExpendEditViewController *editVc = [[XLMaterialExpendEditViewController alloc] initWithStyle:UITableViewStylePlain];
+    editVc.exitExpenses = self.expenses;
+    [self pushViewController:editVc animated:YES];
 }
 
 #pragma mark - UITableViewDataSource/Delegate
@@ -153,10 +173,8 @@
     return cell;
 }
 
-#pragma mark - CaseMaterialsViewControllerDelegate
-- (void)didSelectedMaterialsArray:(NSArray *)array{
-    self.expenses = array;
-    [_tableView reloadData];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - UISearchBar Delegates

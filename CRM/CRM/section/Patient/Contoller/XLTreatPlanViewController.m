@@ -83,9 +83,12 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    XLCureProjectModel *model = self.curePros[indexPath.row];
+    model.step = indexPath.row + 1;
+    
     XLTreatPlanCell *cell = [XLTreatPlanCell cellWithTableView:tableView];
     
-    cell.model = self.curePros[indexPath.row];
+    cell.model = model;
     
     return cell;
     

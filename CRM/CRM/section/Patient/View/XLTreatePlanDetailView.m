@@ -35,7 +35,7 @@
 
 - (NSArray *)buttonNames{
     if (!_buttonNames) {
-        _buttonNames = @[@"付款",@"病程记录",@"预约记录"];
+        _buttonNames = @[@"付款",@"病程记录"];
     }
     return _buttonNames;
 }
@@ -216,8 +216,6 @@
     }else if (button.tag == 101){
         NSLog(@"病程记录");
         
-    }else{
-        NSLog(@"预约记录");
     }
 }
 

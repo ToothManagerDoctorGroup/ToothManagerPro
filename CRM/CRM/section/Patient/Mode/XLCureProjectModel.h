@@ -33,4 +33,10 @@ typedef NS_ENUM(NSInteger, CureProjectStatus) {
 @property (nonatomic, strong)NSNumber *create_user;//创建人id
 @property (nonatomic, copy)NSString *create_time;//创建时间
 
+
+/**
+ *  步骤，仅本地使用
+ */
+@property (nonatomic, assign)NSInteger step;
+
 @end

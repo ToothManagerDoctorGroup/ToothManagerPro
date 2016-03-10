@@ -15,4 +15,8 @@
     return @{@"keyId" : @"KeyId"};
 }
 
++ (NSArray *)ignoredPropertyNames{
+    return @[@"step"];
+}
+
 @end

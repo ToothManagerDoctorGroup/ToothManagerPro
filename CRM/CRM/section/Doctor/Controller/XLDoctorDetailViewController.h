@@ -10,7 +10,10 @@
 /**
  *  医生详情
  */
+@class Doctor;
 @interface XLDoctorDetailViewController : TimDisplayViewController
+
+@property (nonatomic, strong)Doctor *doc;
 
 @end
 

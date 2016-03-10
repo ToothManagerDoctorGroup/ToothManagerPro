@@ -168,12 +168,8 @@
 
 #pragma mark - Delegate
 - (void)registerSucessWithResult:(NSDictionary *)result {
-    NSDictionary *resultDic = [result objectForKey:@"Result"];
-    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
-    //    [SVProgressHUD showSuccessWithStatus:@"注册成功，请登录"];
-    //    [self popViewControllerAnimated:YES]; 注释了上面两行
-    
-    //    [self postNotificationName:SignUpSuccessNotification object:nil];
+//    NSDictionary *resultDic = [result objectForKey:@"Result"];
+//    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
     
     [SVProgressHUD showSuccessWithStatus:@"注册成功，正在登陆"];
     [XLLoginTool loginWithNickName:self.nicknameTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
@@ -189,11 +185,6 @@
         }
         [SVProgressHUD showTextWithStatus:[error localizedDescription]];
     }];
-//    [[AccountManager shareInstance] loginWithNickName:self.nicknameTextField.text passwd:self.passwdTextField.text successBlock:^{
-//        
-//    } failedBlock:^(NSError *error) {
-//        [SVProgressHUD showTextWithStatus:[error localizedDescription]];
-//    }];
 }
 
 - (void)loginSucessWithResult:(NSDictionary *)result {
@@ -201,62 +192,34 @@
     
     NSDictionary *resultDic = result;
     //登录成功，创建和当前登录人对应的数据库
-//    [[DBManager shareInstance] createdbFileWithUserId:[resultDic objectForKey:@"id"]];
-//    [[DBManager shareInstance] createTables];
+    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+    //环信账号登录
+    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
+            
+        if (loginInfo && !error) {
+            //设置是否自动登录
+            [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+            
+            //获取数据库中数据
+            [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+            
+            EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+            //设置离线推送的样式
+            options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+            [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+            
+            //发送自动登陆状态通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+            
+            //保存最近一次登录用户名
+            [self saveLastLoginUsername];
+        }
+    } onQueue:nil];
     
-        [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
-        //环信账号登录
-        [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
-            
-            if (loginInfo && !error) {
-                //设置是否自动登录
-                [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
-                
-                //获取数据库中数据
-                [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
-                
-                EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
-                //设置离线推送的样式
-                options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
-                [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
-                
-                //发送自动登陆状态通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
-                
-                //保存最近一次登录用户名
-                [self saveLastLoginUsername];
-            }
-            else
-            {
-                switch (error.errorCode)
-                {
-                    case EMErrorNotFound:
-                        TTAlertNoTitle(error.description);
-                        break;
-                    case EMErrorNetworkNotConnected:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                        break;
-                    case EMErrorServerNotReachable:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                        break;
-                    case EMErrorServerAuthenticationFailure:
-                        TTAlertNoTitle(error.description);
-                        break;
-                    case EMErrorServerTimeout:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                        break;
-                    default:
-                        TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
-                        break;
-                }
-            }
-            
-        } onQueue:nil];
-        
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
-        XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
-        oneVc.hidesBottomBarWhenPushed = YES;
-        [self pushViewController:oneVc animated:YES];
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+    oneVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:oneVc animated:YES];
         
 }
 

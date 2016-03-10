@@ -15,8 +15,10 @@
 #import "DBTableMode.h"
 #import "XLTeamTool.h"
 #import "XLCureProjectParam.h"
+#import "AccountManager.h"
+#import "XLCommonEditViewController.h"
 
-@interface XLTreatPlanEditViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
+@interface XLTreatPlanEditViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,XLDoctorLibraryViewControllerDelegate,XLCommonEditViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *toothLabel;
 @property (weak, nonatomic) IBOutlet UILabel *typeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
@@ -35,7 +37,7 @@
     [super viewDidLoad];
     self.title = @"添加治疗方案";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithTitle:@"完成"];
+    [self setRightBarButtonWithTitle:@"保存"];
     
     self.timeField.mode = TextFieldInputModeDatePicker;
     self.timeField.dateMode = TextFieldDateModeDate;
@@ -45,9 +47,25 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
+    
+    if (![self.typeLabel.text isNotEmpty]) {
+        [SVProgressHUD showErrorWithStatus:@"请填写治疗事项"];
+        return;
+    }
+    //判断是否选择了治疗医生
+    NSNumber *therapistId = nil;
+    NSString *therapistName = nil;
+    if (self.selectDoc == nil) {
+        therapistId = @([[AccountManager currentUserid] integerValue]);
+        therapistName = [AccountManager shareInstance].currentUser.name;
+    }else{
+        therapistId = @([self.selectDoc.ckeyid integerValue]);
+        therapistName = self.selectDoc.doctor_name;
+    }
+    
     //创建治疗方案
     [SVProgressHUD showWithStatus:@"正在创建"];
-    XLCureProjectParam *param = [[XLCureProjectParam alloc] initWithCaseId:self.mCase.ckeyid patientId:self.mCase.patient_id therapistId:@([self.selectDoc.ckeyid integerValue]) therapistName:self.selectDoc.doctor_name toothPosition:self.toothLabel.text medicalItem:self.typeLabel.text endDate:self.timeField.text goldCount:@(0) status:@(0)];
+    XLCureProjectParam *param = [[XLCureProjectParam alloc] initWithCaseId:self.mCase.ckeyid patientId:self.mCase.patient_id therapistId:therapistId therapistName:therapistName toothPosition:self.toothLabel.text medicalItem:self.typeLabel.text endDate:self.timeField.text goldCount:@(0) status:@(0)];
     [XLTeamTool addNewCureProWithParam:param success:^(XLCureProjectModel *model) {
         [SVProgressHUD showSuccessWithStatus:@"治疗方案创建成功"];
         [self postNotificationName:TreatePlanAddNotification object:nil];
@@ -86,11 +104,14 @@
             [self.navigationController.view addSubview:self.hengYaVC.view];
             
         }else if (indexPath.row == 1){
-            //选择治疗项目
-            XLReserveTypesViewController *reserceVC = [[XLReserveTypesViewController alloc] initWithStyle:UITableViewStylePlain];
-            reserceVC.reserve_type = self.typeLabel.text;
-            reserceVC.delegate = self;
-            [self pushViewController:reserceVC animated:YES];
+            //填写治疗项目
+            XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
+            editVc.placeHolder = @"请填写治疗事项";
+            editVc.rightButtonTitle = @"确定";
+            editVc.delegate = self;
+            editVc.content = self.typeLabel.text;
+            [self pushViewController:editVc animated:YES];
+            
         }else if (indexPath.row == 2){
             //分配给
             //选择治疗医生
@@ -114,6 +135,11 @@
 - (void)doctorLibraryVc:(XLDoctorLibraryViewController *)doctorLibraryVc didSelectDoctor:(Doctor *)doctor{
     self.nameLabel.text = doctor.doctor_name;
     self.selectDoc = doctor;
+}
+
+#pragma mark - XLCommonEditViewControllerDelegate
+- (void)commonEditViewController:(XLCommonEditViewController *)editVc content:(NSString *)content title:(NSString *)title{
+    self.typeLabel.text = content;
 }
 
 #pragma mark - 选择牙位

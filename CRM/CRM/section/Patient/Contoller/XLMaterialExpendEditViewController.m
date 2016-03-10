@@ -1,12 +1,12 @@
 //
-//  CaseMaterialsViewController.m
+//  XLMaterialExpendEditViewController.m
 //  CRM
 //
-//  Created by TimTiger on 2/3/15.
-//  Copyright (c) 2015 TimTiger. All rights reserved.
+//  Created by Argo Zhang on 16/3/10.
+//  Copyright © 2016年 TimTiger. All rights reserved.
 //
 
-#import "CaseMaterialsViewController.h"
+#import "XLMaterialExpendEditViewController.h"
 #import "CaseMaterialsTableViewCell.h"
 #import "CRMMacro.h"
 #import "TimFramework.h"
@@ -14,27 +14,37 @@
 #import "DBManager+Materials.h"
 #import "XLMaterialsViewController.h"
 
-@interface CaseMaterialsViewController () <CaseMaterialsTableViewCellDelegate,XLMaterialsViewControllerDelegate>
-@property (nonatomic) NSInteger selectIndex;
+@interface XLMaterialExpendEditViewController () <CaseMaterialsTableViewCellDelegate,XLMaterialsViewControllerDelegate>
+@property (nonatomic,assign) NSInteger selectIndex;
+
+@property (nonatomic, strong)NSMutableArray *expenses;
+
 @end
 
-@implementation CaseMaterialsViewController
+@implementation XLMaterialExpendEditViewController
+
+- (NSMutableArray *)expenses{
+    if (!_expenses) {
+        _expenses = [NSMutableArray array];
+    }
+    return _expenses;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 }
-
 - (void)initView {
     [super initView];
     self.title = @"种植体编辑";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     [self setRightBarButtonWithTitle:@"保存"];
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.tableView addGestureRecognizer:gestureRecognizer];
     gestureRecognizer.cancelsTouchesInView = NO;
     self.tableView.allowsSelection = NO;
+    
+    [self.expenses addObjectsFromArray:self.exitExpenses];
     //默认添加一个种植体
     [self addLineAction:nil];
 }
@@ -57,49 +67,37 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Actions 
-- (void)onBackButtonAction:(id)sender {
-    //隐藏当前编辑框
-    [self.view endEditing:YES];
-    [self popViewControllerAnimated:YES];
-}
-
+#pragma mark - Actions
 - (void)onRightButtonAction:(id)sender {
     
-    for (int i = 0; i < self.materialsArray.count; i++) {
+    for (int i = 0; i < self.expenses.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        MedicalExpense *expense = self.materialsArray[i];
+        MedicalExpense *expense = self.expenses[i];
         expense.expense_num = [cell.materialNum.text integerValue];
         expense.mat_name = [[DBManager shareInstance] getMaterialWithId:expense.mat_id].mat_name;
     }
     
-    
     //隐藏当前编辑框
     [self.view endEditing:YES];
-    
-    if ([self.delegate respondsToSelector:@selector(didSelectedMaterialsArray:)]) {
-        [self.delegate didSelectedMaterialsArray:self.materialsArray];
-    }
     [self popViewControllerAnimated:YES];
 }
 
 - (void)addLineAction:(id)sender {
     
-    for (int i = 0; i < self.materialsArray.count; i++) {
+    for (int i = 0; i < self.expenses.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        MedicalExpense *expense = self.materialsArray[i];
+        MedicalExpense *expense = self.expenses[i];
         if ([cell.materialCount integerValue] != 0) {
             expense.expense_num = [cell.materialNum.text integerValue];
         }
     }
     
     MedicalExpense *expense = [[MedicalExpense alloc]init];
-    [self.materialsArray addObject:expense];
+    [self.expenses addObject:expense];
     [self.tableView reloadData];
 }
 
@@ -109,7 +107,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.materialsArray.count;
+    return self.expenses.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -135,7 +133,7 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.materialsArray removeObjectAtIndex:indexPath.row];
+        [self.expenses removeObjectAtIndex:indexPath.row];
         [self.tableView reloadData];
     }
 }
@@ -166,11 +164,11 @@
     cell.delegate = self;
     cell.tag = 100+indexPath.row;
     [cell setCell:@[@"AAAAAA",@"sljdaldjsf",@"Olljaldjf"]];
-    MedicalExpense *expense = [self.materialsArray objectAtIndex:indexPath.row];
+    MedicalExpense *expense = [self.expenses objectAtIndex:indexPath.row];
     if (expense.mat_id) {
         Material *material = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
         cell.materialName.text = material.mat_name;
-
+        
         cell.materialName.textColor = [UIColor blackColor];
     } else {
         cell.materialName.text = @"选择种植体类型";
@@ -188,10 +186,10 @@
 #pragma mark - cell Delegate
 - (void)didBeginEdit:(CaseMaterialsTableViewCell *)cell {
     
-    for (int i = 0; i < self.materialsArray.count; i++) {
+    for (int i = 0; i < self.expenses.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        MedicalExpense *expense = self.materialsArray[i];
+        MedicalExpense *expense = self.expenses[i];
         if ([cell.materialCount integerValue] != 0) {
             expense.expense_num = [cell.materialNum.text integerValue];
         }
@@ -206,24 +204,21 @@
 }
 
 - (void)tableViewCell:(CaseMaterialsTableViewCell *)cell materialNum:(NSInteger)num {
-    MedicalExpense *expense = [self.materialsArray objectAtIndex:cell.tag - 100];
+    MedicalExpense *expense = [self.expenses objectAtIndex:cell.tag - 100];
     expense.expense_num = num;
 }
 
 - (void)didDeleteCell:(CaseMaterialsTableViewCell *)cell{
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    [self.materialsArray removeObjectAtIndex:indexPath.row];
+    [self.expenses removeObjectAtIndex:indexPath.row];
     [self.tableView reloadData];
 }
 
 - (void)didSelectedMaterial:(Material *)material {
-   MedicalExpense *expense = [self.materialsArray objectAtIndex:self.selectIndex];
+    MedicalExpense *expense = [self.expenses objectAtIndex:self.selectIndex];
     expense.mat_id = material.ckeyid;
     [self.tableView reloadData];
 }
-
-
-
 
 
 @end

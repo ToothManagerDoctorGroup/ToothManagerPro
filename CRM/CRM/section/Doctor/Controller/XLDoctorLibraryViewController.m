@@ -393,6 +393,7 @@
             
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Team" bundle:nil];
             XLDoctorDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLDoctorDetailViewController"];
+            detailVc.doc = doctor;
             [self pushViewController:detailVc animated:YES];
         }
     }

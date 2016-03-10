@@ -8,6 +8,10 @@
 
 #import "XLTreatePatientCell.h"
 #import "UIColor+Extension.h"
+#import "XLTeamPatientModel.h"
+#import "XLCureProjectModel.h"
+#import "MyDateTool.h"
+#import "DBTableMode.h"
 
 @interface XLTreatePatientCell ()
 @property (weak, nonatomic) IBOutlet UIView *functionView;//父视图
@@ -41,6 +45,44 @@
     self.payButton.layer.borderWidth = .5;
     self.payButton.layer.cornerRadius = 4;
     self.payButton.layer.masksToBounds = YES;
+    
+}
+
+- (void)setModel:(XLTeamPatientModel *)model{
+    _model = model;
+    
+    self.timeLabel.text = model.create_time;
+    self.patientNameLabel.text = model.patient_name;
+    self.expenseNumLabel.text = [NSString stringWithFormat:@"%ld颗",(long)[model.implant_count integerValue]];
+    
+    if ([model.status integerValue] == CureProjectPayed) {
+        //已付款
+        self.payStatusLabel.text = @"已收款";
+        self.payStatusLabel.textColor = [UIColor colorWithHex:0x888888];
+    }else{
+        //未付款
+        self.payStatusLabel.text = @"未收款";
+        self.payStatusLabel.textColor = [UIColor colorWithHex:0x333333];
+    }
+    
+    //就诊状态
+    switch ([model.patient_status integerValue]) {
+        case PatientStatusUntreatment:
+            [self.treateStatus setTextColor:[UIColor colorWithHex:0x00a0ea]];
+            break;
+        case PatientStatusUnplanted:
+            [self.treateStatus setTextColor:[UIColor colorWithHex:0xff3b31]];
+            break;
+        case PatientStatusUnrepaired:
+            [self.treateStatus setTextColor:[UIColor colorWithHex:0x37ab4e]];
+            break;
+        case PatientStatusRepaired:
+            [self.treateStatus setTextColor:[UIColor colorWithHex:0x888888]];
+            break;
+        default:
+            break;
+    }
+    self.treateStatus.text = [Patient statusStrWithIntegerStatus:[model.patient_status integerValue]];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

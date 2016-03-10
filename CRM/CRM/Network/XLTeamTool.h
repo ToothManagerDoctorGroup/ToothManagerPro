@@ -11,7 +11,7 @@
 /**
  *  团队协作网络工具
  */
-@class XLTeamMemberParam,CRMHttpRespondModel,MedicalCase,XLCureProjectParam,XLCureProjectModel;
+@class XLTeamMemberParam,CRMHttpRespondModel,MedicalCase,XLCureProjectParam,XLCureProjectModel,XLTeamPatientModel;
 @interface XLTeamTool : NSObject
 //-------------------------病历相关----------------------------------
 /**
@@ -134,4 +134,38 @@
  */
 + (void)queryAllDiseaseRecordWithCaseId:(NSString *)case_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
 
+//----------------------------耗材相关----------------------------------
+/**
+ *  查询指定病历下的所有耗材信息
+ *
+ *  @param case_id 病历id
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)queryAllExpensesWithCaseId:(NSString *)case_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
+
+//----------------------------医生详情相关----------------------------------
+/**
+ *  获取转入/转出的患者信息
+ *      转出的患者（我转给TA的，介绍人是我，接受人是TA）
+ *      转入的患者（TA转给我的，接受人是我，介绍人是TA）
+ *
+ *  @param doctor_id 医生id
+ *  @param intr_id   介绍人id
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)queryTransferPatientsWithDoctorId:(NSString *)doctor_id intrId:(NSString *)intr_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
+ *  获取我治疗的患者
+ *      治疗我的患者（我邀请TA治疗的患者）
+ *      治疗别人的患者（TA邀请我治疗的患者）
+ *
+ *  @param doctor_id         首诊医生id
+ *  @param therapt_doctor_id 治疗医生的id
+ *  @param success           成功回调
+ *  @param failure           失败回调
+ */
++ (void)queryJoinTreatePatientsWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
 @end

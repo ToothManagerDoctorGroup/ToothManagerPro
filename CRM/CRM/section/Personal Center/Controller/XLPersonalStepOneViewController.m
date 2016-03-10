@@ -27,14 +27,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"信息完善";
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setBackBarButtonWithImage:nil];
     
     //设置控件属性
     [self setViewAttr];
     
     
 }
-//- (void)onBackButtonAction:(id)sender{}
 
 #pragma mark - 设置控件属性
 - (void)setViewAttr{

@@ -146,9 +146,7 @@
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
         
-        //创建数据库
-//        [[DBManager shareInstance] createdbFileWithUserId:[AccountManager currentUserid]];
-//        [[DBManager shareInstance] createTables];
+        NSLog(@"医院名称:%@",[[AccountManager shareInstance] currentUser].hospitalName);
         
         //个人信息完善界面
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
