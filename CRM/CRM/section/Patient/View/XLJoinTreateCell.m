@@ -8,6 +8,8 @@
 
 #import "XLJoinTreateCell.h"
 #import "XLAvatarView.h"
+#import "MyDateTool.h"
+#import "XLJoinTeamModel.h"
 
 @interface XLJoinTreateCell ()
 
@@ -28,6 +30,16 @@
         [tableView registerNib:[UINib nibWithNibName:@"XLJoinTreateCell" bundle:nil] forCellReuseIdentifier:@"XLJoinTreateCell"];
     }
     return cell;
+}
+
+- (void)setModel:(XLJoinTeamModel *)model{
+    _model = model;
+    
+    self.endDateLabel.text = [NSString stringWithFormat:@"截止日期：%@",[MyDateTool stringWithDateNoTime:[MyDateTool dateWithStringWithSec:model.end_date]]];
+    self.patientLabel.text = [NSString stringWithFormat:@"患者：%@",model.patient_name];
+    self.doctorNameLabel.text = model.doctor_name;
+    self.avatarView.urlStr = model.doctor_image;
+    self.avatarView.targetImage = [UIImage imageNamed:@"team_biao_shou"];
 }
 
 - (void)awakeFromNib {

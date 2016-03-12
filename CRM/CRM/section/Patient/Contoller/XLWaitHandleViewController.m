@@ -8,8 +8,14 @@
 
 #import "XLWaitHandleViewController.h"
 #import "XLJoinTreateCell.h"
+#import "MJRefresh.h"
+#import "XLTeamTool.h"
+#import "AccountManager.h"
+#import "XLJoinTeamModel.h"
 
 @interface XLWaitHandleViewController ()
+
+@property (nonatomic, strong)NSArray *dataList;
 
 @end
 
@@ -17,18 +23,38 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.tableView.rowHeight = 60;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    self.tableView.header.updatedTimeHidden = YES;
+    
+    //开始刷新数据
+    [self.tableView.header beginRefreshing];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - headerRefreshAction
+- (void)headerRefreshAction{
+    [XLTeamTool queryJoinOtherCurePatientsWithDoctorId:[AccountManager currentUserid] status:@(0) success:^(NSArray *result) {
+        [self.tableView.header endRefreshing];
+        
+        self.dataList = result;
+        [self.tableView reloadData];
+    } failure:^(NSError *error) {
+        [self.tableView.header endRefreshing];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+
 #pragma mark - UITableViewDataSource/Delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 5;
+    return self.dataList.count;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -46,7 +72,11 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    XLJoinTeamModel * model = self.dataList[indexPath.row];
+    
     XLJoinTreateCell *cell = [XLJoinTreateCell cellWithTableView:tableView];
+    
+    cell.model = model;
     
     return cell;
     

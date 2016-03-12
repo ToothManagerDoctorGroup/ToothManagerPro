@@ -12,6 +12,7 @@
 #import "UIView+WXViewController.h"
 #import "XLTeamMemberModel.h"
 #import "UIColor+Extension.h"
+#import "AccountManager.h"
 
 @interface XLGroupMembersView ()<XLAvatarViewDelegate>
 
@@ -60,6 +61,7 @@
     [self.targetList addObject:[UIImage imageNamed:@"team_del_head"]];
     
     for (int i = 0; i < self.targetList.count; i++) {
+        
         //计算当前的图片的坐标，固定5列
         int index_x = i / count;
         int index_y = i % count;
@@ -78,6 +80,14 @@
             XLTeamMemberModel *model = self.targetList[i];
             avatarView.urlStr = model.doctor_image;
             avatarView.title = model.member_name;
+            
+            //判断是否是介绍人或者是首诊医生
+            if ([[model.create_user stringValue] isEqualToString:[AccountManager currentUserid]] && [[model.member_id stringValue] isEqualToString:[AccountManager currentUserid]]) {
+                //显示首诊医生图标
+                avatarView.targetImage = [UIImage imageNamed:@"team_biao_shou"];
+            }else if ([model.is_intr integerValue] == 1){
+                avatarView.targetImage = [UIImage imageNamed:@"team_biao_jie"];
+            }
         }
     }
     

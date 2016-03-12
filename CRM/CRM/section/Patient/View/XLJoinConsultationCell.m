@@ -8,6 +8,7 @@
 
 #import "XLJoinConsultationCell.h"
 #import "XLAvatarView.h"
+#import "XLJoinTeamModel.h"
 
 @interface XLJoinConsultationCell ()
 
@@ -25,6 +26,16 @@
         [tableView registerNib:[UINib nibWithNibName:@"XLJoinConsultationCell" bundle:nil] forCellReuseIdentifier:@"XLJoinConsultationCell"];
     }
     return cell;
+}
+
+- (void)setModel:(XLJoinTeamModel *)model{
+    _model = model;
+    
+    self.patientNameLabel.text = [NSString stringWithFormat:@"患者：%@",model.patient_name];
+    self.avatarView.urlStr = model.doctor_image;
+    self.avatarView.targetImage = [UIImage imageNamed:@"team_biao_shou"];
+    self.doctorNameLabel.text = model.doctor_name;
+    
 }
 
 - (void)awakeFromNib {

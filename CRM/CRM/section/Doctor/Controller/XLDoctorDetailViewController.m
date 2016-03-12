@@ -10,6 +10,10 @@
 #import "XLAvatarView.h"
 #import "DBTableMode.h"
 #import "XLTreatePatientViewController.h"
+#import "MBProgressHUD+XLHUD.h"
+#import "XLTeamTool.h"
+#import "AccountManager.h"
+#import "XLCureCountModel.h"
 
 @interface XLDoctorDetailViewController ()
 @property (weak, nonatomic) IBOutlet XLAvatarView *avatarView;
@@ -31,15 +35,51 @@
     
     //设置数据
     [self setUpData];
-}
-- (IBAction)phoneAction:(id)sender {
     
+    //查询所有数据
+    [self requestData];
 }
+#pragma mark - 拨打电话
+- (IBAction)phoneAction:(id)sender {
+    if(![NSString isEmptyString:self.doc.doctor_phone]){
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"是否拨打该电话" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        alertView.tag = 101;
+        [alertView show];
+    }else{
+        [SVProgressHUD showImage:nil status:@"电话无效"];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(buttonIndex == 0)return;
+    NSString *number = self.doc.doctor_phone;
+    NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+}
+
 
 - (void)setUpData{
     self.doctorNameLabel.text = self.doc.doctor_name;
     self.phoneLabel.text = self.doc.doctor_phone;
     self.avatarView.urlStr = self.doc.doctor_image;
+}
+
+#pragma mark - 查询所有数据
+- (void)requestData{
+    [XLTeamTool queryAllCountOfPatientWithDoctorId:[AccountManager currentUserid] theraptDocId:self.doc.ckeyid success:^(XLCureCountModel *model) {
+        
+        //加载成功
+        self.meTransferToOtherCount.text = [NSString stringWithFormat:@"(%ld)",(unsigned long)model.introByMe.count];
+        self.otherTransferToMeCount.text = [NSString stringWithFormat:@"(%ld)",(unsigned long)model.introByHim.count];
+        self.otherInviteMeCount.text = [NSString stringWithFormat:@"(%ld)",(unsigned long)model.cureByMe.count];
+        self.meInviteOtherCount.text = [NSString stringWithFormat:@"(%ld)",(unsigned long)model.cureByHim.count];
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+    
 }
 
 #pragma mark - UITableViewDataSource/Delegate

@@ -11,7 +11,7 @@
 /**
  *  团队协作网络工具
  */
-@class XLTeamMemberParam,CRMHttpRespondModel,MedicalCase,XLCureProjectParam,XLCureProjectModel,XLTeamPatientModel;
+@class XLTeamMemberParam,CRMHttpRespondModel,MedicalCase,XLCureProjectParam,XLCureProjectModel,XLTeamPatientModel,XLCureCountModel;
 @interface XLTeamTool : NSObject
 //-------------------------病历相关----------------------------------
 /**
@@ -168,4 +168,32 @@
  *  @param failure           失败回调
  */
 + (void)queryJoinTreatePatientsWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
+ *  查询所有不同类型患者的数量
+ *
+ *  @param doctor_id         当前医生的id
+ *  @param therapt_doctor_id 治疗医生的id
+ *  @param success           成功回调
+ *  @param failure           失败回调
+ */
++ (void)queryAllCountOfPatientWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(XLCureCountModel *model))success failure:(void (^)(NSError *error))failure;
+
+//----------------------------团队协作相关----------------------------------
+/**
+ *  查询我参与会诊的所有患者信息
+ *
+ *  @param doctor_id 医生的id
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)queryJoinConsultationPatientsWithDoctorId:(NSString *)doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
+ *   查询我合作治疗的所有患者信息
+ *
+ *  @param doctor_id 医生id
+ *  @param status    类型（-1表示查询所有，(0:待处理，1:待付款，3:已付款)）
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)queryJoinOtherCurePatientsWithDoctorId:(NSString *)doctor_id status:(NSNumber *)status success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
 @end

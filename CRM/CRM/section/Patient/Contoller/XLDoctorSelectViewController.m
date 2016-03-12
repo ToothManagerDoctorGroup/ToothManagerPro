@@ -261,6 +261,7 @@
                 [selectArray addObject:param.keyValues];
                 index++;
             }
+
         }
         //添加成员
         [SVProgressHUD showWithStatus:@"正在添加"];

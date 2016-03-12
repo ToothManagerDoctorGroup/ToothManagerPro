@@ -10,6 +10,7 @@
 #import "XLGroupMembersView.h"
 #import "XLTeamTool.h"
 #import "DBTableMode.h"
+#import "MJRefresh.h"
 
 @interface XLTreateGroupViewController (){
     XLGroupMembersView *_memberView;
@@ -37,14 +38,22 @@
     self.title = @"团队服务";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    [self.tableView.header beginRefreshing];
+}
+//下拉刷新数据
+- (void)headerRefreshAction{
     //查询网络数据
     [self requestDataWithCaseId:self.mCase.ckeyid];
 }
+
 #pragma mark - 查询网络数据
 - (void)requestDataWithCaseId:(NSString *)caseId{
     __weak typeof(self) weakSelf = self;
     [XLTeamTool queryMedicalCaseMembersWithCaseId:caseId success:^(NSArray *result) {
+        if ([weakSelf.tableView.header isRefreshing]) {
+            [weakSelf.tableView.header endRefreshing];
+        }
         weakSelf.dataList = result;
         
         NSInteger count = (weakSelf.dataList.count + 2) % 5 == 0 ? (weakSelf.dataList.count + 2) / 5 : (weakSelf.dataList.count + 2) / 5 + 1;
@@ -54,6 +63,9 @@
         
         [weakSelf.tableView reloadData];
     } failure:^(NSError *error) {
+        if ([weakSelf.tableView.header isRefreshing]) {
+            [weakSelf.tableView.header endRefreshing];
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }

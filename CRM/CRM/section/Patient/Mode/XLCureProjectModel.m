@@ -19,4 +19,12 @@
     return @[@"step"];
 }
 
+- (NSString *)end_date{
+    if ([_end_date isEqualToString:@"0001-01-01 00:00:00"]) {
+        return @"";
+    }else{
+        return _end_date;
+    }
+}
+
 @end

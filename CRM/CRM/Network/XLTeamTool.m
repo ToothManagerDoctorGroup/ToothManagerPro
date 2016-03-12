@@ -18,6 +18,8 @@
 #import "XLCureProjectModel.h"
 #import "XLCureProjectParam.h"
 #import "XLTeamPatientModel.h"
+#import "XLJoinTeamModel.h"
+#import "XLCureCountModel.h"
 
 @implementation XLTeamTool
 
@@ -367,7 +369,7 @@
 
 + (void)queryJoinTreatePatientsWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureProjectHandler.ashx",DomainName,Method_His_Crm];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"listpateint";
@@ -375,14 +377,82 @@
     params[@"doctor_id"] = doctor_id;
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
-//        NSMutableArray *arrayM = [NSMutableArray array];
-//        for (NSDictionary *dic in responseObject[@"Result"]) {
-//            XLTeamPatientModel *model = [XLTeamPatientModel objectWithKeyValues:dic];
-//            [arrayM addObject:model];
-//        }
-//        if (success) {
-//            success(arrayM);
-//        }
+        NSMutableArray *arrayM = [NSMutableArray array];
+        for (NSDictionary *dic in responseObject[@"Result"]) {
+            XLTeamPatientModel *model = [XLTeamPatientModel objectWithKeyValues:dic];
+            [arrayM addObject:model];
+        }
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)queryAllCountOfPatientWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(XLCureCountModel *model))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"patientByDoctorIdAndIntroId";
+    params[@"therapt_doctor_id"] = therapt_doctor_id;
+    params[@"doctor_id"] = doctor_id;
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        XLCureCountModel *model = [XLCureCountModel objectWithKeyValues:responseObject[@"Result"]];
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+//----------------------------团队协作相关----------------------------------
++ (void)queryJoinConsultationPatientsWithDoctorId:(NSString *)doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"listpartpatient";
+    params[@"doctor_id"] = doctor_id;
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+            NSMutableArray *arrayM = [NSMutableArray array];
+            for (NSDictionary *dic in responseObject[@"Result"]) {
+                XLJoinTeamModel *model = [XLJoinTeamModel objectWithKeyValues:dic];
+                [arrayM addObject:model];
+            }
+            if (success) {
+                success(arrayM);
+            }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)queryJoinOtherCurePatientsWithDoctorId:(NSString *)doctor_id status:(NSNumber *)status success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"listcurepatient";
+    params[@"doctor_id"] = doctor_id;
+    params[@"status"] = status;
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+            NSMutableArray *arrayM = [NSMutableArray array];
+            for (NSDictionary *dic in responseObject[@"Result"]) {
+                XLJoinTeamModel *model = [XLJoinTeamModel objectWithKeyValues:dic];
+                [arrayM addObject:model];
+            }
+            if (success) {
+                success(arrayM);
+            }
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);

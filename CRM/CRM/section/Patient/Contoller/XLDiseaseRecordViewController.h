@@ -10,6 +10,9 @@
 /**
  *  病程记录
  */
+@class MedicalCase;
 @interface XLDiseaseRecordViewController : TimTableViewController
+
+@property (nonatomic, strong)MedicalCase *mCase;
 
 @end

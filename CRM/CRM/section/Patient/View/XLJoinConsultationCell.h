@@ -10,7 +10,10 @@
 /**
  *  参与会诊cell
  */
+@class XLJoinTeamModel;
 @interface XLJoinConsultationCell : UITableViewCell
+
+@property (nonatomic, strong)XLJoinTeamModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

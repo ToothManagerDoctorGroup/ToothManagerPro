@@ -17,6 +17,8 @@
 #import "XLCureProjectParam.h"
 #import "AccountManager.h"
 #import "XLCommonEditViewController.h"
+#import "XLTeamMemberParam.h"
+#import "MJExtension.h"
 
 @interface XLTreatPlanEditViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,XLDoctorLibraryViewControllerDelegate,XLCommonEditViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *toothLabel;
@@ -65,11 +67,16 @@
     
     //创建治疗方案
     [SVProgressHUD showWithStatus:@"正在创建"];
+    __weak typeof(self) weakSelf = self;
     XLCureProjectParam *param = [[XLCureProjectParam alloc] initWithCaseId:self.mCase.ckeyid patientId:self.mCase.patient_id therapistId:therapistId therapistName:therapistName toothPosition:self.toothLabel.text medicalItem:self.typeLabel.text endDate:self.timeField.text goldCount:@(0) status:@(0)];
     [XLTeamTool addNewCureProWithParam:param success:^(XLCureProjectModel *model) {
+        //将医生插入到群组中，同时设置为治疗医生
+        XLTeamMemberParam *param = [[XLTeamMemberParam alloc] initWithCaseId:weakSelf.mCase.ckeyid patientId:weakSelf.mCase.patient_id teamNickName:@"" memberId:@([weakSelf.selectDoc.ckeyid integerValue]) nickName:@"" memberName:weakSelf.selectDoc.doctor_name isConsociation:YES createUserId:@([[AccountManager currentUserid] integerValue])];
+        [XLTeamTool addTeamMemberWithArray:@[param.keyValues] success:^(CRMHttpRespondModel *respond) {} failure:^(NSError *error) {}];
+        
         [SVProgressHUD showSuccessWithStatus:@"治疗方案创建成功"];
-        [self postNotificationName:TreatePlanAddNotification object:nil];
-        [self popViewControllerAnimated:YES];
+        [weakSelf postNotificationName:TreatePlanAddNotification object:nil];
+        [weakSelf popViewControllerAnimated:YES];
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"治疗方案创建失败"];
         if (error) {

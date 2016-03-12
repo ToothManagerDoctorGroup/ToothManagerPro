@@ -142,7 +142,6 @@
     if (conversationModel) {
         EMConversation *conversation = conversationModel.conversation;
         if (conversation) {
-            
             ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:conversation.chatter conversationType:conversation.conversationType];
             chatController.title = conversationModel.title;
             chatController.hidesBottomBarWhenPushed = YES;
@@ -164,8 +163,44 @@
             model.title = patient.patient_name;
         }
     }else if (model.conversation.conversationType == eConversationTypeGroupChat){
-        
-        model.title = @"未知群";
+        NSString *imageName = @"groupPublicHeader";
+        if (![conversation.ext objectForKey:@"groupSubject"] || ![conversation.ext objectForKey:@"isPublic"])
+        {
+            NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
+            for (EMGroup *group in groupArray) {
+                if ([group.groupId isEqualToString:conversation.chatter]) {
+                    model.title = group.groupSubject;
+                    imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
+                    model.avatarImage = [UIImage imageNamed:imageName];
+                    
+                    NSMutableDictionary *ext = [NSMutableDictionary dictionaryWithDictionary:conversation.ext];
+                    [ext setObject:group.groupSubject forKey:@"groupSubject"];
+                    [ext setObject:[NSNumber numberWithBool:group.isPublic] forKey:@"isPublic"];
+                    conversation.ext = ext;
+                    break;
+                }
+            }
+        } else {
+            NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
+            for (EMGroup *group in groupArray) {
+                if ([group.groupId isEqualToString:conversation.chatter]) {
+                    imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
+                    
+                    NSMutableDictionary *ext = [NSMutableDictionary dictionaryWithDictionary:conversation.ext];
+                    [ext setObject:group.groupSubject forKey:@"groupSubject"];
+                    [ext setObject:[NSNumber numberWithBool:group.isPublic] forKey:@"isPublic"];
+                    NSString *groupSubject = [ext objectForKey:@"groupSubject"];
+                    NSString *conversationSubject = [conversation.ext objectForKey:@"groupSubject"];
+                    if (groupSubject && conversationSubject && ![groupSubject isEqualToString:conversationSubject]) {
+                        conversation.ext = ext;
+                    }
+                    break;
+                }
+            }
+            model.title = [conversation.ext objectForKey:@"groupSubject"];
+            imageName = [[conversation.ext objectForKey:@"isPublic"] boolValue] ? @"groupPublicHeader" : @"groupPrivateHeader";
+            model.avatarImage = [UIImage imageNamed:imageName];
+        }
     }
     return model;
 }

@@ -12,6 +12,8 @@
 #import "XLDiseaseRecordCell.h"
 #import "XLDiseaseRecordDetailController.h"
 #import "XLDiseaseRecordEditController.h"
+#import "XLTeamTool.h"
+#import "DBTableMode.h"
 
 @interface XLDiseaseRecordViewController ()
 
@@ -46,6 +48,15 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     self.title = @"病程记录";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    //查询所有病程记录
+    [XLTeamTool queryAllDiseaseRecordWithCaseId:self.mCase.ckeyid success:^(NSArray *result) {
+        
+    } failure:^(NSError *error) {
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 - (void)onRightButtonAction:(id)sender{

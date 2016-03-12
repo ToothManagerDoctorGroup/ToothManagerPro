@@ -10,7 +10,10 @@
 /**
  *  参与治疗cell
  */
+@class XLJoinTeamModel;
 @interface XLJoinTreateCell : UITableViewCell
+
+@property (nonatomic, strong)XLJoinTeamModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

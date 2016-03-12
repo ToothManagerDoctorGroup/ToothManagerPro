@@ -30,7 +30,7 @@
 @property (nonatomic, copy)NSString *nick_name;
 @property (nonatomic, copy)NSString *member_name;
 @property (nonatomic, strong)NSNumber *is_consociation;//是否是合作医生（0:否 1：是）
-@property (nonatomic, strong)NSNumber *is_intr;
+@property (nonatomic, strong)NSNumber *is_intr;//是否是介绍人
 @property (nonatomic, strong)NSNumber *create_user;
 @property (nonatomic, copy)NSString *create_time;
 @property (nonatomic, copy)NSString *doctor_image;

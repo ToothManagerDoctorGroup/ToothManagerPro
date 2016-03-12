@@ -8,8 +8,13 @@
 
 #import "XLJoinConsultationController.h"
 #import "XLJoinConsultationCell.h"
+#import "MJRefresh.h"
+#import "XLTeamTool.h"
+#import "AccountManager.h"
 
 @interface XLJoinConsultationController ()
+
+@property (nonatomic, strong)NSArray *dataList;
 
 @end
 
@@ -22,11 +27,33 @@
     
     self.tableView.rowHeight = 60;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    self.tableView.header.updatedTimeHidden = YES;
+    
+    //开始刷新数据
+    [self.tableView.header beginRefreshing];
 }
+#pragma mark - headerRefreshAction
+- (void)headerRefreshAction{
+    //查询我所参与会诊的患者信息
+    [XLTeamTool queryJoinConsultationPatientsWithDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
+        [self.tableView.header endRefreshing];
+        
+        self.dataList = result;
+        [self.tableView reloadData];
+        
+    } failure:^(NSError *error) {
+        [self.tableView.header endRefreshing];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
 
 #pragma mark - UITableViewDataSource/Delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 5;
+    return self.dataList.count;
 }
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     // 下面这几行代码是用来设置cell的上下行线的位置
@@ -43,7 +70,11 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    XLJoinTeamModel *model = self.dataList[indexPath.row];
+    
     XLJoinConsultationCell *cell = [XLJoinConsultationCell cellWithTableView:tableView];
+    
+    cell.model = model;
     
     return cell;
     
