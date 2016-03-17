@@ -20,6 +20,8 @@
 
 @property (nonatomic,retain) PatientsCellMode *patientsCellMode;
 
+@property (nonatomic, assign)BOOL isNewPatient;//从新增患者跳转
+
 @property (nonatomic, weak)id<PatientDetailViewControllerDelegate> delegate;
 
 @end

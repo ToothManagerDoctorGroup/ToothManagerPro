@@ -222,6 +222,7 @@ NSString * const Repaired = @"已修复";
     expense.expense_price = [result doubleForColumn:@"expense_price"];
     expense.expense_money = [result doubleForColumn:@"expense_money"];
     expense.update_date = [result stringForColumn:@"update_date"];
+    expense.creation_date = [result stringForColumn:@"creation_date"];
     expense.user_id = [result stringForColumn:@"user_id"];
     expense.doctor_id = [result stringForColumn:@"doctor_id"];
     expense.creation_date_sync = [result stringForColumn:@"creation_date_sync"];

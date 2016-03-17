@@ -262,16 +262,16 @@
     
     PatientsCellMode *model = self.patientCellModeArray[indexPath.row];
     //跳转到新的患者详情页面
-//    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-//    detailVc.patientsCellMode = model;
-//    detailVc.hidesBottomBarWhenPushed = YES;
-//    detailVc.delegate = self;
-//    [self.navigationController pushViewController:detailVc animated:YES];
-    
-    XLPatientDetailViewController *detailVc = [[XLPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
     detailVc.patientsCellMode = model;
     detailVc.hidesBottomBarWhenPushed = YES;
+    detailVc.delegate = self;
     [self.navigationController pushViewController:detailVc animated:YES];
+    
+//    XLPatientDetailViewController *detailVc = [[XLPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+//    detailVc.patientsCellMode = model;
+//    detailVc.hidesBottomBarWhenPushed = YES;
+//    [self.navigationController pushViewController:detailVc animated:YES];
 }
 
 -(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -364,6 +364,7 @@
                 }
                 
                 //获取所有的预约数据进行删除
+                
             }
         }
     }];

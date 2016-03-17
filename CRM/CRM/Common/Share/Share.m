@@ -58,7 +58,7 @@
     SendMessageToWXReq * req = [[SendMessageToWXReq alloc]init];
     [req setBText:NO]; //发送消息类型:此处选择了多媒体消息
     [req setMessage:message];
-    [req setScene:WXSceneSession]; //分享至好友
+    [req setScene:WXSceneTimeline]; //分享至朋友圈
     
     [WXApi sendReq:req];
 }

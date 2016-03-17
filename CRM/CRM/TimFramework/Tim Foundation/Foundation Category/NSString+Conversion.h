@@ -16,7 +16,6 @@
 //format YYYY:MM:DD HH:MM:SS
 + (NSString *)currentDateString;
 
-
 //format YYYY:MM:DD HH:MM:SS
 + (NSString *)defaultDateTenMinuteString;
 
@@ -74,5 +73,30 @@ typedef NS_ENUM(NSInteger,ValidationResult) {
  */
 - (ValidationResult)isValidWithFormat:(NSString *)format;
 + (ValidationResult)isValidString:(NSString *)string withFormat:(NSString *)format;
+/**
+ *  计算字符串中的字符总数
+ *
+ *  @param str 原始字符串
+ *
+ *  @return 字符总数
+ */
+- (int)charaterCount;
+/**
+ *  验证所有的手机号码
+ *
+ *  @param telNumber 手机号
+ *
+ *  @return 是否符合
+ */
++ (BOOL)checkTelNumber:(NSString *) telNumber;
+
+/**
+ *  验证所有的电话号码，包括手机号和座机号
+ *
+ *  @param phoneNumber 号码
+ *
+ *  @return 是否符合
+ */
++ (BOOL)checkAllPhoneNumber:(NSString *) phoneNumber;
 
 @end

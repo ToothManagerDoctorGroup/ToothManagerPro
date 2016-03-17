@@ -22,6 +22,9 @@
 #import "JSONKit.h"
 #import "MJExtension.h"
 #import "CRMUserDefalut.h"
+#import "NSString+Conversion.h"
+#import "PatientDetailViewController.h"
+#import "PatientsCellMode.h"
 
 @interface CreatePatientViewController () <UITextFieldDelegate,RequestIntroducerDelegate,XLIntroducerViewControllerDelegate,CreateCaseViewControllerDelegate>
 {
@@ -118,16 +121,21 @@
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
     
+    [self.view endEditing:YES];
+    
     if(self.nameTextField.text.length == 0){
         [SVProgressHUD showImage:nil status:@"请输入患者姓名"];
         return;
     }
-    
-    if(self.phoneTextField.text.length != 11){
-        [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
+    if ([self.nameTextField.text charaterCount] > 32) {
+        [SVProgressHUD showImage:nil status:@"患者姓名过长"];
         return;
     }
     
+    if(self.phoneTextField.text.length == 0 || ![NSString checkAllPhoneNumber:self.phoneTextField.text]){
+        [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
+        return;
+    }
     
     [_nameTextField resignFirstResponder];
     [_introducerTextField resignFirstResponder];
@@ -189,11 +197,19 @@
                     }
                 }
                 
-                UIAlertView * alertview;
-                alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"返回列表" otherButtonTitles:@"新建病历", nil];
-                [alertview show];
+//                UIAlertView * alertview;
+//                alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"再录一个" otherButtonTitles:@"返回",@"新建病历", nil];
+//                [alertview show];
                 //将患者插入手机通讯录
                 [self savePatientPhontToAddressBook];
+                
+                //跳转到患者详细信息页面
+                PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+                PatientsCellMode *model = [[PatientsCellMode alloc] init];
+                model.patientId = patient.ckeyid;
+                detailVc.patientsCellMode = model;
+                detailVc.isNewPatient = YES;
+                [self pushViewController:detailVc animated:YES];
             }
         } else {
             if (self.edit) {  //如果是编辑患者界面
@@ -215,12 +231,19 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 0){
-        //返回列表
-        [self popViewControllerAnimated:YES];
+        //再建一个，清空当前文本框中的信息
+        self.nameTextField.text = @"";
+        self.introducerTextField.text = @"";
+        self.phoneTextField.text = @"";
+        patient = [[Patient alloc]init];
+        
     }else if(buttonIndex == 1){
+        //返回列表
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    }else{
         //新建病例
         //由于patient的keyID是在数据库自增，所以，创建完之后必须要去数据库取最后一行数据的keyID作为当前新建患者的KeyID,【不能查数据库的count作为keyid，因为有可能不连续】
-        //    [[NSNotificationCenter defaultCenter] postNotificationName:MedicalCaseNeedCreateNotification object:patient]
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
         CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
         caseVC.title = @"新建病历";
@@ -228,7 +251,6 @@
         caseVC.delegate = self;
         caseVC.isNewPatient = YES;
         [self pushViewController:caseVC animated:YES];
-        
     }
 }
 

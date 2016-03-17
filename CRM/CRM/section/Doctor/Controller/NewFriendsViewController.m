@@ -68,10 +68,7 @@
     _friendNotifiObj = [[FriendNotification alloc]init];
     
 }
-- (void)viewWillAppear:(BOOL)animated{
-    [self refreshData];
-    [self refreshView];
-}
+
 - (void)refreshData{
     [super refreshData];
     [self requestDataList];

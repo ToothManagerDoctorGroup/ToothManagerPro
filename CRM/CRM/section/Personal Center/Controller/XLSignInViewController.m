@@ -116,39 +116,36 @@
         
         if ([respond.code integerValue] == 200) {
             NSDictionary *resultDic = respond.result;
-            //登录成功，创建和当前登录人对应的数据库
-//            [[DBManager shareInstance] createdbFileWithUserId:[resultDic objectForKey:@"id"]];
-//            [[DBManager shareInstance] createTables];
+            [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+            UserObject *userobj = [[AccountManager shareInstance] currentUser];
+            [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
+            } failedBlock:^(NSError *error) {
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
+            }];
             
-                [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
-                UserObject *userobj = [[AccountManager shareInstance] currentUser];
-                [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-                } failedBlock:^(NSError *error) {
-                    [SVProgressHUD showImage:nil status:error.localizedDescription];
-                }];
-
-                //环信账号登录
-                [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
+            
+            //环信账号登录
+            [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
+                
+                if (loginInfo && !error) {
+                    //设置是否自动登录
+                    [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
                     
-                    if (loginInfo && !error) {
-                        //设置是否自动登录
-                        [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
-                        
-                        //获取数据库中数据
-                        [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
-                        
-                        EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
-                        //设置离线推送的样式
-                        options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
-                        [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
-                        
-                        //发送自动登陆状态通知
-                        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
-                        
-                        //保存最近一次登录用户名
-                        [self saveLastLoginUsername];
-                    }
-                } onQueue:nil];
+                    //获取数据库中数据
+                    [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+                    
+                    EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+                    //设置离线推送的样式
+                    options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+                    [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+                    
+                    //发送自动登陆状态通知
+                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+                    
+                    //保存最近一次登录用户名
+                    [self saveLastLoginUsername];
+                }
+            } onQueue:nil];
             
         }else{
             [SVProgressHUD showErrorWithStatus:respond.result];
@@ -211,7 +208,6 @@
         [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
     
-    
     //环信账号登录
     [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
         
@@ -233,39 +229,25 @@
             //保存最近一次登录用户名
             [self saveLastLoginUsername];
         }
-        else
-        {
-            switch (error.errorCode)
-            {
-                case EMErrorNotFound:
-                    TTAlertNoTitle(error.description);
-                    break;
-                case EMErrorNetworkNotConnected:
-                    TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                    break;
-                case EMErrorServerNotReachable:
-                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                    break;
-                case EMErrorServerAuthenticationFailure:
-                    TTAlertNoTitle(error.description);
-                    break;
-                case EMErrorServerTimeout:
-                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                    break;
-                default:
-                    TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
-                    break;
-            }
-        }
-        
     } onQueue:nil];
 }
 
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD showSuccessWithStatus:@"登录成功"];
-    if(self.navigationController.topViewController == self){
-        [self postNotificationName:SignInSuccessNotification object:nil];
+    
+    //判断当前用户是否填写了医院名称
+    if (![[AccountManager shareInstance].currentUser.hospitalName isNotEmpty] || [[AccountManager shareInstance].currentUser.hospitalName isEqualToString:@"无"]) {
+        //跳转到信息完善界面
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+        XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+        oneVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:oneVc animated:YES];
+        
+    }else{
+        [SVProgressHUD showSuccessWithStatus:@"登录成功"];
+        if(self.navigationController.topViewController == self){
+            [self postNotificationName:SignInSuccessNotification object:nil];
+        }
     }
     NSArray *dicArray = [result objectForKey:@"Result"];
     if (dicArray && dicArray.count > 0) {

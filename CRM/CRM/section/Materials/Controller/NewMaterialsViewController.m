@@ -142,7 +142,7 @@
     } else {
         _material = [[Material alloc] init];
         self.tableView.hidden = YES;
-        self.title = @"新建种植体";
+        self.title = @"添加种植体";
 //        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
         [self setRightBarButtonWithTitle:@"保存"];
     }

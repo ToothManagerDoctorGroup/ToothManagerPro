@@ -255,6 +255,22 @@
 	}
 }
 
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView {
+    
+    CGRect imageViewFrame = _imageView.frame;
+    
+    CGRect screenBounds = [UIScreen mainScreen].bounds;
+    
+    if (imageViewFrame.size.height > screenBounds.size.height)
+        
+    { imageViewFrame.origin.y = 0.0f; }
+    
+    else { imageViewFrame.origin.y = (screenBounds.size.height - imageViewFrame.size.height) / 2.0; }
+    
+    _imageView.frame = imageViewFrame;
+    
+}
+
 - (void)dealloc
 {
     // 取消请求

@@ -327,14 +327,14 @@
                                                         <constraint firstAttribute="height" constant="0.5" id="4hB-M3-tFc"/>
                                                     </constraints>
                                                 </view>
-                                                <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="22" placeholderIntrinsicHeight="22" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CuF-0Y-Wn4">
+                                                <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="22" placeholderIntrinsicHeight="22" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CuF-0Y-Wn4">
                                                     <rect key="frame" x="288" y="14" width="22" height="22"/>
                                                     <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="22" id="BLq-LW-dUs"/>
                                                         <constraint firstAttribute="width" constant="22" id="W8I-33-aED"/>
                                                     </constraints>
-                                                    <state key="normal">
+                                                    <state key="normal" image="medical_add_ct.png">
                                                         <color key="titleColor" red="0.041547209480122325" green="0.81142488532110091" blue="0.99810063073394495" alpha="1" colorSpace="calibratedRGB"/>
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
@@ -388,7 +388,7 @@
                                                     <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="KVk-so-kgl">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="种植手术完成后填写" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="KVk-so-kgl">
                                                     <rect key="frame" x="84" y="10" width="208" height="30"/>
                                                     <animations/>
                                                     <constraints>
@@ -449,7 +449,7 @@
                                                     <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Hsx-sv-4zB">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="修复手术完成后填写" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="Hsx-sv-4zB">
                                                     <rect key="frame" x="84" y="10" width="208" height="30"/>
                                                     <animations/>
                                                     <constraints>
@@ -1737,6 +1737,7 @@
     </scenes>
     <resources>
         <image name="arrow_crm.png" width="13" height="18"/>
+        <image name="medical_add_ct.png" width="20" height="20"/>
         <image name="phone.png" width="16" height="16"/>
         <image name="yawei_big.png" width="175" height="34"/>
         <image name="yawei_medium.png" width="90" height="34"/>

@@ -21,6 +21,8 @@
 
 @property (nonatomic, copy)NSString *currentContent;
 
+@property (nonatomic, copy)NSString *placeHolder;
+
 @property (nonatomic, weak)id<XLContentWriteViewControllerDelegate> delegate;
 
 @end

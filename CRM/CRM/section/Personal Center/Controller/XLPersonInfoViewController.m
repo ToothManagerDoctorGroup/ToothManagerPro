@@ -17,15 +17,15 @@
 #import "XLCommonEditViewController.h"
 #import "DBManager+User.h"
 #import "PatientManager.h"
+#import "NSString+Conversion.h"
+#import "XLContentWriteViewController.h"
 
-
-@interface XLPersonInfoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate,XLCommonEditViewControllerDelegate>
+@interface XLPersonInfoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate,XLCommonEditViewControllerDelegate,XLContentWriteViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;//头像
 @property (weak, nonatomic) IBOutlet UITextField *userName;//姓名
 @property (weak, nonatomic) IBOutlet UITextField *userSex;//性别
 @property (weak, nonatomic) IBOutlet UITextField *userAge;//年龄
 @property (weak, nonatomic) IBOutlet UITextField *userDepartment;//科室
-@property (weak, nonatomic) IBOutlet UITextField *userPhone;//电话
 @property (weak, nonatomic) IBOutlet UITextField *userHospital;//医院
 @property (weak, nonatomic) IBOutlet UITextField *userAcademicTitle;//职称
 @property (weak, nonatomic) IBOutlet UITextField *userDegree;//学历
@@ -78,7 +78,6 @@
     NSInteger birthYear = [[doctorInfo.doctor_birthday substringToIndex:4] integerValue];
     self.userAge.text = [NSString stringWithFormat:@"%d",(int)([self getYear] - birthYear)];
     self.userDepartment.text = doctorInfo.doctor_dept;
-    self.userPhone.text = doctorInfo.doctor_phone;
     self.userHospital.text = doctorInfo.doctor_hospital;
     self.userAcademicTitle.text = doctorInfo.doctor_position;
     self.userDegree.text = doctorInfo.doctor_degree;
@@ -108,25 +107,23 @@
         }
     }else{
         if (indexPath.row == 0) {
-            [self updateInfoWithPlaceHolder:@"请填写姓名" title:@"姓名" content:self.userName.text isNumberKeyBoard:NO];
+            [self updateInfoWithPlaceHolder:@"请填写姓名" title:@"修改姓名" content:self.userName.text isNumberKeyBoard:NO];
         }else if (indexPath.row == 1){
             [self updateWithChooseType:XLDataSelectViewControllerSex content:self.userSex.text];
         }else if (indexPath.row == 2){
-            [self updateInfoWithPlaceHolder:@"请填写年龄" title:@"年龄" content:self.userAge.text isNumberKeyBoard:YES];
+            [self updateInfoWithPlaceHolder:@"请填写年龄" title:@"修改年龄" content:self.userAge.text isNumberKeyBoard:YES];
         }else if (indexPath.row == 3){
             [self updateWithChooseType:XLDataSelectViewControllerDepartment content:self.userDepartment.text];
         }else if (indexPath.row == 4){
-            [self updateInfoWithPlaceHolder:@"请填写电话" title:@"电话" content:self.userPhone.text isNumberKeyBoard:YES];
-        }else if (indexPath.row == 5){
             [self updateInfoWithPlaceHolder:@"请填写医院名称" title:@"医院" content:self.userHospital.text isNumberKeyBoard:NO];
-        }else if (indexPath.row == 6){
+        }else if (indexPath.row == 5){
             [self updateWithChooseType:XLDataSelectViewControllerProfressional content:self.userAcademicTitle.text];
-        }else if (indexPath.row == 7){
+        }else if (indexPath.row == 6){
             [self updateWithChooseType:XLDataSelectViewControllerDegree content:self.userDegree.text];
+        }else if (indexPath.row == 7){
+            [self updateSkillWithTitle:@"个人简介" content:self.userDesc.text placeHolder:@"请填写个人简介"];
         }else if (indexPath.row == 8){
-            [self updateInfoWithPlaceHolder:@"请填写个人简介" title:@"个人简介" content:self.userDesc.text isNumberKeyBoard:NO];
-        }else if (indexPath.row == 9){
-            [self updateInfoWithPlaceHolder:@"请填写擅长项目" title:@"擅长项目" content:self.userSkills.text isNumberKeyBoard:NO];
+            [self updateSkillWithTitle:@"擅长项目" content:self.userSkills.text placeHolder:@"请填写擅长项目"];
         }
     }
 }
@@ -147,6 +144,16 @@
     dataSelectVc.currentContent = content;
     dataSelectVc.delegate = self;
     [self pushViewController:dataSelectVc animated:YES];
+}
+
+#pragma mark - 修改医生的个人简介和擅长项目
+- (void)updateSkillWithTitle:(NSString *)title content:(NSString *)content placeHolder:(NSString *)placeHolder{
+    XLContentWriteViewController *writeVc = [[XLContentWriteViewController alloc] init];
+    writeVc.placeHolder = placeHolder;
+    writeVc.title = title;
+    writeVc.currentContent = content;
+    writeVc.delegate = self;
+    [self pushViewController:writeVc animated:YES];
 }
 
 #pragma mark - 上传头像
@@ -258,13 +265,33 @@
 }
 #pragma mark - XLCommonEditViewControllerDelegate
 - (void)commonEditViewController:(XLCommonEditViewController *)editVc content:(NSString *)content title:(NSString *)title{
-    if ([title isEqualToString:@"姓名"]) {
+    if ([title isEqualToString:@"修改姓名"]) {
+        if (![content isNotEmpty]) {
+            [SVProgressHUD showImage:nil status:@"请输入姓名"];
+            return;
+        }
+        //判断输入的姓名的长度是否合格
+        if ([content charaterCount] > 32) {
+            [SVProgressHUD showImage:nil status:@"姓名过长，请重新输入"];
+            return;
+        }
         self.currentDoctor.doctor_name = content;
-    }else if ([title isEqualToString:@"年龄"]){
+        
+    }else if ([title isEqualToString:@"修改年龄"]){
+        if ([content integerValue] > 150) {
+            [SVProgressHUD showImage:nil status:@"年龄无效，请重新输入"];
+            return;
+        }
         //计算出生年份
         NSInteger yearCount = [self getYear] - [content integerValue];
-        self.currentDoctor.doctor_birthday = [NSString stringWithFormat:@"%ld-01-01",yearCount];
+        self.currentDoctor.doctor_birthday = [NSString stringWithFormat:@"%ld-01-01",(long)yearCount];
     }else if ([title isEqualToString:@"电话"]){
+        //验证电话是否合法
+        BOOL ret = [NSString checkTelNumber:content];
+        if (!ret) {
+            [SVProgressHUD showImage:nil status:@"手机号不合法，请重新输入"];
+            return;
+        }
         self.currentDoctor.doctor_phone = content;
     }else if ([title isEqualToString:@"医院"]){
         self.currentDoctor.doctor_hospital = content;
@@ -276,6 +303,18 @@
     
     [self uploadDoctorInfo];
 }
+
+#pragma mark - XLContentWriteViewControllerDelegate
+- (void)contentWriteViewController:(XLContentWriteViewController *)contentVC didWriteContent:(NSString *)content{
+    if ([contentVC.title isEqualToString:@"个人简介"]) {
+        self.currentDoctor.doctor_cv = content;
+    }else{
+        self.currentDoctor.doctor_skill = content;
+    }
+    
+    [self uploadDoctorInfo];
+}
+
 #pragma mark - 上传个人信息
 - (void)uploadDoctorInfo{
     //上传数据
@@ -289,7 +328,7 @@
             UserObject *userobj = [[AccountManager shareInstance] currentUser];
             [userobj setName:self.userName.text];
             [userobj setDepartment:self.userDepartment.text];
-            [userobj setPhone:self.userPhone.text];
+            [userobj setPhone:userobj.phone];
             [userobj setHospitalName:self.userHospital.text];
             [userobj setTitle:self.userAcademicTitle.text];
             [userobj setDegree:self.userDegree.text];
@@ -314,25 +353,7 @@
     NSInteger year = [dateComponent year];
     return year;
 }
-#pragma mark - 手动下载图片
-- (void)downloadImageWithImageUrl:(NSString *)imageStr{
-    
-    // 1.创建多线程
-    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
-        [NSThread sleepForTimeInterval:0.5];
-        //执行下载操作
-        NSURL *url = [NSURL URLWithString:imageStr];
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        UIImage *image = [UIImage imageWithData:data];
-        
-        //回到主线程更新ui
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            self.iconImageView.image = image;
-        }];
-    }];
-    // 2.必须将任务添加到队列中才能执行
-//    [self.opQueue addOperation:downOp];
-}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

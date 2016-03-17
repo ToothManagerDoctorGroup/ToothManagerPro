@@ -11,10 +11,7 @@
 #import "AccountManager.h"
 #import "XLMessageTemplateModel.h"
 #import "XLTemplateDetailViewController.h"
-
-
-#define TYPE_LOAD @"load"
-#define TYPE_REFRESH @"refresh"
+#import "MJRefresh.h"
 
 @interface XLReserveTypesViewController ()
 
@@ -35,12 +32,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidDisappear:(BOOL)animated{
-    [super viewDidDisappear:animated];
-    
-    [SVProgressHUD dismiss];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"选择预约事项";
@@ -50,8 +41,15 @@
     //添加通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addTemplateAction:) name:MessageTemplateAddNotification object:nil];
     
-    //请求网络数据
-    [self requestWlanDataWithType:TYPE_LOAD];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+    self.tableView.header.updatedTimeHidden = YES;
+ 
+    [self.tableView.header beginRefreshing];
+}
+//上拉刷新
+- (void)headerRefreshAction{
+    [self requestWlanData];
 }
 
 - (void)onRightButtonAction:(id)sender{
@@ -61,19 +59,14 @@
 }
 //添加预约事项的通知
 - (void)addTemplateAction:(NSNotification *)noti{
-    [self requestWlanDataWithType:TYPE_REFRESH];
+    [self requestWlanData];
 }
 
-- (void)requestWlanDataWithType:(NSString *)type{
-    if ([type isEqualToString:TYPE_LOAD]) {
-        //首次加载
-        [SVProgressHUD showWithStatus:@"正在获取预约事项"];
-    }
+- (void)requestWlanData{
     [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        if ([type isEqualToString:TYPE_LOAD]) {
-            [SVProgressHUD dismiss];
+        if ([self.tableView.header isRefreshing]) {
+            [self.tableView.header endRefreshing];
         }
-        
         //对数据进行分组
         for (XLMessageTemplateModel *model in result) {
             if ([model.message_name isEqualToString:@"种植术后注意事项"] || [model.message_name isEqualToString:@"修复术后注意事项"] ||
@@ -87,9 +80,8 @@
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
-        if ([type isEqualToString:TYPE_LOAD]) {
-            [SVProgressHUD dismiss];
-        }
+        if ([self.tableView.header isRefreshing]) [self.tableView.header endRefreshing];
+        
         if (error) {
             NSLog(@"error:%@",error);
         }

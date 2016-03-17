@@ -14,6 +14,7 @@
 #import "CRMUserDefalut.h"
 #import "NSString+TTMAddtion.h"
 
+
 @implementation XLLoginTool
 
 + (void)loginWithNickName:(NSString *)nickName password:(NSString *)password success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
@@ -65,6 +66,8 @@
         NSDictionary *dic = [NSString dicFromJsonStr:sourceStr];
         //字典转模型
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:dic];
+        NSLog(@"data:%@,url:%@",sourceStr,operation.request.URL);
+        
         if (success) {
             success(model);
         }

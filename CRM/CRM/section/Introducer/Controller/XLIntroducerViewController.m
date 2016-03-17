@@ -26,13 +26,13 @@
 #import "AddressBookViewController.h"
 #import "CreateIntroducerViewController.h"
 #import "MJRefresh.h"
+#import "MLKMenuPopover.h"
+#import "XLContactsViewController.h"
 
-@interface XLIntroducerViewController ()<UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,MudItemsBarDelegate,UISearchDisplayDelegate>{
+@interface XLIntroducerViewController ()<UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,MLKMenuPopoverDelegate>{
     UITableView *_tableView;
 }
 
-@property (nonatomic,retain) MudItemsBar *menubar;
-@property (nonatomic) BOOL isBarHidden;
 @property (nonatomic,retain) NSMutableArray * introducerCellModeArray;
 @property (nonatomic,retain) NSArray * introducerInfoArray;
 
@@ -41,9 +41,34 @@
 
 @property (nonatomic, assign)int pageCount;//分页使用的页数，默认是0
 
+/**
+ *  菜单选项
+ */
+@property (nonatomic, strong)NSArray *menuList;
+/**
+ *  菜单弹出视图
+ */
+@property (nonatomic, strong)MLKMenuPopover *menuPopover;
+
 @end
 
 @implementation XLIntroducerViewController;
+
+- (MLKMenuPopover *)menuPopover{
+    if (!_menuPopover) {
+        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 120 - 8, 64, 120, self.menuList.count * 44) menuItems:self.menuList];
+        menuPopover.menuPopoverDelegate = self;
+        _menuPopover = menuPopover;
+    }
+    return _menuPopover;
+}
+
+- (NSArray *)menuList{
+    if (_menuList == nil) {
+        _menuList = [NSArray arrayWithObjects:@"手工录入",@"通讯录导入", nil];
+    }
+    return _menuList;
+}
 
 - (NSMutableArray *)introducerCellModeArray{
     if (!_introducerCellModeArray) {
@@ -198,7 +223,6 @@
 #pragma mark - 请求本地介绍人数据
 - (void)requestLocalDataWitPage:(int)pageCount isHeader:(BOOL)isHeader
 {
-    self.isBarHidden = YES;
     if (self.Mode == IntroducePersonViewSelect) {
         self.introducerInfoArray = [[DBManager shareInstance] getLocalIntroducerWithPage:self.pageCount];
     }else {
@@ -252,14 +276,6 @@
     [_tableView reloadData];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    [SVProgressHUD dismiss];
-    if (self.isBarHidden == NO){                      //如果是显示状态
-        [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
-    }
-}
 #pragma mark - 设置标题栏视图
 - (UIView *)setUpGroupViewAndButtons{
     
@@ -345,35 +361,30 @@
 }
 
 - (void)onRightButtonAction:(id)sender {
-    if (self.isBarHidden == YES) { //如果是消失状态
-        [self setupMenuBar];
-        [self.menubar showBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
-    } else {                      //如果是显示状态
-        [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
-    }
-    self.isBarHidden = !self.isBarHidden;
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    [self.menuPopover showInView:keyWindow];
 }
 
-- (void)setupMenuBar {
-    if (self.menubar == nil) {
-        _menubar = [[MudItemsBar alloc]init];
-        self.menubar.delegate = self;
-        self.menubar.duration = 0.15;
-        self.menubar.barOrigin = CGPointMake(0, 64.5);
-        self.menubar.backgroundColor = [UIColor colorWithHex:MENU_BAR_BACKGROUND_COLOR];
-        UIImage *normalImage = [[UIImage imageNamed:@"baritem_normal_bg"] stretchableImageWithLeftCapWidth:2.5 topCapHeight:2.5];
-        UIImage *selectImage = [[UIImage imageNamed:@"baritem_select_bg"] stretchableImageWithLeftCapWidth:2.5 topCapHeight:2.5];
-        MudItemBarItem *itemAddressBook = [[MudItemBarItem alloc]init];
-        itemAddressBook.text = @"手工录入";
-        itemAddressBook.iteImage = [UIImage imageNamed:@"file"];
-        [itemAddressBook setBackgroundImage:normalImage forState:UIControlStateNormal];
-        [itemAddressBook setBackgroundImage:selectImage forState:UIControlStateHighlighted];
-        MudItemBarItem *itemAdd = [[MudItemBarItem alloc]init];
-        itemAdd.text = @"通讯录导入";
-        itemAdd.iteImage = [UIImage imageNamed:@"copyfile"];
-        [itemAdd setBackgroundImage:normalImage forState:UIControlStateNormal];
-        [itemAdd setBackgroundImage:selectImage forState:UIControlStateHighlighted];
-        self.menubar.items = [NSArray arrayWithObjects:itemAdd,itemAddressBook,nil];
+#pragma mark MLKMenuPopoverDelegate
+
+- (void)menuPopover:(MLKMenuPopover *)menuPopover didSelectMenuItemAtIndex:(NSInteger)selectedIndex
+{
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    [self.menuPopover dismissMenuPopover];
+    if (selectedIndex == 0) {
+        CreateIntroducerViewController *newIntoducerVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreateIntroducerViewController"];
+        newIntoducerVC.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:newIntoducerVC animated:YES];
+    }else if (selectedIndex == 1){
+        XLContactsViewController *contactVc = [[XLContactsViewController alloc] initWithStyle:UITableViewStylePlain];
+        contactVc.type = ContactsImportTypeIntroducer;
+        contactVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:contactVc animated:YES];
+        
+//        AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
+//        addressBook.type = ImportTypeIntroducer;
+//        addressBook.hidesBottomBarWhenPushed = YES;
+//        [self pushViewController:addressBook animated:YES];
     }
 }
 
@@ -486,36 +497,6 @@
         detailCtl.hidesBottomBarWhenPushed = YES;
         [self pushViewController:detailCtl animated:YES];
     }
-}
-
-
-#pragma mark - MudItemsBarDelegate
-- (void)itemsBar:(MudItemsBar *)itemsBar clickedButtonAtIndex:(NSInteger)buttonIndex {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    switch (buttonIndex) {
-            
-        case 0:
-        {
-            AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
-            addressBook.type = ImportTypeIntroducer;
-            addressBook.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:addressBook animated:YES];
-        }
-            break;
-        case 1:
-        {
-            CreateIntroducerViewController *newIntoducerVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreateIntroducerViewController"];
-            newIntoducerVC.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:newIntoducerVC animated:YES];
-        }
-            break;
-        default:
-            break;
-    }
-}
-
-- (void)itemsBarWillDisAppear {
-    self.isBarHidden = YES;
 }
 
 #pragma mark - UISearchBar Delegates

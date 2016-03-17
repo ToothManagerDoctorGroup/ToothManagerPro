@@ -18,7 +18,6 @@
 #import "SyncManager.h"
 #import "PatientDetailViewController.h"
 #import "SysMsgViewController.h"
-#import "PMCalendar.h"
 #import "LewPopupViewController.h"
 #import "SchedulePopMenu.h"
 #import <MessageUI/MFMessageComposeViewController.h>
@@ -41,8 +40,9 @@
 #import "CRMHttpRequest+Sync.h"
 #import "XLGuideImageView.h"
 #import "CRMUserDefalut.h"
+#import "MyDateTool.h"
 
-@interface MyScheduleReminderViewController ()<PMCalendarControllerDelegate,MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
+@interface MyScheduleReminderViewController ()<MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
 @property (nonatomic,retain) NSArray *remindArray;
 
@@ -634,7 +634,7 @@
 #pragma mark - JTCalendarDataSource
 - (BOOL)calendarHaveEvent:(JTCalendar *)calendar date:(NSDate *)date
 {
-    NSString *selectDateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
+    NSString *selectDateStr = [MyDateTool stringWithDateNoTime:date];
     NSArray *array = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMonthArray];
     
     if (array.count > 0) {
@@ -648,8 +648,7 @@
 {
     
     self.selectDate = date;
-    
-    NSString *selectDateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
+    NSString *selectDateStr = [MyDateTool stringWithDateNoTime:date];
    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
     

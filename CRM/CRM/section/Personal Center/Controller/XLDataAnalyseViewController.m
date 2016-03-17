@@ -72,6 +72,7 @@
 }
 
 #pragma mark - UITableViewDelegate/Datasource
+/*
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return 2;
 }
@@ -107,5 +108,7 @@
     }
     [self pushViewController:seniorVC animated:YES];
 }
+ 
+ */
 
 @end

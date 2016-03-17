@@ -122,7 +122,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:material.sync_time forKey:@"sync_time"];
     [subParamDic setObject:material.mat_name forKey:@"mat_name"];
     [subParamDic setObject:[NSString stringWithFormat: @"%.2f", material.mat_price] forKey:@"mat_price"];
-    [subParamDic setObject:[Material typeStringWith:material.mat_type] forKey:@"mat_type"];
+    [subParamDic setObject:[NSString stringWithFormat:@"%ld",(long)material.mat_type] forKey:@"mat_type"];
     [subParamDic setObject:material.doctor_id forKey:@"doctor_id"];
     
     NSError *error;
@@ -209,7 +209,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:curDate forKey:@"sync_time"];
     [subParamDic setObject:medical_case.patient_id forKey:@"patient_id"];
     [subParamDic setObject:medical_case.case_name forKey:@"case_name"];
-    [subParamDic setObject:curDate forKey:@"createdate"];
+    [subParamDic setObject:medical_case.creation_date forKey:@"createdate"];
     
     if (nil == medical_case.implant_time) {
         [subParamDic setObject:@"" forKey:@"implant_time"];

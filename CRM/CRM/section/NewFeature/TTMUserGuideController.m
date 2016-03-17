@@ -12,7 +12,7 @@
 // pageControl的默认Y值的比例
 #define kUserGuideControllerRadio 0.9f
 // 两秒轮巡
-#define kTime 2
+#define kTime 5
 
 @interface TTMUserGuideController () <UIScrollViewDelegate>
 

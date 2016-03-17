@@ -41,6 +41,7 @@
     [super didReceiveMemoryWarning];
 }
 
+
 #pragma mark - Set View
 - (void)setupView {
 }

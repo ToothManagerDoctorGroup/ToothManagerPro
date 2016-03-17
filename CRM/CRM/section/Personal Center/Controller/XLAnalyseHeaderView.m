@@ -67,10 +67,10 @@
     [patientCountView addSubview:patientCountLabel];
     self.patientCountLabel = patientCountLabel;
     
-    UIView *divider = [[UIView alloc] init];
-    divider.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
-    self.divider = divider;
-    [self addSubview:divider];
+//    UIView *divider = [[UIView alloc] init];
+//    divider.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
+//    self.divider = divider;
+//    [self addSubview:divider];
     
 }
 
@@ -123,11 +123,11 @@
         [btn addTarget:self action:@selector(btnAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     
-    CGFloat dividerW = kScreenWidth;
-    CGFloat dividerH = .5;
-    CGFloat dividerX = 0;
-    CGFloat dividerY = self.height - dividerH;
-    self.divider.frame = CGRectMake(dividerX, dividerY, dividerW, dividerH);
+//    CGFloat dividerW = kScreenWidth;
+//    CGFloat dividerH = .5;
+//    CGFloat dividerX = 0;
+//    CGFloat dividerY = self.height - dividerH;
+//    self.divider.frame = CGRectMake(dividerX, dividerY, dividerW, dividerH);
 }
 
 #pragma mark - 按钮点击事件

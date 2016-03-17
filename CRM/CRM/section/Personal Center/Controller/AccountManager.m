@@ -87,16 +87,13 @@ Realize_ShareInstance(AccountManager);
         return;
     }
     
-    ret = [pwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
-    if (ret == ValidationResultInValid)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
+    if ([nickname charaterCount] > 32) {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"用户名过长" errorCode:400]);
         return;
     }
     
-    if (ret == ValidationResultValidateStringIsEmpty)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码不能为空" errorCode:400]);
+    if (![nickname isNotEmpty]) {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"用户名不能为空" errorCode:400]);
         return;
     }
     
@@ -115,6 +112,19 @@ Realize_ShareInstance(AccountManager);
     
     if (validate.length <= 0) {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"验证码不能为空" errorCode:400]);
+        return;
+    }
+    
+    ret = [pwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    if (ret == ValidationResultInValid)
+    {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
+        return;
+    }
+    
+    if (ret == ValidationResultValidateStringIsEmpty)
+    {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码不能为空" errorCode:400]);
         return;
     }
     
@@ -239,12 +249,12 @@ Realize_ShareInstance(AccountManager);
     ret = [oldpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"旧密码格式错误" errorCode:400]);
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"当前密码格式错误" errorCode:400]);
         return;
     }
     if (ret == ValidationResultValidateStringIsEmpty)
     {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"旧密码不能为空" errorCode:400]);
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"当前密码不能为空" errorCode:400]);
         return;
     }
     if (![newpwd isEqualToString:confirmpwd]) {

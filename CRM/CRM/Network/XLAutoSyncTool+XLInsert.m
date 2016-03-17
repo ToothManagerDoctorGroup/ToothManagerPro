@@ -279,6 +279,7 @@
         upLoadParam.name = @"uploadfile";
         upLoadParam.fileName = ct_lib.ct_image;
         upLoadParam.mimeType = @"image/png,image/jpeg,image/pjpeg";
+        
         [[CRMHttpTool shareInstance] POST:POST_CTLIB_INSERT parameters:[self addCommenParams:params] uploadParam:upLoadParam success:^(id responseObject) {
             CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
             if (success) {

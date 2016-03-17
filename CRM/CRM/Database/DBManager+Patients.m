@@ -316,6 +316,7 @@
         ret = YES;
     }
     [set close];
+    
     if (ret == YES) {
         ret = [self updatePatient:patient];
         return ret;
@@ -888,7 +889,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",PatientTableName,patient.ckeyid];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and doctor_id = \"%@\"",PatientTableName,patient.ckeyid,[AccountManager currentUserid]];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -2034,7 +2035,7 @@
     }
     
     __block BOOL ret = NO;
-     NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = ‘%@’",MedicalRecordableName,medicalRecord.ckeyid];
+     NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",MedicalRecordableName,medicalRecord.ckeyid];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
         set = [db executeQuery:sqlStr];
@@ -2156,7 +2157,7 @@
         [valueArray addObject:medicalRecord.creation_date];
         
         // 3. 写入数据库
-        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = ‘%@’", MedicalRecordableName, [columeArray componentsJoinedByString:@"=?,"],medicalRecord.ckeyid];
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", MedicalRecordableName, [columeArray componentsJoinedByString:@"=?,"],medicalRecord.ckeyid];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
         
         if (ret == NO) {
@@ -2193,7 +2194,7 @@
 
         
         // 3. 写入数据库
-        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = ‘%@’", MedicalRecordableName, [columeArray componentsJoinedByString:@"=?,"],medicalRecordId];
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", MedicalRecordableName, [columeArray componentsJoinedByString:@"=?,"],medicalRecordId];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
         
         if (ret == NO) {
@@ -2340,7 +2341,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@'",CTLibTableName, ctlib.ckeyid];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",CTLibTableName, ctlib.ckeyid];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
         set = [db executeQuery:sqlStr];
@@ -2609,13 +2610,15 @@
  *
  *  @return CTLib 数组
  */
-- (NSArray*)getCTLibArrayWithCaseId:(NSString *)medicalcaseid {
+- (NSArray*)getCTLibArrayWithCaseId:(NSString *)medicalcaseid isAsc:(BOOL)asc{
     if ([NSString isEmptyString:medicalcaseid]) {
         return  nil;
     }
     NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
 
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where case_id = \"%@\" and user_id = \"%@\" and creation_date_sync > datetime('%@')",CTLibTableName,medicalcaseid,[AccountManager currentUserid],[NSString defaultDateString]];
+    NSString *ascStr = asc ? @"asc" : @"desc";
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where case_id = \"%@\" and user_id = \"%@\" and creation_date_sync > datetime('%@') order by ckeyid %@",CTLibTableName,medicalcaseid,[AccountManager currentUserid],[NSString defaultDateString],ascStr];
     
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {

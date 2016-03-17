@@ -14,7 +14,7 @@
 @interface XLPersonalStepOneViewController ()<XLDataSelectViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *stepCountLabel; //步骤1
 @property (weak, nonatomic) IBOutlet UILabel *step2CountLabel;//步骤2
-@property (weak, nonatomic) IBOutlet UITextField *userNameField;//姓名
+@property (weak, nonatomic) IBOutlet TimPickerTextField *userNameField;//姓名
 @property (weak, nonatomic) IBOutlet TimPickerTextField *hospitalNameField;//医院
 @property (weak, nonatomic) IBOutlet TimPickerTextField *departmentField;//科室
 @property (weak, nonatomic) IBOutlet TimPickerTextField *professionalField;//职称
@@ -31,8 +31,6 @@
     
     //设置控件属性
     [self setViewAttr];
-    
-    
 }
 
 #pragma mark - 设置控件属性
@@ -79,6 +77,12 @@
         [SVProgressHUD showErrorWithStatus:@"姓名不能为空"];
         return;
     }
+    
+    if ([self.userNameField.text charaterCount] > 32) {
+        [SVProgressHUD showErrorWithStatus:@"姓名过长"];
+        return;
+    }
+    
     if (self.hospitalNameField.text.length == 0) {
         [SVProgressHUD showErrorWithStatus:@"职业医院不能为空"];
         return;

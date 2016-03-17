@@ -362,13 +362,6 @@
 #pragma mark - 添加预约
 - (void)addReserveButtonClick{
     
-    if ([[AccountManager shareInstance] currentUser].hospitalName == NULL || ![[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"你没有设置所在医院，是否前往设置？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"前往", nil];
-        alertView.tag = 200;
-        [alertView show];
-        return;
-    }
-    
     XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
     selectYuyeVc.hidesBottomBarWhenPushed = YES;
     selectYuyeVc.isAddLocationToPatient = YES;

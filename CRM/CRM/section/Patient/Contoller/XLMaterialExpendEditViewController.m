@@ -49,6 +49,7 @@
     [self addLineAction:nil];
 }
 
+
 - (void)hideKeyboard{
     [self.view endEditing:YES];
 }
@@ -71,7 +72,6 @@
 
 #pragma mark - Actions
 - (void)onRightButtonAction:(id)sender {
-    
     for (int i = 0; i < self.expenses.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         CaseMaterialsTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];

@@ -42,11 +42,9 @@
 {
     if (self.phoneTextField.text.length <= 0) {
         [SVProgressHUD showErrorWithStatus:@"您未填写手机号码"];
-    }else if (self.phoneTextField.text.length > 0 && self.phoneTextField.text.length != 11) {
-        [SVProgressHUD showErrorWithStatus:@"请输入正确的手机号码"];
     }else {
-        if (![self isAllNum:self.phoneTextField.text]) {
-            [SVProgressHUD showErrorWithStatus:@"手机号码含有异常字符"];
+        if (![NSString checkTelNumber:self.phoneTextField.text]) {
+            [SVProgressHUD showErrorWithStatus:@"手机号码无效"];
         }else {
             myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refreshTime:) userInfo:nil repeats:YES];
             [[NSRunLoop currentRunLoop]addTimer:myTimer forMode:NSDefaultRunLoopMode];

@@ -89,7 +89,7 @@
     
     //创建上传参数
     MyUploadParam *uploadParam = [[MyUploadParam alloc] init];
-    uploadParam.data = UIImageJPEGRepresentation(image, .2);
+    uploadParam.data = UIImageJPEGRepresentation(image, .5);
     uploadParam.name = @"pic";
     uploadParam.fileName = [NSString stringWithFormat:@"%@.jpg",userId];
     uploadParam.mimeType = @"image/png,image/jpeg,image/pjpeg";
@@ -197,9 +197,13 @@
 }
 
 + (void)transferPatientWithPatientId:(NSString *)patientId doctorId:(NSString *)doctorId receiverId:(NSString *)receiverId success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/NotificationPatientHandler.ashx",DomainName,Method_His_Crm];
+//    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/NotificationPatientHandler.ashx",DomainName,Method_His_Crm];
+//    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+//    params[@"action"] = @"transfer";
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"transfer";
+    params[@"action"] = @"add";
 
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:4];
     [dataEntity setObject:patientId forKey:@"patient_id"];

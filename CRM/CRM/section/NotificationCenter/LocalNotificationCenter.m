@@ -157,6 +157,7 @@ Realize_ShareInstance(LocalNotificationCenter);
 //    [self addNotification:notificaiton];
     BOOL ret = [[DBManager shareInstance] insertLocalNotification:notificaiton];
     if (ret) {
+        //添加预约信息到系统日历
         [self scheduleNotification:notificaiton];
         [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
     }
@@ -233,21 +234,12 @@ Realize_ShareInstance(LocalNotificationCenter);
 
 - (void)scheduleNotification:(LocalNotification *)notification {
     
+    /*
     [self cancelNotification:notification];
     
     UILocalNotification *localNoti = [[UILocalNotification alloc]init];
     localNoti.timeZone = [NSTimeZone systemTimeZone];
     localNoti.fireDate = [notification.reserve_time stringToNSDate];
-    /*
-    if ([notification.reserve_type isEqualToString:RepeatIntervalDay]) {
-        localNoti.repeatInterval = NSCalendarUnitDay;
-    } else  if ([notification.reserve_type isEqualToString:RepeatIntervalWeek]) {
-        localNoti.repeatInterval = NSCalendarUnitWeekday;
-    } else  if ([notification.reserve_type isEqualToString:RepeatIntervalMonth]) {
-        localNoti.repeatInterval = NSCalendarUnitMonth;
-    } else   {
-        localNoti.repeatInterval = NSCalendarUnitEra;
-    }*/
     
     Patient *tpatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notification.patient_id];
     localNoti.alertBody = [NSString stringWithFormat:@"患者 %@ %@",tpatient.patient_name,notification.reserve_type];
@@ -256,7 +248,9 @@ Realize_ShareInstance(LocalNotificationCenter);
     localNoti.soundName = UILocalNotificationDefaultSoundName;
     localNoti.userInfo = [NSDictionary dictionaryWithObject:notification.ckeyid forKey:@"ckeyid"];
     [[UIApplication sharedApplication] scheduleLocalNotification:localNoti];
+    */
     
+    Patient *tpatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notification.patient_id];
     //获取系统设置
     NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
     if (autoReserve == nil) {

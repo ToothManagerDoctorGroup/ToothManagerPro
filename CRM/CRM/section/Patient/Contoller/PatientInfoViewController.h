@@ -7,12 +7,9 @@
 //
 
 #import "TimViewController.h"
-#import "TSPopoverController.h"
 
 @class PatientsCellMode;
-@interface PatientInfoViewController : TimViewController<UITableViewDelegate,UITableViewDataSource,TSPopoverTouchesDelegate,UIGestureRecognizerDelegate>
-
-@property (nonatomic) TSPopoverController *tsPopoverController;
+@interface PatientInfoViewController : TimViewController<UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate>
 
 @property (nonatomic,retain) PatientsCellMode *patientsCellMode;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolBar;

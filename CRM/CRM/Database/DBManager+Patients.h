@@ -326,10 +326,11 @@
  *  获取CTLib中所有数据，也就是照片合集
  *
  *  @param medicalcaseid 病例id
+ *  @param asc 是否是升序排列
  *
  *  @return CTLib 数组
  */
-- (NSArray*)getCTLibArrayWithCaseId:(NSString *)medicalcaseid;
+- (NSArray*)getCTLibArrayWithCaseId:(NSString *)medicalcaseid isAsc:(BOOL)asc;
 
 /**
  *  获取CTLib 数据
@@ -366,5 +367,15 @@
  *  @return 是否保存成功
  */
 - (BOOL)saveAllDownloadPatientInfoWithPatientModel:(XLPatientTotalInfoModel *)model;
+
+/**
+ *  更新患者的状态
+ *
+ *  @param status    状态
+ *  @param patientId 患者id
+ *
+ *  @return 是否更新成功
+ */
+- (BOOL)updatePatientStatus:(PatientStatus)status withPatientId:(NSString *)patientId;
 
 @end

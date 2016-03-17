@@ -32,7 +32,7 @@
 @property (nonatomic, copy)NSString *therapy_doctor_id;//修复医生的id
 @property (nonatomic, copy)NSString *therapy_doctor_name;//修复医生的姓名
 
-@property (nonatomic, copy)NSString *case_id;//病历id
+@property (nonatomic, copy)NSString *case_id;//病历id(预留字段，新功能使用)
 
 /**
  *  本地使用

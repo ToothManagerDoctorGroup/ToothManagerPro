@@ -17,6 +17,10 @@
 
 @implementation CaseMaterialsTableViewCell
 
+- (void)awakeFromNib{
+    [self.materialNum addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+}
+
 - (void)setCell:(NSArray *)array {
     
     self.materialName.layer.cornerRadius = 5;
@@ -62,6 +66,13 @@
     }
 }
 
+- (void)textFieldDidChange:(UITextField *)textField{
+    if (textField == self.materialNum) {
+        if ([textField.text integerValue] > 100) {
+            textField.text = @"100";
+        }
+    }
+}
 
 - (NSString *)materialCount{
     return self.materialNum.text;

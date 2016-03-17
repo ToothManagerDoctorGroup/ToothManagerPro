@@ -19,6 +19,8 @@
 #import "DBManager+AutoSync.h"
 #import "XLStarView.h"
 #import "XLStarSelectViewController.h"
+#import "NSString+Conversion.h"
+
 
 @interface CreateIntroducerViewController () <TimPickerTextFieldDataSource,XLStarSelectViewControllerDelegate>
 
@@ -40,12 +42,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self initView];
+    [self initData];
 }
 
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     [self setRightBarButtonWithTitle:@"保存"];
     [self.tableView setAllowsSelection:NO];
     if (self.edit) {
@@ -83,14 +87,26 @@
     }
 }
 
-- (void)dealloc {
-    
-}
-
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
-    if (self.phoneTextField.text.length != 11) {
+    if (self.nameTextField.text == 0) {
+        [SVProgressHUD showImage:nil status:@"请输入介绍人姓名"];
+        return;
+    }
+    if ([self.nameTextField.text charaterCount] > 32) {
+        [SVProgressHUD showImage:nil status:@"介绍人姓名过长"];
+        return;
+    }
+    
+    if (self.phoneTextField.text.length == 0 || ![NSString checkAllPhoneNumber:self.phoneTextField.text]) {
         [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+        return;
+    }
+    
+    //判断当前介绍人是否存在
+    BOOL exit = [[DBManager shareInstance] isInIntroducerTable:self.introducer.ckeyid];
+    if (exit) {
+        [SVProgressHUD showImage:nil status:@"该电话号码已存在，请重新输入"];
         return;
     }
     

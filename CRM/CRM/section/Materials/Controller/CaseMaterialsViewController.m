@@ -13,9 +13,13 @@
 #import "DBTableMode.h"
 #import "DBManager+Materials.h"
 #import "XLMaterialsViewController.h"
+#import "DBManager+AutoSync.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
 
 @interface CaseMaterialsViewController () <CaseMaterialsTableViewCellDelegate,XLMaterialsViewControllerDelegate>
 @property (nonatomic) NSInteger selectIndex;
+
 @end
 
 @implementation CaseMaterialsViewController
@@ -28,15 +32,17 @@
     [super initView];
     self.title = @"种植体编辑";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     [self setRightBarButtonWithTitle:@"保存"];
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.tableView addGestureRecognizer:gestureRecognizer];
     gestureRecognizer.cancelsTouchesInView = NO;
     self.tableView.allowsSelection = NO;
-    //默认添加一个种植体
-    [self addLineAction:nil];
+    
+    if (self.materialsArray.count == 0) {
+        //默认添加一个种植体
+        [self addLineAction:nil];
+    }
 }
 
 - (void)hideKeyboard{
@@ -55,11 +61,6 @@
     [super refreshView];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Actions 
 - (void)onBackButtonAction:(id)sender {
     //隐藏当前编辑框
@@ -75,9 +76,10 @@
         MedicalExpense *expense = self.materialsArray[i];
         expense.expense_num = [cell.materialNum.text integerValue];
         expense.mat_name = [[DBManager shareInstance] getMaterialWithId:expense.mat_id].mat_name;
+        expense.expense_money = expense.expense_num * expense.expense_price;
+
     }
-    
-    
+
     //隐藏当前编辑框
     [self.view endEditing:YES];
     
@@ -99,6 +101,7 @@
     }
     
     MedicalExpense *expense = [[MedicalExpense alloc]init];
+    
     [self.materialsArray addObject:expense];
     [self.tableView reloadData];
 }
@@ -212,6 +215,20 @@
 
 - (void)didDeleteCell:(CaseMaterialsTableViewCell *)cell{
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    MedicalExpense *expense = self.materialsArray[indexPath.row];
+    
+    //判断本地是否有这个耗材数据
+    MedicalExpense *expenseTmp = [[DBManager shareInstance] getMedicalExpenseWithCkeyId:expense.ckeyid];
+    if (expenseTmp != nil) {
+        //删除本地的耗材数据
+        if([[DBManager shareInstance] deleteMedicalExpenseWithId:expense.ckeyid]){
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expenseTmp.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:MedicalExpenseDeleteNotification object:expense.ckeyid];
+        }
+    }
+    
     [self.materialsArray removeObjectAtIndex:indexPath.row];
     [self.tableView reloadData];
 }
@@ -219,11 +236,10 @@
 - (void)didSelectedMaterial:(Material *)material {
    MedicalExpense *expense = [self.materialsArray objectAtIndex:self.selectIndex];
     expense.mat_id = material.ckeyid;
+    expense.expense_price = material.mat_price;
+    
     [self.tableView reloadData];
 }
-
-
-
 
 
 @end

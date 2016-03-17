@@ -44,7 +44,16 @@
 #define CancelReserveType @"取消预约"
 #define UpdateReserveType @"修改预约"
 
-@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>
+#define EditTextColor [UIColor colorWithHex:0x888888]
+
+@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>{
+    
+    __weak IBOutlet UILabel *_yaweiTitle;
+    __weak IBOutlet UILabel *_nameTitle;
+    __weak IBOutlet UILabel *_reserTypeTitle;
+    __weak IBOutlet UILabel *_hospitalTitle;
+    __weak IBOutlet UILabel *_timeTitle;
+}
 
 @property (weak, nonatomic) IBOutlet UILabel *patientNameLabel;//患者名称
 @property (weak, nonatomic) IBOutlet UILabel *yaweiNameLabel;//牙位
@@ -88,6 +97,7 @@
 }
 #pragma mark - 保存按钮点击
 - (void)onRightButtonAction:(id)sender{
+
     
     if (self.isEditAppointment) {
         //判断当前的预约时间和原来的预约时间是否相同,当前的治疗医生和之前的治疗医生是否相同
@@ -190,11 +200,11 @@
     }else{
         //添加预约
         if(self.patientNameLabel.text.length == 0){
-            [SVProgressHUD showImage:nil status:@"预约患者不能为空"];
+            [SVProgressHUD showImage:nil status:@"请选择患者"];
             return;
         }
         if (self.reserveTypeLabel.text.length == 0) {
-            [SVProgressHUD showImage:nil status:@"治疗项目不能为空"];
+            [SVProgressHUD showImage:nil status:@"请选择预约事项"];
             return;
         }
         
@@ -205,6 +215,7 @@
         notification.medical_chair = @"";
         notification.update_date = [NSString defaultDateString];
         notification.reserve_content = self.yuyueRemarkLabel.text;
+        notification.case_id = @"";
         
         notification.selected = YES;
         notification.tooth_position = self.yaweiNameLabel.text;
@@ -439,6 +450,9 @@
         self.yaweiArrow.hidden = YES;
         self.reserveTypeArrow.hidden = YES;
         
+        //修改文字颜色
+        [self editReserveStyle];
+        
     }else{
         self.reserveTimeArrow.hidden = YES;
         
@@ -503,10 +517,6 @@
         case 2:
             headerLabel.text = @"提醒方式";
             break;
-        case 3:
-            headerLabel.text = @"提醒时间";
-            break;
-            
         default:
             break;
     }
@@ -702,6 +712,20 @@
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         }
     }
+}
+#pragma mark - 添加预约和修改预约样式切换
+- (void)editReserveStyle{
+    self.patientNameLabel.textColor = EditTextColor;
+    self.yaweiNameLabel.textColor = EditTextColor;
+    self.reserveTypeLabel.textColor = EditTextColor;
+    self.visitDurationLabel.textColor = EditTextColor;
+    self.visitAddressLabel.textColor = EditTextColor;
+    
+    _yaweiTitle.textColor = EditTextColor;
+    _nameTitle.textColor = EditTextColor;
+    _reserTypeTitle.textColor = EditTextColor;
+    _hospitalTitle.textColor = EditTextColor;
+    _timeTitle.textColor = EditTextColor;
 }
 
 - (void)didReceiveMemoryWarning {

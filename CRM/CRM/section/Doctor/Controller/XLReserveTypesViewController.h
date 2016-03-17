@@ -6,7 +6,7 @@
 //  Copyright © 2015年 TimTiger. All rights reserved.
 //
 
-#import "TimDisplayViewController.h"
+#import "TimTableViewController.h"
 /**
  *  预约类型列表
  */
@@ -17,7 +17,7 @@
 - (void)reserveTypesViewController:(XLReserveTypesViewController *)vc didSelectReserveType:(NSString *)type;
 
 @end
-@interface XLReserveTypesViewController : TimDisplayViewController
+@interface XLReserveTypesViewController : TimTableViewController
 
 @property (nonatomic, copy)NSString *reserve_type;//页面传递过来的事项
 

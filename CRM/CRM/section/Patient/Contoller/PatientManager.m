@@ -15,9 +15,12 @@
    
     @autoreleasepool {
         
-    NSData *imageData = UIImageJPEGRepresentation(image, 0);
-    UIImage *storeImage = [UIImage imageWithData:imageData];
-    [[SDImageCache sharedImageCache] storeImage:storeImage forKey:key toDisk:YES];
+        NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+        NSLog(@"图片大小:%lu,名称:%@",(unsigned long)imageData.length,key);
+        
+        UIImage *storeImage = [UIImage imageWithData:imageData];
+        [[SDImageCache sharedImageCache] storeImage:storeImage forKey:key toDisk:YES];
+        
 
 //    NSString *filepath = [NSString stringWithFormat:@"%@%@%@.jpg",NSHomeDirectory(),@"/Library/Caches/",key];
 //    NSData *imageData = UIImageJPEGRepresentation(image, 0);
@@ -37,7 +40,7 @@
 
 + (NSData *)pathImageGetFromDisk:(NSString *)key {
 
-   return UIImageJPEGRepresentation([[SDImageCache sharedImageCache] imageFromDiskCacheForKey:key], 0);
+   return UIImageJPEGRepresentation([[SDImageCache sharedImageCache] imageFromDiskCacheForKey:key], 0.1);
 }
 
 + (BOOL)IsImageExisting:(NSString *)key {

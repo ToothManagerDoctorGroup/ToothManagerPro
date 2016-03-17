@@ -171,7 +171,7 @@
 
     self.title = @"医生好友";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_add_doctor"]];
     
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
@@ -371,7 +371,7 @@
     //转诊病人
     if (isTransfer) {
         self.selectDoctor = doctor;
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确认转诊给此好友吗?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"确认转诊给%@吗?",doctor.doctor_name] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
         alertView.tag = 110;
         [alertView show];
         
@@ -391,10 +391,15 @@
                 [[DBManager shareInstance] insertDoctorWithDoctor:doctor];
             }
             
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Team" bundle:nil];
-            XLDoctorDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLDoctorDetailViewController"];
-            detailVc.doc = doctor;
-            [self pushViewController:detailVc animated:YES];
+            DoctorInfoViewController *doctorinfoVC = [[DoctorInfoViewController alloc]init];
+            doctorinfoVC.repairDoctorID = doctor.ckeyid;
+            doctorinfoVC.ifDoctorInfo = YES;
+            [self pushViewController:doctorinfoVC animated:YES];
+            
+//            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Team" bundle:nil];
+//            XLDoctorDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLDoctorDetailViewController"];
+//            detailVc.doc = doctor;
+//            [self pushViewController:detailVc animated:YES];
         }
     }
 }
@@ -446,24 +451,27 @@
 {
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
-        Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
-        if (tmppatient != nil) {
-            //添加患者自动同步信息
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[tmppatient.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-            
-            //插入患者介绍人
-            [self insertPatientIntroducerMap];
-            self.selectDoctor = nil;
-            //发送通知
-            [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
-            [self popViewControllerAnimated:YES];
-        }
-        //发送微信消息
-        [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
-        } failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
+        __weak typeof(self) weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
+            if (tmppatient != nil) {
+                //添加患者自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[tmppatient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                //插入患者介绍人
+                [weakSelf insertPatientIntroducerMap];
+                weakSelf.selectDoctor = nil;
+                //发送通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
+                [weakSelf popViewControllerAnimated:YES];
+            }
+            //发送微信消息
+            [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+            } failedBlock:^(NSError *error){
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
+            }];
+        });
         
     } else {
         [SVProgressHUD showErrorWithStatus:@"转诊患者失败"];

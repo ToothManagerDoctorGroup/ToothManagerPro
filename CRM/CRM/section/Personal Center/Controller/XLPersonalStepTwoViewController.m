@@ -146,6 +146,13 @@
 }
 
 - (IBAction)finishButtonAction:(id)sender {
+    
+    //判断年龄是否合法
+    if ([self.ageField.text integerValue] > 150) {
+        [SVProgressHUD showImage:nil status:@"年龄无效，请重新输入"];
+        return;
+    }
+    
     //保存用户信息
     UserObject *userobj = [[AccountManager shareInstance] currentUser];
     Doctor *doctor = [[Doctor alloc]init];
@@ -175,7 +182,6 @@
     }];
     
 }
-
 
 #pragma mark -
 #pragma mark CRMHttpRequestPersonalCenterDelegate

@@ -54,21 +54,29 @@ Realize_ShareInstance(AddressBoolTool);
 #pragma mark - 修改通讯录联系人的头像
 - (void)saveWithImage:(UIImage *)image person:(NSString *)personName phone:(NSString *)personPhone{
     ABAddressBookRef addressBook = [self getAddressBook];
+    if (addressBook == nil) {
+        NSLog(@"用户没有开通通讯录权限");
+        return;
+    }
     
     NSArray* contacts = (__bridge NSArray *)(ABAddressBookCopyPeopleWithName(addressBook, (__bridge CFStringRef)(personName)));
     for (int i = 0; i < contacts.count; i++) {
         ABRecordRef person = (__bridge ABRecordRef)[contacts objectAtIndex:i];
-        NSString *phone = [self phoneNumberWithABRecordRef:person];
-        if ([phone isEqualToString:personPhone]) {
-            //设置头像
-            NSData *data=UIImagePNGRepresentation(image);
-            ABPersonRemoveImageData(person, NULL);
-            ABAddressBookAddRecord(addressBook, person, nil);
-            ABAddressBookSave(addressBook, nil);
-            CFDataRef cfData=CFDataCreate(NULL, [data bytes], [data length]);
-            ABPersonSetImageData(person, cfData, nil);
-            ABAddressBookAddRecord(addressBook, person, nil);
-            ABAddressBookSave(addressBook, nil);
+        NSArray *phones = [self phoneWithABRecordRef:person];
+        for (NSString *phone in phones) {
+            if ([phone containsString:personPhone]) {
+                //设置头像
+                NSData *data=UIImagePNGRepresentation(image);
+                ABPersonRemoveImageData(person, NULL);
+                ABAddressBookAddRecord(addressBook, person, nil);
+                ABAddressBookSave(addressBook, nil);
+                CFDataRef cfData=CFDataCreate(NULL, [data bytes], [data length]);
+                ABPersonSetImageData(person, cfData, nil);
+                ABAddressBookAddRecord(addressBook, person, nil);
+                ABAddressBookSave(addressBook, nil);
+                
+                break;
+            }
         }
     }
     // 释放通讯录对象的引用
@@ -113,7 +121,49 @@ Realize_ShareInstance(AddressBoolTool);
         }
     }
     CFRelease(phones);
+    
     return returnString;
+}
+#pragma mark - 获取电话号码
+- (NSArray *)phoneWithABRecordRef:(ABRecordRef)recordRef {
+    
+    NSMutableArray *phones = [NSMutableArray array];
+    
+    ABPropertyID multiProperties[] = {
+        kABPersonPhoneProperty,
+        kABPersonEmailProperty
+    };
+    NSInteger multiPropertiesTotal = sizeof(multiProperties) / sizeof(ABPropertyID);
+    for (NSInteger j = 0; j < multiPropertiesTotal; j++) {
+        ABPropertyID property = multiProperties[j];
+        ABMultiValueRef valuesRef = ABRecordCopyValue(recordRef, property);
+        NSInteger valuesCount = 0;
+        if (valuesRef != nil) valuesCount = ABMultiValueGetCount(valuesRef);
+        
+        if (valuesCount == 0) {
+            CFRelease(valuesRef);
+            continue;
+        }
+        //获取电话号码和email
+        for (NSInteger k = 0; k < valuesCount; k++) {
+            CFTypeRef value = ABMultiValueCopyValueAtIndex(valuesRef, k);
+            switch (j) {
+                case 0: {// Phone number
+                    NSString *phoneStr = (__bridge NSString*)value;
+                    [phones addObject:[self editPhoneStyleWithPhone:phoneStr]];
+                    break;
+                }
+                case 1: {// Email
+                    //                    model.email = (__bridge NSString*)value;
+                    break;
+                }
+            }
+            CFRelease(value);
+        }
+        CFRelease(valuesRef);
+    }
+    
+    return phones;
 }
 
 - (BOOL)matchString:(NSString *)string withExpression:(NSString *)expression
@@ -133,6 +183,30 @@ Realize_ShareInstance(AddressBoolTool);
     return YES;
 }
 
+#pragma mark - 去掉号码前的+86 和“-”
+- (NSString *)editPhoneStyleWithPhone:(NSString *)phone{
+    NSString* normalPhone = [phone stringByReplacingOccurrencesOfString:@"-" withString:@""];
+    
+    if ([normalPhone hasPrefix:@"86"]) {
+        NSString *formatStr = [normalPhone substringWithRange:NSMakeRange(2, [phone length]-2)];
+        return formatStr;
+    }
+    else if ([normalPhone hasPrefix:@"+86"])
+    {
+        if ([normalPhone hasPrefix:@"+86·"]) {
+            NSString *formatStr = [normalPhone substringWithRange:NSMakeRange(4, [phone length]-4)];
+            return formatStr;
+        }
+        else
+        {
+            NSString *formatStr = [normalPhone substringWithRange:NSMakeRange(3, [normalPhone length]-3)];
+            return formatStr;
+        }
+    }else{
+        return normalPhone;
+    }
+}
+
 #pragma mark - 根据姓名查询联系人
 - (BOOL)getContactsWithName:(NSString *)contactName phone:(NSString *)contactPhone{
     ABAddressBookRef addressBook = [self getAddressBook];
@@ -144,11 +218,13 @@ Realize_ShareInstance(AddressBoolTool);
     for (int i = 0; i < [contacts count]; i++)
     {
         ABRecordRef person = (__bridge ABRecordRef)[contacts objectAtIndex:i];
-        NSString *phone = [self phoneNumberWithABRecordRef:person];
-        //        UIImage *image = [self imageWithABRecordRef:person];
-        if ([phone isEqualToString:contactPhone]) {
-            //表明联系人已经存在
-            exist = YES;
+        NSArray *phones = [self phoneWithABRecordRef:person];
+        for (NSString *phone in phones) {
+            if ([phone containsString:contactPhone]) {
+                //表明联系人已经存在
+                exist = YES;
+                break;
+            }
         }
     }
     // 释放通讯录对象的引用
@@ -160,6 +236,10 @@ Realize_ShareInstance(AddressBoolTool);
 #pragma mark - 将患者插入到通讯录
 - (void)addContactToAddressBook:(Patient *)patient{
     ABAddressBookRef addressBook = [self getAddressBook];
+    if (addressBook == nil) {
+        NSLog(@"用户没有开通通讯录权限");
+        return;
+    }
     // 新建一个联系人
     // ABRecordRef是一个属性的集合，相当于通讯录中联系人的对象
     // 联系人对象的属性分为两种：
@@ -194,6 +274,10 @@ Realize_ShareInstance(AddressBoolTool);
 
 #pragma mark - 获取通讯录操作类
 - (ABAddressBookRef)getAddressBook{
+    
+    //这个变量用于记录授权是否成功，即用户是否允许我们访问通讯录
+    int __block tip=0;
+    
     ABAddressBookRef addressBook = nil;
     
     //获取通讯录权限 ios6.0以上需要获取权限读通信录
@@ -203,7 +287,13 @@ Realize_ShareInstance(AddressBoolTool);
         
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         
-        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error){dispatch_semaphore_signal(sema);});
+        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error){
+            //greanted为YES是表示用户允许，否则为不允许
+            if (!granted) {
+                tip=1;
+            }
+            dispatch_semaphore_signal(sema);
+        });
         
         dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     }
@@ -214,7 +304,9 @@ Realize_ShareInstance(AddressBoolTool);
         addressBook = ABAddressBookCreate();
 #pragma clang diagnostic pop
     }
-   
+    if (tip == 1) {
+        return nil;
+    }
     return addressBook;
 }
 
@@ -223,6 +315,8 @@ Realize_ShareInstance(AddressBoolTool);
     if (addressBook) {
         CFRelease(addressBook);
     }
+    
 }
+
 
 @end

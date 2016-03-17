@@ -456,6 +456,7 @@ Realize_ShareInstance(AutoSyncManager);
 #pragma mark - 更新失败后的方法
 - (void)updateFailWithError:(NSError *)error infoModel:(InfoAutoSync *)info{
     //上传失败
+     NSLog(@"上传失败,发生错误");
     [[DBManager shareInstance] updateInfoWithSyncStatus:@"3" byInfoId:info.info_id];
     if (error) {
         NSLog(@"error:%@",error);

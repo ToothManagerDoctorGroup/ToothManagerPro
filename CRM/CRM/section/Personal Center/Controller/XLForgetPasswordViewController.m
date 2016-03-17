@@ -12,6 +12,7 @@
 
 @interface XLForgetPasswordViewController ()
 @property (weak, nonatomic) IBOutlet UIButton *submitButton;
+@property (weak, nonatomic) IBOutlet UITextField *certainPassWord;
 
 @end
 
@@ -126,7 +127,7 @@
 }
 
 - (void)forgetPasswordSucessWithResult:(NSDictionary *)result{
-    [SVProgressHUD showSuccessWithStatus:@"已找回密码，请登录"];
+    [SVProgressHUD showSuccessWithStatus:@"密码已修改，请登录"];
     [self popViewControllerAnimated:YES];
 }
 - (void)forgetPasswordFailedWithError:(NSError *)error{
@@ -136,8 +137,23 @@
     [self.phoneTextField resignFirstResponder];
     [self.passwdTextField resignFirstResponder];
     [self.validateTextField resignFirstResponder];
+    
+    if (self.passwdTextField.text.length == 0) {
+        [SVProgressHUD showImage:nil status:@"请输入新密码"];
+        return;
+    }
+    if (self.certainPassWord.text.length == 0) {
+        [SVProgressHUD showImage:nil status:@"请再次输入新密码"];
+        return;
+    }
+    
+    if (![self.passwdTextField.text isEqualToString:self.certainPassWord.text]) {
+        [SVProgressHUD showImage:nil status:@"两次输入的密码不相同"];
+        return;
+    }
+    
     [[AccountManager shareInstance]forgetPasswordWithPhone:self.phoneTextField.text passwd:self.passwdTextField.text validate:self.validateTextField.text successBlock:^{
-        [SVProgressHUD showWithStatus:@"正在找回密码..."];
+        [SVProgressHUD showWithStatus:@"正在修改密码..."];
     } failedBlock:^(NSError *error){
         [SVProgressHUD showTextWithStatus:[error localizedDescription]];
     }];

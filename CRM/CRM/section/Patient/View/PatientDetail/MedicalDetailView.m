@@ -157,7 +157,7 @@
     
     //获取所有的ct图片信息
     NSMutableArray *cTLibs = [NSMutableArray array];
-    NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid];
+    NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid isAsc:NO];
     if (libArray != nil && libArray.count > 0) {
         [cTLibs addObjectsFromArray:libArray];
     } else {
@@ -267,7 +267,7 @@
         }
     }
     //删除CT数据
-    NSArray *cts = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid];
+    NSArray *cts = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid isAsc:NO];
     //删除病历记录数据
     NSArray *medicalRecords = [[DBManager shareInstance] getMedicalRecordWithCaseId:self.medicalCase.ckeyid];
     //删除耗材数据
@@ -297,6 +297,21 @@
             InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         }
+        
+        //判断当前患者是否有病历
+        NSArray *mCases = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:self.medicalCase.patient_id];
+        if (mCases.count == 0) {
+            //更新患者状态
+            [[DBManager shareInstance] updatePatientStatus:PatientStatusUntreatment withPatientId:self.medicalCase.patient_id];
+            
+            //更新服务器患者的状态
+            Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.medicalCase.patient_id];
+            if (patient != nil) {
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+        }
+        
         //删除病历成功
         PatientDetailViewController *detailVc =  (PatientDetailViewController *)self.viewController;
         [detailVc refreshData];

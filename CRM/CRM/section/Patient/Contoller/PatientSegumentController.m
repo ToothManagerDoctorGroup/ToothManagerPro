@@ -47,7 +47,7 @@
     [super viewDidLoad];
     
 //    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
+//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     //创建视图
     [self initSegumentController];
     
@@ -142,7 +142,7 @@
 }
 #pragma mark - 左侧按钮点击事件
 -(void)onLeftButtonAction:(id)sender{
-    
+    /*
     [SVProgressHUD showWithStatus:@"同步中..."];
     if ([[AccountManager shareInstance] isLogin]) {
         [NSTimer scheduledTimerWithTimeInterval:0.2
@@ -157,7 +157,7 @@
         [SVProgressHUD dismiss];
         [NSThread sleepForTimeInterval: 1];
     }
-
+     */
 }
 - (void)callSync {
     [[SyncManager shareInstance] startSync];
@@ -165,6 +165,7 @@
 
 #pragma mark - Right View
 - (void)onRightButtonAction:(id)sender {
+    /*
     if (self.isBarHidden == YES) { //如果是消失状态
         [self setupMenuBar];
         [self.menubar showBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
@@ -172,6 +173,7 @@
         [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
     }
     self.isBarHidden = !self.isBarHidden;
+     */
 }
 
 - (void)setupMenuBar {

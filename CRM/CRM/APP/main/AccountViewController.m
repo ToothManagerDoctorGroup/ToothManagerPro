@@ -48,8 +48,12 @@
 #import "XLPersonalStepOneViewController.h"
 
 #import "XLJoinTeamSegumentController.h"
+#import "PatientManager.h"
+#import "XLCustomAlertView.h"
+#import "XLContactsViewController.h"
+#import "AddressBoolTool.h"
 
-@interface AccountViewController ()<UIAlertViewDelegate>{
+@interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
     __weak IBOutlet UITableView *_tableView;
     IBOutlet UITableViewCell *_zhangHuCell;
@@ -58,7 +62,6 @@
     
     
     IBOutlet UITableViewCell *_doctorCell;
-    IBOutlet UITableViewCell *_repairDoctorCell;
     IBOutlet UITableViewCell *_zhongZhiTiCell;
     IBOutlet UITableViewCell *_tiXingMuBanCell;
     IBOutlet UITableViewCell *_shuJuFenXiCell;
@@ -122,7 +125,20 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    //判断联系人是否存在
+    
+    XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提示" message:@"是否删除当前内容是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容??" Cancel:@"取消" certain:@"确定" weixinEnalbe:YES type:CustonAlertViewTypeCheck cancelHandler:^{
+        NSLog(@"取消");
+    } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+        if (wenxinSend) {
+            NSLog(@"微信发送");
+        }
+        if (messageSend) {
+            NSLog(@"短信发送");
+        }
+        NSLog(@"确定，修改后的内容:%@",content);
+    }];
+    [alertView show];
+    
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -144,8 +160,8 @@
             UserObject *obj = [UserObject userobjectFromDic:dic];
             [[DBManager shareInstance] updateUserWithUserObject:obj];
             [[AccountManager shareInstance] refreshCurrentUserInfo];
-            _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
-            _nameLabel.text = obj.name;
+            _detailLabel.text = obj.hospitalName;
+            _nameLabel.text = [NSString stringWithFormat:@"%@   %@",obj.name,obj.title];
             
             if (obj.img.length > 0) {
                 //下载图片
@@ -200,7 +216,7 @@
         if(section==0){
             return 1;
         }else if (section==1){
-            return 2;
+            return 1;
         }else if (section==2){
             return 2;
         }else if (section==3){
@@ -214,7 +230,7 @@
         if(section==0){
             return 1;
         }else if (section==1){
-            return 2;
+            return 1;
         }else if (section==2){
             return 2;
         }else if(section == 3){
@@ -245,8 +261,6 @@
         }else if (indexPath.section == 1){
             if (indexPath.row == 0){
                 return _doctorCell;
-            }else if (indexPath.row == 1){
-                return _repairDoctorCell;
             }
         }else if (indexPath.section == 2){
             if (indexPath.row == 0) {
@@ -276,10 +290,6 @@
         }else if (indexPath.section == 1){
             if (indexPath.row == 0){
                 return _doctorCell;
-            }else if (indexPath.row == 1){
-                return _repairDoctorCell;
-            }else if (indexPath.row == 2){
-                return _zhongZhiTiCell;
             }
         }else if (indexPath.section == 2){
             if (indexPath.row == 0) {
@@ -325,12 +335,13 @@
             doctorLibrary.hidesBottomBarWhenPushed = YES;
             [self pushViewController:doctorLibrary animated:YES];
             
-        }else if (indexPath.row == 1){
-            XLJoinTeamSegumentController *segumentVc = [[XLJoinTeamSegumentController alloc] init];
-            segumentVc.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:segumentVc animated:YES];
-            
         }
+        //else if (indexPath.row == 1){
+//            XLJoinTeamSegumentController *segumentVc = [[XLJoinTeamSegumentController alloc] init];
+//            segumentVc.hidesBottomBarWhenPushed = YES;
+//            [self pushViewController:segumentVc animated:YES];
+            
+        //}
     }
     if (indexPath.section == 2) {
         if (indexPath.row == 0) {
@@ -402,10 +413,6 @@
                 XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
                 baseSetting.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:baseSetting animated:YES];
-                
-//                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
-//                set.hidesBottomBarWhenPushed = YES;
-//                [self.navigationController pushViewController:set animated:YES];
             }
         }
     }
@@ -414,17 +421,11 @@
 }
 //分享选择
 - (void)showShareActionChoose{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"分享" message:@"确认打开微信进行分享吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-    [alertView show];
-}
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 1) {
-        [self shareAction];
-    }
+    UIActionSheet *sheetView = [[UIActionSheet alloc] initWithTitle:@"分享" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"微信" otherButtonTitles:@"朋友圈", nil];
+    [sheetView showInView:self.view];
 }
 
-//分享
-- (void)shareAction{
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(![WXApi isWXAppInstalled]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];
@@ -435,9 +436,16 @@
         mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
         mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/InviteFriends.aspx?doctorId=%@",Method_Weixin,userobj.userid];
         mode.image = [UIImage imageNamed:@"crm_logo"];
-        [Share shareToPlatform:weixin WithMode:mode];
+        
+        
+        if (buttonIndex == 0) {
+            //微信
+            [Share shareToPlatform:weixinFriend WithMode:mode];
+        }else if(buttonIndex ==1){
+            //朋友圈
+            [Share shareToPlatform:weixin WithMode:mode];
+        }
     }
-
 }
 
 //创建控制器

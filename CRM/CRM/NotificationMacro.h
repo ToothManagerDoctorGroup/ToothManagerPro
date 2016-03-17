@@ -34,6 +34,10 @@
 #define NOtificationUpdated @"NotificationUpdated"   //更新了提醒
 #define NotificationDeleted @"NotificationDeleted"   //删除了提醒
 
+/**********************耗材信息****************************/
+#define MedicalExpenseDeleteNotification @"MedicalExpenseDeleteNotification" //耗材信息被删除
+
+
 
 #define RepairDoctorCreatedNotification (@"RepairDoctorCreatedNotification") //创建了修复医生
 #define RepairDoctorEditedNotification (@"RepairDoctorEditedNotification")  //修复医生被编辑了

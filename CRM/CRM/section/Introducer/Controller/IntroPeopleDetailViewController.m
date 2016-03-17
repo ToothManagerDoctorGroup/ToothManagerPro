@@ -27,6 +27,7 @@
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
 #import "XLStarSelectViewController.h"
+#import "CreateIntroducerViewController.h"
 
 @interface IntroPeopleDetailViewController ()<IntroDetailHeaderTableViewControllerDelegate,XLStarSelectViewControllerDelegate>
 
@@ -136,7 +137,7 @@
 - (void)loadTableView
 {
     myTableView = [[UITableView alloc]init];
-    [myTableView setFrame:CGRectMake(0,90,kScreenWidth,kScreenHeight - 64 - 90)];
+    [myTableView setFrame:CGRectMake(0,0,kScreenWidth,kScreenHeight - 64)];
     myTableView.backgroundColor = [UIColor whiteColor];
     [myTableView setDelegate:self];
     [myTableView setDataSource:self];
@@ -148,7 +149,7 @@
     _tbheaderView = [storyboard instantiateViewControllerWithIdentifier:@"IntroDetailHeaderTableViewController"];
     _tbheaderView.delegate = self;
     _tbheaderView.view.frame = CGRectMake(0, 0, kScreenWidth,90);
-    [self.view addSubview:_tbheaderView.view];
+    myTableView.tableHeaderView = _tbheaderView.view;
     
     if (self.isEdit) {
         //编辑模式
@@ -169,34 +170,40 @@
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    CreateIntroducerViewController *newIntoducerVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreateIntroducerViewController"];
+    newIntoducerVC.edit = YES;
+    newIntoducerVC.introducerId = introducer.ckeyid;
+    [self pushViewController:newIntoducerVC animated:YES];
     
-    if (!self.isEdit) {
-        //编辑状态
-        IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc]init];
-        [detailCtl setIntroducer:introducer];
-        detailCtl.hidesBottomBarWhenPushed = YES;
-        detailCtl.isEdit = YES;
-        [self pushViewController:detailCtl animated:YES];
-        return;
-    }
-    [self.tbheaderView.nameTextField resignFirstResponder];
-    [self.tbheaderView.phoneTextField resignFirstResponder];
-    self.introducer.intr_name = self.tbheaderView.nameTextField.text;
-    self.introducer.intr_level = self.tbheaderView.levelView.level;
-    self.introducer.intr_phone = self.tbheaderView.phoneTextField.text;
-    BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
-    if (ret) {
-        [SVProgressHUD showImage:nil status:@"修改成功"];
-        //自动同步信息
-        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Update dataEntity:[self.introducer.keyValues JSONString] syncStatus:@"0"];
-        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-        
-        [self postNotificationName:IntroducerEditedNotification object:nil];
-        
-        [self popViewControllerAnimated:YES];
-    } else {
-        [SVProgressHUD showImage:nil status:@"修改失败"];
-    }
+//    
+//    if (!self.isEdit) {
+//        //编辑状态
+//        IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc]init];
+//        [detailCtl setIntroducer:introducer];
+//        detailCtl.hidesBottomBarWhenPushed = YES;
+//        detailCtl.isEdit = YES;
+//        [self pushViewController:detailCtl animated:YES];
+//        return;
+//    }
+//    [self.tbheaderView.nameTextField resignFirstResponder];
+//    [self.tbheaderView.phoneTextField resignFirstResponder];
+//    self.introducer.intr_name = self.tbheaderView.nameTextField.text;
+//    self.introducer.intr_level = self.tbheaderView.levelView.level;
+//    self.introducer.intr_phone = self.tbheaderView.phoneTextField.text;
+//    BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
+//    if (ret) {
+//        [SVProgressHUD showImage:nil status:@"修改成功"];
+//        //自动同步信息
+//        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Update dataEntity:[self.introducer.keyValues JSONString] syncStatus:@"0"];
+//        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+//        
+//        [self postNotificationName:IntroducerEditedNotification object:nil];
+//        
+//        [self popViewControllerAnimated:YES];
+//    } else {
+//        [SVProgressHUD showImage:nil status:@"修改失败"];
+//    }
 }
 
 - (void)callIntroducer:(UIButton *)sender

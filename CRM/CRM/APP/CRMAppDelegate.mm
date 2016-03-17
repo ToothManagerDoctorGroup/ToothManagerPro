@@ -156,12 +156,19 @@
         NSString *newVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
         NSString *oldVersion = [CRMUserDefalut getAppVersion];
         if ([newVersion isEqualToString:oldVersion]) {
-            if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
+            if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty] && ![[[AccountManager shareInstance] currentUser].hospitalName isEqualToString:@"无"]) {
                 self.window.rootViewController = self.tabBarController;
             }else{
                 //如果未填写个人信息  直接跳转到登录界面
+                [AccountManager shareInstance].currentUser.userid = nil;
+                [AccountManager shareInstance].currentUser.accesstoken = nil;
+                [CRMUserDefalut setLatestUserId:nil];
+                //取消所有的下载操作
+                [[CRMHttpRequest shareInstance] cancelAllOperations];
+                [self makeLogin];
+                
 //                [[AccountManager shareInstance] logout];
-                self.window.rootViewController = nav;
+//                self.window.rootViewController = nav;
                 
             }
         }else{

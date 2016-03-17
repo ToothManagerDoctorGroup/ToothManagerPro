@@ -18,7 +18,6 @@
 #import "ClinicCover.h"
 #import "MenuTitleViewController.h"
 #import "MyDateTool.h"
-#import "NSDate+Helpers.h"
 #import "XLSelectYuyueCell.h"
 #import "FSCalendar.h"
 #import "XLAddReminderViewController.h"
@@ -157,7 +156,7 @@
 
 - (void)requestDataWithDate:(NSDate *)date{
     
-    NSString *dateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
+    NSString *dateStr = [MyDateTool stringWithDateNoTime:date];
 //    self.remindArray = self.currentMothArray;
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateStr array:self.currentMothArray];
     dateString = dateStr;
@@ -207,7 +206,7 @@
 - (BOOL)calendar:(FSCalendar *)calendar hasEventForDate:(NSDate *)date
 {
     //获取当前
-    NSString *selectDateStr = [date dateStringWithFormat:@"yyyy-MM-dd"];
+    NSString *selectDateStr = [MyDateTool stringWithDateNoTime:date];
     NSArray *array = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMothArray];
     if (array.count > 0) {
         return YES;

@@ -152,7 +152,7 @@
 
     //获取所有的ct图片信息
     NSMutableArray *cTLibs = [NSMutableArray array];
-    NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid];
+    NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCase.ckeyid isAsc:YES];
     if (libArray != nil && libArray.count > 0) {
         [cTLibs addObjectsFromArray:libArray];
     } else {

@@ -65,7 +65,7 @@
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"转诊患者",@"转为介绍人",@"下载CT片", nil];
+        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"转诊患者",@"升为介绍人",@"下载CT片", nil];
     }
     return _menuList;
 }

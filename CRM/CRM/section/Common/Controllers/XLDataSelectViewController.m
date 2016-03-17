@@ -25,26 +25,26 @@
     if (self.type == XLDataSelectViewControllerSex) {
         //性别
         self.dataList = @[@"男",@"女"];
-        self.title = @"性别";
+        self.title = @"选择性别";
     }else if (self.type == XLDataSelectViewControllerDepartment){
         //科室
         self.dataList = @[@"口腔科",@"颌面外科",@"修复科",@"种植科",@"正畸科",@"牙体牙髓科",@"牙周科",@"口腔黏膜科",@"儿童口腔科",@"口腔综合科",@"特诊科",@"特需科",@"口腔预防科",@"老年口腔科",@"关节科",@"急诊科",@"其它"];
-        self.title = @"科室";
+        self.title = @"选择科室";
     }else if(self.type == XLDataSelectViewControllerHospital){
         //医院
-        self.title = @"医院";
+        self.title = @"选择医院";
     }else if (self.type == XLDataSelectViewControllerProfressional){
         //职称
         self.dataList = @[@"医师",@"主治医师",@"副主任医师",@"主任医师"];
-        self.title = @"职称";
+        self.title = @"选择职称";
     }else if (self.type == XLDataSelectViewControllerDegree){
         //学历
         self.dataList = @[@"大专",@"本科",@"硕士",@"博士"];
-        self.title = @"学历";
+        self.title = @"选择学历";
     }else if (self.type == XLDataSelectViewControllerMaterialType){
         //种植体类型
         self.dataList = @[@"种植体",@"其它"];
-        self.title = @"种植体类型";
+        self.title = @"选择种植体类型";
     }
 }
 

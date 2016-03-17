@@ -38,7 +38,6 @@
 #pragma mark - 设置导航栏样式
 - (void)setUpNav{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
     if (self.rightButtonTitle) {
         [self setRightBarButtonWithTitle:self.rightButtonTitle];
     }else{
@@ -82,6 +81,7 @@
 
 #pragma mark - 完成按钮点击事件
 - (void)onRightButtonAction:(id)sender{
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(commonEditViewController:content:title:)]) {
         [self.delegate commonEditViewController:self content:_editField.text title:self.title];
     }

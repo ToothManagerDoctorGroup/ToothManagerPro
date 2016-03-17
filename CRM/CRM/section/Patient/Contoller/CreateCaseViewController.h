@@ -27,6 +27,8 @@
 
 //当从新建患者后跳转过来的时候，设置为YES
 @property (nonatomic, assign)BOOL isNewPatient;
+//患者是否关注了微信
+@property (nonatomic, assign)BOOL isBind;
 
 @property (weak, nonatomic) IBOutlet UIButton *addRecordButton;
 @property (weak, nonatomic) IBOutlet UITextField *recordTextField;

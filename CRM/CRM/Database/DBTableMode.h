@@ -13,6 +13,12 @@ extern NSString * const RepeatIntervalWeek;
 extern NSString * const RepeatIntervalMonth;
 extern NSString * const RepeatIntervalNone;
 
+typedef NS_ENUM(NSInteger,ExpenseState){
+    ExpenseStateUpdate = 0, //修改
+    ExpenseStateAdd = 1,    //新增
+    ExpenseStateDelete = 2  //删除
+};
+
 typedef NS_ENUM(NSInteger, MaterialType) {
     MaterialTypeOther = 1,
     MaterialTypeMaterial = 2,
@@ -213,9 +219,10 @@ typedef CGFloat Money;
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
 
 /**
- *  材料名称，只做显示用，不涉及数据库操作
+ *  材料名称，操作状态，只做显示用，不涉及数据库操作
  */
 @property (nonatomic, copy)NSString *mat_name;
+@property (nonatomic, assign)ExpenseState state;//操作状态
 
 
 + (MedicalExpense *)expenseWithResult:(FMResultSet *)result;

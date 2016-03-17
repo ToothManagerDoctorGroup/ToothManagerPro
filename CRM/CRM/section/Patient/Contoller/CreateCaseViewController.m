@@ -42,12 +42,14 @@
 #import "XLHengYaViewController.h"
 #import "XLRuYaViewController.h"
 #import "AddressBoolTool.h"
+#import "XLPatientSelectViewController.h"
+#import "XLCustomAlertView.h"
+#import "SysMessageTool.h"
 
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
 @property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
 @property (nonatomic,retain) MedicalCase *medicalCase;
 @property (nonatomic,retain) MedicalReserve *medicalRes;
-@property (nonatomic,retain) NSMutableArray *lastctlibArray;
 @property (nonatomic,retain) NSMutableArray *ctblibArray;
 @property (nonatomic,retain) NSMutableArray *expenseArray;
 @property (nonatomic,retain) NSMutableArray *recordArray;
@@ -57,8 +59,8 @@
 @property (nonatomic, strong)NSMutableArray *deleteRcords;//删除的病历记录
 @property (nonatomic, strong)NSMutableArray *newRecords;//新增的病历记录
 
-@property (nonatomic, strong)NSMutableArray *deleteExpenses;//删除的耗材信息
-@property (nonatomic, strong)NSMutableArray *newExpenses;//新增的耗材信息
+@property (nonatomic, strong)NSMutableArray *deleteCtLibs;//删除的ct数据
+@property (nonatomic, strong)NSMutableArray *addCTLibs;//新增的ct数据
 
 @end
 
@@ -66,6 +68,20 @@
     NSString *implant_time;
     NSString *repair_doctor;
     NSString *repair_time;
+}
+
+- (NSMutableArray *)deleteCtLibs{
+    if (!_deleteCtLibs) {
+        _deleteCtLibs = [NSMutableArray array];
+    }
+    return _deleteCtLibs;
+}
+
+- (NSMutableArray *)addCTLibs{
+    if (!_addCTLibs) {
+        _addCTLibs = [NSMutableArray array];
+    }
+    return _addCTLibs;
 }
 
 - (NSMutableArray *)deleteRcords{
@@ -80,18 +96,7 @@
     }
     return _newRecords;
 }
-- (NSMutableArray *)newExpenses{
-    if (!_newExpenses) {
-        _newExpenses = [NSMutableArray array];
-    }
-    return _newExpenses;
-}
-- (NSMutableArray *)deleteExpenses{
-    if (!_deleteExpenses) {
-        _deleteExpenses = [NSMutableArray array];
-    }
-    return _deleteExpenses;
-}
+
 #pragma mark - Life Cicle
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -100,6 +105,12 @@
     repair_time = _medicalCase.repair_time;
     self.tableView.backgroundColor = MyColor(248, 248, 248);
     
+    [self addNotificationObserver];
+    
+}
+
+- (void)dealloc{
+    [self removeNotificationObserver];
 }
 - (void)initView {
     [super initView];
@@ -155,11 +166,9 @@
             _expenseArray = [NSMutableArray arrayWithCapacity:0];
         }
         _ctblibArray = [NSMutableArray arrayWithCapacity:0];
-        _lastctlibArray = [NSMutableArray arrayWithCapacity:0];
-        NSArray *libtmpArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCaseId];
+        NSArray *libtmpArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:self.medicalCaseId isAsc:YES];
         if (libtmpArray && libtmpArray.count > 0) {
             [_ctblibArray addObjectsFromArray:libtmpArray];
-            [_lastctlibArray addObjectsFromArray:libtmpArray];
         }
         self.patiendId = _medicalCase.patient_id;
     } else {
@@ -171,7 +180,6 @@
         _expenseArray = [NSMutableArray arrayWithCapacity:0];
         _recordArray = [NSMutableArray arrayWithCapacity:0];
         _ctblibArray = [NSMutableArray arrayWithCapacity:0];
-        _lastctlibArray = [NSMutableArray arrayWithCapacity:0];
     }
 }
 
@@ -207,162 +215,203 @@
         
         NSString *caseid = _medicalCase.ckeyid;
         if ([NSString isNotEmptyString:caseid]) {
-            //存储ct照片
-            BOOL libRet = YES;
-            BOOL deleteB = NO;
-            for (CTLib *tlib in self.lastctlibArray) {
-                deleteB = YES;
-                for (CTLib *clib in self.ctblibArray) {
-                    if ([tlib.ckeyid isEqualToString:clib.ckeyid]) {
-                        deleteB = NO;
-                        break;
-                    }
-                }
-                if (deleteB == YES) {
-                    libRet =[[DBManager shareInstance] deleteCTlibWithLibId:tlib.ckeyid];
-                    if (libRet == NO) {
-                        return NO;
-                    }
-                    //添加一条删除ct片的自动同步数据
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[tlib.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    
-                }
-            }
-            if (libRet == NO) {
-                return NO;
-            }
-            for (CTLib *lib in _ctblibArray) {
-                lib.patient_id = _medicalCase.patient_id;
-                lib.case_id = _medicalCase.ckeyid;
-                if (nil == lib.creationdate)
-                {
-                    lib.creationdate = [NSString currentDateString];
-                }
-                
-                libRet = [[DBManager shareInstance] insertCTLib:lib];
-                if (libRet == NO) {
-                    return NO;
-                }
-                
-                //获取ctlib数据
-                CTLib *tempCTLib = [[DBManager shareInstance] getCTLibWithCKeyId:lib.ckeyid];
-                if (tempCTLib != nil) {
-                    //添加ct片的自动同步数据
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Insert dataEntity:[tempCTLib.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                }
-            }
-            //存储预约记录
-            _medicalRes.case_id = caseid;
-            _medicalRes.patient_id = _medicalCase.patient_id;
-            _medicalRes.actual_time = _medicalCase.implant_time;
-            _medicalRes.repair_time = _medicalCase.repair_time;
-            _medicalRes.reserve_time = _medicalCase.next_reserve_time;
-            _medicalRes.creation_date = [NSString currentDateString];
-            BOOL resRet = [[DBManager shareInstance] insertMedicalReserve:self.medicalRes];
-            if (resRet == NO) {
-                return NO;
-            }
             
-            //存储病例记录
-            BOOL recordRet = YES;
-            //删除需要删除的病历记录
-            if (self.deleteRcords.count > 0) {
-                for (MedicalRecord *deleteR in self.deleteRcords) {
-                    if ([deleteR.record_content isEmpty]) {
-                        continue;
-                    }
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Delete dataEntity:[deleteR.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    
-                }
-            }
-            //添加新增加的病历记录
-            for (MedicalRecord *recordTmp in self.newRecords) {
-                if ([recordTmp.record_content isEmpty]) {
-                    continue;
-                }
-                recordTmp.case_id = caseid;
-                if (nil == recordTmp.creation_date)
-                {
-                    recordTmp.creation_date = [NSString currentDateString];
-                }
-
-                recordRet = [[DBManager shareInstance] insertMedicalRecord:recordTmp];
-                if (recordRet == NO) {
-                    return NO;
-                }
-                //获取病历记录的信息
-                MedicalRecord *tempRecord = [[DBManager shareInstance] getMedicalRecordWithCkeyId:recordTmp.ckeyid];
-                if (tempRecord != nil) {
-                    //添加自动同步数据
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Insert dataEntity:[tempRecord.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                }
-            }
+            BOOL libRet = [self editCTLibInfo];
+            if (!libRet) return NO;
             
-            //存储种植体消耗信息
-            BOOL expenseRet = YES;
-            if (_expenseArray.count < 1) {
-                return  YES;
-            }
-
-            //获取所有的种植体信息
-            NSArray *deleteArray = [[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:caseid];
-            for (MedicalExpense *expense in deleteArray) {
-                //删除所有之前的种植体信息
-                //添加自动同步数据
-                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
-                if([[DBManager shareInstance] insertInfoWithInfoAutoSync:info]){
-                    //删除本地的耗材数据
-                    [[DBManager shareInstance] deleteMedicalExpenseWithId_sync:expense.ckeyid];
-                }
-            }
+            libRet = [self editMedicalReserveWithCaseId:caseid];
+            if (!libRet) return NO;
             
-//            expenseRet = [[DBManager shareInstance] deleteMedicalExpenseWithCaseId:caseid];
-//            if (expenseRet == NO) {
-//                return NO;
-//            }
+            libRet = [self editMedicalRecordWithCaseId:caseid];
+            if (!libRet) return NO;
             
-            for (MedicalExpense *expenseTmp in _expenseArray) {
-                if ([NSString isEmptyString:expenseTmp.mat_id] || expenseTmp.expense_num <=0) {
-                    continue;
-                }
-                expenseTmp.case_id = caseid;
-                expenseTmp.patient_id = _medicalCase.patient_id;
-                if (nil == expenseTmp.creation_date)
-                {
-                    expenseTmp.creation_date = [NSString currentDateString];
-                }
-                expenseRet = [[DBManager shareInstance] insertMedicalExpenseWith:expenseTmp];
-                if (expenseRet == NO) {
-                    return NO;
-                }
-                //获取完整的耗材信息
-                MedicalExpense *tempExpense = [[DBManager shareInstance] getMedicalExpenseWithCkeyId:expenseTmp.ckeyid];
-                if (tempExpense != nil) {
-                    //添加自动同步数据
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Insert dataEntity:[tempExpense.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                }
-            }
-            return YES;
+            libRet = [self editExpenseInfoWithCaseId:caseid];
+            if (!libRet) return NO;
+            
+            return libRet;
         } else {
-            //handle error
             return NO;
         }
-        
     } else {
-        //handle error
         return NO;
     }
     return YES;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+#pragma mark - 修改CT数据（新增，修改，删除）
+- (BOOL)editCTLibInfo{
+    //存储ct照片
+    BOOL libRet = YES;
+    NSMutableArray *CTTmp = [NSMutableArray array];
+    //找出相同的ct片
+    for (CTLib *addCT in _addCTLibs) {
+        for (CTLib *delCT in _deleteCtLibs) {
+            if ([addCT.ckeyid isEqualToString:delCT.ckeyid]) {
+                [CTTmp addObject:addCT];
+                break;
+            }
+        }
+    }
+    //删除相同的ct片
+    for (CTLib *unUseCT in CTTmp) {
+        [_addCTLibs removeObject:unUseCT];
+        [_deleteCtLibs removeObject:unUseCT];
+    }
+    //删除ct
+    for (CTLib *lib in _deleteCtLibs) {
+        
+        libRet =[[DBManager shareInstance] deleteCTlibWithLibId:lib.ckeyid];
+        if (libRet == NO) {
+            return NO;
+        }
+        //添加一条删除ct片的自动同步数据
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[lib.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    }
+    
+    //新增ct
+    for (CTLib *lib in _addCTLibs) {
+        lib.patient_id = _medicalCase.patient_id;
+        lib.case_id = _medicalCase.ckeyid;
+        if (nil == lib.creationdate)
+        {
+            lib.creationdate = [NSString currentDateString];
+        }
+        libRet = [[DBManager shareInstance] insertCTLib:lib];
+        if (libRet == NO) {
+            return NO;
+        }
+        //获取ctlib数据
+        CTLib *tempCTLib = [[DBManager shareInstance] getCTLibWithCKeyId:lib.ckeyid];
+        if (tempCTLib != nil) {
+            //添加ct片的自动同步数据
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Insert dataEntity:[tempCTLib.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+    }
+    return libRet;
 }
+#pragma mark - 修改预约记录（新增，修改，删除）
+- (BOOL)editMedicalReserveWithCaseId:(NSString *)caseId{
+    //存储预约记录
+    _medicalRes.case_id = caseId;
+    _medicalRes.patient_id = _medicalCase.patient_id;
+    _medicalRes.actual_time = _medicalCase.implant_time;
+    _medicalRes.repair_time = _medicalCase.repair_time;
+    _medicalRes.reserve_time = _medicalCase.next_reserve_time;
+    _medicalRes.creation_date = [NSString currentDateString];
+    BOOL resRet = [[DBManager shareInstance] insertMedicalReserve:self.medicalRes];
+    if (resRet == NO) {
+        return NO;
+    }
+    return resRet;
+}
+
+#pragma mark - 修改病历记录（新增，修改，删除）
+- (BOOL)editMedicalRecordWithCaseId:(NSString *)caseid{
+    NSMutableArray *recordsTmp = [NSMutableArray array];
+    
+    //找出相同的病历记录
+    for (MedicalRecord *newR in _newRecords) {
+        for (MedicalRecord *delR in _deleteCtLibs) {
+            if ([newR.ckeyid isEqualToString:delR.ckeyid]) {
+                [recordsTmp addObject:newR];
+                break;
+            }
+        }
+    }
+    //删除相同的病历记录
+    for (MedicalRecord *unR in recordsTmp) {
+        [_newRecords removeObject:unR];
+        [_deleteRcords removeObject:unR];
+    }
+    //存储病例记录
+    BOOL recordRet = YES;
+    //删除需要删除的病历记录
+    if (self.deleteRcords.count > 0) {
+        for (MedicalRecord *deleteR in self.deleteRcords) {
+            if([[DBManager shareInstance] deleteMedicalRecordWithId:deleteR.ckeyid]){
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Delete dataEntity:[deleteR.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+        }
+    }
+    //添加新增加的病历记录
+    for (MedicalRecord *recordTmp in self.newRecords) {
+        if ([recordTmp.record_content isEmpty]) {
+            continue;
+        }
+        recordTmp.case_id = caseid;
+        if (nil == recordTmp.creation_date)
+        {
+            recordTmp.creation_date = [NSString currentDateString];
+        }
+        
+        recordRet = [[DBManager shareInstance] insertMedicalRecord:recordTmp];
+        if (recordRet == NO) {
+            return NO;
+        }
+        //获取病历记录的信息
+        MedicalRecord *tempRecord = [[DBManager shareInstance] getMedicalRecordWithCkeyId:recordTmp.ckeyid];
+        if (tempRecord != nil) {
+            //添加自动同步数据
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Insert dataEntity:[tempRecord.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+    }
+    return recordRet;
+}
+#pragma mark - 修改种植体耗材信息（新增，修改，删除）
+- (BOOL)editExpenseInfoWithCaseId:(NSString *)caseid{
+    //存储种植体消耗信息
+    BOOL expenseRet = YES;
+    if (_expenseArray.count < 1) {
+        return YES;
+    }
+    //判断本地是否有此耗材信息
+    for (MedicalExpense *expenseTmp in _expenseArray) {
+        MedicalExpense *tmp = [[DBManager shareInstance] getMedicalExpenseWithCkeyId:expenseTmp.ckeyid];
+        if (tmp == nil) {
+            //新增操作
+            expenseTmp.case_id = caseid;
+            expenseTmp.patient_id = _medicalCase.patient_id;
+            if (nil == expenseTmp.creation_date)
+            {
+                expenseTmp.creation_date = [NSString currentDateString];
+            }
+            expenseRet = [[DBManager shareInstance] insertMedicalExpenseWith:expenseTmp];
+            if (expenseRet == NO) {
+                return NO;
+            }
+            //获取完整的耗材信息
+            MedicalExpense *tempExpense = [[DBManager shareInstance] getMedicalExpenseWithCkeyId:expenseTmp.ckeyid];
+            if (tempExpense != nil) {
+                //添加自动同步数据
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Insert dataEntity:[tempExpense.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+        }else{
+            //获取完整的耗材信息
+            MedicalExpense *tempExpense = [[DBManager shareInstance] getMedicalExpenseWithCkeyId:expenseTmp.ckeyid];
+            tempExpense.expense_num = expenseTmp.expense_num;
+            tempExpense.expense_money = expenseTmp.expense_money;
+            tempExpense.expense_price = expenseTmp.expense_price;
+            tempExpense.mat_id = expenseTmp.mat_id;
+            tempExpense.mat_name = expenseTmp.mat_name;
+            
+            if ([[DBManager shareInstance] updateMedicalExpenseWith:tempExpense]) {
+                if (tempExpense != nil) {
+                    //添加自动同步数据
+                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Update dataEntity:[tempExpense.keyValues JSONString] syncStatus:@"0"];
+                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                }
+            }
+        }
+    }
+    
+    return expenseRet;
+}
+
 
 #pragma mark - IBActions
 - (void)createCTAction:(id)sender {
@@ -378,12 +427,12 @@
     
     BOOL ret =  [self saveData];
     if (ret) {
-        if(![NSString isEmptyString:_medicalCase.implant_time] && ![_medicalCase.implant_time isEqualToString:implant_time] ){
-            [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"种植" withSendType:@"1" withSendTime:_medicalCase.implant_time successBlock:^{
-            } failedBlock:^(NSError *error){
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
-        }
+//        if(![NSString isEmptyString:_medicalCase.implant_time] && ![_medicalCase.implant_time isEqualToString:implant_time] ){
+//            [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"种植" withSendType:@"1" withSendTime:_medicalCase.implant_time successBlock:^{
+//            } failedBlock:^(NSError *error){
+//                [SVProgressHUD showImage:nil status:error.localizedDescription];
+//            }];
+//        }
 //        if(![NSString isEmptyString:_medicalCase.repair_doctor] && ![_medicalCase.repair_doctor isEqualToString:repair_doctor] ){
 //         NSString* date;
 //         NSDateFormatter* formatter = [[NSDateFormatter alloc]init];
@@ -394,12 +443,12 @@
 //         [SVProgressHUD showImage:nil status:error.localizedDescription];
 //         }];
 //        }
-        if(![NSString isEmptyString:_medicalCase.repair_time] && ![_medicalCase.repair_time isEqualToString:repair_time]){
-            [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"修复" withSendType:@"1" withSendTime:_medicalCase.repair_time successBlock:^{
-            } failedBlock:^(NSError *error){
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
-        }
+//        if(![NSString isEmptyString:_medicalCase.repair_time] && ![_medicalCase.repair_time isEqualToString:repair_time]){
+//            [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"修复" withSendType:@"1" withSendTime:_medicalCase.repair_time successBlock:^{
+//            } failedBlock:^(NSError *error){
+//                [SVProgressHUD showImage:nil status:error.localizedDescription];
+//            }];
+//        }
         
         [SVProgressHUD showImage:nil status:@"保存成功"];
         //获取患者数据
@@ -428,7 +477,7 @@
         if (self.isNewPatient) {
             
             for (UIViewController *vc in self.navigationController.viewControllers) {
-                if ([vc isKindOfClass:[QrCodePatientViewController class]]) {
+                if ([vc isKindOfClass:[QrCodePatientViewController class]] || [vc isKindOfClass:[XLPatientSelectViewController class]]) {
                     [self popToViewController:vc animated:YES];
                     return;
                 }
@@ -451,7 +500,7 @@
 - (void)onBackButtonAction:(id)sender{
     if (self.isNewPatient) {
         for (UIViewController *vc in self.navigationController.viewControllers) {
-            if ([vc isKindOfClass:[QrCodePatientViewController class]]) {
+            if ([vc isKindOfClass:[QrCodePatientViewController class]] || [vc isKindOfClass:[XLPatientSelectViewController class]]) {
                 [self.navigationController popToViewController:vc animated:YES];
                 return;
             }
@@ -527,13 +576,6 @@
         if (self.recordArray.count > indexPath.row) {
             [self.deleteRcords addObject:self.recordArray[indexPath.row]];
             //判断是不是新增的记录被删除
-            MedicalRecord *record = self.recordArray[indexPath.row];
-            if (self.newRecords.count > 0) {
-                if ([self.newRecords containsObject:record]) {
-                    [self.newRecords removeObject:record];
-                }
-            }
-            
             [self.recordArray removeObjectAtIndex:indexPath.row];
             [self.tableView reloadData];
         }
@@ -569,6 +611,7 @@
     //删除图片
     for (CTLib *lib in self.ctblibArray) {
         if ([lib.ckeyid isEqualToString:pic.keyidStr]) {
+            [self.deleteCtLibs addObject:lib];
             [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
             [self.ctblibArray removeObject:lib];
             break;
@@ -588,6 +631,7 @@
         lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
         lib.ct_desc = [[NSDate date] dateToNSString];
         [self.ctblibArray addObject:lib];
+        [self.addCTLibs addObject:lib];
         [self.tableHeaderView setImages:self.ctblibArray];
         [SVProgressHUD dismiss];
     }];
@@ -623,11 +667,10 @@
         [self.tableHeaderView.expenseTextField resignFirstResponder];
         //跳转界面
         CaseMaterialsViewController *caseMaterialVC = [[CaseMaterialsViewController alloc]initWithStyle:UITableViewStylePlain];
-        TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:caseMaterialVC];
         caseMaterialVC.materialsArray = [NSMutableArray arrayWithCapacity:0];
         [caseMaterialVC.materialsArray addObjectsFromArray:self.expenseArray];
         caseMaterialVC.delegate = self;
-        [self presentViewController:nav animated:YES completion:^{}];
+        [self pushViewController:caseMaterialVC animated:YES];
     } else if ([self.recordTextField isFirstResponder]) {
         CGRect frame = self.view.frame;
         frame.origin.y =  -(keyboardHeight-64);
@@ -735,9 +778,9 @@
     }
 }
 
-- (void)didSelectedMaterialsArray:(NSArray *)array {
+- (void)didSelectedMaterialsArray:(NSArray *)sourceArray{
     [self.expenseArray removeAllObjects];
-    for (MedicalExpense *expense in array) {
+    for (MedicalExpense *expense in sourceArray) {
         if ([NSString isNotEmptyString:expense.mat_id] && expense.expense_num > 0)
             [self.expenseArray addObject:expense];
     }
@@ -761,17 +804,24 @@
     self.tableHeaderView.repairDoctorTextField.text = doctor.doctor_name;
 }
 
-//- (void)didSelectedRepairDoctor:(RepairDoctor *)doctor {
-//    _medicalCase.repair_doctor = doctor.ckeyid;
-//    self.tableHeaderView.repairDoctorTextField.text = doctor.doctor_name;
-//}
-
 #pragma mark - CreateCaseHeaderViewControllerDeleate
 - (void)didChooseTime:(NSString *)time withType:(NSString *)type{
     //获取提醒数据
     [DoctorTool yuYueMessagePatient:self.patiendId fromDoctor:[AccountManager currentUserid] withMessageType:type withSendType:@"1" withSendTime:time success:^(CRMHttpRespondModel *result) {
         if ([result.code integerValue] == 200) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"保存后提醒患者" message:result.result delegate:self cancelButtonTitle:NULL otherButtonTitles:@"知道了", nil];
+            XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+            } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                if (wenxinSend) {
+                    NSLog(@"微信发送");
+                    [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.patiendId contentType:@"text" sendContent:content doctorId:[AccountManager currentUserid] success:^{
+                    } failure:^(NSError *error) {
+                        [SVProgressHUD showImage:nil status:error.localizedDescription];
+                    }];
+                }
+                if (messageSend) {
+                    NSLog(@"短信发送");
+                }
+            }];
             [alertView show];
         }
     } failure:^(NSError *error) {
@@ -792,6 +842,26 @@
         [self.newRecords addObject:record];
         self.recordTextField.text = @"";
         [self refreshData];
+    }
+}
+
+#pragma mark - NotificationHandler
+- (void)addNotificationObserver{
+    [super addNotificationObserver];
+    [self addObserveNotificationWithName:MedicalExpenseDeleteNotification];
+}
+
+- (void)removeNotificationObserver{
+    [super removeNotificationObserver];
+    [self removeObserverNotificationWithName:MedicalExpenseDeleteNotification];
+}
+
+- (void)handNotification:(NSNotification *)notifacation{
+    [super handNotification:notifacation];
+    
+    if ([notifacation.name isEqualToString:MedicalExpenseDeleteNotification]) {
+        NSArray *tmpArr = [NSMutableArray arrayWithArray:[[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:self.medicalCaseId]];
+        [self didSelectedMaterialsArray:tmpArr];
     }
 }
 

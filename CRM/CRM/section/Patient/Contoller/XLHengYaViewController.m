@@ -51,12 +51,12 @@
         [self xhClick:xiaHeBtn];
     }else if ([self.hengYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
-    }else if (self.hengYaString.length > 0 && [self isShuZi:self.hengYaString] && ![self.hengYaString isContainsString:@","]){
+    }else if (self.hengYaString.length > 0 && [self isPureNumandCharacters:self.hengYaString] && ![self.hengYaString isContainsString:@","]){
         UIButton *button = (UIButton *)[_henyaCell.contentView viewWithTag:[self.hengYaString integerValue]];
         button.selected = YES;
         [hengYaArray addObject:self.hengYaString];
     }else if(self.hengYaString.length > 0 && [self.hengYaString isContainsString:@","]){
-        if(self.hengYaString.length > 0 && [self isShuZi:self.hengYaString]){
+        if(self.hengYaString.length > 0 && [self isPureNumandCharacters:self.hengYaString]){
             NSArray *hen = [self.hengYaString componentsSeparatedByString:@","];
             for(NSInteger i = 0;i<[hen count];i++){
                 UIButton *button = (UIButton *)[_henyaCell.contentView viewWithTag:[[hen objectAtIndex:i]integerValue]];
@@ -74,14 +74,16 @@
 
 
 #pragma mark - 判断是否是数字
--(BOOL)isShuZi:(NSString *)str {
-    NSRange range = NSMakeRange(0, 1);
-    NSString *subString = [str substringWithRange:range];
-    if([subString integerValue] >= 0 && [subString integerValue] <=9){
-        return YES;
+- (BOOL)isPureNumandCharacters:(NSString *)string
+{
+    string = [string stringByTrimmingCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]];
+    if(string.length > 0)
+    {
+        return NO;
     }
-    return NO;
+    return YES;
 }
+
 -(void)disMissView{
     [self.delegate removeHengYaVC];
 }

@@ -20,6 +20,8 @@
 #import "DBManager+AutoSync.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "XLContactCell.h"
+#import "XLContactModel.h"
 
 @interface AddressBookViewController () <UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,AddressBookCellDelegate>
 
@@ -61,7 +63,6 @@
         self.title = @"通讯录导入修复医生";
     }
     self.tableView.allowsSelection = NO;
-
 }
 
 - (void)initData {

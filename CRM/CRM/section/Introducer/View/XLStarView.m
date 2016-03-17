@@ -56,7 +56,7 @@
 - (void)setLevel:(NSInteger)level{
     _level = level;
     
-    [self setNeedsLayout];
+     self.starView.scale = self.level;
 }
 
 - (void)setAlignment:(XLStarViewAlignment)alignment{

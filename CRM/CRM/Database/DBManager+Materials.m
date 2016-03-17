@@ -641,7 +641,7 @@
         return nil;
     }
     
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",MedicalExpenseTableName,ckeyId];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and creation_date_sync > datetime('%@')",MedicalExpenseTableName,ckeyId,[NSString defaultDateString]];
     __block MedicalExpense *expense = nil;
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {

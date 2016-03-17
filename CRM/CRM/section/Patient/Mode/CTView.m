@@ -81,7 +81,7 @@
     //路径
     filePath = [CaseFunction getCasePath:medicalcase.ckeyid patientId:medicalcase.patient_id];
     //路径里存在的照片
-    NSArray *tmpLibArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:medicalcase.ckeyid];
+    NSArray *tmpLibArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:medicalcase.ckeyid isAsc:NO];
     [ctlibArray addObjectsFromArray:tmpLibArray]; //这个病例对应的所有CTLib信息
 }
 

@@ -181,7 +181,7 @@
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
     for (MedicalCase *mCase in array) {
         [_caseArray addObject:mCase];
-        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:mCase.ckeyid];
+        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:mCase.ckeyid isAsc:NO];
         if (libArray != nil && libArray.count > 0) {
             [_dataSouceArray addObject:libArray];
         } else {
@@ -265,7 +265,7 @@
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
     for (MedicalCase *mCase in array) {
         [_caseArray addObject:mCase];
-        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:mCase.ckeyid];
+        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:mCase.ckeyid isAsc:NO];
         if (libArray != nil && libArray.count > 0) {
             [_dataSouceArray addObject:libArray];
         } else {

@@ -256,11 +256,17 @@
         time = self.implantTextField.text;
     }
     if ([btn.currentTitle isEqualToString:@"确定"]) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(didChooseTime:withType:)]) {
-            [self.delegate didChooseTime:time withType:type];
-        }
+        __weak typeof(self) weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(didChooseTime:withType:)]) {
+                [weakSelf.delegate didChooseTime:time withType:type];
+            }
+        });
+        
     }
 }
+
+
 
 
 @end

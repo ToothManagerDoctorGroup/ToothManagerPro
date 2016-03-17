@@ -20,7 +20,7 @@
 @end
 
 
-@interface IntroDetailHeaderTableViewController : TimViewController<MFMessageComposeViewControllerDelegate>
+@interface IntroDetailHeaderTableViewController : TimViewController
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nameTextField;
 @property (weak, nonatomic) IBOutlet XLStarView *levelView;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *phoneTextField;

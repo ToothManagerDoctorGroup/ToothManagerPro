@@ -186,4 +186,41 @@
     return ValidationResultInValid;
 }
 
+
+- (int)charaterCount{
+    int strlength = 0;
+    char* p = (char*)[self cStringUsingEncoding:NSUnicodeStringEncoding];
+    for (int i=0 ; i<[self lengthOfBytesUsingEncoding:NSUnicodeStringEncoding] ;i++) {
+        if (*p) {
+            p++;
+            strlength++;
+        }
+        else {
+            p++;
+        }
+        
+    }
+    return strlength;
+
+}
+
++ (BOOL)checkTelNumber:(NSString *) telNumber
+{
+    NSString *pattern = @"^((1[0-9][0-9])|(13[0-9])|(147)|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+    BOOL isMatch = [pred evaluateWithObject:telNumber];
+    return isMatch;
+}
+
++ (BOOL)checkAllPhoneNumber:(NSString *)phoneNumber{
+    NSString *pattern = @"^(0[0-9]{2,3}/-)?([2-9][0-9]{6,7})+(/-[0-9]{1,4})?$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+    BOOL isMatch = [pred evaluateWithObject:phoneNumber];
+    
+    if (isMatch || [self checkTelNumber:phoneNumber]) {
+        return YES;
+    }
+    
+    return NO;
+}
 @end

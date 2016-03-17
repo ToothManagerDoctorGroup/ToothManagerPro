@@ -249,35 +249,40 @@
 - (void)getReserveRecordByReserveId:(NSString *)reserve_id messageModel:(SysMessageModel *)msgModel{
     [SVProgressHUD showWithStatus:@"正在获取预约信息"];
     [SysMessageTool getReserveRecordByReserveId:reserve_id success:^(CRMHttpRespondModel *respond) {
-        //将预约信息保存到本地
-        LocalNotification *local = [LocalNotification LNFromLNFResult:respond.result];
-        [[DBManager shareInstance] insertLocalNotification:local];
-        //判断患者是否存在
-        Patient *patient = [[DBManager shareInstance] getPatientCkeyid:local.patient_id];
-        if (patient == nil) {
-            //获取所有的患者信息，同时保存到本地
-            [MyPatientTool getPatientAllInfosWithPatientId:local.patient_id doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
-                if ([respond.code integerValue] == 200) {
-                    NSMutableArray *arrayM = [NSMutableArray array];
-                    for (NSDictionary *dic in respond.result) {
-                        XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
-                        [arrayM addObject:model];
+        if ([respond.code integerValue] == 200) {
+            //将预约信息保存到本地
+            LocalNotification *local = [LocalNotification LNFromLNFResult:respond.result];
+            [[DBManager shareInstance] insertLocalNotification:local];
+            //判断患者是否存在
+            Patient *patient = [[DBManager shareInstance] getPatientCkeyid:local.patient_id];
+            if (patient == nil) {
+                //获取所有的患者信息，同时保存到本地
+                [MyPatientTool getPatientAllInfosWithPatientId:local.patient_id doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+                    if ([respond.code integerValue] == 200) {
+                        NSMutableArray *arrayM = [NSMutableArray array];
+                        for (NSDictionary *dic in respond.result) {
+                            XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                            [arrayM addObject:model];
+                        }
+                        //请求成功后缓存患者信息
+                        [self savePatientDataWithModel:arrayM[0] messageModel:msgModel];
+                    }else{
+                        [SVProgressHUD showErrorWithStatus:respond.result];
                     }
-                    //请求成功后缓存患者信息
-                    [self savePatientDataWithModel:arrayM[0] messageModel:msgModel];
-                }else{
-                    [SVProgressHUD showErrorWithStatus:respond.result];
-                }
-            } failure:^(NSError *error) {
-                if (error) {
-                    NSLog(@"error:%@",error);
-                }
-            }];
+                } failure:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"error:%@",error);
+                    }
+                }];
+            }else{
+                //设置已读
+                [self setMessageReadWithModel:msgModel noOperate:NO];
+                
+            }
         }else{
-            //设置已读
-            [self setMessageReadWithModel:msgModel noOperate:NO];
-            
+            [SVProgressHUD showErrorWithStatus:@"预约信息获取失败"];
         }
+        
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"预约信息获取失败"];
         if (error) {

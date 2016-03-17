@@ -83,7 +83,7 @@
 - (void)initNavBar{
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.title = @"患者信息";
+    self.title = @"修改患者信息";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     if (self.isGroup) {

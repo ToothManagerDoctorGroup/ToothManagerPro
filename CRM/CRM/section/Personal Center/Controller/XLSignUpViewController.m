@@ -78,11 +78,9 @@
     [super didReceiveMemoryWarning];
 }
 - (IBAction)signupAction:(id)sender {
-    [self.nicknameTextField resignFirstResponder];
-    [self.phoneTextField resignFirstResponder];
-    [self.passwdTextField resignFirstResponder];
-    [self.recommenderTextField resignFirstResponder];
-    [self.validateTextField resignFirstResponder];
+    [self.view endEditing:YES];
+    
+    
     [[AccountManager shareInstance] registerWithNickName:self.nicknameTextField.text passwd:self.passwdTextField.text phone:self.phoneTextField.text recommender:self.recommenderTextField.text validate:self.validateTextField.text successBlock:^{
         [SVProgressHUD showWithStatus:@"正在注册..."];
     } failedBlock:^(NSError *error) {

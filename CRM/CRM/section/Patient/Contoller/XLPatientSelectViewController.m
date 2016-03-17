@@ -7,8 +7,6 @@
 //
 
 #import "XLPatientSelectViewController.h"
-#import "MudItemBarItem.h"
-#import "MudItemsBar.h"
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"
 #import "UISearchBar+XLMoveBgView.h"
@@ -27,16 +25,16 @@
 #import "CreatePatientViewController.h"
 #import "MJRefresh.h"
 #import "DBManager+Doctor.h"
+#import "MLKMenuPopover.h"
+#import "XLContactsViewController.h"
 
-@interface XLPatientSelectViewController () <MudItemsBarDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
+@interface XLPatientSelectViewController () <UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,MLKMenuPopoverDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
     BOOL ifIntroducerSelected;
     UITableView *_tableView;
 }
-@property (nonatomic,retain) MudItemsBar *menubar;
-@property (nonatomic) BOOL isBarHidden;
 @property (nonatomic,retain) NSArray *patientInfoArray;
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
 
@@ -45,9 +43,34 @@
 
 @property (nonatomic, assign)int pageNum;//分页页数
 
+/**
+ *  菜单选项
+ */
+@property (nonatomic, strong)NSArray *menuList;
+/**
+ *  菜单弹出视图
+ */
+@property (nonatomic, strong)MLKMenuPopover *menuPopover;
+
 @end
 
 @implementation XLPatientSelectViewController
+
+- (MLKMenuPopover *)menuPopover{
+    if (!_menuPopover) {
+        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 120 - 8, 64, 120, self.menuList.count * 44) menuItems:self.menuList];
+        menuPopover.menuPopoverDelegate = self;
+        _menuPopover = menuPopover;
+    }
+    return _menuPopover;
+}
+
+- (NSArray *)menuList{
+    if (_menuList == nil) {
+        _menuList = [NSArray arrayWithObjects:@"手工录入",@"通讯录导入", nil];
+    }
+    return _menuList;
+}
 
 - (NSArray *)patientInfoArray{
     if (!_patientInfoArray) {
@@ -119,33 +142,10 @@
     [_tableView.header beginRefreshing];
 }
 
-#pragma mark - 设置
--(void)onLeftButtonAction:(id)sender{
-    if(self.isTabbarVc == NO){
-        [self popViewControllerAnimated:YES];
-    }else{
-        [SVProgressHUD showWithStatus:@"同步中..."];
-        if ([[AccountManager shareInstance] isLogin]) {
-            [NSTimer scheduledTimerWithTimeInterval:0.2
-                                             target:self
-                                           selector:@selector(callSync)
-                                           userInfo:nil
-                                            repeats:NO];
-            
-        } else {
-            NSLog(@"User did not login");
-            [SVProgressHUD showWithStatus:@"同步失败，请先登录..."];
-            [SVProgressHUD dismiss];
-            [NSThread sleepForTimeInterval: 1];
-        }
-    }
-}
-- (void)callSync {
-    [[SyncManager shareInstance] startSync];
-}
 - (void)setupView {
     self.title = @"患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
 
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
@@ -182,7 +182,6 @@
 
 - (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader{
     
-    self.isBarHidden = YES;
         self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
         if (self.patientInfoArray.count > 50) {
             self.pageNum++;
@@ -235,46 +234,33 @@
     [_tableView removeFooter];
 }
 
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if (self.isBarHidden == NO){                      //如果是显示状态
-        [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
-    }
-}
-
-
 #pragma mark - Right View
 - (void)onRightButtonAction:(id)sender {
-    if (self.isBarHidden == YES) { //如果是消失状态
-        [self setupMenuBar];
-        [self.menubar showBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
-    } else {                      //如果是显示状态
-        [self.menubar hiddenBar:self.navigationController.view WithBarAnimation:MudItemsBarAnimationTop];
-    }
-    self.isBarHidden = !self.isBarHidden;
+    
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    [self.menuPopover showInView:keyWindow];
 }
 
-- (void)setupMenuBar {
-    if (self.menubar == nil) {
-        _menubar = [[MudItemsBar alloc]init];
-        self.menubar.delegate = self;
-        self.menubar.duration = 0.15;
-        self.menubar.barOrigin = CGPointMake(0, 64.5);
-        self.menubar.backgroundColor = [UIColor colorWithHex:MENU_BAR_BACKGROUND_COLOR];
-        UIImage *normalImage = [[UIImage imageNamed:@"baritem_normal_bg"] stretchableImageWithLeftCapWidth:2.5 topCapHeight:2.5];
-        UIImage *selectImage = [[UIImage imageNamed:@"baritem_select_bg"] stretchableImageWithLeftCapWidth:2.5 topCapHeight:2.5];
-        MudItemBarItem *itemAddressBook = [[MudItemBarItem alloc]init];
-        itemAddressBook.text = @"手工录入";
-        itemAddressBook.iteImage = [UIImage imageNamed:@"file"];
-        [itemAddressBook setBackgroundImage:normalImage forState:UIControlStateNormal];
-        [itemAddressBook setBackgroundImage:selectImage forState:UIControlStateHighlighted];
-        MudItemBarItem *itemAdd = [[MudItemBarItem alloc]init];
-        itemAdd.text = @"通讯录导入";
-        itemAdd.iteImage = [UIImage imageNamed:@"copyfile"];
-        [itemAdd setBackgroundImage:normalImage forState:UIControlStateNormal];
-        [itemAdd setBackgroundImage:selectImage forState:UIControlStateHighlighted];
-        self.menubar.items = [NSArray arrayWithObjects:itemAdd,itemAddressBook,nil];
+#pragma mark MLKMenuPopoverDelegate
+
+- (void)menuPopover:(MLKMenuPopover *)menuPopover didSelectMenuItemAtIndex:(NSInteger)selectedIndex
+{
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    [self.menuPopover dismissMenuPopover];
+    if (selectedIndex == 0) {
+        CreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreatePatientViewController"];
+        newPatientVC.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:newPatientVC animated:YES];
+    }else if (selectedIndex == 1){
+        XLContactsViewController *contactVc = [[XLContactsViewController alloc] initWithStyle:UITableViewStylePlain];
+        contactVc.type = ContactsImportTypePatients;
+        contactVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:contactVc animated:YES];
+        
+//        AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
+//        addressBook.type = ImportTypePatients;
+//        addressBook.hidesBottomBarWhenPushed = YES;
+//        [self pushViewController:addressBook animated:YES];
     }
 }
 
@@ -285,7 +271,6 @@
     [self addObserveNotificationWithName:MedicalCaseCreatedNotification];
     [self addObserveNotificationWithName:MedicalCaseEditedNotification];
     [self addObserveNotificationWithName:PatientTransferNotification];
-    [self addObserveNotificationWithName:@"tongbu"];
 }
 
 - (void)removeNotificationObserver {
@@ -294,7 +279,6 @@
     [self removeObserverNotificationWithName:MedicalCaseCreatedNotification];
     [self removeObserverNotificationWithName:MedicalCaseEditedNotification];
     [self removeObserverNotificationWithName:PatientTransferNotification];
-    [self removeObserverNotificationWithName:@"tongbu"];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
@@ -305,12 +289,7 @@
         || [notifacation.name isEqualToString:MedicalCaseEditedNotification]
         ) {
         //有新患者创建或者患者被编辑，需要更新界面
-        [self refreshData];
-        [self refreshView];
-    }
-    if ([notifacation.name isEqualToString:@"tongbu"]) {
-        [self initData];
-        [self refreshView];
+        [self headerRefreshAction];
     }
 }
 
@@ -570,114 +549,6 @@
         detailVc.hidesBottomBarWhenPushed = YES;
         [self pushViewController:detailVc animated:YES];
     }
-}
-
-#pragma mark - 单元格删除事件
-- (void)deleteMaterialWithIndexPath:(NSIndexPath *)indexPath tableView:(UITableView *)tableView sourceArray:(NSMutableArray *)sourceArray{
-    TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
-        [tableView reloadData];
-    } comfirmButtonHandlder:^{
-        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-        cellMode = [sourceArray objectAtIndex:indexPath.row];
-        
-        NSArray *libArray = [[DBManager shareInstance] getCTLibArrayWithPatientId:cellMode.patientId];
-        for (CTLib *lib in libArray) {
-            [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
-        }
-        BOOL ret = [[DBManager shareInstance] deletePatientByPatientID:cellMode.patientId];
-        if (ret == NO) {
-            [SVProgressHUD showImage:nil status:@"删除失败"];
-        } else {
-            if (tableView != _tableView) {
-                [sourceArray removeObjectAtIndex:indexPath.row];
-                [self.patientCellModeArray removeObject:cellMode];
-                
-                [tableView reloadData];
-            }else{
-                [sourceArray removeObjectAtIndex:indexPath.row];
-            }
-            [self refreshView];
-            
-            Patient *pateintTemp = [[DBManager shareInstance] getPatientCkeyid:cellMode.patientId];
-            //自动同步信息
-            if (pateintTemp != nil) {
-                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Delete dataEntity:[pateintTemp.keyValues JSONString] syncStatus:@"0"];
-                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                
-                
-                //获取所有的病历进行删除
-                NSArray *medicalcases = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_case];
-                if (medicalcases.count > 0) {
-                    for (MedicalCase *mCase in medicalcases) {
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalCase postType:Delete dataEntity:[mCase.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    }
-                }
-                //获取所有的耗材信息进行删除
-                NSArray *medicalExpenses = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_expense];
-                if (medicalcases.count > 0) {
-                    for (MedicalExpense *expense in medicalExpenses) {
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalExpense postType:Delete dataEntity:[expense.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    }
-                }
-                //获取所有的病历记录进行删除
-                NSArray *medicalRecords = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_record];
-                if (medicalRecords.count > 0) {
-                    for (MedicalRecord *record in medicalRecords) {
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_MedicalRecord postType:Delete dataEntity:[record.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    }
-                }
-                //获取所有的ct数据进行删除
-                NSArray *ctLibs = [[DBManager shareInstance] getAllDeleteNeedSyncCt_lib];
-                if (ctLibs.count > 0) {
-                    for (CTLib *ctLib in ctLibs) {
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    }
-                }
-                
-                //获取所有的会诊记录进行删除
-                NSArray *patientCons = [[DBManager shareInstance] getPatientConsultationWithPatientId:cellMode.patientId];
-                if (patientCons.count > 0) {
-                    for (PatientConsultation *patientC in patientCons) {
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientConsultation postType:Delete dataEntity:[patientC.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    }
-                }
-            }
-        }
-    }];
-    [alertView show];
-}
-
-#pragma mark - MudItemsBarDelegate
-- (void)itemsBar:(MudItemsBar *)itemsBar clickedButtonAtIndex:(NSInteger)buttonIndex {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    switch (buttonIndex) {
-        case 0:
-        {
-            AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
-            addressBook.type = ImportTypePatients;
-            addressBook.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:addressBook animated:YES];
-        }
-            break;
-        case 1:
-        {
-            CreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreatePatientViewController"];
-            newPatientVC.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:newPatientVC animated:YES];
-        }
-            break;
-        default:
-            break;
-    }
-}
-
-- (void)itemsBarWillDisAppear {
-    self.isBarHidden = YES;
 }
 
 #pragma mark - UISearchBar Delegates
