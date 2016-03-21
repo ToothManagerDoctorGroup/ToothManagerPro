@@ -10,4 +10,9 @@
 
 @interface CRMAppDelegate (EaseMob)
 
+/**
+ *  注册环信相关信息
+ */
+- (void)registerEaseMobConfigWithapplication:(UIApplication *)application options:(NSDictionary *)launchOptions;
+
 @end

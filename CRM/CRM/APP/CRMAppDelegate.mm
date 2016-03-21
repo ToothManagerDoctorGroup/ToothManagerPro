@@ -35,6 +35,8 @@
 #import "XLAdvertisementView.h"
 #import "UIImageView+WebCache.h"
 #import "CRMAppDelegate+Reachability.h"
+#import "CRMAppDelegate+EaseMob.h"
+#import "CRMAppDelegate+UMessage.h"
 
 @interface CRMAppDelegate ()
 
@@ -46,44 +48,40 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-/******************************环信集成Start*************************************/
-    NSString *apnsCertName = nil;
-#if DEBUG
-    apnsCertName = @"toothManagerDoctor_dev";
-#else
-    apnsCertName = @"toothManagerDoctor_dis";
-#endif
-    //如果是测试环境
-    NSString *appKeyStr;
-    if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
-        appKeyStr = @"zijingyiyuan#zygjtest";
-    }else{
-        appKeyStr = @"zijingyiyuan#zygj";
-    }
-    [[EaseMob sharedInstance] registerSDKWithAppKey:appKeyStr apnsCertName:apnsCertName otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
+    //配置第三方SDK
+    [self configThirdPartWithApplication:application option:launchOptions];
     
-    [[EaseMob sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+    //开启设备网络状态监控
+    [self addNetWorkNotification];
     
-    //ios9
-    if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
-        [application registerForRemoteNotifications];
-        UIUserNotificationType notificationTypes = UIUserNotificationTypeBadge |
-        UIUserNotificationTypeSound |
-        UIUserNotificationTypeAlert;
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
-        [application registerUserNotificationSettings:settings];
-    }
-    //ios8以下
-    else{
-        UIRemoteNotificationType notificationTypes = UIRemoteNotificationTypeBadge |
-        UIRemoteNotificationTypeSound |
-        UIRemoteNotificationTypeAlert;
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notificationTypes];
-    }
-    //注册通知，可以接收环信消息
-    [self registerEaseMobNotification];
-/******************************环信集成End*************************************/
-    //百度地图启动类
+    //通用的界面的设置
+    [CRMViewAppearance setCRMAppearance];
+    
+    //准备数据库
+    [[DBManager shareInstance] createdbFile];
+    [[DBManager shareInstance] createTables];
+    //更新数据库表结构
+//    [[DBManager shareInstance] updateDB];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+    
+    //页面跳转
+    [self turnToMainVc];
+
+    return YES;
+}
+
+#pragma mark - 配置第三方SDK
+- (void)configThirdPartWithApplication:(UIApplication *)application option:(NSDictionary *)launchOptions {
+    
+    //注册环信
+    [self registerEaseMobConfigWithapplication:application options:launchOptions];
+    //注册友盟
+    [self registerUMessageConfigWithOptions:launchOptions];
+    
+    //百度地图
     _mapManager = [[BMKMapManager alloc]init];
     // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
     BOOL ret = [_mapManager start:@"Yu0DYus5oGSY08r5FLwh3Dbd" generalDelegate:nil];
@@ -93,51 +91,20 @@
         NSLog(@"manager start success!");
     }
     
+    //注册微信
+    [WXApi registerApp:@"wx43875d1f976c1ded"];
     
+    //样式设置，添加通知
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
-    
-    //[[UIApplication sharedApplication]setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-    [[UIApplication sharedApplication]setStatusBarStyle:UIStatusBarStyleLightContent];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [UIApplication sharedApplication].statusBarHidden = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignInSuccessNotification object:nil];
-     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignUpSuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignUpSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignOutSuccessNotification object:nil];
-    
-    
-    [self configThirdPart:launchOptions];
-    
-    //开启设备网络状态监控
-//     [[SyncManager shareInstance] opendSync];
-    [self addNetWorkNotification];
-    
-    //通用的界面的设置
-    [CRMViewAppearance setCRMAppearance];
-    
-    //准备数据库
-    [[DBManager shareInstance] createdbFile];
-    [[DBManager shareInstance] createTables];
-    
-    
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-    
-    [self turnToMainVc];
-    
-//    self.adImageView = [[XLAdvertisementView alloc] initWithFrame:self.window.bounds];
-//    NSURL *imageUrl = [NSURL URLWithString:@"http://sh.sinaimg.cn/2012/0701/U4818P18DT20120701160643.jpg"];
-//    [self.adImageView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"adImage"] options:SDWebImageRetryFailed];
-//    [self.adImageView start];
-//    [self.window addSubview:self.adImageView];
-//    [self.window bringSubviewToFront:self.adImageView];
-//    self.adImageView.completeBlock = ^(){};
-
-    return YES;
 }
+
 #pragma mark - 跳转到主页面
 - (void)turnToMainVc{
     //判断用户是否登录
@@ -145,9 +112,6 @@
         if (self.tabBarController == nil) {
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
-        
-        NSLog(@"医院名称:%@",[[AccountManager shareInstance] currentUser].hospitalName);
-        
         //个人信息完善界面
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
         XLPersonalStepOneViewController *oneVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
@@ -167,18 +131,21 @@
                 [[CRMHttpRequest shareInstance] cancelAllOperations];
                 [self makeLogin];
                 
-//                [[AccountManager shareInstance] logout];
-//                self.window.rootViewController = nav;
+                //                [[AccountManager shareInstance] logout];
+                //                self.window.rootViewController = nav;
                 
             }
         }else{
+            //更新数据库表结构
+            [[DBManager shareInstance] updateDB];
+            
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
             guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
             guideController.showIndicator = NO;
             if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
                 guideController.forwardController = self.tabBarController;
             }else{
-//                [[AccountManager shareInstance] logout];
+                //                [[AccountManager shareInstance] logout];
                 guideController.forwardController = nav;
             }
             self.window.rootViewController = guideController;
@@ -190,43 +157,7 @@
     }
 }
 
-- (void)configThirdPart:(NSDictionary *)launchOptions {
-    //2.友盟统计（主要是用来统计错误）
-    [MobClick startWithAppkey:UMENG_APPKEY reportPolicy:BATCH channelId:@"App Store"];
-    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    [MobClick setAppVersion:version];
-    
-    //set AppKey and AppSecret
-    [UMessage startWithAppkey:UMENG_APPKEY launchOptions:launchOptions];
-#ifdef __IPHONE_8_0
-    if (IOS_8_OR_LATER) {
-        //register remoteNotification types （iOS 8.0及其以上版本）
-        UIUserNotificationSettings *userSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert categories:nil];
-        
-        [UMessage registerRemoteNotificationAndUserNotificationSettings:userSettings];
-    }
-#endif
-    if (!IOS_8_OR_LATER) {
-        //register remoteNotification types (iOS 8.0以下)
-        [UMessage registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge
-         |UIRemoteNotificationTypeSound
-         |UIRemoteNotificationTypeAlert];
-    }
-    
-    //友盟用户反馈
-    [UMOpus setAudioEnable:YES];
-    [UMFeedback setAppkey:UMENG_APPKEY];
-    [UMFeedback setLogEnabled:YES];
-    [[UMFeedback sharedInstance] setFeedbackViewController:[UMFeedback feedbackViewController] shouldPush:YES];
-    NSDictionary *notificationDict = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if ([notificationDict valueForKey:@"aps"]) // 点击推送进入
-    {
-        [UMFeedback didReceiveRemoteNotification:notificationDict];
-    }
-    
-    //注册微信
-    [WXApi registerApp:@"wx43875d1f976c1ded"];
-}
+#pragma mark - 登录
 - (void)makeLogin {
     self.tabBarController = nil;
     //获取版本号
@@ -241,6 +172,9 @@
         
         self.window.rootViewController = nav;
     }else{
+        //更新数据库表结构
+        [[DBManager shareInstance] updateDB];
+        
         TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
         guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
         guideController.showIndicator = NO;
@@ -251,7 +185,7 @@
     }
     
 }
-
+#pragma mark - 接收到通知处理
 - (void)handNotification:(NSNotification *)notification {
     if ([notification.name isEqualToString:SignInSuccessNotification]
         || [notification.name isEqualToString:SignUpSuccessNotification]) {
@@ -264,6 +198,8 @@
     }
 }
 
+
+#pragma mark - Another Method
 - (void)applicationWillResignActive:(UIApplication *)application
 {
      [BMKMapView willBackGround];//当应用即将后台时调用，停止一切调用opengl相关的操作
@@ -299,24 +235,23 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    //关闭友盟对话框
+    [UMessage setAutoAlert:NO];
     [UMessage didReceiveRemoteNotification:userInfo];
-    //定制自定的的弹出框
+    //定制自定义的弹出框
     if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
     {
-//        [UMessage sendClickReportForRemoteNotification:userInfo];
         [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
     }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-//    [[DBManager shareInstance] closeDB];
     [[EaseMob sharedInstance] applicationDidEnterBackground:application];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-//    [[DBManager shareInstance] opendDB];
     [[EaseMob sharedInstance] applicationWillEnterForeground:application];
 }
 
@@ -396,7 +331,6 @@
     [self removeNetWorkNotification];
 }
 #pragma mark - Application's Documents directory
-// Returns the URL to the application's Documents directory.
 - (NSURL *)applicationDocumentsDirectory
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];

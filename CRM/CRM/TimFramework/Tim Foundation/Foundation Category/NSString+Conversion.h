@@ -98,5 +98,23 @@ typedef NS_ENUM(NSInteger,ValidationResult) {
  *  @return 是否符合
  */
 + (BOOL)checkAllPhoneNumber:(NSString *) phoneNumber;
+/**
+ *  验证身份证号码
+ *
+ *  @param idCard 身份证号
+ *
+ *  @return 验证结果
+ */
++ (ValidationResult)checkIDCard:(NSString *)idCard;
+/**
+ *  验证字符串是否符合长度
+ *
+ *  @param string 原始字符串
+ *  @param length 固定长度
+ *
+ *  @return 验证结果
+ */
+- (ValidationResult)isValidLength:(int)length;
++ (ValidationResult)isValidLength:(NSString *)string length:(int)length;
 
 @end

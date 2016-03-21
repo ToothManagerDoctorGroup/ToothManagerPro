@@ -31,7 +31,10 @@
 #import "XLAppointDetailViewController.h"
 #import "XLPatientAppointViewController.h"
 #import "CRMMacro.h"
+#import "DBManager+Doctor.h"
 #import "SDWebImageManager.h"
+#import "DoctorTool.h"
+#import "DoctorInfoModel.h"
 
 @interface UnReadMessageViewController ()
 
@@ -293,6 +296,7 @@
 
 #pragma mark - 缓存患者信息
 - (void)savePatientDataWithModel:(XLPatientTotalInfoModel *)model messageModel:(SysMessageModel *)msgModel{
+    [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:model];
     //"ckeyid": "1009_1451464419254",
     if (model.baseInfo[@"ckeyid"] == nil) {
         //如果患者为空
@@ -379,8 +383,37 @@
         }
     }
     if (total == current) {
-        //设置已读
-        [self setMessageReadWithModel:msgModel noOperate:NO];
+        //判断当前介绍人是否存在
+        if (model.introducerMap.count > 0) {
+            for (NSDictionary *dic in model.introducerMap) {
+                PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
+                if ([map.intr_id isNotEmpty]) {
+                    __block Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:map.intr_id];
+                    if (doctor == nil) {
+                        //获取医生信息
+                        [DoctorTool requestDoctorInfoWithDoctorId:map.intr_id success:^(DoctorInfoModel *dcotorInfo) {
+                            doctor = [Doctor DoctorFromDoctorResult:dcotorInfo.keyValues];
+                            if([[DBManager shareInstance] insertDoctorWithDoctor:doctor]){
+                                //设置已读
+                                [self setMessageReadWithModel:msgModel noOperate:NO];
+                            }
+                        } failure:^(NSError *error) {
+                            [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
+                            if (error) {
+                                NSLog(@"error:%@",error);
+                            }
+                        }];
+                    }else{
+                        //设置已读
+                        [self setMessageReadWithModel:msgModel noOperate:NO];
+                    }
+                }
+            }
+        }else{
+            //设置已读
+            [self setMessageReadWithModel:msgModel noOperate:NO];
+        }
+        
     }else{
         [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
     }

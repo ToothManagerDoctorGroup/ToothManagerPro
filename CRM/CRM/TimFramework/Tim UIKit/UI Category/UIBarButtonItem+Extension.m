@@ -37,6 +37,7 @@
     button.frame = CGRectMake(0, 0,44, 44);
     [button setTitle:title forState:UIControlStateNormal];
     [button setTitle:title forState:UIControlStateHighlighted];
+    button.titleLabel.font = [UIFont systemFontOfSize:15];
     [button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *item = [[UIBarButtonItem alloc]initWithCustomView:button];
     [item setStyle:UIBarButtonItemStylePlain];

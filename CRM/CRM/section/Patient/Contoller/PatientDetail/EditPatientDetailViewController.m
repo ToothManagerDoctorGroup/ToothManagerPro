@@ -107,11 +107,6 @@
 
 - (void)onRightButtonAction:(id)sender{
     
-    if (self.patientPhoneField.text.length != 11) {
-        [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
-        return;
-    }
-    
     Patient *currentPatient = self.patient;
     currentPatient.patient_name = self.patientNameField.text;
     currentPatient.patient_age = self.patientAgeField.text;
@@ -256,16 +251,43 @@
 #pragma mark - XLCommonEditViewControllerDelegate
 - (void)commonEditViewController:(XLCommonEditViewController *)editVc content:(NSString *)content title:(NSString *)title{
     if ([title isEqualToString:@"姓名"]) {
+        ValidationResult result = [NSString isValidLength:content length:32];
+        if (result == ValidationResultInValid) {
+            [SVProgressHUD showImage:nil status:@"姓名过长，请重新输入"];
+            return;
+        }
         self.patientNameField.text = content;
     }else if ([title isEqualToString:@"电话"]){
+        if (![NSString checkAllPhoneNumber:content]) {
+            [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+            return;
+        }
         self.patientPhoneField.text = content;
     }else if ([title isEqualToString:@"备注名"]){
+        ValidationResult result = [NSString isValidLength:content length:32];
+        if (result == ValidationResultInValid) {
+            [SVProgressHUD showImage:nil status:@"备注名过长，请重新输入"];
+            return;
+        }
         self.remarkNameLabel.text = content;
     }else if ([title isEqualToString:@"年龄"]){
+        if ([content intValue] > 150) {
+            [SVProgressHUD showImage:nil status:@"年龄无效，请重新输入"];
+            return;
+        }
         self.patientAgeField.text = content;
     }else if ([title isEqualToString:@"家庭住址"]){
+        ValidationResult result = [NSString isValidLength:content length:100];
+        if (result == ValidationResultInValid) {
+            [SVProgressHUD showImage:nil status:@"家庭住址过长，请重新输入"];
+            return;
+        }
         self.patientAddressLabel.text = content;
     }else if ([title isEqualToString:@"身份证号"]){
+        ValidationResult result = [NSString checkIDCard:content];
+        if (result != ValidationResultValid) {
+            [SVProgressHUD showImage:nil status:@"身份证号无效，请重新输入"];
+        }
         self.patientIdCardField.text = content;
     }
 }

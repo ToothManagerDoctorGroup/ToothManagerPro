@@ -18,6 +18,7 @@
 #import "DBManager+AutoSync.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "PatientSegumentController.h"
 
 @interface XLContactsViewController ()<XLContactCellDelegate,UISearchBarDelegate,UISearchDisplayDelegate>
 
@@ -88,6 +89,17 @@
     [self getAllContacts];
     //对联系人进行排序
     [self setUpTableSection];
+}
+
+- (void)onBackButtonAction:(id)sender{
+    if (self.type == ContactsImportTypePatients) {
+        
+        UITabBarController *rootVC = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        [rootVC setSelectedViewController:[rootVC.viewControllers objectAtIndex:1]];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }else{
+        [self popViewControllerAnimated:YES];
+    }
 }
 
 #pragma mark - 控件初始化
@@ -331,7 +343,9 @@
     }
     
     if (tip == 1) {
-        [SVProgressHUD showErrorWithStatus:@"您已关闭通讯录访问权限"];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" delegate:nil cancelButtonTitle:@"知道了" otherButtonTitles:nil];
+        [alertView show];
+        
         return;
     }
     
@@ -417,8 +431,9 @@
         if (abName) CFRelease(abName);
         if (abLastName) CFRelease(abLastName);
         if (abFullName) CFRelease(abFullName);
+        if (person) CFRelease(person);
     }
-    
+    CFRelease(allPeople);
     CFRelease(addBook);
 }
 

@@ -15,7 +15,6 @@
 #import "CRMMacro.h"
 #import "CRMUserDefalut.h"
 #import "NSDictionary+Extension.h"
-#import "UserInfoViewController.h"
 #import "AccountViewController.h"
 #import "XLPersonalStepOneViewController.h"
 #import "XLLoginTool.h"
@@ -169,7 +168,7 @@
 //    NSDictionary *resultDic = [result objectForKey:@"Result"];
 //    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
     
-    [SVProgressHUD showSuccessWithStatus:@"注册成功，正在登陆"];
+    [SVProgressHUD showWithStatus:@"注册成功，正在登陆"];
     [XLLoginTool loginWithNickName:self.nicknameTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
             [self loginSucessWithResult:respond.result];

@@ -15,7 +15,10 @@
 #import "MenuButtonPushManager.h"
 
 @interface TimNavigationViewController ()
+
 @end
+
+
 
 @implementation TimNavigationViewController
 
@@ -33,7 +36,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setupView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -42,8 +44,5 @@
 }
 
 
-#pragma mark - Set View
-- (void)setupView {
-}
 
 @end

@@ -10,6 +10,7 @@
 #import "CRMHttpTool.h"
 #import "SysMessageModel.h"
 #import "JSONKit.h"
+#import "AccountManager.h"
 
 @implementation SysMessageTool
 
@@ -116,7 +117,7 @@
         dataEntityParams[@"therapy_doctor_id"] = noti.therapy_doctor_id;
         dataEntityParams[@"therapy_doctor_name"] = noti.therapy_doctor_name;
         dataEntityParams[@"ckeyid"] = noti.ckeyid;
-        dataEntityParams[@"doctor_id"] = noti.doctor_id;
+        dataEntityParams[@"doctor_id"] = [AccountManager currentUserid];
         dataEntityParams[@"reserve_content"] = noti.reserve_content;
         dataEntityParams[@"reserve_type"] = noti.reserve_type;
         dataEntityParams[@"reserve_time"] = noti.reserve_time;
@@ -125,7 +126,7 @@
         params[@"reserve_entity"] = [dataEntityParams JSONString];
     }
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         if (success) {
             success();
         }
@@ -142,7 +143,7 @@
     params[@"action"] = @"updatereservestatus";
     params[@"reserve_id"] = reserve_id;
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -181,7 +182,7 @@
     params[@"send_content"] = send_content;
     params[@"doctor_id"] = doctor_id;
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         if (success) {
             success();
         }
@@ -192,5 +193,27 @@
     }];
 }
 
++ (void)sendMessageWithDoctorId:(NSString *)doctor_id patientId:(NSString *)patient_id isWeixin:(BOOL)isWeixin isSms:(BOOL)isSms txtContent:(NSString *)content success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SendMsgHandler.ashx",DomainName,Method_His_Crm];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = @"ToPatient";
+    params[@"doctor_id"] = doctor_id;
+    params[@"patient_id"] = patient_id;
+    params[@"is_weixin"] = isWeixin ? @"1" : @"0";
+    params[@"is_sms"] =  isSms ? @"1" : @"0";
+    params[@"txt_content"] = content;
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 
 @end

@@ -169,6 +169,15 @@ CGFloat buttonSpacerHeight = 0;
     containerView = subView;
 }
 
+- (void)setCertainBtnEnable:(BOOL)certainBtnEnable{
+    _certainBtnEnable = certainBtnEnable;
+    
+    UIButton *certainBtn = (UIButton *)[self viewWithTag:1];
+    if (certainBtn) {
+        certainBtn.enabled = certainBtnEnable;
+    }
+}
+
 // Creates the container view here: create the dialog, then add the custom content and buttons
 - (UIView *)createContainerView
 {
@@ -255,6 +264,7 @@ CGFloat buttonSpacerHeight = 0;
         [closeButton setTitleColor:[UIColor colorWithRed:0.0f green:0.5f blue:1.0f alpha:1.0f] forState:UIControlStateNormal];
         [closeButton setTitleColor:[UIColor colorWithRed:0.2f green:0.2f blue:0.2f alpha:0.5f] forState:UIControlStateHighlighted];
         [closeButton.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
+        [closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
         [closeButton.layer setCornerRadius:kCustomIOS7AlertViewCornerRadius];
 
         [container addSubview:closeButton];

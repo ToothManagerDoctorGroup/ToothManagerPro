@@ -44,6 +44,7 @@
     [weixinBtn setTitle:self.titles[0] forState:UIControlStateNormal];
     [weixinBtn setTitleColor:[UIColor colorWithHex:0x333333] forState:UIControlStateNormal];
     [weixinBtn setTitleColor:[UIColor colorWithHex:0x888888] forState:UIControlStateDisabled];
+    [weixinBtn setImage:[UIImage imageNamed:@"message_send_weiguanzhu"] forState:UIControlStateDisabled];
     weixinBtn.titleLabel.font = [UIFont systemFontOfSize:15];
     [weixinBtn setImageEdgeInsets:UIEdgeInsetsMake(0.0, -5, 0.0, 0.0)];
     [weixinBtn setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 5, 0.0, 0.0)];
@@ -61,8 +62,33 @@
     [messageBtn setImageEdgeInsets:UIEdgeInsetsMake(0.0, -5, 0.0, 0.0)];
     [messageBtn setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 5, 0.0, 0.0)];
     [messageBtn addTarget:self action:@selector(messageAction) forControlEvents:UIControlEventTouchUpInside];
+    messageBtn.selected = YES;
     self.messageBtn = messageBtn;
     [self addSubview:messageBtn];
+    
+    
+    [weixinBtn addObserver:self forKeyPath:@"selected" options:NSKeyValueObservingOptionNew context:nil];
+    [messageBtn addObserver:self forKeyPath:@"selected" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)dealloc{
+    [self.weixinBtn removeObserver:self forKeyPath:@"selected"];
+    [self.messageBtn removeObserver:self forKeyPath:@"selected"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
+    
+    if (!self.weixinBtn.isSelected && !self.messageBtn.isSelected) {
+        //都选中
+        if (self.delegate && [self.delegate respondsToSelector:@selector(checkAlertView:didSelect:)]) {
+            [self.delegate checkAlertView:self didSelect:NO];
+        }
+    }else{
+        //都不选中
+        if (self.delegate && [self.delegate respondsToSelector:@selector(checkAlertView:didSelect:)]) {
+            [self.delegate checkAlertView:self didSelect:YES];
+        }
+    }
 }
 
 - (void)layoutSubviews{
@@ -82,7 +108,9 @@
 - (void)setWeiXinCheckEnable:(BOOL)weiXinCheckEnable{
     _weiXinCheckEnable = weiXinCheckEnable;
     
+    self.weixinBtn.selected = weiXinCheckEnable;
     self.weixinBtn.enabled = weiXinCheckEnable;
+    
 }
 
 - (void)setShowCheck:(BOOL)showCheck{

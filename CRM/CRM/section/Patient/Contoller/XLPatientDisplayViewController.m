@@ -36,6 +36,7 @@
 #import "MJRefresh.h"
 #import "DBManager+Doctor.h"
 #import "XLPatientDetailViewController.h"
+#import "DBManager+LocalNotification.h"
 
 @interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,PatientDetailViewControllerDelegate>{
     BOOL ifNameBtnSelected;
@@ -96,7 +97,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:MedicalCaseCreatedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:MedicalCaseEditedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientTransferNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:@"tongbu" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:SyncGetSuccessNotification object:nil];
 }
 #pragma mark - 下拉刷新事件
 - (void)tableViewDidTriggerHeaderRefresh{
@@ -364,7 +365,16 @@
                 }
                 
                 //获取所有的预约数据进行删除
+                NSArray *notis = [[DBManager shareInstance] localNotificationListByPatientId:cellMode.patientId];
+                if (notis.count > 0) {
+                    for (LocalNotification *noti in notis) {
+                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Delete dataEntity:[noti.keyValues JSONString] syncStatus:@"0"];
+                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    }
+                }
                 
+                //删除成功后发送通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:PatientDeleteNotification object:nil];
             }
         }
     }];
@@ -475,7 +485,6 @@
     [nameButton addTarget:self action:@selector(nameButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:nameButton];
-    
     
     UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [statusButton setTitle:@"状态" forState:UIControlStateNormal];

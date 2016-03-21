@@ -57,7 +57,6 @@
 //    }];
     
     if (self.isDoctor) {
-        
         //判断本地是否存在二维码的url
         NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
         if (qrcodeUrl == nil) {
@@ -115,7 +114,7 @@
     }else{
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
         ShareMode *mode = [[ShareMode alloc]init];
-        mode.title = @"分享种牙管家医生二维码";
+        mode.title = [NSString stringWithFormat:@"%@医生的二维码名片",[AccountManager shareInstance].currentUser.name];
         mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
         mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",Method_Weixin,userobj.userid];
         mode.image = self.QrCodeImageView.image;

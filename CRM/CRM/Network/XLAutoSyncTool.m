@@ -138,8 +138,8 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    
     [params setObject:jsonString forKey:@"DataEntity"];
+    
     
     [[CRMHttpTool shareInstance] POST:POST_MATERIAL_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -233,6 +233,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:medical_case.repair_doctor forKey:@"repair_doctor"];
     [subParamDic setObject:medical_case.doctor_id forKey:@"doctor_id"];
     [subParamDic setObject:medical_case.repair_doctor_name forKey:@"repair_doctor_name"];
+    [subParamDic setObject:medical_case.tooth_position forKey:@"tooth_position"];
     
     NSError *error;
     NSString *jsonString;

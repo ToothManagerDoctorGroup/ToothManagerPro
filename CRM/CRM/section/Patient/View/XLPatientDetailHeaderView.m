@@ -15,7 +15,6 @@
 #import "DBTableMode.h"
 #import "EditAllergyViewController.h"
 #import "IntroducerViewController.h"
-#import "UserInfoViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"

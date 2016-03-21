@@ -17,7 +17,6 @@
 #import "CRMUserDefalut.h"
 #import "DBManager+User.h"
 #import "ForgetPasswordViewController.h"
-#import "UserInfoViewController.h"
 #import "DoctorInfoModel.h"
 #import "XLSignUpViewController.h"
 #import "XLPersonalStepOneViewController.h"
@@ -122,8 +121,7 @@
             } failedBlock:^(NSError *error) {
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
-            
-            
+
             //环信账号登录
             [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
                 
@@ -234,21 +232,7 @@
 
 //获取用户的医生列表
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    
-    //判断当前用户是否填写了医院名称
-    if (![[AccountManager shareInstance].currentUser.hospitalName isNotEmpty] || [[AccountManager shareInstance].currentUser.hospitalName isEqualToString:@"无"]) {
-        //跳转到信息完善界面
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
-        XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
-        oneVc.hidesBottomBarWhenPushed = YES;
-        [self pushViewController:oneVc animated:YES];
-        
-    }else{
-        [SVProgressHUD showSuccessWithStatus:@"登录成功"];
-        if(self.navigationController.topViewController == self){
-            [self postNotificationName:SignInSuccessNotification object:nil];
-        }
-    }
+    [SVProgressHUD showSuccessWithStatus:@"登录成功"];
     NSArray *dicArray = [result objectForKey:@"Result"];
     if (dicArray && dicArray.count > 0) {
         for (NSDictionary *dic in dicArray) {
@@ -260,9 +244,24 @@
             UserObject *obj = [UserObject userobjectFromDic:dic];
             [[DBManager shareInstance] updateUserWithUserObject:obj];
             [[AccountManager shareInstance] refreshCurrentUserInfo];
-            return;
+            break;
         }
     }
+    //判断当前用户是否填写了医院名称
+    if (![dicArray[0][@"doctor_hospital"] isNotEmpty]) {
+        //跳转到信息完善界面
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+        XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+        oneVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:oneVc animated:YES];
+        
+    }else{
+        if(self.navigationController.topViewController == self){
+            [self postNotificationName:SignInSuccessNotification object:nil];
+        }
+    }
+    
+    
     
 }
 - (void)getDoctorListFailedWithError:(NSError *)error {

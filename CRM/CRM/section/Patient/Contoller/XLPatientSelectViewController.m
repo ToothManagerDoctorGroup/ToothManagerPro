@@ -539,7 +539,7 @@
         tmpPatient.ckeyid = cellMode.patientId;
         tmpPatient.patient_name = cellMode.name;
         [LocalNotificationCenter shareInstance].selectPatient = tmpPatient;
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"yuyuePatientNotification" object:tmpPatient];
+        [[NSNotificationCenter defaultCenter]postNotificationName:YuyuePatientNotification object:tmpPatient];
         [self.navigationController popViewControllerAnimated:YES];
         
     }else {

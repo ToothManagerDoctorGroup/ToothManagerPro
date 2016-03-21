@@ -14,6 +14,7 @@
 #import "XLTeamTool.h"
 #import "AccountManager.h"
 #import "XLCureCountModel.h"
+#import "XLUserInfoViewController.h"
 
 @interface XLDoctorDetailViewController ()
 @property (weak, nonatomic) IBOutlet XLAvatarView *avatarView;
@@ -32,6 +33,7 @@
     [super viewDidLoad];
     self.title = @"医生详情";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setRightBarButtonWithTitle:@"更多"];
     
     //设置数据
     [self setUpData];
@@ -62,6 +64,13 @@
     self.doctorNameLabel.text = self.doc.doctor_name;
     self.phoneLabel.text = self.doc.doctor_phone;
     self.avatarView.urlStr = self.doc.doctor_image;
+}
+
+- (void)onRightButtonAction:(id)sender{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    XLUserInfoViewController *userInfoVc = [storyboard instantiateViewControllerWithIdentifier:@"XLUserInfoViewController"];
+    userInfoVc.doctor = self.doc;
+    [self pushViewController:userInfoVc animated:YES];
 }
 
 #pragma mark - 查询所有数据

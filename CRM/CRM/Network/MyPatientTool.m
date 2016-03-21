@@ -49,11 +49,6 @@
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
-//        NSMutableArray *arrayM = [NSMutableArray array];
-//        for (NSDictionary *dic in responseObject[@"Result"]) {
-//            XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
-//            [arrayM addObject:model];
-//        }
         CRMHttpRespondModel *respondT = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         
         if (success) {

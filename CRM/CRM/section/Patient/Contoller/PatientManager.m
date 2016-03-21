@@ -15,9 +15,7 @@
    
     @autoreleasepool {
         
-        NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
-        NSLog(@"图片大小:%lu,名称:%@",(unsigned long)imageData.length,key);
-        
+        NSData *imageData = UIImageJPEGRepresentation(image, 0);
         UIImage *storeImage = [UIImage imageWithData:imageData];
         [[SDImageCache sharedImageCache] storeImage:storeImage forKey:key toDisk:YES];
         
@@ -40,7 +38,7 @@
 
 + (NSData *)pathImageGetFromDisk:(NSString *)key {
 
-   return UIImageJPEGRepresentation([[SDImageCache sharedImageCache] imageFromDiskCacheForKey:key], 0.1);
+   return UIImageJPEGRepresentation([[SDImageCache sharedImageCache] imageFromDiskCacheForKey:key], 0);
 }
 
 + (BOOL)IsImageExisting:(NSString *)key {

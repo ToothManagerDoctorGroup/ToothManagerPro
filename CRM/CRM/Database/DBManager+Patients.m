@@ -308,7 +308,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' or patient_phone = '%@'",PatientTableName,patient.ckeyid,patient.patient_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' and patient_phone = '%@' and user_id = '%@'",PatientTableName,patient.ckeyid,patient.patient_phone,[AccountManager currentUserid]];
     
     FMResultSet *set = nil;
     set = [db executeQuery:sqlStr];
@@ -982,7 +982,7 @@
     }
     __block BOOL ret = NO;
     
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_id = \"%@\"",PatIntrMapTableName,PatIntro.patient_id,PatIntro.doctor_id,PatIntro.intr_id];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_source like '%%B'",PatIntrMapTableName,PatIntro.patient_id,PatIntro.doctor_id];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         __block FMResultSet *set = nil;
         set = [db executeQuery:sqlStr];
@@ -1200,20 +1200,6 @@
     }
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
-        
-        // \"case_name\" text,\n\t \"creation_date\" text ,\n\t \"patient_id\" integer,\n\t \"case_status\" integer"];
-        /*
-         @property (nonatomic,copy) NSString *case_name;     //病例名称
-         @property (nonatomic,copy) NSString *patient_id;   //患者id
-         @property (nonatomic,copy) NSString *implant_time;     //移植时间
-         @property (nonatomic,copy) NSString *next_reserve_time;     //下次预约时间
-         @property (nonatomic,copy) NSString *repair_time;         //修复时间
-         @property (nonatomic,readwrite) NSInteger case_status;   //病例状态
-         @property (nonatomic,copy) NSString *repair_doctor;     //修复医生
-         @property (nonatomic,copy) NSString *user_id;           //医生id
-         @property (nonatomic,copy) NSString *creation_date;    //创建日期
-         @property (nonatomic,copy) NSString *sync_time;  //同步时间
-         */
         
         NSMutableArray *columeArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];

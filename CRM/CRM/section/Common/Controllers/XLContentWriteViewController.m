@@ -8,6 +8,7 @@
 
 #import "XLContentWriteViewController.h"
 #import "XLTextViewPlaceHolder.h"
+#import "NSString+Conversion.h"
 
 @interface XLContentWriteViewController ()<UITextViewDelegate>
 
@@ -78,6 +79,14 @@
         _textView.hidePlaceHolder = YES;
     }else{
         _textView.hidePlaceHolder = NO;
+    }
+    
+    if (self.limit != 0) {
+        NSInteger number = [self.textView.text length];
+        if (number > self.limit) {
+            self.textView.text = [self.textView.text substringToIndex:self.limit];
+            number = self.limit;
+        }
     }
 }
 

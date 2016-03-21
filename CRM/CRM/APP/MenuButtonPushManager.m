@@ -10,7 +10,6 @@
 #import "AddReminderViewController.h"
 #import "QrCodePatientViewController.h"
 #import "AccountManager.h"
-#import "UserInfoViewController.h"
 #import "AppoinmentMenuViewController.h"
 #import "XLSelectYuyueViewController.h"
 

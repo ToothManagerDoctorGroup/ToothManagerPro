@@ -16,7 +16,6 @@
 #import "SVProgressHUD.h"
 #import "FriendNotification.h"
 #import "InPatientNotification.h"
-#import "UserInfoViewController.h"
 #import "CRMHttpRequest+PersonalCenter.h"
 #import "DBManager+Introducer.h"
 #import "PatientInfoCellTableViewCell.h"
@@ -28,6 +27,7 @@
 #import "SyncManager.h"
 #import "CRMHttpRequest+Sync.h"
 #import "DBManager+sync.h"
+#import "XLUserInfoViewController.h"
 
 @interface SysMsgViewController () <DoctorTableViewCellDelegate,CRMHttpRequestNotificationDelegate,CRMHttpRequestPersonalCenterDelegate>
 @property (nonatomic,retain) InPatientNotification *inPatientNotifiObj;
@@ -231,11 +231,11 @@
             tmpdoctor.ckeyid = friNotifiItem.doctor_id;
             tmpdoctor.doctor_name = friNotifiItem.doctor_name;
             UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-            userInfoVC.doctor = tmpdoctor;
-            userInfoVC.needGet = YES;
-            userInfoVC.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:userInfoVC animated:YES];
+            XLUserInfoViewController *userInfo = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
+            userInfo.doctor = tmpdoctor;
+            userInfo.needGet = YES;
+            userInfo.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:userInfo animated:YES];
         }
             break;
         case 1:

@@ -10,6 +10,8 @@
 
 @interface MyDateTool : NSObject
 
++ (NSString *)stringWithDateFormatterStr:(NSString *)formatterStr dateStr:(NSString *)dateStr;
+
 + (NSString *)stringWithDateWithSec:(NSDate *)date;
 
 + (NSString *)stringWithDateNoSec:(NSDate *)date;

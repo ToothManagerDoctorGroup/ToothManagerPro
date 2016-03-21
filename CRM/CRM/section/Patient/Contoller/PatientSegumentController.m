@@ -46,8 +46,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
-//    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     //创建视图
     [self initSegumentController];
     
@@ -116,8 +114,6 @@
 //    TwoViewController *twoVc = self.childViewControllers[1];
     
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
-        self.navigationItem.rightBarButtonItem.enabled = YES;
           [self transitionFromViewController:self.currentViewController toViewController:patientVC duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
               
           } completion:^(BOOL finished) {
@@ -128,8 +124,6 @@
               }
           }];
     }else{
-        [self setRightBarButtonWithImage:nil];
-        self.navigationItem.rightBarButtonItem.enabled = NO;
         [self transitionFromViewController:self.currentViewController toViewController:successVc duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
         } completion:^(BOOL finished) {
             if (finished) {

@@ -16,6 +16,7 @@
 #import "GroupEntity.h"
 #import "DoctorGroupModel.h"
 #import "XLGroupManagerViewController.h"
+#import "NSString+Conversion.h"
 
 @interface DoctorGroupViewController ()<CustomAlertViewDelegate,UIAlertViewDelegate>
 
@@ -149,8 +150,12 @@
 
 #pragma mark - CustomAlertViewDelegate
 - (void)alertView:(CustomAlertView *)alertView didClickCertainButtonWithContent:(NSString *)content{
-    if (content.length == 0 || [content isEqualToString:@""]) {
+    if (content.length == 0) {
         [SVProgressHUD showErrorWithStatus:@"分组名不能为空"];
+        return;
+    }
+    if ([content isValidLength:32] == ValidationResultInValid) {
+        [SVProgressHUD showErrorWithStatus:@"分组名最多为16个汉字"];
         return;
     }
     

@@ -393,14 +393,14 @@
     [super addNotificationObserver];
     [self addObserveNotificationWithName:IntroducerCreatedNotification];
     [self addObserveNotificationWithName:IntroducerEditedNotification];
-    [self addObserveNotificationWithName:@"tongbu"];
+    [self addObserveNotificationWithName:SyncGetSuccessNotification];
 }
 
 
 - (void)handNotification:(NSNotification *)notifacation {
     [super handNotification:notifacation];
     if ([notifacation.name isEqualToString:IntroducerCreatedNotification]
-        || [notifacation.name isEqualToString:IntroducerEditedNotification] || [notifacation.name isEqualToString:@"tongbu"]) {
+        || [notifacation.name isEqualToString:IntroducerEditedNotification] || [notifacation.name isEqualToString:SyncGetSuccessNotification]) {
         [self headerRefreshAction];
     }
 }

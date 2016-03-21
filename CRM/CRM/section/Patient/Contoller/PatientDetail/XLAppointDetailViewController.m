@@ -24,6 +24,11 @@
 #import "SysMessageTool.h"
 #import "XLEventStoreManager.h"
 #import "DBManager+Doctor.h"
+#import "DoctorTool.h"
+#import "MyDateTool.h"
+#import "XLCustomAlertView.h"
+#import "MyPatientTool.h"
+#import "SysMessageTool.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -33,6 +38,8 @@
 
 @property (nonatomic, strong)NSMutableArray *dataList;
 @property (nonatomic, strong)NSArray *titles;
+
+@property (nonatomic, assign)BOOL isBind;//是否绑定微信
 
 @end
 
@@ -52,8 +59,33 @@
     
     //设置子控件
     [self initSubViews];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    [self requestLocalDataWithNoti:self.localNoti];
+    //获取患者绑定微信的状态
+    __weak typeof(self) weakSelf = self;
+    [MyPatientTool getWeixinStatusWithPatientId:self.localNoti.patient_id success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //绑定
+            weakSelf.isBind = YES;
+        }else{
+            //未绑定
+            weakSelf.isBind = NO;
+        }
+        
+    } failure:^(NSError *error) {
+        weakSelf.isBind = NO;
+        //未绑定
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 
 }
+
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
@@ -68,11 +100,6 @@
     self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"医院",@"治疗医生",@"预约人",@"备注"];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    [self requestLocalDataWithNoti:self.localNoti];
-}
 
 - (void)requestLocalDataWithNoti:(LocalNotification *)noti{
     [self.dataList removeAllObjects];
@@ -200,7 +227,7 @@
     [SVProgressHUD showWithStatus:@"正在取消预约，请稍候..."];
     [[XLAutoSyncTool shareInstance] deleteAllNeedSyncReserve_record:self.localNoti success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
-            //删除预约成功后
+            //删除预约成功后，发送给医生信息
             [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.localNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:YES notification:self.localNoti type:CancelReserveType success:nil failure:nil];
             //删除预约信息
             if([[DBManager shareInstance] deleteLocalNotification_Sync:self.localNoti]){
@@ -209,7 +236,37 @@
                 [[NSNotificationCenter defaultCenter] postNotificationName:NotificationDeleted object:nil];
                 
                 [SVProgressHUD showSuccessWithStatus:@"预约取消成功"];
-                [self popViewControllerAnimated:YES];
+                __weak typeof(self) weakSelf = self;
+                [DoctorTool yuYueMessagePatient:self.localNoti.patient_id fromDoctor:[AccountManager currentUserid] withMessageType:@"取消预约" withSendType:@"0" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *result) {
+
+                    XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+                         [self popViewControllerAnimated:YES];
+                    } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                        [SVProgressHUD  showWithStatus:@"正在发送消息"];
+                        [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.localNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                            
+                            if ([respond.code integerValue] == 200) {
+                                [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                            }else{
+                                [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                            }
+                            [weakSelf popViewControllerAnimated:YES];
+                        } failure:^(NSError *error) {
+                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                            [weakSelf popViewControllerAnimated:YES];
+                            if (error) {
+                                NSLog(@"error:%@",error);
+                            }
+                        }];
+                    }];
+                    [alertView show];
+                    
+                } failure:^(NSError *error) {
+                    [SVProgressHUD showErrorWithStatus:@"提醒内容获取失败，请检查网络设置"];
+                    if (error) {
+                        NSLog(@"error:%@",error);
+                    }
+                }];
             }
         }else{
              [SVProgressHUD showSuccessWithStatus:@"预约取消失败"];
@@ -230,7 +287,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-
 }
 
 

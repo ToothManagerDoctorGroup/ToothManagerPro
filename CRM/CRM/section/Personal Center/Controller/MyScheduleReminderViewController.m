@@ -375,22 +375,20 @@
     [self addObserveNotificationWithName:NotificationCreated];
     [self addObserveNotificationWithName:NOtificationUpdated];
     [self addObserveNotificationWithName:NotificationDeleted];
-    [self addObserveNotificationWithName:@"tongbu"];
+    [self addObserveNotificationWithName:SyncGetSuccessNotification];
+    [self addObserveNotificationWithName:PatientDeleteNotification];
 }
 
 - (void)removeNotificationObserver {
     [self removeObserverNotificationWithName:NotificationCreated];
     [self removeObserverNotificationWithName:NOtificationUpdated];
     [self removeObserverNotificationWithName:NotificationDeleted];
-    [self removeObserverNotificationWithName:@"tongbu"];
+    [self removeObserverNotificationWithName:SyncGetSuccessNotification];
+    [self removeObserverNotificationWithName:PatientDeleteNotification];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
-    if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:@"tongbu"] || [notifacation.name isEqualToString:NotificationDeleted]) {
-        
-//        NSString *destDateString = [dateFormatter stringFromDate:self.selectDate];
-//        self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:destDateString];
-//        self.remindArray = [self updateListTimeArray:self.remindArray];
+    if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:SyncGetSuccessNotification] || [notifacation.name isEqualToString:NotificationDeleted] || [notifacation.name isEqualToString:PatientDeleteNotification]) {
         
         [self getAllDataWithCurrentDate:self.selectDate];
         

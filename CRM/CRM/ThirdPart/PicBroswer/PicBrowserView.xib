@@ -23,13 +23,13 @@
                     </constraints>
                     <items>
                         <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="fqv-0i-4Uc"/>
-                        <barButtonItem title="上一页" style="done" id="nHD-q0-03l">
+                        <barButtonItem title="上一张" style="done" id="nHD-q0-03l">
                             <connections>
                                 <action selector="pageupAction:" destination="iN0-l3-epB" id="NQ3-gT-3Lu"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem width="26" style="plain" systemItem="fixedSpace" id="0Gu-41-nyz"/>
-                        <barButtonItem title="下一页" style="done" id="5YT-r5-lpH">
+                        <barButtonItem title="下一张" style="done" id="5YT-r5-lpH">
                             <connections>
                                 <action selector="pagedownAction:" destination="iN0-l3-epB" id="1t2-DB-f82"/>
                             </connections>

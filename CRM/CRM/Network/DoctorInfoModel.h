@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MJExtension.h"
 
+@class UserObject;
 @interface DoctorInfoModel : NSObject<MJKeyValue,MJCoding>
 
 @property (nonatomic, copy)NSString *keyID;
@@ -38,6 +39,9 @@
 @property (nonatomic, copy)NSString *star_level;
 @property (nonatomic, assign)int patient_count;
 
-+ (instancetype)shareDcotorInfo;
+
+- (instancetype)initWithUserObj:(UserObject *)user;
+
+
 
 @end

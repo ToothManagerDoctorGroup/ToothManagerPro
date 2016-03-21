@@ -223,7 +223,7 @@
     [super addNotificationObserver];
     [self addObserveNotificationWithName:IntroducerCreatedNotification];
     [self addObserveNotificationWithName:IntroducerEditedNotification];
-    [self addObserveNotificationWithName:@"tongbu"];
+    [self addObserveNotificationWithName:SyncGetSuccessNotification];
 }
 
 
@@ -235,7 +235,7 @@
         [self refreshView];
     }
     //如果是同步的通知
-    if ([notifacation.name isEqualToString:@"tongbu"]) {
+    if ([notifacation.name isEqualToString:SyncGetSuccessNotification]) {
         [self initData];
         [self refreshView];
     }

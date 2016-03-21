@@ -9,6 +9,8 @@
 #import "XLUserAssistenceViewController.h"
 #import "UIColor+Extension.h"
 #import "XLAssistenceDetailViewController.h"
+#import "XLAssistenceModel.h"
+#import "DoctorTool.h"
 
 @interface XLUserAssistenceViewController ()
 
@@ -20,7 +22,7 @@
 
 - (NSMutableArray *)dataList{
     if (!_dataList) {
-        _dataList = [NSMutableArray arrayWithObjects:@"【初诊患者到医院就诊】如何操作?",@"【复诊患者到医院就诊】如何操作?",@"【某患者的治疗需要其他医生协助】如何操作？",@"【患者想要介绍朋友给医生】如何操作？", nil];
+        _dataList = [NSMutableArray array];
     }
     return _dataList;
 }
@@ -30,6 +32,9 @@
     
     //设置导航栏样式
     [self setNavStyle];
+    
+    //请求数据
+    [self  requestData];
 }
 
 #pragma mark - 设置导航栏样式
@@ -37,6 +42,27 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"使用帮助";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+}
+
+- (void)dealloc{
+    [SVProgressHUD dismiss];
+}
+
+#pragma mark - 请求数据
+- (void)requestData{
+    [SVProgressHUD showWithStatus:@"正在加载"];
+    __weak typeof(self) weakSelf = self;
+    [DoctorTool getAllUsingHelpSuccess:^(NSArray *array) {
+        [SVProgressHUD dismiss];
+        [weakSelf.dataList addObjectsFromArray:array];
+        
+        [weakSelf.tableView reloadData];
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
+        if (error) {
+            NSLog(@"error:%@",error.localizedDescription);
+        }
+    }];
 }
 
 #pragma mark - UITableViewDelegate/DataSource
@@ -56,7 +82,10 @@
         view.backgroundColor = [UIColor colorWithHex:0xdddddd];
         [cell.contentView addSubview:view];
     }
-    cell.textLabel.text = self.dataList[indexPath.row];
+    
+    XLAssistenceModel *model = self.dataList[indexPath.row];
+    
+    cell.textLabel.text = model.help_name;
     
     return cell;
     
@@ -65,7 +94,10 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+    XLAssistenceModel *model = self.dataList[indexPath.row];
+    
     XLAssistenceDetailViewController *detailVc = [[XLAssistenceDetailViewController alloc] init];
+    detailVc.model = model;
     if (indexPath.row == 0) {
         detailVc.image = [UIImage imageNamed:@"assistence_01"];
         detailVc.title = @"初诊患者到医院就诊";

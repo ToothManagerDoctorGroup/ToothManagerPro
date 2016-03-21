@@ -17,6 +17,7 @@
 #import "GroupMemberModel.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "XLAssistenceModel.h"
 
 #define userIdParam @"userid"
 #define requestActionParam @"action"
@@ -332,6 +333,29 @@
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)getAllUsingHelpSuccess:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/UsingHelpHandler.ashx",DomainName,Method_His_Crm];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = @"listhelp";
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        NSMutableArray *arrayM = [NSMutableArray array];
+        for (NSDictionary *dic in responseObject[@"Result"]) {
+            XLAssistenceModel *model = [XLAssistenceModel objectWithKeyValues:dic];
+            [arrayM addObject:model];
+        }
+        
+        if (success) {
+            success(arrayM);
         }
     } failure:^(NSError *error) {
         if (failure) {

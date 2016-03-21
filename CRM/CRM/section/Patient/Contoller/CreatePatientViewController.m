@@ -25,6 +25,7 @@
 #import "NSString+Conversion.h"
 #import "PatientDetailViewController.h"
 #import "PatientsCellMode.h"
+#import "AddressBoolTool.h"
 
 @interface CreatePatientViewController () <UITextFieldDelegate,RequestIntroducerDelegate,XLIntroducerViewControllerDelegate,CreateCaseViewControllerDelegate>
 {
@@ -117,6 +118,27 @@
     [super didReceiveMemoryWarning];
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    //判断是否显示提醒框
+    NSString *isShow = [CRMUserDefalut objectForKey:AddressBook_IsShowKey];
+    if (isShow == nil) {
+        isShow = Auto_Action_Open;
+        [CRMUserDefalut setObject:Auto_Action_Open forKey:AddressBook_IsShowKey];
+    }
+    if ([isShow isEqualToString:Auto_Action_Open]) {
+        //判断当前用户是否开启通讯录权限
+        BOOL canShow = [[AddressBoolTool shareInstance] userAllowToAddress];
+        if (!canShow) {
+            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启；开启后患者来电即可看到ta的CT片和治疗情况" cancel:@"确定" certain:@"不再提醒" cancelHandler:^{
+            } comfirmButtonHandlder:^{
+                [CRMUserDefalut setObject:Auto_Action_Close forKey:AddressBook_IsShowKey];
+            }];
+            [alertView show];
+        }
+    }
+}
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
@@ -201,7 +223,7 @@
 //                alertview = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"再录一个" otherButtonTitles:@"返回",@"新建病历", nil];
 //                [alertview show];
                 //将患者插入手机通讯录
-                [self savePatientPhontToAddressBook];
+                [self savePatientPhontToAddressBookWithPatient:patient];
                 
                 //跳转到患者详细信息页面
                 PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
@@ -224,8 +246,6 @@
         [self.view makeToast:@"请填入患者完整信息" duration:1.0f position:@"Center"];
     }
 }
-
-#pragma mark - Private API
 
 #pragma mark - UIAlertView Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -310,7 +330,7 @@
 
 
 #pragma mark - 将新建的患者保存到通讯录
-- (void)savePatientPhontToAddressBook{
+- (void)savePatientPhontToAddressBookWithPatient:(Patient *)patientTmp{
     //判断设置里面的开关是否打开
     NSString *open = [CRMUserDefalut objectForKey:PatientToAddressBookKey];
     if (open == nil) {
@@ -318,45 +338,8 @@
         open = Auto_Action_Open;
         [CRMUserDefalut setObject:open forKey:PatientToAddressBookKey];
     }
-    
     if ([open isEqualToString:Auto_Action_Open]) {
-        //把新建的患者倒入手机本地联系人
-        // 初始化一个ABAddressBookRef对象，使用完之后需要进行释放，
-        // 这里使用CFRelease进行释放
-        // 相当于通讯录的一个引用
-        ABAddressBookRef addressBook = ABAddressBookCreate();
-        // 新建一个联系人
-        // ABRecordRef是一个属性的集合，相当于通讯录中联系人的对象
-        // 联系人对象的属性分为两种：
-        // 只拥有唯一值的属性和多值的属性。
-        // 唯一值的属性包括：姓氏、名字、生日等。
-        // 多值的属性包括:电话号码、邮箱等。
-        ABRecordRef person = ABPersonCreate();
-        // 保存到联系人对象中，每个属性都对应一个宏，例如：kABPersonFirstNameProperty
-        // 设置firstName属性
-        NSString *nameStr = self.nameTextField.text;
-        CFStringRef nameRef = (__bridge CFStringRef)nameStr;
-        NSString *phoneStr = self.phoneTextField.text;
-        CFStringRef phoneRef = (__bridge CFStringRef)phoneStr;
-        
-        
-        ABRecordSetValue(person, kABPersonFirstNameProperty,nameRef, NULL);
-        // ABMultiValueRef类似是Objective-C中的NSMutableDictionary
-        // 添加电话号码与其对应的名称内容
-        ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-        ABMultiValueAddValueAndLabel(multiPhone, phoneRef, kABPersonPhoneMainLabel, NULL);
-        // 设置phone属性
-        ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, NULL);
-        // 释放该数组
-        CFRelease(multiPhone);
-        // 将新建的联系人添加到通讯录中
-        ABAddressBookAddRecord(addressBook, person, NULL);
-        // 保存通讯录数据
-        ABAddressBookSave(addressBook, NULL);
-        // 释放通讯录对象的引用
-        if (addressBook) {
-            CFRelease(addressBook);
-        }
+        [[AddressBoolTool shareInstance] addContactToAddressBook:patientTmp];
     }
 
 }

@@ -87,8 +87,12 @@
         self.expenseTextField.mode = TextFieldInputModeExternal;
         self.repairDoctorTextField.borderStyle = UITextBorderStyleNone;
         self.repairDoctorTextField.mode = TextFieldInputModeExternal;
+        
         self.casenameTextField.mode = TextFieldInputModeKeyBoard;
         [self.casenameTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
+        
+        self.toothPositionField.mode = TextFieldInputModeKeyBoard;
+        [self.toothPositionField setClearButtonMode:UITextFieldViewModeWhileEditing];
     }
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:mCase.patient_id];
     self.nameTextField.text = patient.patient_name;
@@ -103,7 +107,7 @@
     if ([self.repairTextField.text isNotEmpty]) {
         self.repairPicker.ScrollToDate = [MyDateTool dateWithStringWithSec:mCase.repair_time];
     }
-    
+    self.toothPositionField.text = mCase.tooth_position;
     self.casenameTextField.text = mCase.case_name;
     if (mCase.repair_doctor_name != nil && [mCase.repair_doctor_name isNotEmpty]) {
         self.repairDoctorTextField.text = mCase.repair_doctor_name;
@@ -137,7 +141,7 @@
         MedicalExpense *expense = expenseArray[i];
         Material *mater = [[DBManager shareInstance] getMaterialWithId:expense.mat_id];
         
-        UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 300 + i * commenH, kScreenWidth, commenH)];
+        UIView *superView = [[UIView alloc] initWithFrame:CGRectMake(0, 350 + i * commenH, kScreenWidth, commenH)];
         superView.tag = 150 + i;
         superView.backgroundColor = MyColor(248, 248, 248);
         [self.view addSubview:superView];
@@ -165,14 +169,7 @@
 - (void)setImages:(NSArray *)images {
     self.imageScrollView.sdelegate = self;
     NSMutableArray *muarray = [NSMutableArray arrayWithCapacity:0];
-    /*
-    for (CTLib *lib in images) {
-        TimImage *image = [[TimImage alloc]init];
-        image.url = lib.ct_image;
-        image.title = lib.ct_desc;
-        [muarray addObject:image];
-    }
-     */
+  
     for(NSInteger i = images.count;i>0;i--){
         CTLib *lib = images[i-1];
         TimImage *image = [[TimImage alloc] init];
@@ -207,10 +204,10 @@
         mCase.repair_time = [NSString stringWithFormat:@"%@:00",self.repairTextField.text];
     }
     
-    if ([NSString isEmptyString:self.casenameTextField.text]) {
-        mCase.case_name = @"无";
+    if ([NSString isEmptyString:self.toothPositionField.text]) {
+        mCase.tooth_position = @"";
     } else {
-        mCase.case_name = self.casenameTextField.text;
+        mCase.tooth_position = self.toothPositionField.text;
     }
     /*
     if ([NSString isEmptyString:self.repairDoctorTextField.text]) {

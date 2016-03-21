@@ -36,5 +36,8 @@
 //引导页面是否显示
 #define Schedule_IsShowedKey @"Schedule_IsShowedKey"
 
+//当用户关闭通讯录权限的时候，提醒用户打开权限
+#define AddressBook_IsShowKey @"AddressBook_IsShowKey"
+
 
 #endif /* SettingMacro_h */

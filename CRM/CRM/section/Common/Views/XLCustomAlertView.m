@@ -18,7 +18,8 @@
 #define ContentFont [UIFont systemFontOfSize:15]
 #define MAXWIDTH 320;
 
-@interface XLCustomAlertView ()<CustomIOS7AlertViewDelegate>{
+
+@interface XLCustomAlertView ()<CustomIOS7AlertViewDelegate,XLCheckAlertViewDelegate>{
     CustomCancelHandler _cancelHandler;
     CustomCertainHandler _certainHandler;
     CustomCertainSwitchHandler _switchHandler;
@@ -95,6 +96,7 @@
                 self.textView = switchView;
                 
                 [self addSubview:switchView];
+            
             }
                 break;
             case CustonAlertViewTypeCheck:
@@ -105,8 +107,10 @@
                 switchAlert.contentTextView.text = message;
                 switchAlert.weiXinCheckEnable = weixinEnalbe;
                 switchAlert.showCheck = YES;
+                switchAlert.delegate = self;
                 self.textView = switchView;
                 [self addSubview:switchView];
+                
             }
                 
                 break;
@@ -133,6 +137,11 @@
     [alertView setUseMotionEffects:true];
     self.alertView = alertView;
     [alertView show];
+}
+
+#pragma mark - XLCheckAlertViewDelegate
+- (void)checkAlertView:(XLCheckAlertView *)alertView didSelect:(BOOL)select{
+    self.alertView.certainBtnEnable = select;
 }
 
 #pragma mark - 计算frame大小
@@ -181,6 +190,7 @@
     [self.alertView close];
 }
 
+
 #pragma mark - CustomIOS7AlertViewDelegate
 - (void)customIOS7dialogButtonTouchUpInside:(id)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     [self dismiss];
@@ -192,10 +202,8 @@
         }
     }else{
         if (_certainHandler) {
-//            _certainHandler(self.textView.contentTextView.text);
             _certainHandler(self.textView.contentTextView.text);
         }else if (_switchHandler){
-//            _switchHandler(self.textView.contentTextView.text,self.textView.weixinIsOn,self.textView.messageIsOn);
             if (self.type == CustonAlertViewTypeSwitch) {
                 XLSwitchAlertView *switchAlert = (XLSwitchAlertView *)self.textView;
                 _switchHandler(switchAlert.contentTextView.text,switchAlert.weixinIsOn,switchAlert.messageIsOn);
@@ -204,7 +212,6 @@
                 _switchHandler(checkAlert.contentTextView.text,checkAlert.weixinIsCheck,checkAlert.messageIsCheck);
             }
         }
-        
     }
 }
 

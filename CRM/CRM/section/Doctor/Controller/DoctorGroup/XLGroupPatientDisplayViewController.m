@@ -16,6 +16,9 @@
 #import "DBManager+Patients.h"
 #import "EditPatientDetailViewController.h"
 #import "MJRefresh.h"
+#import "PatientDetailViewController.h"
+#import "MyPatientTool.h"
+#import "XLPatientTotalInfoModel.h"
 
 @interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
@@ -341,16 +344,50 @@
 
 #pragma mark -设置单元格点击事件
 - (void)selectTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSMutableArray *)sourceArray{
-    GroupMemberModel *cellMode = sourceArray[indexPath.row];
-    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:cellMode.ckeyid];
+    //获取当前对应的数据模型
+    GroupMemberModel *model = sourceArray[indexPath.row];
+    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:model.ckeyid];
     if (patient != nil) {
-        //跳转到患者详细信息页面
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        EditPatientDetailViewController *editDetail = [storyboard instantiateViewControllerWithIdentifier:@"EditPatientDetailViewController"];
-        editDetail.patient = patient;
-        editDetail.isGroup = YES;
-        [self.navigationController pushViewController:editDetail animated:YES];
+        PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+        cellModel.patientId = patient.ckeyid;
+        //跳转到新的患者详情页面
+        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+        detailVc.patientsCellMode = cellModel;
+        detailVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:detailVc animated:YES];
+    }else {
+        //根据患者id去服务器获取数据保存到本地
+        [SVProgressHUD showWithStatus:@"正在获取患者数据"];
+        [MyPatientTool getPatientAllInfosWithPatientId:model.ckeyid doctorID:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                NSMutableArray *arrayM = [NSMutableArray array];
+                for (NSDictionary *dic in respond.result) {
+                    XLPatientTotalInfoModel *model = [XLPatientTotalInfoModel objectWithKeyValues:dic];
+                    [arrayM addObject:model];
+                }
+                [SVProgressHUD dismiss];
+                BOOL ret = [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:arrayM[0]];
+                if (ret) {
+                    PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+                    cellModel.patientId = patient.ckeyid;
+                    //跳转到新的患者详情页面
+                    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+                    detailVc.patientsCellMode = cellModel;
+                    detailVc.hidesBottomBarWhenPushed = YES;
+                    [self pushViewController:detailVc animated:YES];
+                }
+            }else{
+                [SVProgressHUD showErrorWithStatus:respond.result];
+            }
+            
+        } failure:^(NSError *error) {
+            [SVProgressHUD showWithStatus:@"患者数据获取失败"];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
     }
+
 }
 
 #pragma mark - 全选按钮点击事件

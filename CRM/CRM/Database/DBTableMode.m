@@ -883,10 +883,10 @@ NSString * const Repaired = @"已修复";
     user.img = [result stringForColumn:@"img"];
     
     
-//    user.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
-//    user.doctor_gender = [result stringForColumn:@"doctor_gender"];
-//    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
-//    user.doctor_skill = [result stringForColumn:@"doctor_skill"];
+    user.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
+    user.doctor_gender = [result stringForColumn:@"doctor_gender"];
+    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
+    user.doctor_skill = [result stringForColumn:@"doctor_skill"];
     return user;
 }
 
@@ -923,10 +923,10 @@ NSString * const Repaired = @"已修复";
     self.img = [dic stringForKey:@"img" placeholder:@"无"];
     
 #warning 添加新代码
-//    self.doctor_birthday = [dic stringForKey:@"doctor_birthday" placeholder:@""];
-//    self.doctor_gender = [dic stringForKey:@"doctor_gender" placeholder:@""];
-//    self.doctor_cv = [dic stringForKey:@"doctor_cv" placeholder:@""];
-//    self.doctor_skill = [dic stringForKey:@"doctor_skill" placeholder:@""];
+    self.doctor_birthday = [dic stringForKey:@"doctor_birthday" placeholder:@""];
+    self.doctor_gender = [dic stringForKey:@"doctor_gender" placeholder:@""];
+    self.doctor_cv = [dic stringForKey:@"doctor_cv" placeholder:@""];
+    self.doctor_skill = [dic stringForKey:@"doctor_skill" placeholder:@""];
 }
 
 
@@ -950,10 +950,10 @@ NSString * const Repaired = @"已修复";
 //    tmpDoctor.auth_pic = @"";
 //    tmpDoctor.update_date = [NSString defaultDateString];
     
-//    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
-//    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
-//    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
-//    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
+    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
     return tmpDoctor;
 }
 
@@ -969,6 +969,7 @@ NSString * const Repaired = @"已修复";
     info.dataEntity = [result stringForColumn:@"dataEntity"];
     info.sync_status = [result stringForColumn:@"sync_status"];
     info.autoSync_CreateDate = [result stringForColumn:@"autoSync_CreateDate"];
+    info.syncCount = [result intForColumn:@"syncCount"];
     return info;
 }
 
@@ -980,6 +981,7 @@ NSString * const Repaired = @"已修复";
     info.dataEntity = dataEntity;
     info.sync_status = syncStatus;
     info.autoSync_CreateDate = [MyDateTool stringWithDateyyyyMMddHHmmss:[NSDate date]];
+    info.syncCount = 0;
     return info;
 }
 

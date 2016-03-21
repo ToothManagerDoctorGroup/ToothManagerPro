@@ -59,9 +59,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
     //移除kvo
     CRMAppDelegate *delegateTmp = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
     [delegateTmp removeObserver:self forKeyPath:@"connectionStatus"];
-    //移除通知
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:AutoSyncTimeChangeNotification object:nil];
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:AutoSyncStateChangeNotification object:nil];
 }
 
 - (void)viewDidLoad {
@@ -77,13 +74,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     }
     
-    
-    //判断当前自动同步是否打开
-//    [self createSyncGetTimer];
-    
-    //添加通知
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncGetTimeChange:) name:AutoSyncTimeChangeNotification object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createSyncGetTimer) name:AutoSyncStateChangeNotification object:nil];
     
     //if 使tabBarController中管理的viewControllers都符合 UIRectEdgeNone
     if ([UIDevice currentDevice].systemVersion.floatValue >= 7) {
@@ -123,54 +113,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - 当自动下载时间改变时
-/*
-- (void)syncGetTimeChange:(NSNotification *)noti{
-    //创建自动下载定时器
-    [self createSyncGetTimer];
-}
-
-- (void)createSyncGetTimer{
-    if (self.syncGetTimer != nil) {
-        [self.syncGetTimer invalidate];
-        self.syncGetTimer = nil;
-    }
-    
-    //判断当前自动同步是否打开
-    NSString *autoOpen = [CRMUserDefalut objectForKey:AutoSyncOpenKey];
-    if (autoOpen == nil) {
-        autoOpen = Auto_Action_Open;
-    }
-    
-    if ([autoOpen isEqualToString:Auto_Action_Open]) {
-        //获取系统设置的自动下载的时间
-        NSString *autoTime = [CRMUserDefalut objectForKey:AutoSyncTimeKey];
-        NSTimeInterval duration = 0;
-        if (autoTime == nil) {
-            duration = 5.0 * 60;
-        }else{
-            if ([autoTime isEqualToString:AutoSyncTime_Five]) {
-                duration = 5.0 * 60;
-            }else if ([autoTime isEqualToString:AutoSyncTime_Ten]){
-                duration = 10.0 * 60;
-            }else{
-                duration = 20.0 * 60;
-            }
-        }
-        //重新创建定时器
-        self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
-        //将定时器添加到主队列中
-        [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
-    }
-}
- 
-
-#pragma mark - 定时器，自动下载
-- (void)autoSyncGetAction:(NSTimer *)timer{
-    [[AutoSyncGetManager shareInstance] startSyncGet];
-}
- */
-
 #pragma mark - 定时器,自动上传
 - (void)autoSyncAction:(NSTimer *)timer{
     //开始同步
@@ -201,17 +143,16 @@ static NSString *kConversationChatter = @"ConversationChatter";
     TimNavigationViewController* ncViewController4=[[TimNavigationViewController alloc]initWithRootViewController:_account];
     [self setTabbarItemState:_account withTitle:@"我" withImage1:@"ic_tabbar_me" withImage2:@"ic_tabbar_me_active"];
     
-    UIViewController *vc3 = [[UIViewController alloc]init];
+    UIViewController *vc3 = [[UIViewController alloc] init];
     TimNavigationViewController* nc3=[[TimNavigationViewController alloc]initWithRootViewController:vc3];
-    
     
     self.tabBar.backgroundColor = [UIColor colorWithHex:0xe5e5e5];
     
-    NSMutableArray *array = [NSMutableArray arrayWithObjects:viewController1, ncViewController3, nc3,ncViewController2, ncViewController4,nil];
+    NSMutableArray *array = [NSMutableArray arrayWithObjects:viewController1, ncViewController3,nc3,ncViewController2, ncViewController4,nil];
     [self setViewControllers:array];
     
     menuButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    menuButton.frame = CGRectMake(0, 0, SCREEN_WIDTH/5-15, self.tabBar.height);
+    menuButton.frame = CGRectMake(0, 0, SCREEN_WIDTH/5, self.tabBar.height);
     [menuButton setImage:[UIImage imageNamed:@"menuButton"] forState:UIControlStateNormal];
     [menuButton setImage:[UIImage imageNamed:@"menuButton"] forState:UIControlStateSelected];
     [menuButton addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];

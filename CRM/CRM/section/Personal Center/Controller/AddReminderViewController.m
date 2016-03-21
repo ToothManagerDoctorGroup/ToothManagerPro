@@ -33,7 +33,6 @@
 #import "NSDate+Conversion.h"
 #import "DoctorTool.h"
 #import "CRMHttpRespondModel.h"
-#import "UserInfoViewController.h"
 
 @interface AddReminderViewController ()<ChooseMaterialViewControllerDelegate,ChooseAssistViewControllerDelegate,UIAlertViewDelegate>{
     

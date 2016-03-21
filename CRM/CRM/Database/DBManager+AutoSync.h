@@ -36,6 +36,15 @@
  */
 - (BOOL)updateInfoWithSyncStatus:(NSString *)syncStatus byInfoId:(NSInteger)infoId;
 /**
+ *  更新同步状态
+ *
+ *  @param syncStatus 同步状态
+ *  @param info       info模型
+ *
+ *  @return 返回参数
+ */
+- (BOOL)updateInfoWithSyncStatus:(NSString *)syncStatus byInfo:(InfoAutoSync *)info;
+/**
  *  删除一条同步信息
  *
  *  @param info 同步模型
@@ -70,5 +79,17 @@
  *  @return 返回参数
  */
 - (NSArray *)getInfoListWithPostType:(NSString *)postType syncStatus:(NSString *)status;
+/**
+ *  根据同步状态获取所有异常数据
+ *
+ *  @return 返回参数
+ */
+- (NSArray *)getInfoListBySyncCountWithStatus:(NSString *)status;
+/**
+ *  获取所有数据
+ *
+ *  @return 返回参数
+ */
+- (NSArray *)getAllInfo;
 
 @end

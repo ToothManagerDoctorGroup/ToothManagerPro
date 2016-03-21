@@ -14,6 +14,7 @@
 #import "DBManager+sync.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
+#import "NSString+Conversion.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
@@ -162,6 +163,11 @@
 //        [SVProgressHUD showErrorWithStatus:@"内容不能为空!"];
 //        return;
 //    }
+    ValidationResult result = [NSString isValidLength:self.textView.text length:400];
+    if (result == ValidationResultInValid) {
+        [SVProgressHUD showImage:nil status:@"内容过长，请重新输入"];
+        return;
+    }
     
     Patient *currentPatient = self.patient;
     EditAllergyViewControllerType type;

@@ -216,6 +216,7 @@
     [subParamDic setObject:medical_case.repair_doctor forKey:@"repair_doctor"];
     [subParamDic setObject:medical_case.doctor_id forKey:@"doctor_id"];
     [subParamDic setObject:medical_case.repair_doctor_name forKey:@"repair_doctor_name"];
+    [subParamDic setObject:medical_case.tooth_position forKey:@"tooth_position"];
     
     NSError *error;
     NSString *jsonString;

@@ -225,8 +225,69 @@
                         <sections>
                             <tableViewSection id="5BG-RI-86L">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="ztD-Cd-Tza">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="rpu-mB-NnB">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rpu-mB-NnB" id="oI8-Sp-ROp">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EFo-O2-BEB">
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="0.5"/>
+                                                    <animations/>
+                                                    <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="0.5" id="nJh-6w-aWT"/>
+                                                    </constraints>
+                                                </view>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="病历名称" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ecA-Au-0CQ">
+                                                    <rect key="frame" x="10" y="15" width="60" height="21"/>
+                                                    <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="60" id="0WK-fz-aum"/>
+                                                        <constraint firstAttribute="height" constant="21" id="pQq-yN-bVo"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="0.53333333329999999" green="0.53333333329999999" blue="0.53333333329999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="pND-at-kzW">
+                                                    <rect key="frame" x="297" y="16" width="13" height="18"/>
+                                                    <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="13" id="3tZ-rb-Lb8"/>
+                                                        <constraint firstAttribute="height" constant="18" id="hjW-DP-fEU"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LIa-an-CXG" customClass="TimPickerTextField">
+                                                    <rect key="frame" x="84" y="10" width="209" height="30"/>
+                                                    <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="1Ru-cn-mg1"/>
+                                                    </constraints>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstItem="pND-at-kzW" firstAttribute="centerY" secondItem="oI8-Sp-ROp" secondAttribute="centerY" id="8EB-bQ-zt1"/>
+                                                <constraint firstItem="ecA-Au-0CQ" firstAttribute="leading" secondItem="oI8-Sp-ROp" secondAttribute="leading" constant="10" id="9xE-2d-Usd"/>
+                                                <constraint firstItem="LIa-an-CXG" firstAttribute="centerY" secondItem="oI8-Sp-ROp" secondAttribute="centerY" id="Cqa-bI-ZFM"/>
+                                                <constraint firstItem="LIa-an-CXG" firstAttribute="leading" secondItem="ecA-Au-0CQ" secondAttribute="trailing" constant="14" id="Fxs-ub-9vA"/>
+                                                <constraint firstItem="pND-at-kzW" firstAttribute="leading" secondItem="LIa-an-CXG" secondAttribute="trailing" constant="4" id="MmZ-RU-tYV"/>
+                                                <constraint firstAttribute="trailing" secondItem="EFo-O2-BEB" secondAttribute="trailing" id="iCK-D5-m3Z"/>
+                                                <constraint firstItem="EFo-O2-BEB" firstAttribute="leading" secondItem="oI8-Sp-ROp" secondAttribute="leading" id="ila-dM-ppo"/>
+                                                <constraint firstItem="ecA-Au-0CQ" firstAttribute="centerY" secondItem="oI8-Sp-ROp" secondAttribute="centerY" id="nT3-xQ-MCF"/>
+                                                <constraint firstItem="EFo-O2-BEB" firstAttribute="top" secondItem="oI8-Sp-ROp" secondAttribute="top" id="oRI-bX-x4L"/>
+                                                <constraint firstAttribute="trailing" secondItem="pND-at-kzW" secondAttribute="trailing" constant="10" id="uPC-El-l1n"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="ztD-Cd-Tza">
+                                        <rect key="frame" x="0.0" y="50" width="320" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ztD-Cd-Tza" id="2Hf-iZ-C8l">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
@@ -259,7 +320,7 @@
                                                         <constraint firstAttribute="width" constant="13" id="dWL-Iw-8df"/>
                                                     </constraints>
                                                 </imageView>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ypK-Bh-nZ6" customClass="TimPickerTextField">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请选择牙位" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ypK-Bh-nZ6" customClass="TimPickerTextField">
                                                     <rect key="frame" x="84" y="10" width="209" height="30"/>
                                                     <animations/>
                                                     <constraints>
@@ -287,7 +348,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="3df-Fm-y1s">
-                                        <rect key="frame" x="0.0" y="50" width="320" height="50"/>
+                                        <rect key="frame" x="0.0" y="100" width="320" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3df-Fm-y1s" id="KyM-FU-1bQ">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
@@ -363,7 +424,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="eEx-d4-psn">
-                                        <rect key="frame" x="0.0" y="100" width="320" height="50"/>
+                                        <rect key="frame" x="0.0" y="150" width="320" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eEx-d4-psn" id="YnQ-mb-woM">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
@@ -424,7 +485,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="yNe-sX-wLR">
-                                        <rect key="frame" x="0.0" y="150" width="320" height="50"/>
+                                        <rect key="frame" x="0.0" y="200" width="320" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yNe-sX-wLR" id="zjj-Pb-pip">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
@@ -485,7 +546,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="PIn-MJ-haf">
-                                        <rect key="frame" x="0.0" y="200" width="320" height="50"/>
+                                        <rect key="frame" x="0.0" y="250" width="320" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PIn-MJ-haf" id="Qdt-kB-AyC">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
@@ -546,7 +607,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="h4l-rT-wZY">
-                                        <rect key="frame" x="0.0" y="250" width="320" height="50"/>
+                                        <rect key="frame" x="0.0" y="300" width="320" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="h4l-rT-wZY" id="rni-IL-gO0">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
@@ -604,12 +665,13 @@
                         </connections>
                     </tableView>
                     <connections>
-                        <outlet property="casenameTextField" destination="ypK-Bh-nZ6" id="xe3-5N-Lt9"/>
+                        <outlet property="casenameTextField" destination="LIa-an-CXG" id="YKg-e8-j4H"/>
                         <outlet property="expenseTextField" destination="dmX-ev-o8p" id="loP-lp-ep3"/>
                         <outlet property="imageScrollView" destination="AYK-UA-ucd" id="8fM-j3-CKP"/>
                         <outlet property="implantTextField" destination="KVk-so-kgl" id="lsz-oA-1rA"/>
                         <outlet property="repairDoctorTextField" destination="yeZ-k2-e18" id="dHf-x8-xT3"/>
                         <outlet property="repairTextField" destination="Hsx-sv-4zB" id="kGb-vc-12H"/>
+                        <outlet property="toothPositionField" destination="ypK-Bh-nZ6" id="zsQ-U4-hep"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Awi-Ac-AYJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

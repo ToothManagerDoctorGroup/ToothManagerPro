@@ -165,12 +165,26 @@
 
 #pragma mark - 保存按钮点击
 - (void)onRightButtonAction:(id)sender{
+    if (self.messageTypeField.text.length == 0) {
+        [SVProgressHUD showImage:nil status:@"请输入提醒事项"];
+        return;
+    }
+    if ([self.messageTypeField.text isValidLength:32]) {
+        [SVProgressHUD showImage:nil status:@"提醒事项过长，请重新输入"];
+        return;
+    }
+    if ([self.messageContentView.text isValidLength:1000]) {
+        [SVProgressHUD showImage:nil status:@"提醒内容过长，请重新输入"];
+        return;
+    }
+    
     NSArray *leftArray = [self.messageContentView.text indexOfTargetStr:@"{"];
     NSArray *rightArray = [self.messageContentView.text indexOfTargetStr:@"}"];
     if (leftArray.count != rightArray.count) {
         [SVProgressHUD showImage:nil status:@"消息格式不正确，请重新填写"];
         return;
     }
+    
     if (self.isEdit == YES) {
         //表明是编辑
         [SVProgressHUD showWithStatus:@"正在修改"];

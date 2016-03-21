@@ -28,6 +28,7 @@
 @property (nonatomic, retain) NSArray *buttonTitles;
 @property (nonatomic, assign) BOOL useMotionEffects;
 @property (nonatomic, assign)BOOL useDismissButton;
+@property (nonatomic, assign)BOOL certainBtnEnable;//确定按钮是否可编辑
 
 @property (copy) void (^onButtonTouchUpInside)(CustomIOS7AlertView *alertView, int buttonIndex) ;
 

@@ -11,6 +11,7 @@
 #import "NSString+Conversion.h"
 #import "AccountManager.h"
 #import "CRMMacro.h"
+#import "FMDatabaseAdditions.h"
 
 @interface DBManager ()
 {
@@ -78,7 +79,6 @@ Realize_ShareInstance(DBManager);
         ret = [db executeUpdate:sqlstr];
         if (ret != YES)
         {
-            
         }
     }];
     return ret;
@@ -101,6 +101,9 @@ Realize_ShareInstance(DBManager);
 }
 
 - (BOOL)createTables {
+    
+    
+    
 //  integer PRIMARY KEY AUTOINCREMENT,\n\t INTEGER integer
     [self createDBTableWithTableName:DoctorTableName andParams:@"doctor_name text, doctor_dept text,doctor_phone text, user_id text, doctor_email text, doctor_hospital text, doctor_position text, doctor_degree text, doctor_image text, auth_status integer, auth_text text, auth_pic text,doctor_certificate text,creation_date text, update_date text, isopen integer, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, doctor_birthday text, doctor_gender text, doctor_cv text, doctor_skill text"];
 
@@ -121,35 +124,58 @@ Realize_ShareInstance(DBManager);
     
     [self createDBTableWithTableName:MedicalRecordableName andParams:@"patient_id text, case_id text ,record_content text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
     
-    [self createDBTableWithTableName:PatientConsultationTableName andParams:@"patient_id text,  doctor_name text , amr_file text, amr_time text, cons_type text, cons_content text,creation_date text, data_flag integer, user_id text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
+    [self createDBTableWithTableName:PatientConsultationTableName andParams:@"patient_id text, doctor_name text , amr_file text, amr_time text, cons_type text, cons_content text,creation_date text, data_flag integer, user_id text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
     
     [self createDBTableWithTableName:MedicalReserveTableName andParams:@"patient_id text, case_id text , reserve_time text, actual_time text, repair_time text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
     
     [self createDBTableWithTableName:LocalNotificationTableName andParams:@"patient_id text, reserve_type text , reserve_time text, reserve_content text, medical_place text, medical_chair text, user_id text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, tooth_position text, clinic_reserve_id text, duration text,therapy_doctor_id text,therapy_doctor_name text,reserve_status text,case_id text"];
     
-    [self createDBTableWithTableName:UserTableName andParams:@"accesstoken text,user_id text,name text, phone text,email text, hospital_name text, department text, title text, degree text, auth_status integer, auth_text text, auth_pic text, creation_date text, update_date text, ckeyid text, sync_time text, doctor_id text,img text"];
+    [self createDBTableWithTableName:UserTableName andParams:@"accesstoken text,user_id text,name text, phone text,email text, hospital_name text, department text, title text, degree text, auth_status integer, auth_text text, auth_pic text, creation_date text, update_date text, ckeyid text, sync_time text, doctor_id text,img text,doctor_birthday text,doctor_gender text,doctor_cv text,doctor_skill text"];
     
     [self createDBTableWithTableName:PatIntrMapTableName andParams:@"patient_id text, intr_id text, intr_time text, intr_source text, remark text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, user_id text"];
     
     [self createDBTableWithTableName:RepairDocTableName andParams:@"doctor_name text, doctor_phone text, creation_time text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text, user_id text,creation_date text, update_date text"];
     
     //创建自动同步的表
-    [self createDBTableWithTableName:InfoAutoSyncTableName andParams:@"id INTEGER PRIMARY KEY AUTOINCREMENT,data_type text,post_type text,dataEntity text,sync_status text,autoSync_CreateDate text"];
+    [self createDBTableWithTableName:InfoAutoSyncTableName andParams:@"id INTEGER PRIMARY KEY AUTOINCREMENT,data_type text,post_type text,dataEntity text,sync_status text,autoSync_CreateDate text,syncCount int"];
     
     return YES;
 }
 
-- (void)initMaterial {
-//    NSArray *nameArray = @[@"Straumamn",@"Nobel",@"Dentium"];
-//    for (NSInteger i = 0; i < nameArray.count; i++) {
-//        Material *material = [[Material alloc] init];
-//        material.ckeyid = [NSString stringWithFormat:@"%@_0000000%d",[AccountManager currentUserid],i];
-//        material.mat_name = [nameArray objectAtIndex:i];
-//        material.mat_price = 0;
-//        material.mat_type = MaterialTypeMaterial;
-//        material.sync_time = [NSString currentDateString];
-//        [self insertMaterial:material];
-//    }
+#pragma mark - 程序更新的时候判断是否修改数据库
+- (void)updateDB{
+    //更新数据库的版本
+    [self updateTableWithColumName:@"syncCount" tableName:InfoAutoSyncTableName type:@"int" defaultStr:@(0)];
+    
+    //UserTableName
+    [self updateTableWithColumName:@"doctor_birthday" tableName:UserTableName type:@"text" defaultStr:nil];
+    [self updateTableWithColumName:@"doctor_gender" tableName:UserTableName type:@"text" defaultStr:nil];
+    [self updateTableWithColumName:@"doctor_cv" tableName:UserTableName type:@"text" defaultStr:nil];
+    [self updateTableWithColumName:@"doctor_skill" tableName:UserTableName type:@"text" defaultStr:nil];
+}
+
+//为表添加字段
+- (void)updateTableWithColumName:(NSString *)columName tableName:(NSString *)tableName type:(NSString *)type defaultStr:(NSNumber *)defaultStr{
+    //判断字段是否存在
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        BOOL ret = [db columnExists:columName inTableWithName:tableName];
+        if (!ret) {
+            NSString *sql;
+            if (defaultStr == nil) {
+                sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD %@ %@",tableName,columName,type];
+            }else{
+                if ([type isEqualToString:@"text"]) {
+                    sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD %@ %@ DEFAULT %@",tableName,columName,type,[defaultStr stringValue]];
+                }else if([type isEqualToString:@"int"]){
+                    sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD %@ %@ DEFAULT %d",tableName,columName,type,[defaultStr intValue]];
+                }
+            }
+            [db executeUpdate:sql];
+        }
+    }];
+}
+
+- (void)initMaterial{
 }
 
 -(void)dealloc {

@@ -21,6 +21,7 @@
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
 #import "XLMaterialsViewController.h"
+#import "XLMaterialDetailViewController.h"
 
 @interface XLMaterialsViewController () <UISearchBarDelegate>
 {
@@ -300,11 +301,15 @@
         [self popViewControllerAnimated:YES];
     } else {
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        NewMaterialsViewController *meterialDetailVC = [storyboard instantiateViewControllerWithIdentifier:@"NewMaterialsViewController"];
-        meterialDetailVC.edit = YES;
-        meterialDetailVC.showPatients = YES;
-        meterialDetailVC.materialId = material.ckeyid;
-        [self pushViewController:meterialDetailVC animated:YES];
+        XLMaterialDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLMaterialDetailViewController"];
+        detailVc.materialId = material.ckeyid;
+        [self pushViewController:detailVc animated:YES];
+        
+//        NewMaterialsViewController *meterialDetailVC = [storyboard instantiateViewControllerWithIdentifier:@"NewMaterialsViewController"];
+//        meterialDetailVC.edit = YES;
+//        meterialDetailVC.showPatients = YES;
+//        meterialDetailVC.materialId = material.ckeyid;
+//        [self pushViewController:meterialDetailVC animated:YES];
     }
 }
 #pragma mark -设置单元格

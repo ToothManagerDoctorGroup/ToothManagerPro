@@ -15,6 +15,8 @@
 #define SignUpSuccessNotification (@"SignUpSuccessNotification")  //注册成功
 #define SignOutSuccessNotification (@"SignOutSuccessNotification")  //注册成功
 
+#define SyncGetSuccessNotification (@"SyncGetSuccessNotification")//同步数据成功
+
 #define MedicalCaseCreatedNotification (@"MedicalCaseCreatedNotification")   //病例创建
 #define MedicalCaseNeedCreateNotification (@"MedicalCaseNeedCreateNotification")  //需要创建病例
 #define MedicalCaseEditedNotification (@"MedicalCaseEditedNotification")       //病例被编辑
@@ -23,6 +25,7 @@
 #define PatientCreatedNotification (@"PatientCreatedNotification")             //创建了患者
 #define PatientEditedNotification (@"PatientEditedNotification")               //编辑了患者
 #define PatientTransferNotification (@"PatientTransferNotification")           //病人被转诊
+#define PatientDeleteNotification (@"PatientDeleteNotification") //患者被删除
 
 #define IntroducerCreatedNotification (@"IntroducerCreatedNotification")  //介绍人被创建
 #define IntroducerEditedNotification (@"IntroducerEditedNotification")    //介绍人被编辑
@@ -37,7 +40,8 @@
 /**********************耗材信息****************************/
 #define MedicalExpenseDeleteNotification @"MedicalExpenseDeleteNotification" //耗材信息被删除
 
-
+/**********************耗材信息****************************/
+#define YuyuePatientNotification @"YuyuePatientNotification" //选择了预约患者
 
 #define RepairDoctorCreatedNotification (@"RepairDoctorCreatedNotification") //创建了修复医生
 #define RepairDoctorEditedNotification (@"RepairDoctorEditedNotification")  //修复医生被编辑了

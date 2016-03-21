@@ -15,7 +15,6 @@
 #import "DBManager+User.h"
 #import "QrCodeViewController.h"
 #import "DBManager+Doctor.h"
-#import "UserInfoViewController.h"
 #import "ShuJuFenXiViewController.h"
 #import "CommonMacro.h"
 #import "UIImageView+WebCache.h"
@@ -49,9 +48,9 @@
 
 #import "XLJoinTeamSegumentController.h"
 #import "PatientManager.h"
-#import "XLCustomAlertView.h"
 #import "XLContactsViewController.h"
-#import "AddressBoolTool.h"
+#import "XLBackUpViewController.h"
+#import "DBManager+AutoSync.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -72,9 +71,10 @@
     
     IBOutlet UITableViewCell *_myBillCell;
     __weak IBOutlet UIImageView *iconImageView;
-    
-    
+    __weak IBOutlet UITableViewCell *_copyCell;
 }
+
+@property (weak, nonatomic) IBOutlet UIView *targetView;
 
 @property (nonatomic, assign)BOOL isSign; //是否签约
 
@@ -115,30 +115,20 @@
     iconImageView.layer.masksToBounds = YES;
     iconImageView.userInteractionEnabled = YES;
     //设置头像的默认图片
-//    [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [iconImageView addGestureRecognizer:tap];
     
-    //获取个人信息保存到本地
-//    [[UserProfileManager sharedInstance] loadUserProfileInBackground:@[[AccountManager currentUserid]] saveToLoacal:YES completion:^(BOOL success, NSError *error) {
-//    }];
+    //设置标记图片样式
+    self.targetView.layer.cornerRadius = 5;
+    self.targetView.layer.masksToBounds = YES;
 }
 
 - (void)onRightButtonAction:(id)sender{
     
-    XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提示" message:@"是否删除当前内容是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容?是否删除当前内容??" Cancel:@"取消" certain:@"确定" weixinEnalbe:YES type:CustonAlertViewTypeCheck cancelHandler:^{
-        NSLog(@"取消");
-    } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
-        if (wenxinSend) {
-            NSLog(@"微信发送");
-        }
-        if (messageSend) {
-            NSLog(@"短信发送");
-        }
-        NSLog(@"确定，修改后的内容:%@",content);
-    }];
-    [alertView show];
-    
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+    XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+    oneVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:oneVc animated:YES];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -147,11 +137,11 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    
     [SVProgressHUD dismiss];
 }
 
 //获取用户的医生列表
+/*
 - (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
     [SVProgressHUD dismiss];
     NSArray *dicArray = [result objectForKey:@"Result"];
@@ -182,7 +172,7 @@
 - (void)getDoctorListFailedWithError:(NSError *)error {
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
-
+*/
 - (void)refreshView{
     [super refreshView];
     
@@ -193,12 +183,25 @@
 {
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-        
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
+//    UserObject *userobj = [[AccountManager shareInstance] currentUser];
+//    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
+//        
+//    } failedBlock:^(NSError *error) {
+//        [SVProgressHUD showImage:nil status:error.localizedDescription];
+//    }];
+    
+    UserObject *user = [AccountManager shareInstance].currentUser;
+    _detailLabel.text = user.hospitalName;
+    _nameLabel.text = [NSString stringWithFormat:@"%@   %@",user.name,user.title];
+    [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+    
+    //查询数据库，是否有未同步的数据
+    NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"4"];
+    if (array.count > 0) {
+        self.tableView.hidden = NO;
+    }else{
+        self.targetView.hidden = YES;
+    }
 }
 
 #pragma mark - UITableViewDataSource/Delegate
@@ -224,7 +227,7 @@
         }else if(section == 4){
             return 2;
         }else{
-            return 1;
+            return 2;
         }
     }else{
         if(section==0){
@@ -236,7 +239,7 @@
         }else if(section == 3){
             return 2;
         }else{
-            return 1;
+            return 2;
         }
     }
     
@@ -282,7 +285,12 @@
             }
             
         }else if (indexPath.section == 5){
-            return _sheZhiCell;
+            if (indexPath.row == 0) {
+                return _copyCell;
+            }else{
+                return _sheZhiCell;
+            }
+            
         }
     }else{
         if(indexPath.section == 0){
@@ -304,6 +312,9 @@
                 return _shareCell;
             }
         }else if (indexPath.section == 4){
+            if (indexPath.row == 0) {
+                return _copyCell;
+            }
             return _sheZhiCell;
         }
     }
@@ -387,13 +398,15 @@
             }
         }
         if(indexPath.section == 5){
-            if(indexPath.row == 0){
+            if (indexPath.row == 0) {
+                UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+                XLBackUpViewController *backUpVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLBackUpViewController"];
+                backUpVc.hidesBottomBarWhenPushed = YES;
+                [self pushViewController:backUpVc animated:YES];
+            }else if(indexPath.row == 1){
                 XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
                 baseSetting.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:baseSetting animated:YES];
-//                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
-//                set.hidesBottomBarWhenPushed = YES;
-//                [self.navigationController pushViewController:set animated:YES];
                 
             }
             
@@ -410,6 +423,11 @@
         }
         if(indexPath.section == 4){
             if(indexPath.row == 0){
+                UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+                XLBackUpViewController *backUpVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLBackUpViewController"];
+                backUpVc.hidesBottomBarWhenPushed = YES;
+                [self pushViewController:backUpVc animated:YES];
+            }else if(indexPath.row == 1){
                 XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
                 baseSetting.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:baseSetting animated:YES];
@@ -471,26 +489,6 @@
     pageVC.postNotification = YES;
     pageVC.bounces = YES;
     return pageVC;
-}
-
-- (void)downloadImageWithImageUrl:(NSString *)imageStr{
-    
-    // 1.创建多线程
-    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
-        [NSThread sleepForTimeInterval:0.5];
-        //执行下载操作
-        NSURL *url = [NSURL URLWithString:imageStr];
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        UIImage *image = [UIImage imageWithData:data];
-        
-        //回到主线程更新ui
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            iconImageView.image = image;
-        }];
-    }];
-    // 2.必须将任务添加到队列中才能执行
-//    [self.opQueue addOperation:downOp];
-    
 }
 
 - (void)didReceiveMemoryWarning {

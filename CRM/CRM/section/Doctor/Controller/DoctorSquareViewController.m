@@ -12,7 +12,6 @@
 #import "CRMHttpRequest+Doctor.h"
 #import "SVProgressHUD.h"
 #import "NSDictionary+Extension.h"
-#import "UserInfoViewController.h"
 #import "IntroducerManager.h"
 #import "CRMHttpRequest+Introducer.h"
 #import "DBManager+Doctor.h"

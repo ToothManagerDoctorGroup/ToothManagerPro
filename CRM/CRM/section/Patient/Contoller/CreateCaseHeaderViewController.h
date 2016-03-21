@@ -12,6 +12,7 @@
 @interface CreateCaseHeaderViewController : TimTableViewController
 @property (nonatomic,assign) id <CreateCaseHeaderViewControllerDeleate> delegate;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *casenameTextField;
+@property (weak, nonatomic) IBOutlet TimPickerTextField *toothPositionField;
 @property (weak, nonatomic) IBOutlet UILabel *nameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *implantTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nextReserveTextField;

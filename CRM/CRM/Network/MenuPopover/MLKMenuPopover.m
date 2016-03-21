@@ -16,7 +16,7 @@
 #define CELL_IDENTIGIER         @"MenuPopoverCell"
 #define MENU_TABLE_VIEW_FRAME   CGRectMake(0, 0, frame.size.width, frame.size.height)
 #define SEPERATOR_LINE_RECT     CGRectMake(10, MENU_ITEM_HEIGHT - 1, self.frame.size.width - 20, 1)
-#define MENU_POINTER_RECT       CGRectMake(frame.origin.x + frame.size.width - 26, frame.origin.y, 23, 11)
+#define MENU_POINTER_RECT       CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, 9)
 
 #define CONTAINER_BG_COLOR      RGBA(0, 0, 0, 0.1f)
 
@@ -47,6 +47,7 @@
 
 - (id)initWithFrame:(CGRect)frame menuItems:(NSArray *)aMenuItems
 {
+    frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height + 9);
     self = [super initWithFrame:frame];
     
     if (self)
@@ -61,12 +62,12 @@
 
         // Adding Menu Options Pointer
         UIImageView *menuPointerView = [[UIImageView alloc] initWithFrame:MENU_POINTER_RECT];
-        menuPointerView.image = [UIImage imageNamed:@"options_pointer"];
+        menuPointerView.image = [UIImage imageNamed:@"menubtn_bg_top"];
         menuPointerView.tag = MENU_POINTER_TAG;
-//        [self.containerButton addSubview:menuPointerView];
+        [self.containerButton addSubview:menuPointerView];
         
         // Adding menu Items table
-        UITableView *menuItemsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        UITableView *menuItemsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 9, frame.size.width, frame.size.height - 9)];
         
         menuItemsTableView.dataSource = self;
         menuItemsTableView.delegate = self;
@@ -75,7 +76,7 @@
         menuItemsTableView.backgroundColor = [UIColor clearColor];
         menuItemsTableView.tag = MENU_TABLE_VIEW_TAG;
         
-        UIImageView *bgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"menu_background_arrow"]];
+        UIImageView *bgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"menubtn_bg_bottom"]];
         menuItemsTableView.backgroundView = bgView;
         
         [self addSubview:menuItemsTableView];

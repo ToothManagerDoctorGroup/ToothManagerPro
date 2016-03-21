@@ -645,8 +645,12 @@
 
 #pragma mark CustomAlertViewDelegate
 - (void)alertView:(CustomAlertView *)alertView didClickCertainButtonWithContent:(NSString *)content{
-    if ([content isEqualToString:self.group.group_name]) {
-        [SVProgressHUD showErrorWithStatus:@"分组名称不能相同"];
+    if (content.length == 0) {
+        [SVProgressHUD showErrorWithStatus:@"分组名不能为空"];
+        return;
+    }
+    if ([content isValidLength:32] == ValidationResultInValid) {
+        [SVProgressHUD showErrorWithStatus:@"分组名最多为16个汉字"];
         return;
     }
     //编辑组名
@@ -655,6 +659,7 @@
         if ([respondModel.code integerValue] == 200) {
             //修改当前的组名
             self.title = content;
+            self.group.group_name = content;
             //发送通知
             [[NSNotificationCenter defaultCenter] postNotificationName:DoctorUpdateGroupNameSuccessNotification object:nil];
         }

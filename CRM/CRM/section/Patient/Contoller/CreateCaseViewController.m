@@ -46,15 +46,16 @@
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
 
+#define TableHeaderViewHeight 350
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
-@property (nonatomic,retain) CreateCaseHeaderViewController *tableHeaderView;
-@property (nonatomic,retain) MedicalCase *medicalCase;
-@property (nonatomic,retain) MedicalReserve *medicalRes;
-@property (nonatomic,retain) NSMutableArray *ctblibArray;
-@property (nonatomic,retain) NSMutableArray *expenseArray;
-@property (nonatomic,retain) NSMutableArray *recordArray;
-@property (nonatomic,retain) XLHengYaViewController *hengYaVC;
-@property (nonatomic,retain) XLRuYaViewController *ruYaVC;
+@property (nonatomic,strong) CreateCaseHeaderViewController *tableHeaderView;
+@property (nonatomic,strong) MedicalCase *medicalCase;
+@property (nonatomic,strong) MedicalReserve *medicalRes;
+@property (nonatomic,strong) NSMutableArray *ctblibArray;
+@property (nonatomic,strong) NSMutableArray *expenseArray;
+@property (nonatomic,strong) NSMutableArray *recordArray;
+@property (nonatomic,strong) XLHengYaViewController *hengYaVC;
+@property (nonatomic,strong) XLRuYaViewController *ruYaVC;
 
 @property (nonatomic, strong)NSMutableArray *deleteRcords;//删除的病历记录
 @property (nonatomic, strong)NSMutableArray *newRecords;//新增的病历记录
@@ -109,9 +110,6 @@
     
 }
 
-- (void)dealloc{
-    [self removeNotificationObserver];
-}
 - (void)initView {
     [super initView];
     self.tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 44);
@@ -120,20 +118,19 @@
     self.addRecordButton.layer.cornerRadius = 5.0f;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     _tableHeaderView = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseHeaderViewController"];
-    [_tableHeaderView.view setFrame:CGRectMake(0, 0, kScreenWidth, 300)];
+    [_tableHeaderView.view setFrame:CGRectMake(0, 0, kScreenWidth, TableHeaderViewHeight)];
     _tableHeaderView.delegate = self;
     _tableHeaderView.tableView.scrollEnabled = NO;
     [_tableHeaderView setviewWith:_medicalCase andRes:_medicalRes];
     [_tableHeaderView setImages:_ctblibArray];
     [_tableHeaderView setExpenseArray:_expenseArray];
-    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 300 + _expenseArray.count * 40);
+    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, TableHeaderViewHeight + _expenseArray.count * 40);
     
     self.tableView.tableHeaderView = _tableHeaderView.view;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-//    self.tableView.backgroundColor = [UIColor colorWithHex:0xe5e5e5];
     self.tableView.backgroundColor = MyColor(248, 248, 248);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
@@ -176,6 +173,8 @@
         _medicalCase = [[MedicalCase alloc]init];
         _medicalCase.patient_id = self.patiendId;
         _medicalCase.case_status = 1;
+        Patient *tmpP = [[DBManager shareInstance] getPatientCkeyid:self.patiendId];
+        _medicalCase.case_name = [NSString stringWithFormat:@"%@的病历",tmpP.patient_name];
         [self initMedicalReserve];
         _expenseArray = [NSMutableArray arrayWithCapacity:0];
         _recordArray = [NSMutableArray arrayWithCapacity:0];
@@ -421,7 +420,11 @@
 
 - (void)onRightButtonAction:(id)sender {
     if (self.tableHeaderView.casenameTextField.text.length == 0) {
-        [SVProgressHUD showImage:nil status:@"请选择牙位"];
+        [SVProgressHUD showImage:nil status:@"请填写病历名称"];
+        return;
+    }
+    if ([self.tableHeaderView.casenameTextField.text isValidLength:32]) {
+        [SVProgressHUD showImage:nil status:@"病历名称最多为16个汉字"];
         return;
     }
     
@@ -457,19 +460,22 @@
             InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         }
-        //获取ct片
-        if (self.ctblibArray.count > 0) {
-            //保存患者的头像
-            BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
-            if (!isExist) {
-                [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+        //判断是否开启了通讯录权限
+        if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
+            if (self.ctblibArray.count > 0) {
+                //保存患者的头像
+                BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+                if (!isExist) {
+                    [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+                }
+                
+                CTLib *ctLib = [self.ctblibArray lastObject];
+                UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
+                UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
+                [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
             }
-            
-            CTLib *ctLib = [self.ctblibArray lastObject];
-            UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
-            UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
-            [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
         }
+        
         
         //发送通知
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
@@ -581,8 +587,7 @@
         }
     }
 }
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
     
     if (buttonIndex > 1) {
         return;
@@ -703,12 +708,12 @@
         [self pushViewController:selectYuyeVc animated:YES];
         
         
-    } else if ([self.tableHeaderView.casenameTextField isFirstResponder]){
-        [self.tableHeaderView.casenameTextField resignFirstResponder];
+    }else if ([self.tableHeaderView.toothPositionField isFirstResponder]){
+        [self.tableHeaderView.toothPositionField resignFirstResponder];
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
         self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLHengYaViewController"];
         self.hengYaVC.delegate = self;
-        self.hengYaVC.hengYaString = self.tableHeaderView.casenameTextField.text;
+        self.hengYaVC.hengYaString = self.tableHeaderView.toothPositionField.text;
         [self.navigationController addChildViewController:self.hengYaVC];
         [self.navigationController.view addSubview:self.hengYaVC.view];
     }
@@ -724,9 +729,9 @@
 - (void)queDingHengYa:(NSMutableArray *)hengYaArray toothStr:(NSString *)toothStr{
     
     if ([toothStr isEqualToString:@"未连续"]) {
-        self.tableHeaderView.casenameTextField.text = [hengYaArray componentsJoinedByString:@","];
+        self.tableHeaderView.toothPositionField.text = [hengYaArray componentsJoinedByString:@","];
     }else{
-        self.tableHeaderView.casenameTextField.text = toothStr;
+        self.tableHeaderView.toothPositionField.text = toothStr;
     }
     
     [self removeHengYaVC];
@@ -734,9 +739,9 @@
 
 - (void)queDingRuYa:(NSMutableArray *)ruYaArray toothStr:(NSString *)toothStr{
     if ([toothStr isEqualToString:@"未连续"]) {
-        self.tableHeaderView.casenameTextField.text = [ruYaArray componentsJoinedByString:@","];
+        self.tableHeaderView.toothPositionField.text = [ruYaArray componentsJoinedByString:@","];
     }else{
-        self.tableHeaderView.casenameTextField.text = toothStr;
+        self.tableHeaderView.toothPositionField.text = toothStr;
     }
     [self removeRuYaVC];
 }
@@ -752,7 +757,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
     self.ruYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLRuYaViewController"];
     self.ruYaVC.delegate = self;
-    self.ruYaVC.ruYaString = self.tableHeaderView.casenameTextField.text;
+    self.ruYaVC.ruYaString = self.tableHeaderView.toothPositionField.text;
     [self.navigationController addChildViewController:self.ruYaVC];
     [self.navigationController.view addSubview:self.ruYaVC.view];
 }
@@ -762,7 +767,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
     self.hengYaVC = [storyboard instantiateViewControllerWithIdentifier:@"XLHengYaViewController"];
     self.hengYaVC.delegate = self;
-    self.hengYaVC.hengYaString = self.tableHeaderView.casenameTextField.text;
+    self.hengYaVC.hengYaString = self.tableHeaderView.toothPositionField.text;
     [self.navigationController addChildViewController:self.hengYaVC];
     [self.navigationController.view addSubview:self.hengYaVC.view];
 }
@@ -786,7 +791,7 @@
     }
     [_tableHeaderView setExpenseArray:_expenseArray];
     
-    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, 300 + _expenseArray.count * 40);
+    _tableHeaderView.view.frame = CGRectMake(0, 0, kScreenWidth, TableHeaderViewHeight + _expenseArray.count * 40);
     _tableHeaderView.view.backgroundColor = MyColor(248, 248, 248);
     self.tableView.tableHeaderView = _tableHeaderView.view;
     [self.tableView reloadData];
@@ -811,16 +816,18 @@
         if ([result.code integerValue] == 200) {
             XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
             } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
-                if (wenxinSend) {
-                    NSLog(@"微信发送");
-                    [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.patiendId contentType:@"text" sendContent:content doctorId:[AccountManager currentUserid] success:^{
-                    } failure:^(NSError *error) {
-                        [SVProgressHUD showImage:nil status:error.localizedDescription];
-                    }];
-                }
-                if (messageSend) {
-                    NSLog(@"短信发送");
-                }
+                [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:self.patiendId isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                    if ([respond.code integerValue] == 200) {
+                        [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                    }else{
+                        [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                    }
+                } failure:^(NSError *error) {
+                    [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                    if (error) {
+                        NSLog(@"error:%@",error);
+                    }
+                }];
             }];
             [alertView show];
         }
@@ -832,7 +839,14 @@
 }
 
 - (IBAction)addRecordAction:(id)sender {
+    
     if ([NSString isNotEmptyString:self.recordTextField.text]) {
+        
+        if ([self.recordTextField.text isValidLength:600]) {
+            [SVProgressHUD showErrorWithStatus:@"内容过长"];
+            return;
+        }
+        
         MedicalRecord *record = [[MedicalRecord alloc]init];
         record.patient_id = self.medicalCase.patient_id;
         record.case_id = self.medicalCase.ckeyid;
@@ -863,6 +877,36 @@
         NSArray *tmpArr = [NSMutableArray arrayWithArray:[[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:self.medicalCaseId]];
         [self didSelectedMaterialsArray:tmpArr];
     }
+}
+
+- (void)dealloc{
+    [self removeNotificationObserver];
+    
+    self.tableHeaderView = nil;
+    self.medicalCase = nil;
+    self.medicalRes = nil;
+    
+    [self.ctblibArray removeAllObjects];
+    self.ctblibArray = nil;
+    [self.expenseArray removeAllObjects];
+    self.expenseArray = nil;
+    [self.recordArray removeAllObjects];
+    self.recordArray = nil;
+    self.hengYaVC = nil;
+    self.ruYaVC = nil;
+    
+    [self.deleteRcords removeAllObjects];
+    self.deleteRcords = nil;
+    [self.newRecords removeAllObjects];
+    self.newRecords = nil;
+    [self.deleteCtLibs removeAllObjects];
+    self.deleteCtLibs = nil;
+    [self.addCTLibs removeAllObjects];
+    self.addCTLibs = nil;
+    
+    implant_time = nil;
+    repair_doctor = nil;
+    repair_time = nil;
 }
 
 @end

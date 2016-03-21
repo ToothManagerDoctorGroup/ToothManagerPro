@@ -286,7 +286,7 @@ NSInteger curTimeMCNum_mr01 = 0;
             [SVProgressHUD showSuccessWithStatus:@"同步完成"];
             [NSThread sleepForTimeInterval:1.0];
             [SVProgressHUD dismiss];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
         }
         
         
@@ -344,7 +344,7 @@ NSInteger curTimeMCNum_mr01 = 0;
                         [SVProgressHUD showSuccessWithStatus:@"同步完成"];
                         [NSThread sleepForTimeInterval:1.0];
                         [SVProgressHUD dismiss];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
                     }
                 }
             });

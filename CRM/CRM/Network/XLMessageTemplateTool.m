@@ -60,6 +60,7 @@
 }
 
 + (void)editMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
+    
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = @"edit";

@@ -44,5 +44,7 @@ Declare_ShareInstance(DBManager);
 
 - (BOOL)opendDB;
 - (BOOL)closeDB;
+//更新表数据
+- (void)updateDB;
 
 @end

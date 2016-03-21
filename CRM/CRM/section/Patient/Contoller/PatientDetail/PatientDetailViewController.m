@@ -141,6 +141,8 @@
     return _comments;
 }
 
+#pragma mark - 获取患者所有的
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
@@ -289,7 +291,6 @@
                 _headerInfoView.introducerName = doctor.doctor_name;
             }
         }
-
     }
     
     Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:self.detailPatient.ckeyid withIntrId:[AccountManager shareInstance].currentUser.userid];
@@ -299,8 +300,9 @@
 - (void)refreshData {
     [super refreshData];
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
-
     _headerMedicalView.medicalCases = array;
+    
+    [_tableView reloadData];
 }
 
 #pragma mark -加载子视图
@@ -419,32 +421,36 @@
 }
 #pragma mark -UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    UserObject *user = [[AccountManager shareInstance] currentUser];
-    PatientConsultation *model = [self createPatientConsultationWithContent:textField.text];
-    CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
-    modelFrame.model = model;
-    modelFrame.headImg_url = user.img;
-    
-    BOOL result = [[DBManager shareInstance] insertPatientConsultation:model];
-    if (result) {
-        
-        PatientConsultation *tempPatientC = [[DBManager shareInstance] getPatientConsultationWithCkeyId:model.ckeyid];
-        if (tempPatientC != nil) {
-            //添加会诊信息自动同步信息
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientConsultation postType:Insert dataEntity:[tempPatientC.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-        }
-        
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.comments.count inSection:0];
-
-        [self.comments addObject:modelFrame];
-        [_tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
-        
-        textField.text = @"";
-        
-        [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    if ([textField.text isValidLength:600]) {
+        [SVProgressHUD showErrorWithStatus:@"内容过长"];
     }else{
-        [SVProgressHUD showErrorWithStatus:@"发送失败"];
+        UserObject *user = [[AccountManager shareInstance] currentUser];
+        PatientConsultation *model = [self createPatientConsultationWithContent:textField.text];
+        CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
+        modelFrame.model = model;
+        modelFrame.headImg_url = user.img;
+        
+        BOOL result = [[DBManager shareInstance] insertPatientConsultation:model];
+        if (result) {
+            
+            PatientConsultation *tempPatientC = [[DBManager shareInstance] getPatientConsultationWithCkeyId:model.ckeyid];
+            if (tempPatientC != nil) {
+                //添加会诊信息自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientConsultation postType:Insert dataEntity:[tempPatientC.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+            
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.comments.count inSection:0];
+            
+            [self.comments addObject:modelFrame];
+            [_tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+            
+            textField.text = @"";
+            
+            [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        }else{
+            [SVProgressHUD showErrorWithStatus:@"发送失败"];
+        }
     }
     return YES;
 }
@@ -622,6 +628,9 @@
     }
     if (total == current) {
         [SVProgressHUD dismiss];
+        //将会诊信息的array清除
+        [self.comments removeAllObjects];
+        self.comments = nil;
         [self refreshData];
         
     }else{
@@ -660,7 +669,7 @@
 //患者转介绍人
 - (void)patientToIntroducerSuccess:(NSDictionary *)result{
     if ([result integerForKey:@"Code"] == 200) {
-        [SVProgressHUD showImage:nil status:@"转换成功"];
+        [SVProgressHUD showImage:nil status:@"升级成功"];
         //发送微信消息
         [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
         } failedBlock:^(NSError *error){
@@ -694,6 +703,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
     CreateCaseViewController *caseVC = [storyboard instantiateViewControllerWithIdentifier:@"CreateCaseViewController"];
     caseVC.title = @"新建病历";
+    caseVC.isBind = self.isBind;
     caseVC.patiendId = self.detailPatient.ckeyid;
     [self pushViewController:caseVC animated:YES];
 }
@@ -797,7 +807,6 @@
     }
 }
 
-
 - (void)insertPatientIntroducerMapWithPatient:(Patient *)patient{
     if ([selectIntroducer.intr_id isEqualToString:@"0"]) {
         [[CRMHttpRequest shareInstance] postPatientIntroducerMap:patient.ckeyid withDoctorId:[AccountManager shareInstance].currentUser.userid withIntrId:selectIntroducer.ckeyid];
@@ -832,6 +841,34 @@
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
     [self.view endEditing:YES];
+}
+
+
+
+- (void)dealloc{
+    _tableView = nil;
+    _headerView = nil;
+    _headerInfoView = nil;
+    _headerMedicalView = nil;
+    _editView = nil;
+    _searchImage = nil;
+    _commentTextField = nil;
+    selectIntroducer = nil;
+    
+    [self.comments removeAllObjects];
+    self.comments = nil;
+    self.menuList = nil;
+    self.menuPopover = nil;
+    
+    self.detailPatient = nil;
+    self.detailIntroducer = nil;
+    self.changeIntroducer = nil;
+    [self.medicalCases removeAllObjects];
+    self.medicalCases = nil;
+    [self.cTLibs removeAllObjects];
+    self.cTLibs = nil;
+    self.selectCase = nil;
+    self.isBind = nil;
 }
 
 @end

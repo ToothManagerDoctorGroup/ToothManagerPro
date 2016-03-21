@@ -30,5 +30,11 @@ Declare_ShareInstance(AddressBoolTool);
  *
  *  @param patient 患者信息
  */
-- (void)addContactToAddressBook:(Patient *)patient;
+- (BOOL)addContactToAddressBook:(Patient *)patient;
+/**
+ *  用户是否开启通讯录权限
+ *
+ *  @return 是否开钱
+ */
+- (BOOL)userAllowToAddress;
 @end

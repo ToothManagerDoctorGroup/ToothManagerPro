@@ -97,7 +97,7 @@ Realize_ShareInstance(AccountManager);
         return;
     }
     
-    ret = [phone isValidWithFormat:@"^[0-9]{6,14}$"];
+    ret = [phone isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"手机号格式错误" errorCode:400]);
@@ -115,7 +115,7 @@ Realize_ShareInstance(AccountManager);
         return;
     }
     
-    ret = [pwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [pwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
@@ -142,7 +142,7 @@ Realize_ShareInstance(AccountManager);
 - (void)forgetPasswordWithPhone:(NSString *)phone passwd:(NSString *)newpwd  validate:(NSString *)validate successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     ValidationResult ret = ValidationResultValid;//[nickname isValidWithFormat:@"^[a-zA-Z0-9]{3,15}$"];
     
-    ret = [newpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [newpwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
@@ -207,7 +207,7 @@ Realize_ShareInstance(AccountManager);
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"昵称不能为空" errorCode:400]);
         return;
     }
-    ret = [pwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [pwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
@@ -246,7 +246,7 @@ Realize_ShareInstance(AccountManager);
  */
 - (void)updatePasswdWithOldpwd:(NSString *)oldpwd newpwd:(NSString *)newpwd comfirmPwd:(NSString *)confirmpwd userId:(NSString *)userId successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     ValidationResult ret = ValidationResultValid;
-    ret = [oldpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [oldpwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"当前密码格式错误" errorCode:400]);
@@ -261,7 +261,7 @@ Realize_ShareInstance(AccountManager);
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"两次输入的密码不一致" errorCode:400]);
         return;
     }
-    ret = [newpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [newpwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"新密码格式错误" errorCode:400]);

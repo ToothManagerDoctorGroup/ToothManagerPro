@@ -14,4 +14,6 @@ typedef void(^AlertButtonHandler)();
 
 - (id)initWithTitle:(NSString *)title message:(NSString *)message cancelHandler:(AlertButtonHandler)cancelHandler comfirmButtonHandlder:(AlertButtonHandler)comfirmHandler;
 
+
+- (id)initWithTitle:(NSString *)title message:(NSString *)message cancel:(NSString *)cancel certain:(NSString *)certain cancelHandler:(AlertButtonHandler)cancelHandler comfirmButtonHandlder:(AlertButtonHandler)comfirmHandler;
 @end

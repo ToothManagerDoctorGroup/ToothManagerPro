@@ -23,6 +23,8 @@
 
 @property (nonatomic, copy)NSString *placeHolder;
 
+@property (nonatomic, assign)int limit;//长度限制
+
 @property (nonatomic, weak)id<XLContentWriteViewControllerDelegate> delegate;
 
 @end

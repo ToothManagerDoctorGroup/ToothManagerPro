@@ -15,6 +15,10 @@
 #import "DoctorTool.h"
 #import "TimPickerTextField.h"
 #import "XLDataSelectViewController.h"
+#import "CRMUserDefalut.h"
+#import "DoctorTool.h"
+#import "MJExtension.h"
+#import "DoctorInfoModel.h"
 
 @interface XLPersonalStepTwoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *step1CountLabel; //步骤1
@@ -41,6 +45,8 @@
     
     //设置控件属性
     [self setViewAttr];
+    //设置控件内容
+    [self setUpData];
     
 }
 - (void)onBackButtonAction:(id)sender{}
@@ -74,6 +80,24 @@
     [self.headImageView addGestureRecognizer:tap];
 
 }
+#pragma mark - 设置控件内容
+- (void)setUpData{
+    NSString *headImgPath = [CRMUserDefalut objectForKey:@"avatar"];
+    if (headImgPath != nil) {
+        NSError *error;
+        NSData *imgData = [NSData dataWithContentsOfFile:headImgPath options:NSDataReadingUncached error:&error];
+        if (imgData.length > 0) {
+            UIImage *image = [UIImage imageWithData:imgData scale:.5];
+            self.headImageView.image = image;
+        }
+    }
+    
+    //设置修改内容
+    self.ageField.text = self.age;
+    self.academicField.text = self.degree;
+    self.sexCount = self.sex == nil ? 1 : [self.sex intValue];
+}
+
 - (void)choseImage:(UITapGestureRecognizer *)gesture {
     UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:nil
                                                             delegate:self
@@ -128,20 +152,39 @@
 //选择男
 - (IBAction)menSelectActon:(id)sender {
     self.sexCount = 1;
-    self.menButton.selected = YES;
-    self.womenButton.selected = NO;
+    
 }
 //选择女
 - (IBAction)womenSelectAction:(id)sender {
     self.sexCount = 0;
-    self.menButton.selected = NO;
-    self.womenButton.selected = YES;
+    
+}
+
+- (void)setSexCount:(int)sexCount{
+    _sexCount = sexCount;
+    
+    switch (sexCount) {
+        case 0:
+            self.menButton.selected = NO;
+            self.womenButton.selected = YES;
+            break;
+        case 1:
+            self.menButton.selected = YES;
+            self.womenButton.selected = NO;
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 - (IBAction)preStepAction:(id)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(personalStepTwoVC:didWriteAge:sex:degree:)]) {
+        [self.delegate personalStepTwoVC:self didWriteAge:self.ageField.text sex:[NSString stringWithFormat:@"%d",self.sexCount] degree:self.academicField.text];
+    }
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -188,22 +231,23 @@
 - (void)updateUserInfoSuccessWithResult:(NSDictionary *)result
 {
     if ([result integerForKey:@"Code"] == 200) {
-        [SVProgressHUD showImage:nil status:@"个人消息更新成功"];
+        //获取个人信息
+        [DoctorTool requestDoctorInfoWithDoctorId:[AccountManager currentUserid] success:^(DoctorInfoModel *dcotorInfo) {
+            [SVProgressHUD showImage:nil status:@"个人消息更新成功"];
+            
+            //更新登录人信息
+            UserObject *obj = [UserObject userobjectFromDic:dcotorInfo.keyValues];
+            [[DBManager shareInstance] updateUserWithUserObject:obj];
+            [[AccountManager shareInstance] refreshCurrentUserInfo];
+            
+            [self postNotificationName:SignInSuccessNotification object:nil];
+        } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:@"个人消息更新失败"];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
         
-        UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        
-        [userobj setName:self.userName];
-        [userobj setDepartment:self.departMentName];
-        [userobj setPhone:userobj.phone];
-        [userobj setHospitalName:self.hospitalName];
-        [userobj setTitle:self.professionalName];
-        [userobj setDegree:self.academicField.text];
-        [userobj setAuthStatus:userobj.authStatus];
-        [userobj setAuthText:userobj.authText];
-        
-        [[DBManager shareInstance] updateUserWithUserObject:userobj];
-        
-        [self postNotificationName:SignInSuccessNotification object:nil];
     } else {
         [SVProgressHUD showImage:nil status:@"个人消息更新失败"];
     }

@@ -10,6 +10,7 @@
 #import <AddressBookUI/AddressBookUI.h>
 #import <AddressBook/AddressBook.h>
 #import "DBTableMode.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation AddressBoolTool
 Realize_ShareInstance(AddressBoolTool);
@@ -64,7 +65,7 @@ Realize_ShareInstance(AddressBoolTool);
         ABRecordRef person = (__bridge ABRecordRef)[contacts objectAtIndex:i];
         NSArray *phones = [self phoneWithABRecordRef:person];
         for (NSString *phone in phones) {
-            if ([phone containsString:personPhone]) {
+            if ([phone isContainsString:personPhone]) {
                 //设置头像
                 NSData *data=UIImagePNGRepresentation(image);
                 ABPersonRemoveImageData(person, NULL);
@@ -220,7 +221,7 @@ Realize_ShareInstance(AddressBoolTool);
         ABRecordRef person = (__bridge ABRecordRef)[contacts objectAtIndex:i];
         NSArray *phones = [self phoneWithABRecordRef:person];
         for (NSString *phone in phones) {
-            if ([phone containsString:contactPhone]) {
+            if ([phone isContainsString:contactPhone]) {
                 //表明联系人已经存在
                 exist = YES;
                 break;
@@ -234,11 +235,10 @@ Realize_ShareInstance(AddressBoolTool);
 }
 
 #pragma mark - 将患者插入到通讯录
-- (void)addContactToAddressBook:(Patient *)patient{
+- (BOOL)addContactToAddressBook:(Patient *)patient{
     ABAddressBookRef addressBook = [self getAddressBook];
     if (addressBook == nil) {
-        NSLog(@"用户没有开通通讯录权限");
-        return;
+        return NO;
     }
     // 新建一个联系人
     // ABRecordRef是一个属性的集合，相当于通讯录中联系人的对象
@@ -270,6 +270,8 @@ Realize_ShareInstance(AddressBoolTool);
     ABAddressBookSave(addressBook, NULL);
     // 释放通讯录对象的引用
     [self releaseAddressBook:addressBook];
+    
+    return YES;
 }
 
 #pragma mark - 获取通讯录操作类
@@ -318,5 +320,15 @@ Realize_ShareInstance(AddressBoolTool);
     
 }
 
+
+- (BOOL)userAllowToAddress{
+    ABAddressBookRef addressBook = [self getAddressBook];
+    if (addressBook) {
+        [self releaseAddressBook:addressBook];
+        return YES;
+    }else{
+        return NO;
+    }
+}
 
 @end

@@ -20,6 +20,7 @@
 #import "UIImageView+WebCache.h"
 #import "PatientDetailViewController.h"
 #import "XLSliderView.h"
+#import "XLUserInfoViewController.h"
 
 #define TYPE_FROM @"from"
 #define TYPE_TO @"to"
@@ -87,7 +88,15 @@
 }
 - (void)initSubViews {
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setRightBarButtonWithTitle:@"详情"];
     [self loadTableView];
+}
+
+- (void)onRightButtonAction:(id)sender{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    XLUserInfoViewController *userInfoVc = [storyboard instantiateViewControllerWithIdentifier:@"XLUserInfoViewController"];
+    userInfoVc.doctor = self.doctor;
+    [self pushViewController:userInfoVc animated:YES];
 }
 
 - (void)requestLocalDataWithType:(NSString *)type{

@@ -13,7 +13,6 @@
 #import "CRMHttpRequest+Doctor.h"
 #import "SVProgressHUD.h"
 #import "NSDictionary+Extension.h"
-#import "UserInfoViewController.h"
 #import "IntroducerManager.h"
 #import "CRMHttpRequest+Introducer.h"
 #import "DBManager+Doctor.h"
@@ -552,10 +551,6 @@
     } else {
         doctor = [self.searchHistoryArray objectAtIndex:cell.tag-100];
     }
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-    userInfoVC.doctor = doctor;
-    [self pushViewController:userInfoVC animated:YES];
 }
 
 

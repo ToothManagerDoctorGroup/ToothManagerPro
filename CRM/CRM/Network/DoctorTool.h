@@ -116,4 +116,11 @@
  *  @param failure   失败回调
  */
 + (void)sendAdviceWithDoctorId:(NSString *)doctor_id content:(NSString *)content success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+/**
+ *  获取用户帮助
+ *
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getAllUsingHelpSuccess:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
 @end

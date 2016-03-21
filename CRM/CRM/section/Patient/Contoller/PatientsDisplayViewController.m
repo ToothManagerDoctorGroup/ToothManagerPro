@@ -209,7 +209,7 @@
     [self addObserveNotificationWithName:MedicalCaseCreatedNotification];
     [self addObserveNotificationWithName:MedicalCaseEditedNotification];
     [self addObserveNotificationWithName:PatientTransferNotification];
-    [self addObserveNotificationWithName:@"tongbu"];
+    [self addObserveNotificationWithName:SyncGetSuccessNotification];
 }
 
 - (void)removeNotificationObserver {
@@ -218,7 +218,7 @@
     [self removeObserverNotificationWithName:MedicalCaseCreatedNotification];
     [self removeObserverNotificationWithName:MedicalCaseEditedNotification];
     [self removeObserverNotificationWithName:PatientTransferNotification];
-    [self removeObserverNotificationWithName:@"tongbu"];
+    [self removeObserverNotificationWithName:SyncGetSuccessNotification];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
@@ -232,7 +232,7 @@
         [self refreshData];
         [self refreshView];
     }
-    if ([notifacation.name isEqualToString:@"tongbu"]) {
+    if ([notifacation.name isEqualToString:SyncGetSuccessNotification]) {
         [self initData];
         [self refreshView]; 
     }

@@ -19,6 +19,7 @@
 #import "PatientDetailViewController.h"
 #import "XLDataSelectViewController.h"
 #import "DBManager+Doctor.h"
+#import "NSString+Conversion.h"
 
 //TIMUIKIT_EXTERN NSString * const ITI;
 //TIMUIKIT_EXTERN NSString * const DENTIS;
@@ -33,7 +34,6 @@
     NSMutableArray *patientCellModeArray;
 }
 
-@property (nonatomic,readonly) NSArray *materialTypeArray;
 @property (nonatomic,readonly) Material *material;
 
 @end
@@ -115,8 +115,6 @@
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
-    
-  //  patientCellModeArray = [NSMutableArray arrayWithObjects:@"1",@"2", nil];
 }
 
 - (void)initData {
@@ -135,7 +133,6 @@
         }else{
             self.title = @"编辑种植体";
             self.tableView.hidden = YES;
-//            [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
             [self setRightBarButtonWithTitle:@"保存"];
         }
         
@@ -143,7 +140,6 @@
         _material = [[Material alloc] init];
         self.tableView.hidden = YES;
         self.title = @"添加种植体";
-//        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
         [self setRightBarButtonWithTitle:@"保存"];
     }
     
@@ -164,7 +160,7 @@
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
         cellMode.status = patientTmp.patient_status;
-        //            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+
         cellMode.countMaterial = patientTmp.expense_num;
         Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
         if ([doc.doctor_name isNotEmpty]) {
@@ -184,11 +180,6 @@
     [self.priceTextField resignFirstResponder];
     [self.typeTextField resignFirstResponder];
 }
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    //第一行进入编辑状态
-   // [self.nameTextField becomeFirstResponder];
-}
 
 - (void)didReceiveMemoryWarning
 {
@@ -197,6 +188,16 @@
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    //判断耗材名称长度
+    if ([self.nameTextField.text isValidLength:32]) {
+        [SVProgressHUD showImage:nil status:@"种植体名称过长"];
+        return;
+    }
+    if ([self.priceTextField.text floatValue] > 1000000) {
+        [SVProgressHUD showImage:nil status:@"种植体价格无效"];
+        return;
+    }
+    
     //判断是否是编辑状态
     if (self.showPatients) {
         //跳转到编辑页面

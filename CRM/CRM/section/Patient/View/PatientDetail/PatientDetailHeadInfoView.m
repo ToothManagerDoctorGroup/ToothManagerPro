@@ -15,7 +15,6 @@
 #import "DBTableMode.h"
 #import "EditAllergyViewController.h"
 #import "IntroducerViewController.h"
-#import "UserInfoViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"
@@ -308,18 +307,7 @@
             NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
         }
-    }else if (alertView.tag == 200){
-        if (buttonIndex == 0) {
-            //取消
-        }else{
-            //编辑个人信息
-            UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-            userInfoVC.hidesBottomBarWhenPushed = YES;
-            [self.viewController.navigationController pushViewController:userInfoVC animated:YES];
-        }
     }
-    
 }
 
 #pragma mark -发信息

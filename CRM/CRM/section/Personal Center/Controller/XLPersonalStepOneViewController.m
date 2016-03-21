@@ -11,7 +11,7 @@
 #import "TimPickerTextField.h"
 #import "XLDataSelectViewController.h"
 
-@interface XLPersonalStepOneViewController ()<XLDataSelectViewControllerDelegate>
+@interface XLPersonalStepOneViewController ()<XLDataSelectViewControllerDelegate,XLPersonalStepTwoViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *stepCountLabel; //步骤1
 @property (weak, nonatomic) IBOutlet UILabel *step2CountLabel;//步骤2
 @property (weak, nonatomic) IBOutlet TimPickerTextField *userNameField;//姓名
@@ -19,6 +19,10 @@
 @property (weak, nonatomic) IBOutlet TimPickerTextField *departmentField;//科室
 @property (weak, nonatomic) IBOutlet TimPickerTextField *professionalField;//职称
 @property (weak, nonatomic) IBOutlet UIButton *nextStepButton;//下一步按钮
+
+@property (nonatomic, copy)NSString *sex;
+@property (nonatomic, copy)NSString *age;
+@property (nonatomic, copy)NSString *degree;
 
 @end
 
@@ -53,8 +57,6 @@
     NSMutableArray *selectRepeatArray1 = [NSMutableArray arrayWithObjects:@"医师",@"主治医师",@"副主任医师",@"主任医师", nil];
     self.professionalField.mode = TextFieldInputModePicker;
     self.professionalField.pickerDataSource = selectRepeatArray1;
-    
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -84,9 +86,15 @@
     }
     
     if (self.hospitalNameField.text.length == 0) {
-        [SVProgressHUD showErrorWithStatus:@"职业医院不能为空"];
+        [SVProgressHUD showErrorWithStatus:@"医院不能为空"];
         return;
     }
+    //判断输入的姓名的长度是否合格
+    if ([self.hospitalNameField.text charaterCount] > 100) {
+        [SVProgressHUD showImage:nil status:@"医院名称过长，请重新输入"];
+        return;
+    }
+    
     if (self.departmentField.text.length == 0) {
         [SVProgressHUD showErrorWithStatus:@"科室不能为空"];
         return;
@@ -98,10 +106,14 @@
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
     XLPersonalStepTwoViewController *twoVc = [storyboard instantiateViewControllerWithIdentifier:@"XLPersonalStepTwoViewController"];
+    twoVc.delegate = self;
     twoVc.userName = self.userNameField.text;
     twoVc.hospitalName = self.hospitalNameField.text;
     twoVc.departMentName = self.departmentField.text;
     twoVc.professionalName = self.professionalField.text;
+    twoVc.sex = self.sex;
+    twoVc.age = self.age;
+    twoVc.degree = self.degree;
     [self pushViewController:twoVc animated:YES];
 }
 
@@ -141,6 +153,13 @@
     }else if (type == XLDataSelectViewControllerProfressional){
         self.professionalField.text = content;
     }
+}
+
+#pragma mark -XLPersonalStepTwoViewControllerDelegate
+- (void)personalStepTwoVC:(XLPersonalStepTwoViewController *)stepOneVc didWriteAge:(NSString *)age sex:(NSString *)sex degree:(NSString *)degree{
+    self.age = age;
+    self.sex = sex;
+    self.degree = degree;
 }
 
 

@@ -4074,7 +4074,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             [SVProgressHUD showSuccessWithStatus:@"同步完成"];
             [NSThread sleepForTimeInterval:1.0];
             [SVProgressHUD dismiss];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
         }
         
         NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
@@ -4218,7 +4218,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 [SVProgressHUD showSuccessWithStatus:@"同步完成"];
                 [NSThread sleepForTimeInterval:1.0];
                 [SVProgressHUD dismiss];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
             });
             return;
         }
@@ -4357,7 +4357,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 [SVProgressHUD showSuccessWithStatus:@"同步完成"];
                 [NSThread sleepForTimeInterval:1.0];
                 [SVProgressHUD dismiss];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
             });
             
         }
@@ -4847,7 +4847,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [SVProgressHUD showSuccessWithStatus:@"同步完成"];
         [NSThread sleepForTimeInterval:1.0];
         [SVProgressHUD dismiss];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
     });
    
 }

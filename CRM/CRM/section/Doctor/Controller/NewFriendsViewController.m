@@ -10,14 +10,14 @@
 #import "AccountManager.h"
 #import "DoctorTableViewCell.h"
 #import "CacheFactory.h"
-#import "UserInfoViewController.h"
 #import "DBManager+Introducer.h"
 #import "DBManager+sync.h"
 #import "NSDictionary+Extension.h"
 #import "CRMHttpRequest+Sync.h"
 #import "CRMHttpTool.h"
 #import "CRMUserDefalut.h"
-
+#import "XLUserInfoViewController.h"
+#import "DBManager+Doctor.h"
 
 @interface NewFriendsViewController ()<DoctorTableViewCellDelegate>
 
@@ -112,11 +112,10 @@
     }
     
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-    userInfoVC.doctor = tmpdoctor;
-    userInfoVC.needGet = YES;
-    userInfoVC.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:userInfoVC animated:YES];
+    XLUserInfoViewController *userInfo = [storyBoard instantiateViewControllerWithIdentifier:@"XLUserInfoViewController"];
+    userInfo.doctor = tmpdoctor;
+    userInfo.needGet = YES;
+    [self pushViewController:userInfo animated:YES];
 }
 
 #pragma mark - 好友数据请求成功
@@ -170,10 +169,17 @@
 //    } else {
 //        [SVProgressHUD showImage:nil status:@"接受失败"];
 //    }
+    
+    
     [SVProgressHUD showImage:nil status:[result stringForKey:@"Result"]];
     self.selectFriendNotiItem.notification_status = [NSNumber numberWithInteger:1];
     [self.tableView reloadData];
     self.selectFriendNotiItem = nil;
+    
+    //将医生保存到本地
+    if (self.addDoctor != nil) {
+        [[DBManager shareInstance] insertDoctorWithDoctor:self.addDoctor];
+    }
 }
 
 - (void)approveIntroducerApplyFailedWithError:(NSError *)error {
@@ -217,6 +223,7 @@
             for (NSDictionary *dic in dicArray) {
                 Doctor *tmpDoctor = [Doctor DoctorFromDoctorResult:dic];
                 self.addDoctor = tmpDoctor;
+                
                 [[AccountManager shareInstance] approveIntroducerApply:tmpDoctor.ckeyid successBlock:^{
                     
                 } failedBlock:^(NSError *error) {

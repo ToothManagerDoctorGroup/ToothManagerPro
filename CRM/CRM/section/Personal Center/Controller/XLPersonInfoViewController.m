@@ -19,6 +19,10 @@
 #import "PatientManager.h"
 #import "NSString+Conversion.h"
 #import "XLContentWriteViewController.h"
+#import "MJRefresh.h"
+#import "CRMUserDefalut.h"
+
+#define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
 
 @interface XLPersonInfoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate,XLCommonEditViewControllerDelegate,XLContentWriteViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;//头像
@@ -46,19 +50,51 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //添加下拉刷新
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
+//    self.tableView.header.updatedTimeHidden = YES;
 }
-//初始化数据
-- (void)initData{
+#pragma mark -下拉刷新
+- (void)headerRefreshAction{
+    //刷新数据
     [DoctorTool requestDoctorInfoWithDoctorId:[AccountManager currentUserid] success:^(DoctorInfoModel *doctorInfo) {
+        [self.tableView.header endRefreshing];
         
         self.currentDoctor = doctorInfo;
         [self setUpViewDataWithDoctor:doctorInfo];
         
+        //更新数据库中的信息
+        [self updateUserInfo];
+        
     } failure:^(NSError *error) {
+        [self.tableView.header endRefreshing];
         if (error) {
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+//初始化数据
+- (void)initData{
+    //加载本地数据
+    UserObject *user = [AccountManager shareInstance].currentUser;
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+    
+    self.userName.text = user.name;
+    self.userSex.text = [user.doctor_gender isEqualToString:@"0"] ? @"女" : @"男";
+    //计算出生年份
+    if ([user.doctor_birthday isNotEmpty]) {
+        NSInteger birthYear = [[user.doctor_birthday substringToIndex:4] integerValue];
+        self.userAge.text = [NSString stringWithFormat:@"%d",(int)([self getYear] - birthYear)];
+    }
+    self.userDepartment.text = user.department;
+    self.userHospital.text = user.hospitalName;
+    self.userAcademicTitle.text = user.title;
+    self.userDegree.text = user.degree;
+    self.userDesc.text = user.doctor_cv;
+    self.userSkills.text = user.doctor_skill;
+    
+    self.currentDoctor = [[DoctorInfoModel alloc] initWithUserObj:user];
 }
 //初始化视图
 - (void)initView{
@@ -87,10 +123,10 @@
 
 #pragma mark - UITableViewDataSource/UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 10;
+    return 1;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    return 10;
+    return 20;
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -121,9 +157,9 @@
         }else if (indexPath.row == 6){
             [self updateWithChooseType:XLDataSelectViewControllerDegree content:self.userDegree.text];
         }else if (indexPath.row == 7){
-            [self updateSkillWithTitle:@"个人简介" content:self.userDesc.text placeHolder:@"请填写个人简介"];
+            [self updateSkillWithTitle:@"个人简介" content:self.userDesc.text placeHolder:@"请填写个人简介" limit:300];
         }else if (indexPath.row == 8){
-            [self updateSkillWithTitle:@"擅长项目" content:self.userSkills.text placeHolder:@"请填写擅长项目"];
+            [self updateSkillWithTitle:@"擅长项目" content:self.userSkills.text placeHolder:@"请填写擅长项目" limit:100];
         }
     }
 }
@@ -147,12 +183,13 @@
 }
 
 #pragma mark - 修改医生的个人简介和擅长项目
-- (void)updateSkillWithTitle:(NSString *)title content:(NSString *)content placeHolder:(NSString *)placeHolder{
+- (void)updateSkillWithTitle:(NSString *)title content:(NSString *)content placeHolder:(NSString *)placeHolder limit:(int)limit{
     XLContentWriteViewController *writeVc = [[XLContentWriteViewController alloc] init];
     writeVc.placeHolder = placeHolder;
     writeVc.title = title;
     writeVc.currentContent = content;
     writeVc.delegate = self;
+    writeVc.limit = limit;
     [self pushViewController:writeVc animated:YES];
 }
 
@@ -241,6 +278,12 @@
     [DoctorTool composeTeacherHeadImg:tempImage userId:[[AccountManager shareInstance] currentUser].userid success:^{
         //清空缓存中的用户头像
         [[SDImageCache sharedImageCache] removeImageForKey:[AccountManager shareInstance].currentUser.img];
+        //清空二维码缓存
+        NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
+        if (qrcodeUrl) {
+            [[SDImageCache sharedImageCache] removeImageForKey:qrcodeUrl];
+        }
+        
         weakSelf.iconImageView.image = tempImage;
         [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
         
@@ -289,11 +332,20 @@
         //验证电话是否合法
         BOOL ret = [NSString checkTelNumber:content];
         if (!ret) {
-            [SVProgressHUD showImage:nil status:@"手机号不合法，请重新输入"];
+            [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
             return;
         }
         self.currentDoctor.doctor_phone = content;
     }else if ([title isEqualToString:@"医院"]){
+        if (![content isNotEmpty]) {
+            [SVProgressHUD showImage:nil status:@"请输入医院名称"];
+            return;
+        }
+        //判断输入的姓名的长度是否合格
+        if ([content charaterCount] > 100) {
+            [SVProgressHUD showImage:nil status:@"医院名称过长，请重新输入"];
+            return;
+        }
         self.currentDoctor.doctor_hospital = content;
     }else if ([title isEqualToString:@"个人简介"]){
         self.currentDoctor.doctor_cv = content;
@@ -323,19 +375,8 @@
         if ([respond.code integerValue] == 200) {
             [SVProgressHUD showSuccessWithStatus:@"修改成功"];
             [self setUpViewDataWithDoctor:self.currentDoctor];
-            
             //更新数据库中的信息
-            UserObject *userobj = [[AccountManager shareInstance] currentUser];
-            [userobj setName:self.userName.text];
-            [userobj setDepartment:self.userDepartment.text];
-            [userobj setPhone:userobj.phone];
-            [userobj setHospitalName:self.userHospital.text];
-            [userobj setTitle:self.userAcademicTitle.text];
-            [userobj setDegree:self.userDegree.text];
-            [userobj setAuthStatus:userobj.authStatus];
-            [userobj setAuthText:userobj.authText];
-            
-            [[DBManager shareInstance] updateUserWithUserObject:userobj];
+            [self updateUserInfo];
         }
     } failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"修改失败"];
@@ -344,6 +385,26 @@
         }
     }];
 }
+
+- (void)updateUserInfo{
+    //更新数据库中的信息
+    UserObject *userobj = [[AccountManager shareInstance] currentUser];
+    [userobj setName:self.userName.text];
+    [userobj setDepartment:self.userDepartment.text];
+    [userobj setPhone:userobj.phone];
+    [userobj setHospitalName:self.userHospital.text];
+    [userobj setTitle:self.userAcademicTitle.text];
+    [userobj setDegree:self.userDegree.text];
+    [userobj setAuthStatus:userobj.authStatus];
+    [userobj setAuthText:userobj.authText];
+    
+    [userobj setDoctor_birthday:self.currentDoctor.doctor_birthday];
+    [userobj setDoctor_cv:self.currentDoctor.doctor_cv];
+    [userobj setDoctor_gender:self.currentDoctor.doctor_gender];
+    [userobj setDoctor_skill:self.currentDoctor.doctor_skill];
+    [[DBManager shareInstance] updateUserWithUserObject:userobj];
+}
+
 
 #pragma mark - 获取年份
 - (NSInteger)getYear{

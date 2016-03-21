@@ -87,5 +87,17 @@
  *  @param failure      失败回调
  */
 + (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content doctorId:(NSString *)doctor_id success:(void (^)())success failure:(void (^)(NSError *error))failure;
+/**
+ *  发送消息给患者
+ *
+ *  @param doctor_id  医生id
+ *  @param patient_id 患者id
+ *  @param isWeixin   微信发送
+ *  @param isSms      短信发送
+ *  @param content    发送的内容
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)sendMessageWithDoctorId:(NSString *)doctor_id patientId:(NSString *)patient_id isWeixin:(BOOL)isWeixin isSms:(BOOL)isSms txtContent:(NSString *)content success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 
 @end

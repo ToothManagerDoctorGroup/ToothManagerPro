@@ -9,7 +9,11 @@
 #import "DBManager+AutoSync.h"
 #import "NSString+TTMAddtion.h"
 
+#define MAX_SYNC_COUNT 50
+
 @implementation DBManager (AutoSync)
+
+
 
 - (BOOL)insertInfoWithInfoAutoSync:(InfoAutoSync *)info{
     if (info == nil || [info.dataEntity isEmpty]) {
@@ -28,13 +32,16 @@
         [columeArray addObject:@"dataEntity"];
         [columeArray addObject:@"sync_status"];
         [columeArray addObject:@"autoSync_CreateDate"];
+        [columeArray addObject:@"syncCount"];
         
         [valueArray addObject:info.data_type];
         [valueArray addObject:info.post_type];
         [valueArray addObject:info.dataEntity];
         [valueArray addObject:info.sync_status];
         [valueArray addObject:info.autoSync_CreateDate];
+        [valueArray addObject:@(info.syncCount)];
         
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -65,13 +72,16 @@
         [columeArray addObject:@"dataEntity"];
         [columeArray addObject:@"sync_status"];
         [columeArray addObject:@"autoSync_CreateDate"];
+        [columeArray addObject:@"syncCount"];
         
         [valueArray addObject:info.data_type];
         [valueArray addObject:info.post_type];
         [valueArray addObject:info.dataEntity];
         [valueArray addObject:info.sync_status];
         [valueArray addObject:info.autoSync_CreateDate];
+        [valueArray addObject:@(info.syncCount)];
         
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -91,6 +101,17 @@
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set sync_status=\"%@\" where id=%ld",InfoAutoSyncTableName,syncStatus,(long)infoId];
+        ret = [db executeUpdate:sqlQuery];
+    }];
+    return ret;
+}
+
+- (BOOL)updateInfoWithSyncStatus:(NSString *)syncStatus byInfo:(InfoAutoSync *)info{
+    __block BOOL ret;
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        // 3. 写入数据库
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set sync_status=\"%@\",syncCount = %d where id=%ld",InfoAutoSyncTableName,syncStatus,info.syncCount,(long)info.info_id];
         ret = [db executeUpdate:sqlQuery];
     }];
     return ret;
@@ -145,7 +166,7 @@
          NSString *sqlString;
          if ([status isContainsString:@","]) {
              NSArray *statusArr = [status componentsSeparatedByString:@","];
-             NSMutableString *sqlStringM = [NSMutableString stringWithFormat:@"select * from %@ where post_type=\"%@\" and (",InfoAutoSyncTableName,postType];
+             NSMutableString *sqlStringM = [NSMutableString stringWithFormat:@"select * from %@ where post_type=\"%@\" and syncCount <= %d and (",InfoAutoSyncTableName,postType,MAX_SYNC_COUNT];
              for (int i = 0; i < statusArr.count; i++) {
                  if (i != statusArr.count - 1) {
                      [sqlStringM appendFormat:@"sync_status=\"%@\" or ",statusArr[i]];
@@ -155,7 +176,7 @@
              }
              sqlString = [NSString stringWithString:sqlStringM];
          }else{
-             sqlString = [NSString stringWithFormat:@"select * from %@ where post_type=\"%@\" sync_status=\"%@\"",InfoAutoSyncTableName,postType,status];
+             sqlString = [NSString stringWithFormat:@"select * from %@ where post_type=\"%@\" and sync_status=\"%@\" and syncCount <= %d",InfoAutoSyncTableName,postType,status,MAX_SYNC_COUNT];
          }
          
          result = [db executeQuery:sqlString];
@@ -170,4 +191,46 @@
     return resultArray;
 }
 
+- (NSArray *)getInfoListBySyncCountWithStatus:(NSString *)status{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+        
+         NSString *sqlString = [NSString stringWithFormat:@"select * from %@ where sync_status=\"%@\" and syncCount > %d",InfoAutoSyncTableName,status,MAX_SYNC_COUNT];
+         
+         result = [db executeQuery:sqlString];
+         
+         while ([result next])
+         {
+             InfoAutoSync * info = [InfoAutoSync InfoAutoSyncWithResult:result];
+             [resultArray addObject:info];
+         }
+         [result close];
+     }];
+    return resultArray;
+}
+
+
+- (NSArray *)getAllInfo{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         
+         NSString *sqlString = [NSString stringWithFormat:@"select * from %@",InfoAutoSyncTableName];
+         
+         result = [db executeQuery:sqlString];
+         
+         while ([result next])
+         {
+             InfoAutoSync * info = [InfoAutoSync InfoAutoSyncWithResult:result];
+             [resultArray addObject:info];
+         }
+         [result close];
+     }];
+    return resultArray;
+}
 @end

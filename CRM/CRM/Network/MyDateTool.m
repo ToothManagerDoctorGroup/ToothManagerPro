@@ -10,6 +10,13 @@
 
 @implementation MyDateTool
 
++ (NSString *)stringWithDateFormatterStr:(NSString *)formatterStr dateStr:(NSString *)dateStr{
+    NSDate *dateTmp = [self dateWithStringWithSec:dateStr];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = formatterStr;
+    return [formatter stringFromDate:dateTmp];
+}
+
 + (NSString *)stringWithDateWithSec:(NSDate *)date{
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";

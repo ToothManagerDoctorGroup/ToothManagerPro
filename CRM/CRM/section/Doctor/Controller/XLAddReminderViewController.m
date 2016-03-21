@@ -39,6 +39,10 @@
 #import "DoctorTool.h"
 #import "XLPatientSelectViewController.h"
 #import "XLDoctorLibraryViewController.h"
+#import "XLCustomAlertView.h"
+#import "MyPatientTool.h"
+#import "SysMessageTool.h"
+#import "MyDateTool.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -46,7 +50,7 @@
 
 #define EditTextColor [UIColor colorWithHex:0x888888]
 
-@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,UIAlertViewDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>{
+@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>{
     
     __weak IBOutlet UILabel *_yaweiTitle;
     __weak IBOutlet UILabel *_nameTitle;
@@ -61,7 +65,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *visitTimeLabel;//就诊时间
 @property (weak, nonatomic) IBOutlet UILabel *visitAddressLabel;//就诊地点
 @property (weak, nonatomic) IBOutlet UILabel *visitDurationLabel;//就诊时长
-@property (weak, nonatomic) IBOutlet UISwitch *weixinSendSwitch;//是否发送微信
 @property (weak, nonatomic) IBOutlet UILabel *yuyueRemarkLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *therapyDoctor;
@@ -76,6 +79,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *reserveTypeArrow;
 @property (weak, nonatomic) IBOutlet UIImageView *reserveTimeArrow;
 @property (weak, nonatomic) IBOutlet UIImageView *treatDoctorArrow;
+
+@property (nonatomic, assign)BOOL isBind;//是否绑定了微信
 
 @end
 
@@ -97,8 +102,6 @@
 }
 #pragma mark - 保存按钮点击
 - (void)onRightButtonAction:(id)sender{
-
-    
     if (self.isEditAppointment) {
         //判断当前的预约时间和原来的预约时间是否相同,当前的治疗医生和之前的治疗医生是否相同
         if ([self.localNoti.reserve_time isEqualToString:self.visitTimeLabel.text] && self.currentSelectDoctor == nil) {
@@ -109,12 +112,11 @@
             [[XLAutoSyncTool shareInstance] editAllNeedSyncReserve_record:self.localNoti success:^(CRMHttpRespondModel *respond) {
                 if ([respond.code integerValue] == 200) {
                     if([[DBManager shareInstance] updateLocalNotificaiton:self.localNoti]){
-                        [SVProgressHUD showSuccessWithStatus:@"修改预约成功"];
+                        [SVProgressHUD showSuccessWithStatus:@"预约修改成功"];
                         //发送通知
                         [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
-                        //发送微信给治疗医生
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            [self.navigationController popViewControllerAnimated:YES];
+                            [self popToScheduleVc];
                         });
                     }
                 }else{
@@ -142,7 +144,7 @@
                     otherNoti.reserve_time = [NSString stringWithFormat:@"%@:00",self.visitTimeLabel.text];
                     otherNoti.reserve_content = self.yuyueRemarkLabel.text;
                     otherNoti.reserve_status = @"0";
-                    otherNoti.doctor_id = self.localNoti.doctor_id;
+                    otherNoti.doctor_id = [AccountManager currentUserid];
                     if (self.currentSelectDoctor && ![self.currentSelectDoctor.ckeyid isEqualToString:self.localNoti.therapy_doctor_id]) {
                         otherNoti.therapy_doctor_id = self.currentSelectDoctor.ckeyid;
                         otherNoti.therapy_doctor_name = self.currentSelectDoctor.doctor_name;
@@ -159,7 +161,7 @@
                                 //进行转诊操作
                                 [DoctorTool transferPatientWithPatientId:otherNoti.patient_id doctorId:[AccountManager currentUserid] receiverId:otherNoti.therapy_doctor_id success:^(CRMHttpRespondModel *result) {
                                     //转诊成功
-                                    [self transferPatientSuccessWithResult:result];
+                                    [self transferPatientSuccessWithResult:result send:NO];
                                 } failure:^(NSError *error) {
                                     if (self.isEditAppointment) {
                                         [SVProgressHUD showErrorWithStatus:@"修改预约失败,转诊失败"];
@@ -175,8 +177,6 @@
                                 //修改预约成功，只是修改治疗时间，无转诊操作
                                 [self updateReserveRecordSuccess];
                             }
-                            
-                            
                         }else{
                             [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                         }
@@ -242,43 +242,14 @@
         }
         notification.patient_id = patient_id;
         self.currentNoti = notification;
-        //微信消息推送打开
-        if([self.weixinSendSwitch isOn]){
-            //获取偏好设置中保存的提醒设置
-            NSString *isOpen = [CRMUserDefalut objectForKey:AutoAlertKey];
-            if (isOpen == nil) {
-                isOpen = Auto_Action_Open;
-                [CRMUserDefalut setObject:isOpen forKey:AutoAlertKey];
-            }
-            //开启提示框功能
-            if ([isOpen isEqualToString:Auto_Action_Open]) {
-                [SVProgressHUD showWithStatus:@"正在加载..."];
-                [DoctorTool yuYueMessagePatient:patient_id fromDoctor:[AccountManager currentUserid] withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.visitTimeLabel.text success:^(CRMHttpRespondModel *result) {
-                    [SVProgressHUD dismiss];
-                    //显示提示框
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提醒内容" message:result.result delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"发送", nil];
-                    [alertView show];
-                    
-                } failure:^(NSError *error) {
-                    [SVProgressHUD showErrorWithStatus:@"提醒内容获取失败，请检查网络设置"];
-                    if (error) {
-                        NSLog(@"error:%@",error);
-                    }
-                }];
-            }else{
-                [self saveNotificationWithNoti:notification sendWeiXin:YES];
-            }
-        }else{
-            //不给患者发送微信时，添加预约信息
-            [self saveNotificationWithNoti:notification sendWeiXin:NO];
-        }
+        
+        //直接调用接口上传数据
+        [self saveNotificationWithNoti:notification sendWeiXin:YES];
     }
 }
 #pragma mark - 修改预约方法
 - (void)updateReserveRecordSuccess{
-    if ([self.localNoti.doctor_id isEqualToString:[AccountManager currentUserid]]) {
-         [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
-    }
+
     //向本地保存一条预约信息
     if([[LocalNotificationCenter shareInstance] addLocalNotification:self.currentNoti]){
         //更新所有病历的下次预约时间
@@ -289,18 +260,53 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
         
-        if (self.delegate && [self.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
-            [self.delegate addReminderViewController:self didUpdateReserveRecord:self.currentNoti];
-        }
-        //发送微信给治疗医生
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.navigationController popViewControllerAnimated:YES];
-        });
+        //获取消息,发送给医生
+        [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
+        
+        //发送消息给患者
+        NSString *formatterStr = @"yyyy年MM月dd日 HH时mm分";
+        NSString *preDateStr = [MyDateTool stringWithDateFormatterStr:formatterStr dateStr:[NSString stringWithFormat:@"%@:00",self.localNoti.reserve_time]];
+        NSString *currentDateStr = [MyDateTool stringWithDateFormatterStr:formatterStr dateStr:self.currentNoti.reserve_time];
+        NSString *template = [NSString stringWithFormat:@"您好，我是%@医生，原定于%@的预约已调整为%@，请您准时就诊。如有疑问请随时联系！",[AccountManager shareInstance].currentUser.name,preDateStr,currentDateStr];
+        __weak typeof(self) weakSelf = self;
+        XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:template Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+            [weakSelf popToScheduleVc];
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
+                [weakSelf.delegate addReminderViewController:weakSelf didUpdateReserveRecord:weakSelf.currentNoti];
+            }
+        } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+            [SVProgressHUD  showWithStatus:@"正在发送消息"];
+            [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                
+                if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
+                    [weakSelf.delegate addReminderViewController:weakSelf didUpdateReserveRecord:weakSelf.currentNoti];
+                }
+                
+                if ([respond.code integerValue] == 200) {
+                    [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                }else{
+                    [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                }
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [weakSelf popToScheduleVc];
+                });
+            } failure:^(NSError *error) {
+                [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [weakSelf popToScheduleVc];
+                });
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }];
+        [alertView show];
     }
 }
 
 #pragma mark - 保存本地预约,给患者发送预约信息
 - (void)saveNotificationWithNoti:(LocalNotification *)noti sendWeiXin:(BOOL)isSend{
+    
     [SVProgressHUD showWithStatus:@"正在添加预约，请稍候..."];
     [[XLAutoSyncTool shareInstance] postAllNeedSyncReserve_record:noti success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
@@ -309,7 +315,7 @@
                 //进行转诊操作
                 [DoctorTool transferPatientWithPatientId:noti.patient_id doctorId:[AccountManager currentUserid] receiverId:noti.therapy_doctor_id success:^(CRMHttpRespondModel *result) {
                     //转诊成功回调
-                    [self transferPatientSuccessWithResult:result];
+                    [self transferPatientSuccessWithResult:result send:YES];
                 } failure:^(NSError *error) {
                     if (self.isEditAppointment) {
                         [SVProgressHUD showErrorWithStatus:@"修改预约失败,转诊失败"];
@@ -321,25 +327,47 @@
                     }
                 }];
             }else{
+                if (self.isEditAppointment) {
+                    [SVProgressHUD showSuccessWithStatus:@"修改预约成功"];
+                }else {
+                    [SVProgressHUD showSuccessWithStatus:@"添加预约成功"];
+                }
+                
                 //添加一条本地预约数据
                 BOOL ret = [[LocalNotificationCenter shareInstance] addLocalNotification:noti];
                 if (ret) {
                     //修改所有病历的下次预约信息
                     [self updateNextReserveTimeWithPatientId:noti.patient_id time:noti.reserve_time];
                     
-                    [SVProgressHUD showSuccessWithStatus:@"预约添加成功"];
-                    //判断微信发送是否打开
-                    if (self.weixinSendSwitch.isOn) {
-                        //发送微信给治疗医生和患者
-                        [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:noti.ckeyid oldReserveId:noti.ckeyid isCancel:NO notification:nil type:AddReserveType success:nil failure:nil];
-                    }
-                    
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                        [self.navigationController popViewControllerAnimated:YES];
-                    });
+                    //发送微信消息给医生
+                    [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:noti.ckeyid oldReserveId:noti.ckeyid isCancel:NO notification:nil type:AddReserveType success:nil failure:nil];
+                    //获取消息
+                    __weak typeof(self) weakSelf = self;
+                    [self sendMessageWithNoti:noti cancel:^{
+                        [weakSelf popToScheduleVc];
+                    } certain:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                        [SVProgressHUD showWithStatus:@"正在发送消息"];
+                        [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                            if ([respond.code integerValue] == 200) {
+                                [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                            }else{
+                                [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                            }
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                [weakSelf popToScheduleVc];
+                            });
+                        } failure:^(NSError *error) {
+                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                [weakSelf popToScheduleVc];
+                            });
+                            if (error) {
+                                NSLog(@"error:%@",error);
+                            }
+                        }];
+                    }];
                 }
             }
-            
         }else{
             [SVProgressHUD showErrorWithStatus:@"预约添加失败"];
         }
@@ -351,16 +379,8 @@
     }];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 0) {
-    }else{
-        //点击了发送按钮
-        [self saveNotificationWithNoti:self.currentNoti sendWeiXin:YES];
-    }
-}
-
 #pragma mark - 转诊患者成功
-- (void)transferPatientSuccessWithResult:(CRMHttpRespondModel *)resultModel
+- (void)transferPatientSuccessWithResult:(CRMHttpRespondModel *)resultModel send:(BOOL)send
 {
     if ([resultModel.code integerValue] == 200) {
         //转诊成功
@@ -394,30 +414,89 @@
             //发送转诊成功的通知
             [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
             
+            //发送转诊成功通知给医生
             if (self.isEditAppointment) {
-                if ([self.localNoti.doctor_id isEqualToString:[AccountManager currentUserid]]) {
-                    [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
-                }
+                [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
                 //发送通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
             }else{
+                //发送微信给治疗医生
+                [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.currentNoti.ckeyid isCancel:NO notification:nil type:AddReserveType success:^{} failure:^{}];
                 [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
-                //判断微信发送是否打开
-                if (self.weixinSendSwitch.isOn) {
-                    //发送微信给治疗医生和患者
-                    [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.currentNoti.ckeyid isCancel:NO notification:nil type:AddReserveType success:^{} failure:^{}];
+            }
+            if (send) {
+                //发送微信消息给患者，需要医生手动发送
+                __weak typeof(self) weakSelf = self;
+                [self sendMessageWithNoti:self.currentNoti cancel:^{
+                    if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
+                        [weakSelf.delegate addReminderViewController:weakSelf didUpdateReserveRecord:weakSelf.currentNoti];
+                    }
+                    [weakSelf popToScheduleVc];
+                } certain:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                    if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
+                        [weakSelf.delegate addReminderViewController:weakSelf didUpdateReserveRecord:weakSelf.currentNoti];
+                    }
+                    [SVProgressHUD showWithStatus:@"正在发送消息"];
+                    [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                        if ([respond.code integerValue] == 200) {
+                            [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                        }else{
+                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                        }
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            [weakSelf popToScheduleVc];
+                        });
+                    } failure:^(NSError *error) {
+                        [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            [weakSelf popToScheduleVc];
+                        });
+                        if (error) {
+                            NSLog(@"error:%@",error);
+                        }
+                    }];
+                }];
+            }else{
+                if (self.delegate && [self.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
+                    [self.delegate addReminderViewController:self didUpdateReserveRecord:self.currentNoti];
                 }
+                [self popToScheduleVc];
             }
-            if (self.delegate && [self.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
-                [self.delegate addReminderViewController:self didUpdateReserveRecord:self.currentNoti];
-            }
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.navigationController popViewControllerAnimated:YES];
-            });
         }
     }
-
 }
+
+#pragma mark - 发送消息
+- (void)sendMessageWithNoti:(LocalNotification *)noti cancel:(void(^)())cancel certain:(void(^)(NSString *content, BOOL wenxinSend, BOOL messageSend))certain{
+    
+    [DoctorTool yuYueMessagePatient:noti.patient_id fromDoctor:[AccountManager currentUserid] withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.visitTimeLabel.text success:^(CRMHttpRespondModel *result) {
+        
+        XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+            if (cancel) {
+                cancel();
+            }
+        } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+            if (certain) {
+                certain(content,wenxinSend,messageSend);
+            }
+        }];
+        [alertView show];
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"提醒内容获取失败，请检查网络设置"];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+#pragma mark - 退出到日程表
+- (void)popToScheduleVc{
+    UITabBarController *rootVC = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    [rootVC setSelectedViewController:[rootVC.viewControllers objectAtIndex:0]];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
 #pragma mark - 向本地插入患者介绍人关系表
 -(void)insertPatientIntroducerMap{
     PatientIntroducerMap *map = [[PatientIntroducerMap alloc]init];
@@ -480,10 +559,35 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    
+    NSString *patient_id;
     if (!self.isNextReserve && !self.isAddLocationToPatient && !self.isEditAppointment) {
+        //是添加预约时选择患者
         self.patientNameLabel.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
+        patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    }else if(self.isAddLocationToPatient){
+        //给指定患者添加预约
+        patient_id = self.patient.ckeyid;
+    }else{
+        //修改预约
+        patient_id = self.localNoti.patient_id;
     }
+    //获取患者绑定微信的状态
+    [MyPatientTool getWeixinStatusWithPatientId:patient_id success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //绑定
+            self.isBind = YES;
+        }else{
+            //未绑定
+            self.isBind = NO;
+        }
+        
+    } failure:^(NSError *error) {
+        self.isBind = NO;
+        //未绑定
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 #pragma mark - UITableView  Delegate/DataSource
@@ -504,22 +608,6 @@
     headerLabel.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
     headerLabel.font = [UIFont systemFontOfSize:15];
     [headerView addSubview:headerLabel];
-    
-    switch (section) {
-        case 0:
-        
-            headerLabel.text = @"";
-            
-            break;
-        case 1:
-            headerLabel.text = @"";
-            break;
-        case 2:
-            headerLabel.text = @"提醒方式";
-            break;
-        default:
-            break;
-    }
     
     if (section == 0) {
         return nil;
@@ -555,6 +643,7 @@
                 contentVC.title = @"备注";
                 contentVC.delegate = self;
                 contentVC.currentContent = self.yuyueRemarkLabel.text;
+                contentVC.limit = 300;
                 [self pushViewController:contentVC animated:YES];
             }
         }

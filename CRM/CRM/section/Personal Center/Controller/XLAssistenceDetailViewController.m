@@ -8,34 +8,46 @@
 
 #import "XLAssistenceDetailViewController.h"
 #import "XLLongImageScrollView.h"
+#import "XLAssistenceModel.h"
 
-@interface XLAssistenceDetailViewController ()
+@interface XLAssistenceDetailViewController ()<UIWebViewDelegate>
 
-@property (nonatomic, strong)XLLongImageScrollView *imageScrollView;//图片滚动视图
+@property (nonatomic, strong)UIWebView *webView;
 
 @end
 
 @implementation XLAssistenceDetailViewController
 
-- (XLLongImageScrollView *)imageScrollView{
-    if (!_imageScrollView) {
-        _imageScrollView = [[XLLongImageScrollView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, self.view.height)];
-        _imageScrollView.image = self.image;
-        [self.view addSubview:_imageScrollView];
+- (UIWebView *)webView{
+    if (!_webView) {
+        _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+        _webView.dataDetectorTypes = UIDataDetectorTypeAll;
+        _webView.delegate = self;
+        [self.view addSubview:_webView];
     }
-    return _imageScrollView;
+    return _webView;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
+    self.title = self.model.help_des;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
-    [self imageScrollView];
+    
+    
+    NSURL *url = [NSURL URLWithString:self.model.help_url];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    [self.webView loadRequest:request];
 }
 
 - (void)dealloc{
-    self.imageScrollView = nil;
+    self.webView = nil;
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"WebKitCacheModelPreferenceKey"];
 }
 
 - (void)didReceiveMemoryWarning {
