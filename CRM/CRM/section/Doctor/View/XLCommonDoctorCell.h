@@ -10,8 +10,22 @@
 /**
  *  医生通用cell
  */
+@class Doctor,FriendNotificationItem,XLCommonDoctorCell;
+@protocol XLCommonDoctorCellDelegte <NSObject>
+
+@optional
+- (void)commonDoctorCell:(XLCommonDoctorCell *)cell addButtonDidSelect:(id)sender;
+
+@end
 @interface XLCommonDoctorCell : UITableViewCell
 
+@property (nonatomic, weak)id<XLCommonDoctorCellDelegte> delegate;
+
++ (CGFloat)fixHeight;
+
 + (instancetype)cellWithTableView:(UITableView *)tableView;
+
+//新的好友页面
+- (void)setNewFriendCellWithFrienNotifi:(FriendNotificationItem *)notifiItem;
 
 @end

@@ -330,6 +330,8 @@
     NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
     newFriendVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:newFriendVc animated:YES];
+    
+    
 }
 
 #pragma mark -UIAlertViewDelegate

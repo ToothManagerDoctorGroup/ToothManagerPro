@@ -1036,6 +1036,7 @@
 		3DB5A3711C2C072900308DC9 /* UISearchBar+XLMoveBgView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB5A3701C2C072900308DC9 /* UISearchBar+XLMoveBgView.m */; };
 		3DBC84731C574A2F0072CCC7 /* XLMessageTemplateParam.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DBC84721C574A2F0072CCC7 /* XLMessageTemplateParam.m */; };
 		3DBC847F1C5767FD0072CCC7 /* XLSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DBC847E1C5767FD0072CCC7 /* XLSliderView.m */; };
+		3DC0747F1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0747E1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.m */; };
 		3DD2C7181C59E973008F2C99 /* XLUserAssistenceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD2C7171C59E973008F2C99 /* XLUserAssistenceViewController.m */; };
 		3DD2C71B1C59F09B008F2C99 /* XLLongImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD2C71A1C59F09B008F2C99 /* XLLongImageScrollView.m */; };
 		3DD2C71E1C59F885008F2C99 /* XLAssistenceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DD2C71D1C59F885008F2C99 /* XLAssistenceDetailViewController.m */; };
@@ -3187,6 +3188,8 @@
 		3DBC84721C574A2F0072CCC7 /* XLMessageTemplateParam.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLMessageTemplateParam.m; sourceTree = "<group>"; };
 		3DBC847D1C5767FD0072CCC7 /* XLSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLSliderView.h; sourceTree = "<group>"; };
 		3DBC847E1C5767FD0072CCC7 /* XLSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLSliderView.m; sourceTree = "<group>"; };
+		3DC0747D1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLNewFriendNotiViewController.h; sourceTree = "<group>"; };
+		3DC0747E1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLNewFriendNotiViewController.m; sourceTree = "<group>"; };
 		3DD2C7161C59E973008F2C99 /* XLUserAssistenceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLUserAssistenceViewController.h; sourceTree = "<group>"; };
 		3DD2C7171C59E973008F2C99 /* XLUserAssistenceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLUserAssistenceViewController.m; sourceTree = "<group>"; };
 		3DD2C7191C59F09B008F2C99 /* XLLongImageScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLLongImageScrollView.h; sourceTree = "<group>"; };
@@ -7881,6 +7884,8 @@
 			children = (
 				3DE7C1E81C225425001F24ED /* NewFriendsViewController.h */,
 				3DE7C1E91C225425001F24ED /* NewFriendsViewController.m */,
+				3DC0747D1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.h */,
+				3DC0747E1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.m */,
 			);
 			name = NewFriendMsg;
 			sourceTree = "<group>";
@@ -10692,6 +10697,7 @@
 				81B1EBFD1AAFED8C0030A92C /* UIView+convenience.m in Sources */,
 				3D1661C41C28F43B0062009D /* XLPersonalStepOneViewController.m in Sources */,
 				3DE78BAB1C3B7A63001F963F /* XLAdviseFeedBackViewController.m in Sources */,
+				3DC0747F1CA11A4D00BE4CBC /* XLNewFriendNotiViewController.m in Sources */,
 				64CFD93619F7F6A6001EB0DA /* PatientsTableViewCell.m in Sources */,
 				3DF671561BF70A9900527B49 /* UIViewExt.m in Sources */,
 				3D1B5FE01C18082B0032D949 /* DACircularProgressView.m in Sources */,
@@ -11229,7 +11235,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -11263,7 +11269,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -11320,7 +11326,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = NO;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -11380,7 +11386,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.trasen.dev.CRM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "83767722-7bb2-49b6-a3b2-66e8d1c280f2";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;

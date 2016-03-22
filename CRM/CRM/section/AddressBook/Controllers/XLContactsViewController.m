@@ -433,7 +433,6 @@
         if (abFullName) CFRelease(abFullName);
         if (person) CFRelease(person);
     }
-    CFRelease(allPeople);
     CFRelease(addBook);
 }
 

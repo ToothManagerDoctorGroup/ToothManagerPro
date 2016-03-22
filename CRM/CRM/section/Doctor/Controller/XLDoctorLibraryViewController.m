@@ -31,6 +31,7 @@
 #import "DoctorManager.h"
 #import "MyDateTool.h"
 #import "XLDoctorDetailViewController.h"
+#import "XLNewFriendNotiViewController.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
     UITableView *_tableView;
@@ -406,7 +407,11 @@
 
 #pragma mark - newFriendAction
 - (void)newFriendAction:(UITapGestureRecognizer *)tap{
-    NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+//    NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+//    newFriendVc.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:newFriendVc animated:YES];
+    
+    XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
     newFriendVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:newFriendVc animated:YES];
 }
