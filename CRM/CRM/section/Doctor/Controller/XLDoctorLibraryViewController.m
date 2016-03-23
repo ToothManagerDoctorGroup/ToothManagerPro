@@ -32,8 +32,9 @@
 #import "MyDateTool.h"
 #import "XLDoctorDetailViewController.h"
 #import "XLNewFriendNotiViewController.h"
+#import "XLCommonDoctorCell.h"
 
-@interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate>{
+@interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate,XLCommonDoctorCellDelegte>{
     UITableView *_tableView;
 }
 
@@ -238,30 +239,7 @@
         }
     }];
 }
-#pragma mark - 排序
--(void)orderedByNumber{
 
-    NSArray *lastArray = [self.searchHistoryArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        Doctor *doctor1 = (Doctor *)obj1;
-        Doctor *doctor2 = (Doctor *)obj2;
-        NSInteger count1 = [[DBManager shareInstance] getAllPatientWithID:doctor1.ckeyid].count;
-        NSInteger count2 = [[DBManager shareInstance] getAllPatientWithID:doctor2.ckeyid].count;
-        if (count1 > count2){
-            return NSOrderedDescending;
-        }
-        if(count1 < count2){
-            return  NSOrderedAscending;
-        }
-        return NSOrderedSame;
-        
-    }];
-    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
-    for(NSInteger i = lastArray.count;i>0;i--){
-        [resultArray addObject:lastArray[i-1]];
-    }
-    [self.searchHistoryArray removeAllObjects];
-    [self.searchHistoryArray addObjectsFromArray:resultArray];
-}
 #pragma mark - 医生广场入口
 - (void)onRightButtonAction:(id)sender {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
@@ -275,7 +253,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 68.f;
+    return [XLCommonDoctorCell fixHeight];
 }
 
 
@@ -346,22 +324,23 @@
 }
 #pragma mark -设置单元格
 - (UITableViewCell *)setUpTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
-    DoctorTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DoctorTableViewCell"];
-    if (cell == nil) {
-        cell = [[[NSBundle mainBundle] loadNibNamed:@"DoctorTableViewCell" owner:nil options:nil] objectAtIndex:0];
-        [tableView registerNib:[UINib nibWithNibName:@"DoctorTableViewCell" bundle:nil] forCellReuseIdentifier:@"DoctorTableViewCell"];
-    }
-    cell.delegate = self;
-    cell.addButton.backgroundColor = [UIColor clearColor];
-    [cell.addButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+//    DoctorTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DoctorTableViewCell"];
+//    if (cell == nil) {
+//        cell = [[[NSBundle mainBundle] loadNibNamed:@"DoctorTableViewCell" owner:nil options:nil] objectAtIndex:0];
+//        [tableView registerNib:[UINib nibWithNibName:@"DoctorTableViewCell" bundle:nil] forCellReuseIdentifier:@"DoctorTableViewCell"];
+//    }
+    XLCommonDoctorCell *cell = [XLCommonDoctorCell cellWithTableView:tableView];
+//    cell.delegate = self;
+//    cell.addButton.backgroundColor = [UIColor clearColor];
+//    [cell.addButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     cell.tag = indexPath.row+100;
     
     Doctor *doctor = [sourceArray objectAtIndex:indexPath.row];
-    [cell setCellWithMode:doctor];
+    [cell setFriendListCellWithModel:doctor];
     
-    [cell.addButton setTitle:doctor.patient_count forState:UIControlStateNormal];
-    cell.addButton.hidden = YES;
-    cell.addButton.enabled = NO;
+//    [cell.addButton setTitle:doctor.patient_count forState:UIControlStateNormal];
+//    cell.addButton.hidden = YES;
+//    cell.addButton.enabled = NO;
     
     return cell;
 }
@@ -500,6 +479,9 @@
 }
 
 #pragma mark - Cell Delegate
+- (void)commonDoctorCell:(XLCommonDoctorCell *)cell addButtonDidSelect:(id)sender{
+
+}
 - (void)addButtonDidSelected:(id)sender {
     DoctorTableViewCell *cell = (DoctorTableViewCell *)sender;
     Doctor *doctor = nil;

@@ -35,6 +35,7 @@
 #import "SDWebImageManager.h"
 #import "DoctorTool.h"
 #import "DoctorInfoModel.h"
+#import "XLNewFriendNotiViewController.h"
 
 @interface UnReadMessageViewController ()
 
@@ -161,7 +162,7 @@
             //重新请求数据
             [self requestData];
             //新增好友
-            NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
+            XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
             [self.navigationController pushViewController:newFriendVc animated:YES];
         } failure:^(NSError *error) {
             [SVProgressHUD dismiss];

@@ -27,5 +27,9 @@
 
 //新的好友页面
 - (void)setNewFriendCellWithFrienNotifi:(FriendNotificationItem *)notifiItem;
+//好友列表页面
+- (void)setFriendListCellWithModel:(Doctor *)doctor;
+//医生广场页面
+- (void)setDoctorSquareCellWithModel:(Doctor *)doctor;
 
 @end

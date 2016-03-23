@@ -16,7 +16,6 @@
 #import "AccountManager.h"
 #import "MJRefresh.h"
 #import "DBManager+Patients.h"
-#import "DoctorTableViewCell.h"
 #import "DoctorInfoViewController.h"
 #import "DBManager+Doctor.h"
 #import "XLDoctorSelectCell.h"

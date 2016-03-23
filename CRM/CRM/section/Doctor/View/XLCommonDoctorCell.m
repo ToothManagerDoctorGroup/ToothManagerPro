@@ -12,12 +12,12 @@
 #import "FriendNotification.h"
 #import "AccountManager.h"
 #import "UIColor+Extension.h"
+#import "DBManager+Doctor.h"
 
-#define BUTTON_TITLE_SELECT @"已接受"
-#define BUTTON_TITLE_NORMAL @"接受"
 #define BUTTON_TITLT_FONT [UIFont systemFontOfSize:14]
 #define BUTTON_TITLE_COLOR MyColor(15, 166, 255)
-#define TEXT_COLOR MyColor(15, 166, 255)
+#define NAME_TEXT_COLOR MyColor(15, 166, 255)
+#define CONTENT_TEXT_COLOR [UIColor colorWithHex:0x888888]
 #define NAME_FONT [UIFont systemFontOfSize:17]
 #define CONTENT_FONT [UIFont systemFontOfSize:14]
 #define DESC_FONT [UIFont systemFontOfSize:15]
@@ -58,17 +58,17 @@
     
     _nameLabel = [[UILabel alloc] init];
     _nameLabel.font = NAME_FONT;
-    _nameLabel.textColor = TEXT_COLOR;
+    _nameLabel.textColor = NAME_TEXT_COLOR;
     [self.contentView addSubview:_nameLabel];
     
     _contentLabel = [[UILabel alloc] init];
     _contentLabel.font = CONTENT_FONT;
-    _contentLabel.textColor = TEXT_COLOR;
+    _contentLabel.textColor = CONTENT_TEXT_COLOR;
     [self.contentView addSubview:_contentLabel];
     
     _addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_addButton setTitle:BUTTON_TITLE_NORMAL forState:UIControlStateNormal];
-    [_addButton setTitle:BUTTON_TITLE_SELECT forState:UIControlStateSelected];
+    [_addButton setTitle:@"接受" forState:UIControlStateNormal];
+    [_addButton setTitle:@"已接受" forState:UIControlStateSelected];
     [_addButton setTitleColor:BUTTON_TITLE_COLOR forState:UIControlStateNormal];
     _addButton.titleLabel.font = BUTTON_TITLT_FONT;
     [self.contentView addSubview:_addButton];
@@ -87,7 +87,7 @@
     .centerYEqualToView(self.contentView);
     
     _nameLabel.sd_layout
-    .widthIs(100)
+    .widthIs(120)
     .heightIs(25)
     .leftSpaceToView(_iconImageView,margin)
     .topEqualToView(_iconImageView);
@@ -99,10 +99,16 @@
     .centerYEqualToView(self.contentView);
     
     _contentLabel.sd_layout
-    .heightIs(25)
-    .topSpaceToView(_nameLabel,0)
+    .heightIs(20)
+    .topSpaceToView(_nameLabel,5)
     .leftEqualToView(_nameLabel)
     .rightSpaceToView(_addButton,margin);
+    
+    _descLabel.sd_layout
+    .heightIs(25)
+    .widthIs(100)
+    .leftSpaceToView(_nameLabel,0)
+    .topEqualToView(_nameLabel);
 }
 
 + (CGFloat)fixHeight{
@@ -138,7 +144,6 @@
         _addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
         [_addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _addButton.enabled = YES;
-        
         _iconImageView.urlStr = notifiItem.receiver_image;
 
         if (notifiItem.notification_status.integerValue == 0) {
@@ -158,6 +163,37 @@
             _addButton.enabled = NO;
         }
     }
+}
+
+- (void)setFriendListCellWithModel:(Doctor *)doctor{
+    _addButton.hidden = YES;
+    _nameLabel.text = doctor.doctor_name;
+    _descLabel.text = doctor.doctor_degree;
+    _contentLabel.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
+    
+    _iconImageView.urlStr = doctor.doctor_image;
+}
+
+- (void)setDoctorSquareCellWithModel:(Doctor *)doctor{
+    _addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
+    _addButton.layer.cornerRadius = 5.0f;
+    [_addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    
+    _nameLabel.text = doctor.doctor_name;
+    _addButton.enabled = doctor.isopen;
+    
+    NSArray *array = [[DBManager shareInstance] getAllDoctor];
+    for(Doctor *doc in array){
+        if([doc.doctor_name isEqualToString:doctor.doctor_name]){
+            [_addButton setBackgroundColor:[UIColor lightGrayColor]];
+            [_addButton setTitle:@"已是好友" forState:UIControlStateNormal];
+            _addButton.enabled = NO;
+        }
+    }
+    
+    _descLabel.text = doctor.doctor_degree;
+    _contentLabel.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
+    _iconImageView.urlStr = doctor.doctor_image;
 }
 
 @end

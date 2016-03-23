@@ -123,5 +123,4 @@
     [self.avatarButton addTarget:target action:action forControlEvents:controlEvents];
 }
 
-
 @end
