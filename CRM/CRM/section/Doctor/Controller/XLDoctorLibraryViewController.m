@@ -197,13 +197,13 @@
 #pragma mark - 下拉刷新数据
 - (void)headerRefreshAction{
     self.pageIndex = 1;
-    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(CommonPageSize)];
     [self requestWlanDataWithQueryModel:queryModel isHeader:YES];
 }
 #pragma mark - 上拉加载数据
 - (void)footerRefreshAction{
     self.pageIndex++;
-    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(CommonPageSize)];
     [self requestWlanDataWithQueryModel:queryModel isHeader:NO];
 }
 

@@ -130,6 +130,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     _introducerVC = [[XLIntroducerViewController alloc] init];
     [self setTabbarItemState:_introducerVC withTitle:@"介绍人" withImage1:@"ic_tabbar_jieshaoren_grey" withImage2:@"ic_tabbar_jiashaoren_blue"];
     _introducerVC.isHome = YES;
+    _introducerVC.Mode = IntroducePersonViewNormal;
     TimNavigationViewController* ncViewController2=[[TimNavigationViewController alloc]initWithRootViewController:_introducerVC];
     
     //患者

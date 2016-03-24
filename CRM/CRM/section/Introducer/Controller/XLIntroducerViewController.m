@@ -40,6 +40,8 @@
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
 @property (nonatomic, assign)int pageCount;//分页使用的页数，默认是0
+@property (nonatomic, assign)NSInteger allCount;//所有数据
+@property (nonatomic, assign)NSInteger currentCount;//当前加载的数据
 
 /**
  *  菜单选项
@@ -212,27 +214,33 @@
 
 #pragma mark - 下拉刷新
 - (void)headerRefreshAction{
+    self.allCount = [[DBManager shareInstance] getIntroducerAllCount];
     self.pageCount = 0;
     [self requestLocalDataWitPage:self.pageCount isHeader:YES];
 }
 #pragma mark - 上拉加载
 - (void)footerRefreshAction{
-    [self requestLocalDataWitPage:self.pageCount isHeader:NO];
+    if (self.introducerCellModeArray.count < self.allCount) {
+        self.pageCount++;
+        [self requestLocalDataWitPage:self.pageCount isHeader:NO];
+    }else{
+        [_tableView.footer noticeNoMoreData];
+    }
+    
 }
 
 #pragma mark - 请求本地介绍人数据
 - (void)requestLocalDataWitPage:(int)pageCount isHeader:(BOOL)isHeader
 {
-    if (self.Mode == IntroducePersonViewSelect) {
-        self.introducerInfoArray = [[DBManager shareInstance] getLocalIntroducerWithPage:self.pageCount];
-    }else {
-        self.introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:pageCount];
-    }
-    if (self.introducerInfoArray.count > 50) {
-        self.pageCount++;
-    }
+    self.introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:pageCount];
+
     if (isHeader) {
         [self.introducerCellModeArray removeAllObjects];
+        if (self.introducerInfoArray.count < CommonPageSize) {
+            [_tableView.footer noticeNoMoreData];
+        }else{
+            [_tableView.footer resetNoMoreData];
+        }
     }
     
     for (NSInteger i = 0; i < self.introducerInfoArray.count; i++) {
@@ -243,29 +251,6 @@
         cellMode.level = introducerInfo.intr_level;
         cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
         [self.introducerCellModeArray addObject:cellMode];
-    }
-//    //如果是“编辑患者”选择“介绍人”进来，则只显示intr_id为0的介绍人，也就是本地介绍人
-//    if (self.Mode == IntroducePersonViewSelect && self.delegate) {
-//        for (NSInteger i = 0; i < self.introducerInfoArray.count; i++) {
-//            Introducer *introducerInfo = [self.introducerInfoArray objectAtIndex:i];
-//            if([introducerInfo.intr_id isEqualToString:@"0"]){
-//                IntroducerCellMode *cellMode = [[IntroducerCellMode alloc]init];
-//                cellMode.ckeyid = introducerInfo.ckeyid;
-//                cellMode.name = introducerInfo.intr_name;
-//                cellMode.level = introducerInfo.intr_level;
-//                cellMode.count = [[DBManager shareInstance] numberIntroducedWithIntroducerId:introducerInfo.ckeyid];
-//                [self.introducerCellModeArray addObject:cellMode];
-//            }
-//        }
-//    }else{
-//        
-//    }
-    
-    //对数据进行排序，按介绍人数进行排序
-//    [self sortByIntroCount];
-    
-    if (self.introducerCellModeArray.count < 50) {
-        [_tableView removeFooter];
     }
     //刷新
     if (isHeader) {

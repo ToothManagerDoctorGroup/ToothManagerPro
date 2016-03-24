@@ -8,7 +8,6 @@
 
 #import "XLContactsViewController.h"
 #import "XLContactCell.h"
-#import "XLContactModel.h"
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import "EMSearchBar.h"
@@ -19,6 +18,7 @@
 #import "JSONKit.h"
 #import "MJExtension.h"
 #import "PatientSegumentController.h"
+#import "NVMContactManager.h"
 
 @interface XLContactsViewController ()<XLContactCellDelegate,UISearchBarDelegate,UISearchDisplayDelegate>
 
@@ -54,6 +54,9 @@
     self.contacts = nil;
     self.searchBar = nil;
     self.searchController = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"我被销毁了");
 }
 
 - (NSMutableArray *)contacts{
@@ -85,10 +88,53 @@
     self.tableView.tableHeaderView = [self searchBar];
     [self searchController];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(allowAccessContacts)
+                                                 name:NVMContactAccessAllowedNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(accessDenied)
+                                                 name:NVMContactAccessDeniedNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(accessFailed)
+                                                 name:NVMContactAccessFailedNotification
+                                               object:nil];
+    
     //获取所有联系人
     [self getAllContacts];
-    //对联系人进行排序
-    [self setUpTableSection];
+//    NVMContactManager *manager = [NVMContactManager manager];
+//    for (NVMContact *contact in manager.allPeople) {
+//        NSLog(@"%@", contact);
+//    }
+}
+
+- (void)getAllContacts{
+    //获取联系人
+    __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"正在获取联系人列表"];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [weakSelf.contacts addObjectsFromArray:[NVMContactManager manager].allPeople];
+        if (self.type == ContactsImportTypePatients) {
+            for (NVMContact *model in weakSelf.contacts) {
+                if (model.phoneNumbers.count > 0) {
+                    model.hasAdd = [[DBManager shareInstance] isInPatientsTable:model.phoneNumbers[0]];
+                }
+            }
+        } else if (self.type == ContactsImportTypeIntroducer) {
+            for (NVMContact *model in weakSelf.contacts) {
+                if (model.phoneNumbers.count > 0) {
+                    model.hasAdd = [[DBManager shareInstance] isInIntroducerTable:model.phoneNumbers[0]];
+                }
+            }
+        }
+        //对联系人进行排序
+        [weakSelf setUpTableSection];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+            [weakSelf.tableView reloadData];
+        });
+    });
 }
 
 - (void)onBackButtonAction:(id)sender{
@@ -126,7 +172,7 @@
             
             XLContactCell *cell = [XLContactCell cellWithTableView:tableView];
             cell.delegate = weakSelf;
-            XLContactModel *model = weakSelf.searchController.resultsSource[indexPath.row];
+            NVMContact *model = weakSelf.searchController.resultsSource[indexPath.row];
             cell.contact = model;
             
             return cell;
@@ -156,15 +202,15 @@
     }
     
     //初始化27个空数组加入newSectionsArray
-    for (XLContactModel *model in self.contacts) {
-        NSUInteger sectionIndex = [collation sectionForObject:model collationStringSelector:@selector(name)];
+    for (NVMContact *model in self.contacts) {
+        NSUInteger sectionIndex = [collation sectionForObject:model collationStringSelector:@selector(fullName)];
         [newSectionArray[sectionIndex] addObject:model];
     }
     
      //对每个section中的数组按照name属性排序
     for (NSUInteger index=0; index<numberOfSections; index++) {
         NSMutableArray *personsForSection = newSectionArray[index];
-        NSArray *sortedPersonsForSection = [collation sortedArrayFromArray:personsForSection collationStringSelector:@selector(name)];
+        NSArray *sortedPersonsForSection = [collation sortedArrayFromArray:personsForSection collationStringSelector:@selector(fullName)];
         newSectionArray[index] = sortedPersonsForSection;
     }
     
@@ -186,10 +232,12 @@
 #pragma mark - tableview delegate and datasource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return self.sectionTitlesArray.count;
+//    return [NVMContactManager manager].sequencePeopleTitles.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.sectionArray[section] count];
+//    return [[NVMContactManager manager].sequencePeoples[section] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -200,28 +248,40 @@
     NSUInteger section = indexPath.section;
     NSUInteger row = indexPath.row;
     
-    XLContactModel *model = self.sectionArray[section][row];
+//    NVMContact *contact = (NVMContact *)([NVMContactManager manager].sequencePeoples[section][row]);
+    NVMContact *model = self.sectionArray[section][row];
     cell.contact = model;
     
     return cell;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    
+    if (self.isSearchDisplayController) {
+        return nil;
+    }
+//    return [NVMContactManager manager].sequencePeopleTitles[section];
     return self.sectionTitlesArray[section];
 }
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView{
-    return self.sectionTitlesArray;
+
+    if (self.isSearchDisplayController) {
+        return nil;
+    }
+//    return [NVMContactManager manager].sequencePeopleTitles;
+        return self.sectionTitlesArray;
 }
 
 
 #pragma mark - XLContactCellDelegate
 - (void)ContactCell:(XLContactCell *)cell didclickAddButton:(UIButton *)button{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    XLContactModel *model = nil;
+    NVMContact *model = nil;
     if (self.isSearchDisplayController) {
+        NSIndexPath *indexPath = [self.searchResultTableView indexPathForCell:cell];
         model = self.searchController.resultsSource[indexPath.row];
     }else{
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
         model = self.sectionArray[indexPath.section][indexPath.row];
     }
     BOOL ret = NO;
@@ -233,46 +293,53 @@
     if (ret) {
         model.hasAdd = YES;
         button.enabled = NO;
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"该联系人没有名称或手机号码"];
     }
 }
 
-- (BOOL)insertPatientInfoWithModel:(XLContactModel *)model{
+- (BOOL)insertPatientInfoWithModel:(NVMContact *)model{
     BOOL ret = NO;
-    Patient *patient = [[Patient alloc]init];
-    patient.patient_name = model.name;
-    patient.patient_phone = model.phone;
-    ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
-    if (ret) {
-        [[DBManager shareInstance] updateUpdateDate:patient.ckeyid];
-        //获取患者信息
-        Patient *tempPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patient.ckeyid];
-        if (tempPatient != nil) {
-            [self postNotificationName:PatientCreatedNotification object:nil];
-            //添加自动同步信息
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    if (model.phoneNumbers.count > 0 && [model.fullName isNotEmpty]) {
+        Patient *patient = [[Patient alloc]init];
+        patient.patient_name = model.fullName;
+        patient.patient_phone = model.phoneNumbers[0];
+        ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
+        if (ret) {
+            [[DBManager shareInstance] updateUpdateDate:patient.ckeyid];
+            //获取患者信息
+            Patient *tempPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patient.ckeyid];
+            if (tempPatient != nil) {
+                [self postNotificationName:PatientCreatedNotification object:nil];
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
         }
     }
     return ret;
 }
-- (BOOL)insertIntrInfoWithModel:(XLContactModel *)model{
+- (BOOL)insertIntrInfoWithModel:(NVMContact *)model{
     BOOL ret = NO;
-    Introducer *introducer = [[Introducer alloc]init];
-    introducer.intr_name = model.name;
-    introducer.intr_phone = model.phone;
-    introducer.intr_level = 1;
-    introducer.intr_id = @"0";
-    ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
-    if (ret) {
-        [self postNotificationName:IntroducerCreatedNotification object:nil];
-        //获取介绍人信息
-        Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
-        if (tempIntr != nil) {
-            //添加自动同步信息
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    if (model.phoneNumbers.count > 0 && [model.fullName isNotEmpty]) {
+        Introducer *introducer = [[Introducer alloc]init];
+        introducer.intr_name = model.fullName;
+        introducer.intr_phone = model.phoneNumbers[0];
+        introducer.intr_level = 1;
+        introducer.intr_id = @"0";
+        ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
+        if (ret) {
+            [self postNotificationName:IntroducerCreatedNotification object:nil];
+            //获取介绍人信息
+            Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
+            if (tempIntr != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
         }
     }
+    
     return ret;
 }
 
@@ -288,9 +355,8 @@
 {
     NSArray *searchResults;
     if ([searchText isNotEmpty]) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name CONTAINS %@", searchText]; //predicate只能是对象
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fullName CONTAINS %@", searchText]; //predicate只能是对象
         searchResults = [self.contacts filteredArrayUsingPredicate:predicate];
-        
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:searchResults];
         [self.searchController.searchResultsTableView reloadData];
@@ -314,6 +380,7 @@
     [searchBar setShowsCancelButton:NO animated:YES];
 }
 
+/*
 #pragma mark - 访问通讯录
 - (void)getAllContacts{
     //这个变量用于记录授权是否成功，即用户是否允许我们访问通讯录
@@ -343,98 +410,108 @@
     }
     
     if (tip == 1) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" delegate:nil cancelButtonTitle:@"知道了" otherButtonTitles:nil];
+        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" cancel:@"取消" certain:@"前往设置" cancelHandler:^{
+        } comfirmButtonHandlder:^{
+            NSURL * url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            if([[UIApplication sharedApplication] canOpenURL:url]) {
+                NSURL*url =[NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [[UIApplication sharedApplication] openURL:url];
+            }
+        }];
         [alertView show];
         
         return;
     }
-    
-    //获取通讯录中的所有人
-    CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addBook);
-    //通讯录中人数
-    CFIndex nPeople = ABAddressBookGetPersonCount(addBook);
-    //循环，获取每个人的个人信息
-    for (NSInteger i = 0; i < nPeople; i++)
-    {
-        //新建一个联系人的模型
-        XLContactModel *model = [[XLContactModel alloc] init];
-        //获取个人
-        ABRecordRef person = CFArrayGetValueAtIndex(allPeople, i);
-        //获取个人名字
-        CFTypeRef abName = ABRecordCopyValue(person, kABPersonFirstNameProperty);
-        CFTypeRef abLastName = ABRecordCopyValue(person, kABPersonLastNameProperty);
-        CFStringRef abFullName = ABRecordCopyCompositeName(person);
-        NSString *nameString = (__bridge NSString *)abName;
-        NSString *lastNameString = (__bridge NSString *)abLastName;
-        
-        if ((__bridge id)abFullName != nil) {
-            nameString = (__bridge NSString *)abFullName;
-        } else {
-            if ((__bridge id)abLastName != nil)
-            {
-                nameString = [NSString stringWithFormat:@"%@%@", nameString, lastNameString];
-            }
-        }
-        model.name = nameString;
-        
-        //读取照片
-//        NSData *image = (__bridge NSData*)ABPersonCopyImageData(person);
-//        if (image.length == 0) {
-//            model.image = [UIImage imageNamed:@"user_icon"];
-//        }else{
-//            model.image = [UIImage imageWithData:image];
-//        }
-        
-        ABPropertyID multiProperties[] = {
-            kABPersonPhoneProperty,
-            kABPersonEmailProperty
-        };
-        NSInteger multiPropertiesTotal = sizeof(multiProperties) / sizeof(ABPropertyID);
-        for (NSInteger j = 0; j < multiPropertiesTotal; j++) {
-            ABPropertyID property = multiProperties[j];
-            ABMultiValueRef valuesRef = ABRecordCopyValue(person, property);
-            NSInteger valuesCount = 0;
-            if (valuesRef != nil) valuesCount = ABMultiValueGetCount(valuesRef);
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        //获取通讯录中的所有人
+        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addBook);
+        //通讯录中人数
+        CFIndex nPeople = ABAddressBookGetPersonCount(addBook);
+        //循环，获取每个人的个人信息
+        for (NSInteger i = 0; i < nPeople; i++)
+        {
+            //新建一个联系人的模型
+            XLContactModel *model = [[XLContactModel alloc] init];
+            //获取个人
+            ABRecordRef person = CFArrayGetValueAtIndex(allPeople, i);
+            //获取个人名字
+            CFTypeRef abName = ABRecordCopyValue(person, kABPersonFirstNameProperty);
+            CFTypeRef abLastName = ABRecordCopyValue(person, kABPersonLastNameProperty);
+            CFStringRef abFullName = ABRecordCopyCompositeName(person);
+            NSString *nameString = (__bridge NSString *)abName;
+            NSString *lastNameString = (__bridge NSString *)abLastName;
             
-            if (valuesCount == 0) {
-                CFRelease(valuesRef);
-                continue;
-            }
-            //获取电话号码和email
-            for (NSInteger k = 0; k < valuesCount; k++) {
-                CFTypeRef value = ABMultiValueCopyValueAtIndex(valuesRef, k);
-                switch (j) {
-                    case 0: {// Phone number
-                        NSString *phoneStr = (__bridge NSString*)value;
-                        model.phone = [self editPhoneStyleWithPhone:phoneStr];
-                        break;
-                    }
-                    case 1: {// Email
-                        model.email = (__bridge NSString*)value;
-                        break;
-                    }
+            if ((__bridge id)abFullName != nil) {
+                nameString = (__bridge NSString *)abFullName;
+            } else {
+                if ((__bridge id)abLastName != nil)
+                {
+                    nameString = [NSString stringWithFormat:@"%@%@", nameString, lastNameString];
                 }
-                CFRelease(value);
             }
-            CFRelease(valuesRef);
-        }
-        //将个人信息添加到数组中，循环完成后addressBookTemp中包含所有联系人的信息
-        if (model.phone != nil && [model.name isNotEmpty]) {
-            if (self.type == ContactsImportTypePatients) {
-                model.hasAdd = [[DBManager shareInstance] isInPatientsTable:model.phone];
-            } else if (self.type == ContactsImportTypeIntroducer) {
-                model.hasAdd = [[DBManager shareInstance] isInIntroducerTable:model.phone];
+            model.name = nameString;
+            
+            //读取照片
+            //        NSData *image = (__bridge NSData*)ABPersonCopyImageData(person);
+            //        if (image.length == 0) {
+            //            model.image = [UIImage imageNamed:@"user_icon"];
+            //        }else{
+            //            model.image = [UIImage imageWithData:image];
+            //        }
+            
+            ABPropertyID multiProperties[] = {
+                kABPersonPhoneProperty,
+                kABPersonEmailProperty
+            };
+            NSInteger multiPropertiesTotal = sizeof(multiProperties) / sizeof(ABPropertyID);
+            for (NSInteger j = 0; j < multiPropertiesTotal; j++) {
+                ABPropertyID property = multiProperties[j];
+                ABMultiValueRef valuesRef = ABRecordCopyValue(person, property);
+                NSInteger valuesCount = 0;
+                if (valuesRef != nil) valuesCount = ABMultiValueGetCount(valuesRef);
+                
+                if (valuesCount == 0) {
+                    CFRelease(valuesRef);
+                    continue;
+                }
+                //获取电话号码和email
+                for (NSInteger k = 0; k < valuesCount; k++) {
+                    CFTypeRef value = ABMultiValueCopyValueAtIndex(valuesRef, k);
+                    switch (j) {
+                        case 0: {// Phone number
+                            NSString *phoneStr = (__bridge NSString*)value;
+                            model.phone = [self editPhoneStyleWithPhone:phoneStr];
+                            break;
+                        }
+                        case 1: {// Email
+                            model.email = (__bridge NSString*)value;
+                            break;
+                        }
+                    }
+                    CFRelease(value);
+                }
+                CFRelease(valuesRef);
             }
-            [self.contacts addObject:model];
+            //将个人信息添加到数组中，循环完成后addressBookTemp中包含所有联系人的信息
+            if (model.phone != nil && [model.name isNotEmpty]) {
+                if (self.type == ContactsImportTypePatients) {
+                    model.hasAdd = [[DBManager shareInstance] isInPatientsTable:model.phone];
+                } else if (self.type == ContactsImportTypeIntroducer) {
+                    model.hasAdd = [[DBManager shareInstance] isInIntroducerTable:model.phone];
+                }
+                [self.contacts addObject:model];
+            }
+            
+            if (abName) CFRelease(abName);
+            if (abLastName) CFRelease(abLastName);
+            if (abFullName) CFRelease(abFullName);
+            if (person) CFRelease(person);
         }
-        
-        if (abName) CFRelease(abName);
-        if (abLastName) CFRelease(abLastName);
-        if (abFullName) CFRelease(abFullName);
-        if (person) CFRelease(person);
-    }
-    CFRelease(allPeople);
-    CFRelease(addBook);
+        CFRelease(addBook);
+    });
+    
+    //对联系人进行排序
+    [self setUpTableSection];
 }
 
 #pragma mark - 获取联系人的头像
@@ -445,6 +522,8 @@
     UIImage* image = [UIImage imageWithData:imageData];;
     return image;
 }
+ 
+ */
 
 #pragma mark - 修改电话号码格式
 - (NSString *)editPhoneStyleWithPhone:(NSString *)phone{
@@ -469,7 +548,24 @@
         return normalPhone;
     }
 }
-
+#pragma mark - notification action
+- (void)allowAccessContacts {
+    NSLog(@"accessAllowed");
+}
+- (void)accessDenied {
+    
+}
+- (void)accessFailed {
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" cancel:@"取消" certain:@"前往设置" cancelHandler:^{
+    } comfirmButtonHandlder:^{
+        NSURL * url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+        if([[UIApplication sharedApplication] canOpenURL:url]) {
+            NSURL*url =[NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }];
+    [alertView show];
+}
 
 #pragma mark - UISearchDisplayDelegate
 - (void) searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller NS_DEPRECATED_IOS(3_0,8_0){

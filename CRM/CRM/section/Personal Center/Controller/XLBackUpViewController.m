@@ -9,6 +9,7 @@
 #import "XLBackUpViewController.h"
 #import "DBManager+AutoSync.h"
 #import "DBTableMode.h"
+#import "UIColor+Extension.h"
 
 @interface XLBackUpViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -25,30 +26,26 @@
     
     self.title = @"云端备份";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    
+
     //设置数据
     [self setUpData];
-
-}
-
-- (void)awakeFromNib{
-    self.backUpButton.layer.cornerRadius = 5;
-    self.backUpButton.layer.masksToBounds = YES;
 }
 
 - (void)setUpData{
     //获取数据
     self.dataList = [[DBManager shareInstance] getInfoListWithSyncStatus:@"4"];
     if (self.dataList.count == 0) {
-        self.titleLabel.text = @"当前没有数据未同步云端服务器";
+        self.titleLabel.text = @"您的数据已全部在云端服务器备份，暂时没有需要同步的数据！";
+        self.backUpButton.backgroundColor = [UIColor colorWithHex:0xBBBBBB];
+        self.backUpButton.enabled = NO;
     }else{
-        self.titleLabel.text = [NSString stringWithFormat:@"您有%lu数据未同步到云端服务器",(unsigned long)self.dataList.count];
+        self.titleLabel.text = [NSString stringWithFormat:@"您有%lu数据需要同步到云端服务器",(unsigned long)self.dataList.count];
     }
 }
 
 #pragma mark - UITableViewDelegate/DataSource
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 10;
+    return 1;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
@@ -56,7 +53,7 @@
 }
 - (IBAction)backUpAction:(id)sender {
     if (self.dataList.count == 0) {
-        [SVProgressHUD showImage:nil status:@"当前没有数据未同步云端服务器"];
+        [SVProgressHUD showImage:nil status:@"您的数据已全部在云端服务器备份，暂时没有需要同步的数据！"];
     }else{
         for (InfoAutoSync *info in self.dataList) {
             //重置所有消息的同步次数和上传状态

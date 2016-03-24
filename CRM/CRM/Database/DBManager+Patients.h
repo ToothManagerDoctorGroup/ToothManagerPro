@@ -100,6 +100,12 @@
  */
 - (int)getPatientsCountWithStatus:(PatientStatus )status;
 /**
+ *  获取数据库中所有患者
+ *
+ *  @return 患者数量
+ */
+- (NSInteger)getAllPatientCount;
+/**
  *  判断这个患者是否存在
  *
  *  @param patient 患者

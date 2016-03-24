@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class XLContactModel,XLContactCell;
+@class NVMContact,XLContactCell;
 @protocol  XLContactCellDelegate<NSObject>
 @optional
 - (void)ContactCell:(XLContactCell *)cell didclickAddButton:(UIButton *)button;
@@ -21,7 +21,7 @@
 
 + (CGFloat)fixedHeight;
 
-@property (nonatomic, strong)XLContactModel *contact;
+@property (nonatomic, strong)NVMContact *contact;
 
 @property (nonatomic, weak)id<XLContactCellDelegate> delegate;
 

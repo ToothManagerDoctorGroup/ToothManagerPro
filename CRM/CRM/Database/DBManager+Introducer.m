@@ -10,7 +10,6 @@
 #import "NSString+Conversion.h"
 
 
-#define PageCount 200
 @implementation DBManager (Introducer)
 #pragma mark - IntroducerTableName
 
@@ -345,7 +344,7 @@
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * PageCount,PageCount];
+         NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * CommonPageSize,CommonPageSize];
          result = [db executeQuery:sqlStr];
          //NSLog(@"sqlString:%@",[NSString stringWithFormat:@"select * from %@",IntroducerTableName]);
          while ([result next])
@@ -358,13 +357,31 @@
     return resultArray;
 }
 
+- (NSInteger)getIntroducerAllCount{
+    __block FMResultSet* result = nil;
+    __block NSInteger count = 0;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         NSString *sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where user_id = '%@' and creation_date > datetime('%@')",IntroducerTableName,[AccountManager currentUserid],[NSString defaultDateString]];
+         
+         result = [db executeQuery:sqlString];
+         while (result.next) {
+             count = [result intForColumn:@"count"];
+         }
+         [result close];
+     }];
+    
+    return count;
+}
+
+
 - (NSArray *)getLocalIntroducerWithPage:(int)page{
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') and intr_id = '%@' order by creation_date desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],@"0",page * PageCount,PageCount]];
+         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') and intr_id = '%@' order by creation_date desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],@"0",page * CommonPageSize,CommonPageSize]];
          while ([result next])
          {
              Introducer * introducer = [Introducer introducerlWithResult:result];

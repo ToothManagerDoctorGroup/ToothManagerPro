@@ -1669,7 +1669,7 @@
         <scene sceneID="dy4-mp-uxE">
             <objects>
                 <tableViewController storyboardIdentifier="XLBackUpViewController" id="WOU-wK-fwF" customClass="XLBackUpViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="cVJ-Cx-7Ic">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="cVJ-Cx-7Ic">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
@@ -1677,49 +1677,66 @@
                         <sections>
                             <tableViewSection footerTitle="说明" id="Wth-Bs-UkX">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="200" id="qik-Ft-63S">
-                                        <rect key="frame" x="0.0" y="35" width="320" height="200"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="400" id="qik-Ft-63S">
+                                        <rect key="frame" x="0.0" y="35" width="320" height="400"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qik-Ft-63S" id="X5F-Df-Bab">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="199.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="400"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lsH-hr-iab">
-                                                    <rect key="frame" x="60" y="40" width="200" height="36"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tZg-js-Gtc">
+                                                    <rect key="frame" x="25" y="320" width="270" height="50"/>
+                                                    <animations/>
+                                                    <color key="backgroundColor" red="0.0" green="0.62745098039215685" blue="0.91764705882352937" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="270" id="NIm-h4-DMo"/>
+                                                        <constraint firstAttribute="height" constant="50" id="dQn-ho-njq"/>
+                                                    </constraints>
+                                                    <state key="normal" title="立即同步">
+                                                        <color key="titleColor" red="0.97647058819999999" green="0.97647058819999999" blue="0.97647058819999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </state>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="5"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="backUpAction:" destination="WOU-wK-fwF" eventType="touchUpInside" id="3zZ-XC-ylj"/>
+                                                    </connections>
+                                                </button>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backup_yun.png" translatesAutoresizingMaskIntoConstraints="NO" id="3lz-Av-0zv">
+                                                    <rect key="frame" x="43" y="30" width="234" height="224"/>
                                                     <animations/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="36" id="Z3m-Jy-Eyt"/>
-                                                        <constraint firstAttribute="width" constant="200" id="lKj-LQ-OCh"/>
+                                                        <constraint firstAttribute="height" constant="224" id="FF1-fw-fNr"/>
+                                                        <constraint firstAttribute="width" constant="234" id="f0j-Kx-xTz"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lsH-hr-iab">
+                                                    <rect key="frame" x="43" y="274" width="234" height="36"/>
+                                                    <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="36" id="AMt-fm-han"/>
+                                                        <constraint firstAttribute="width" constant="234" id="Hqv-JB-uEF"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tZg-js-Gtc">
-                                                    <rect key="frame" x="60" y="106" width="200" height="40"/>
-                                                    <animations/>
-                                                    <color key="backgroundColor" red="0.0" green="0.62745098039215685" blue="0.91764705882352937" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="200" id="7CG-KZ-rnm"/>
-                                                        <constraint firstAttribute="height" constant="40" id="V1U-dh-wZQ"/>
-                                                    </constraints>
-                                                    <state key="normal" title="立即同步">
-                                                        <color key="titleColor" red="0.97647058819999999" green="0.97647058819999999" blue="0.97647058819999999" alpha="1" colorSpace="calibratedRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="backUpAction:" destination="WOU-wK-fwF" eventType="touchUpInside" id="3zZ-XC-ylj"/>
-                                                    </connections>
-                                                </button>
                                             </subviews>
                                             <animations/>
                                             <constraints>
-                                                <constraint firstItem="tZg-js-Gtc" firstAttribute="top" secondItem="lsH-hr-iab" secondAttribute="bottom" constant="30" id="Cf4-sL-Kv9"/>
-                                                <constraint firstItem="lsH-hr-iab" firstAttribute="top" secondItem="X5F-Df-Bab" secondAttribute="top" constant="40" id="aVG-Qy-zXb"/>
-                                                <constraint firstItem="tZg-js-Gtc" firstAttribute="centerX" secondItem="X5F-Df-Bab" secondAttribute="centerX" id="cuS-TL-knQ"/>
-                                                <constraint firstItem="lsH-hr-iab" firstAttribute="centerX" secondItem="X5F-Df-Bab" secondAttribute="centerX" id="rmf-OY-ePu"/>
+                                                <constraint firstItem="tZg-js-Gtc" firstAttribute="centerX" secondItem="X5F-Df-Bab" secondAttribute="centerX" id="1Ku-LZ-say"/>
+                                                <constraint firstItem="3lz-Av-0zv" firstAttribute="top" secondItem="X5F-Df-Bab" secondAttribute="top" constant="30" id="I0L-IO-NXz"/>
+                                                <constraint firstItem="lsH-hr-iab" firstAttribute="centerX" secondItem="X5F-Df-Bab" secondAttribute="centerX" id="R0r-LM-vFJ"/>
+                                                <constraint firstItem="lsH-hr-iab" firstAttribute="top" secondItem="3lz-Av-0zv" secondAttribute="bottom" constant="20" id="YvF-tZ-YWj"/>
+                                                <constraint firstItem="tZg-js-Gtc" firstAttribute="top" secondItem="lsH-hr-iab" secondAttribute="bottom" constant="10" id="ajv-PL-wvw"/>
+                                                <constraint firstItem="3lz-Av-0zv" firstAttribute="centerX" secondItem="X5F-Df-Bab" secondAttribute="centerX" id="pWr-kd-029"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
+                                        <color key="backgroundColor" red="0.97254901960784312" green="0.97254901960784312" blue="0.97254901960784312" alpha="1" colorSpace="calibratedRGB"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -4853,6 +4870,7 @@
     </scenes>
     <resources>
         <image name="arrow_crm.png" width="13" height="18"/>
+        <image name="backup_yun.png" width="234" height="224"/>
         <image name="ic_backup.png" width="20" height="20"/>
         <image name="ic_list_doctor.png" width="20" height="20"/>
         <image name="ic_list_set.png" width="20" height="20"/>

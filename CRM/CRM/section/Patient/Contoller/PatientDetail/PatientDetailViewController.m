@@ -549,6 +549,7 @@
     
     NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count + model.introducerMap.count;
     NSInteger current = 0;
+    
     //保存患者消息
     Patient *patient = [Patient PatientFromPatientResult:model.baseInfo];
     [[DBManager shareInstance] insertPatient:patient];

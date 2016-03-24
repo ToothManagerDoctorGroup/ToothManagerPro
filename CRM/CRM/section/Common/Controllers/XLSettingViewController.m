@@ -215,8 +215,14 @@
 #pragma mark - 将患者导入通讯录
 - (void)addPatientToAddressBook{
     if(![[AddressBoolTool shareInstance] userAllowToAddress]){
-        //关闭了权限
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" delegate:nil cancelButtonTitle:@"知道了" otherButtonTitles:nil];
+        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" cancel:@"取消" certain:@"前往设置" cancelHandler:^{
+        } comfirmButtonHandlder:^{
+            NSURL * url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            if([[UIApplication sharedApplication] canOpenURL:url]) {
+                NSURL*url =[NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                [[UIApplication sharedApplication] openURL:url];
+            }
+        }];
         [alertView show];
         return;
     }

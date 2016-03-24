@@ -53,6 +53,7 @@
 @property (nonatomic,retain) NSArray *patientInfoArray;
 
 @property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
+@property (nonatomic, assign)NSInteger allCount;//所有数据
 
 @end
 
@@ -85,7 +86,7 @@
     
     //设置上拉加载和下拉刷新
     self.showRefreshHeader = YES;
-    
+
     //重新请求数据
     [self.tableView.header beginRefreshing];
 }
@@ -101,24 +102,32 @@
 }
 #pragma mark - 下拉刷新事件
 - (void)tableViewDidTriggerHeaderRefresh{
-    self.pageNum = 0;
     //重新请求数据
+    self.pageNum = 0;
     [self requestLocalDataWithPage:self.pageNum isHeader:YES isFooter:NO];
 }
 #pragma mark - 上拉加载事件
 - (void)tableViewDidTriggerFooterRefresh{
     //首先将页码加1
-    [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES];
+    if (self.patientCellModeArray.count < self.allCount) {
+        self.pageNum++;
+        [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES];
+    }else{
+        self.showRefreshFooter = NO;
+    }
 }
 
 //加载本地数据
 - (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter{
         self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
-        if (self.patientInfoArray.count > 0) {
-            self.pageNum++;
-        }
         if (isHeader) {
+            self.allCount = [[DBManager shareInstance] getAllPatientCount];
             [self.patientCellModeArray removeAllObjects];
+            if (self.patientInfoArray.count < CommonPageSize) {
+                self.showRefreshFooter = NO;
+            }else{
+                self.showRefreshFooter = YES;
+            }
         }
         for (NSInteger i = 0; i < self.patientInfoArray.count; i++) {
             Patient *patientTmp = [self.patientInfoArray objectAtIndex:i];
@@ -146,11 +155,6 @@
         }
     
     if (isHeader) {
-        if (self.patientCellModeArray.count > 50) {
-            self.showRefreshFooter = YES;
-        }else{
-            self.showRefreshFooter = NO;
-        }
         [self tableViewDidFinishTriggerHeader:YES reload:NO];
     }else if (isFooter){
         [self tableViewDidFinishTriggerHeader:NO reload:NO];

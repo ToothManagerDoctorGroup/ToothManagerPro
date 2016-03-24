@@ -212,6 +212,7 @@
             }
             [self.patientCellModeArray addObject:cellMode];
         }
+    
         if (self.patientCellModeArray.count < 50) {
             [self removeFooter];
         }

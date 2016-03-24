@@ -43,6 +43,7 @@
 #import "MyPatientTool.h"
 #import "SysMessageTool.h"
 #import "MyDateTool.h"
+#import "EditAllergyViewController.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -50,7 +51,7 @@
 
 #define EditTextColor [UIColor colorWithHex:0x888888]
 
-@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,XLContentWriteViewControllerDelegate>{
+@interface XLAddReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,XLDoctorLibraryViewControllerDelegate,XLSelectYuyueViewControllerDelegate,EditAllergyViewControllerDelegate>{
     
     __weak IBOutlet UILabel *_yaweiTitle;
     __weak IBOutlet UILabel *_nameTitle;
@@ -680,12 +681,12 @@
             }
         }else if (indexPath.section == 1){
             if (indexPath.row == 3) {
-                //跳转到修改备注页面
-                XLContentWriteViewController *contentVC = [[XLContentWriteViewController alloc] init];
-                contentVC.title = @"备注";
-                contentVC.delegate = self;
-                contentVC.currentContent = self.yuyueRemarkLabel.text;
-                [self pushViewController:contentVC animated:YES];
+                EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
+                allergyVc.title = @"备注";
+                allergyVc.content = self.yuyueRemarkLabel.text;
+                allergyVc.type = EditAllergyViewControllerRemark;
+                allergyVc.delegate = self;
+                [self pushViewController:allergyVc animated:YES];
             }
         }
     }
@@ -780,8 +781,8 @@
     return doctorId;
 }
 
-#pragma mark - XLContentWriteViewControllerDelegate
-- (void)contentWriteViewController:(XLContentWriteViewController *)contentVC didWriteContent:(NSString *)content{
+#pragma mark - EditAllergyViewControllerDelegate
+- (void)editViewController:(EditAllergyViewController *)editVc didEditWithContent:(NSString *)content type:(EditAllergyViewControllerType)type{
     self.yuyueRemarkLabel.text = content;
 }
 

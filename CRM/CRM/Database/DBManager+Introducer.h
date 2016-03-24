@@ -59,7 +59,12 @@
  *@return NSArray 返回患者数组，没有则为nil
  */
 - (NSArray *)getAllIntroducerWithPage:(int)page;
-
+/**
+ *  获取所有介绍人数量
+ *
+ *  @return 介绍人数量
+ */
+- (NSInteger)getIntroducerAllCount;
 /**
  *  获取本地介绍人数据
  *

@@ -88,7 +88,7 @@
 }
 - (void)initSubViews {
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithTitle:@"详情"];
+    [self setRightBarButtonWithTitle:@"更多"];
     [self loadTableView];
 }
 
