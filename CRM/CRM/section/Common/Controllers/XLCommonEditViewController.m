@@ -9,11 +9,13 @@
 #import "XLCommonEditViewController.h"
 #import "UIColor+Extension.h"
 #import "AddressChoicePickerView.h"
+#import "NSString+TTMAddtion.h"
 
 @interface XLCommonEditViewController ()<UITextFieldDelegate>{
     UIView *_editSuperView;
     UITextField *_editField;
     UIButton *_editBtn;
+    UITextField *_addressField;//地址选择
 }
 
 @end
@@ -51,13 +53,17 @@
 
 #pragma mark - 设置子视图
 - (void)setUpSubViews{
-    _editSuperView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, kScreenWidth, 44)];
+    
+    CGFloat fieldH = 44;
+    CGFloat margin = 10;
+    
+    _editSuperView = [[UIView alloc] initWithFrame:CGRectMake(0, margin * 2, kScreenWidth, fieldH)];
     _editSuperView.layer.borderColor = [UIColor colorWithHex:0xcccccc].CGColor;
     _editSuperView.backgroundColor = [UIColor whiteColor];
     _editSuperView.layer.borderWidth = 0.5;
     [self.view addSubview:_editSuperView];
     
-    _editField = [[UITextField alloc] initWithFrame:CGRectMake(10, 0, _editSuperView.width - 20, 44)];
+    _editField = [[UITextField alloc] initWithFrame:CGRectMake(margin, 0, _editSuperView.width - margin * 2, fieldH)];
     _editField.textColor = [UIColor colorWithHex:0x333333];
     _editField.font = [UIFont systemFontOfSize:15];
     _editField.placeholder = self.placeHolder;
@@ -66,49 +72,78 @@
     _editField.returnKeyType = UIReturnKeyDone;
     _editField.delegate = self;
     _editField.keyboardType = self.keyboardType;
+    _editField.tag = 100;
     [_editSuperView addSubview:_editField];
     
     if (self.showBtn) {
-        _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(kScreenWidth - 100 - 10, 64, 100, 40);
-        [_editBtn setTitle:@"选择所在地区" forState:UIControlStateNormal];
-        [_editBtn setTitleColor:[UIColor colorWithHex:0x00a0ea] forState:UIControlStateNormal];
-        _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-        [_editBtn addTarget:self action:@selector(editBtnAction) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:_editBtn];
+        UIView *addressSuperView = [[UIView alloc] initWithFrame:CGRectMake(0, margin * 2, kScreenWidth, fieldH)];
+        addressSuperView.layer.borderColor = [UIColor colorWithHex:0xcccccc].CGColor;
+        addressSuperView.backgroundColor = [UIColor whiteColor];
+        addressSuperView.layer.borderWidth = 0.5;
+        [self.view addSubview:addressSuperView];
+        
+        _addressField = [[UITextField alloc] initWithFrame:CGRectMake(margin, 0, _editSuperView.width - margin * 2, fieldH)];
+        _addressField.textColor = [UIColor colorWithHex:0x333333];
+        _addressField.font = [UIFont systemFontOfSize:15];
+        _addressField.placeholder = @"请选择地址";
+        _addressField.delegate = self;
+        _addressField.clearButtonMode = UITextFieldViewModeAlways;
+        _addressField.tag = 200;
+        [addressSuperView addSubview:_addressField];
+        
+        _editSuperView.frame = CGRectMake(0, addressSuperView.bottom + margin * 2, kScreenWidth, fieldH);
+        _editField.frame = CGRectMake(margin, 0, _editSuperView.width - margin * 2, fieldH);
+        
+        //判断地址格式
+        if ([self.content isNotEmpty]) {
+            if ([self.content isContainsString:@"-"]) {
+                _addressField.text = [self.content componentsSeparatedByString:@"-"][0];
+                _editField.text = [self.content componentsSeparatedByString:@"-"][1];
+            }else{
+                _editField.text = self.content;
+            }
+        }
     }
 }
 
 #pragma mark - 完成按钮点击事件
 - (void)onRightButtonAction:(id)sender{
     
+    NSString *title;
+    if (self.showBtn) {
+        title = [NSString stringWithFormat:@"%@-%@",_addressField.text,_editField.text];
+    }else{
+        title = _editField.text;
+    }
     if (self.delegate && [self.delegate respondsToSelector:@selector(commonEditViewController:content:title:)]) {
-        [self.delegate commonEditViewController:self content:_editField.text title:self.title];
+        [self.delegate commonEditViewController:self content:title title:self.title];
     }
     [self popViewControllerAnimated:YES];
 }
 
-#pragma mark - 按钮点击事件
-- (void)editBtnAction{
-    if ([_editField isFirstResponder]) {
-        [_editField resignFirstResponder];
-    }
-    AddressChoicePickerView *addressPickerView = [[AddressChoicePickerView alloc] init];
-    addressPickerView.block = ^(AddressChoicePickerView *view,UIButton *btn,AreaObject *locate){
-        _editField.text = [NSString stringWithFormat:@"%@",locate];
-    };
-    [addressPickerView show];
-}
-
 - (void)tapAction:(UITapGestureRecognizer *)tap{
-    if ([_editField isFirstResponder]) {
-        [_editField resignFirstResponder];
-    }
+    [self.view endEditing:YES];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     [self.view endEditing:YES];
     return YES;
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+    if (textField.tag == 200) {
+        [_editField resignFirstResponder];
+        
+        AddressChoicePickerView *addressPickerView = [[AddressChoicePickerView alloc] init];
+        addressPickerView.block = ^(AddressChoicePickerView *view,UIButton *btn,AreaObject *locate){
+            _addressField.text = [NSString stringWithFormat:@"%@",locate];
+        };
+        [addressPickerView show];
+        
+        return NO;
+    }else{
+        return YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning {

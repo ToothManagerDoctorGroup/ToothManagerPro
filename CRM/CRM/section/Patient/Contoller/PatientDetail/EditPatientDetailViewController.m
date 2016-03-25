@@ -19,6 +19,7 @@
 #import "CRMMacro.h"
 #import "XLCommonEditViewController.h"
 #import "UIColor+Extension.h"
+#import "XLEditGroupViewController.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
@@ -152,15 +153,19 @@
     
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            [self jumpToEditPageWithTitle:@"姓名" placeHolder:@"请填写姓名" content:self.patientNameField.text showBtn:NO];
+            
+            [self jumpToEditPageWithTitle:@"姓名" placeHolder:@"请填写姓名" content:self.patientNameField.text showBtn:NO keyboardType:UIKeyboardTypeDefault];
         }else if (indexPath.row == 1){
-            [self jumpToEditPageWithTitle:@"电话" placeHolder:@"请填写电话" content:self.patientPhoneField.text showBtn:NO];
+            [self jumpToEditPageWithTitle:@"电话" placeHolder:@"请填写电话" content:self.patientPhoneField.text showBtn:NO keyboardType:UIKeyboardTypeNumberPad];
         }
     }
     
     if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            [self jumpToEditPageWithTitle:@"备注名" placeHolder:@"请填写备注名" content:self.remarkNameLabel.text showBtn:NO];
+            [self jumpToEditPageWithTitle:@"备注名" placeHolder:@"请填写备注名" content:self.remarkNameLabel.text showBtn:NO keyboardType:UIKeyboardTypeDefault];
+        }else if (indexPath.row == 1){
+            XLEditGroupViewController *editGroupVc = [[XLEditGroupViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [self pushViewController:editGroupVc animated:YES];
         }
     }
     if (indexPath.section == 2) {
@@ -172,12 +177,12 @@
             selectVc.delegate = self;
             [self pushViewController:selectVc animated:YES];
         }else if (indexPath.row == 1) {
-            [self jumpToEditPageWithTitle:@"年龄" placeHolder:@"请填写年龄" content:self.patientAgeField.text showBtn:NO];
+            [self jumpToEditPageWithTitle:@"年龄" placeHolder:@"请填写年龄" content:self.patientAgeField.text showBtn:NO keyboardType:UIKeyboardTypeNumberPad];
         }
         else if (indexPath.row == 2){
-            [self jumpToEditPageWithTitle:@"家庭住址" placeHolder:@"请填写详细地址" content:self.patientAddressLabel.text showBtn:YES];
+            [self jumpToEditPageWithTitle:@"家庭住址" placeHolder:@"请填写详细地址" content:self.patientAddressLabel.text showBtn:YES keyboardType:UIKeyboardTypeDefault];
         }else if (indexPath.row == 3){
-            [self jumpToEditPageWithTitle:@"身份证号" placeHolder:@"请填写身份证号" content:self.patientIdCardField.text showBtn:NO];
+            [self jumpToEditPageWithTitle:@"身份证号" placeHolder:@"请填写身份证号" content:self.patientIdCardField.text showBtn:NO keyboardType:UIKeyboardTypeDefault];
         }
         
     }else if (indexPath.section == 3) {
@@ -206,12 +211,11 @@
     {
         return nil;
     }
-    
     return path;
 }
 
 #pragma mark - 跳转到编辑页面
-- (void)jumpToEditPageWithTitle:(NSString *)title placeHolder:(NSString *)placeHolder content:(NSString *)content showBtn:(BOOL)showBtn{
+- (void)jumpToEditPageWithTitle:(NSString *)title placeHolder:(NSString *)placeHolder content:(NSString *)content showBtn:(BOOL)showBtn keyboardType:(UIKeyboardType)type{
     XLCommonEditViewController *editVc = [[XLCommonEditViewController alloc] init];
     editVc.title = title;
     editVc.placeHolder = placeHolder;
@@ -219,6 +223,7 @@
     editVc.content = content;
     editVc.rightButtonTitle = @"完成";
     editVc.showBtn = showBtn;
+    editVc.keyboardType = type;
     [self pushViewController:editVc animated:YES];
 }
 

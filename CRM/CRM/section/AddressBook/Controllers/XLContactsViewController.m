@@ -8,7 +8,6 @@
 
 #import "XLContactsViewController.h"
 #import "XLContactCell.h"
-#import "XLContactModel.h"
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import "EMSearchBar.h"
@@ -19,11 +18,10 @@
 #import "JSONKit.h"
 #import "MJExtension.h"
 #import "PatientSegumentController.h"
+#import "XLContactsManager.h"
 
 @interface XLContactsViewController ()<XLContactCellDelegate,UISearchBarDelegate,UISearchDisplayDelegate>
 
-@property (nonatomic,strong) NSMutableArray *sectionArray;//有多少组
-@property (nonatomic, strong) NSMutableArray *sectionTitlesArray;//每组多少个联系人
 @property (nonatomic, strong)NSMutableArray *contacts;//原数组
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
@@ -43,14 +41,10 @@
 @implementation XLContactsViewController
 
 - (void)dealloc{
-    [self.sectionArray removeAllObjects];
-    [self.sectionTitlesArray removeAllObjects];
     [self.contacts removeAllObjects];
     self.searchBar.delegate = nil;
     self.searchController.delegate = nil;
     
-    self.sectionArray = nil;
-    self.sectionTitlesArray = nil;
     self.contacts = nil;
     self.searchBar = nil;
     self.searchController = nil;
@@ -86,9 +80,35 @@
     [self searchController];
 
     //获取所有联系人
-    [self getAllContacts];
+//    [self getAllContacts];
     //对联系人进行排序
-    [self setUpTableSection];
+//    [self setUpTableSection];
+    
+    __weak typeof(self) weakSelf = self;
+    [SVProgressHUD showWithStatus:@"正在获取联系人数据"];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        //获取联系人数据
+        XLContactsManager *manager = [XLContactsManager manager];
+        if (self.type == ContactsImportTypePatients) {
+            for (XLContact *model in manager.allPeople) {
+                if (model.phoneNumbers.count > 0) {
+                    model.hasAdd = [[DBManager shareInstance] isInPatientsTable:model.phoneNumbers[0]];
+                }
+            }
+        } else if (self.type == ContactsImportTypeIntroducer) {
+            for (XLContact *model in manager.allPeople) {
+                if (model.phoneNumbers.count > 0) {
+                    model.hasAdd = [[DBManager shareInstance] isInIntroducerTable:model.phoneNumbers[0]];
+                }
+            }
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+            [weakSelf.tableView reloadData];
+        });
+        
+    });
 }
 
 - (void)onBackButtonAction:(id)sender{
@@ -126,7 +146,7 @@
             
             XLContactCell *cell = [XLContactCell cellWithTableView:tableView];
             cell.delegate = weakSelf;
-            XLContactModel *model = weakSelf.searchController.resultsSource[indexPath.row];
+            XLContact *model = weakSelf.searchController.resultsSource[indexPath.row];
             cell.contact = model;
             
             return cell;
@@ -145,12 +165,13 @@
     return _searchController;
 }
 #pragma mark - 数组排序
+/*
 - (void) setUpTableSection {
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
     
     //初始化一个数组newSectionsArray用来存放最终的数据，我们最终要得到的数据模型应该形如@[@[以A开头的数据数组], @[以B开头的数据数组], @[以C开头的数据数组], ... @[以#(其它)开头的数据数组]]
     NSUInteger numberOfSections = [[collation sectionTitles] count];
-    NSMutableArray *newSectionArray =  [[NSMutableArray alloc]init];
+    NSMutableArray *newSectionArray =  [[NSMutableArray alloc] init];
     for (NSUInteger index = 0; index<numberOfSections; index++) {
         [newSectionArray addObject:[[NSMutableArray alloc]init]];
     }
@@ -183,13 +204,16 @@
     self.sectionArray = newSectionArray;
     
 }
+ */
 #pragma mark - tableview delegate and datasource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.sectionTitlesArray.count;
+//    return self.sectionTitlesArray.count;
+    return [XLContactsManager manager].sequencePeopleTitles.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.sectionArray[section] count];
+//    return [self.sectionArray[section] count];
+    return [[XLContactsManager manager].sequencePeoples[section] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -200,29 +224,40 @@
     NSUInteger section = indexPath.section;
     NSUInteger row = indexPath.row;
     
-    XLContactModel *model = self.sectionArray[section][row];
+//    XLContactModel *model = self.sectionArray[section][row];
+    XLContact *model = [XLContactsManager manager].sequencePeoples[section][row];
     cell.contact = model;
     
     return cell;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    return self.sectionTitlesArray[section];
+    if (self.isSearchDisplayController) {
+        return nil;
+    }
+//    return self.sectionTitlesArray[section];
+    return [XLContactsManager manager].sequencePeopleTitles[section];
 }
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView{
-    return self.sectionTitlesArray;
+    if (self.isSearchDisplayController) {
+        return nil;
+    }
+//    return self.sectionTitlesArray;
+    return [XLContactsManager manager].sequencePeopleTitles;
 }
 
 
 #pragma mark - XLContactCellDelegate
 - (void)ContactCell:(XLContactCell *)cell didclickAddButton:(UIButton *)button{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    XLContactModel *model = nil;
+    
+    XLContact *model = nil;
     if (self.isSearchDisplayController) {
+        NSIndexPath *indexPath = [self.searchResultTableView indexPathForCell:cell];
         model = self.searchController.resultsSource[indexPath.row];
     }else{
-        model = self.sectionArray[indexPath.section][indexPath.row];
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+        model = [XLContactsManager manager].sequencePeoples[indexPath.section][indexPath.row];
     }
     BOOL ret = NO;
     if (self.type == ContactsImportTypePatients) {
@@ -233,44 +268,51 @@
     if (ret) {
         model.hasAdd = YES;
         button.enabled = NO;
+    }else{
+        [SVProgressHUD showErrorWithStatus:@"该联系人没有名称或手机号码"];
     }
 }
 
-- (BOOL)insertPatientInfoWithModel:(XLContactModel *)model{
+- (BOOL)insertPatientInfoWithModel:(XLContact *)model{
+    
     BOOL ret = NO;
-    Patient *patient = [[Patient alloc]init];
-    patient.patient_name = model.name;
-    patient.patient_phone = model.phone;
-    ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
-    if (ret) {
-        [[DBManager shareInstance] updateUpdateDate:patient.ckeyid];
-        //获取患者信息
-        Patient *tempPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patient.ckeyid];
-        if (tempPatient != nil) {
-            [self postNotificationName:PatientCreatedNotification object:nil];
-            //添加自动同步信息
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    if (model.phoneNumbers.count > 0 && [model.fullName isNotEmpty]) {
+        Patient *patient = [[Patient alloc]init];
+        patient.patient_name = model.fullName;
+        patient.patient_phone = model.phoneNumbers[0];
+        ret = [[DBManager shareInstance] insertPatientsWithArray:@[patient]];
+        if (ret) {
+            [[DBManager shareInstance] updateUpdateDate:patient.ckeyid];
+            //获取患者信息
+            Patient *tempPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patient.ckeyid];
+            if (tempPatient != nil) {
+                [self postNotificationName:PatientCreatedNotification object:nil];
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Insert dataEntity:[tempPatient.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
         }
     }
     return ret;
 }
-- (BOOL)insertIntrInfoWithModel:(XLContactModel *)model{
+- (BOOL)insertIntrInfoWithModel:(XLContact *)model{
     BOOL ret = NO;
-    Introducer *introducer = [[Introducer alloc]init];
-    introducer.intr_name = model.name;
-    introducer.intr_phone = model.phone;
-    introducer.intr_level = 1;
-    introducer.intr_id = @"0";
-    ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
-    if (ret) {
-        [self postNotificationName:IntroducerCreatedNotification object:nil];
-        //获取介绍人信息
-        Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
-        if (tempIntr != nil) {
-            //添加自动同步信息
-            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
-            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    if (model.phoneNumbers.count > 0 && [model.fullName isNotEmpty]) {
+        Introducer *introducer = [[Introducer alloc]init];
+        introducer.intr_name = model.fullName;
+        introducer.intr_phone = model.phoneNumbers[0];
+        introducer.intr_level = 1;
+        introducer.intr_id = @"0";
+        ret = [[DBManager shareInstance] insertIntroducersWithArray:@[introducer]];
+        if (ret) {
+            [self postNotificationName:IntroducerCreatedNotification object:nil];
+            //获取介绍人信息
+            Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:introducer.ckeyid];
+            if (tempIntr != nil) {
+                //添加自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
         }
     }
     return ret;
@@ -289,7 +331,7 @@
     NSArray *searchResults;
     if ([searchText isNotEmpty]) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name CONTAINS %@", searchText]; //predicate只能是对象
-        searchResults = [self.contacts filteredArrayUsingPredicate:predicate];
+        searchResults = [[XLContactsManager manager].allPeople filteredArrayUsingPredicate:predicate];
         
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:searchResults];
@@ -314,6 +356,7 @@
     [searchBar setShowsCancelButton:NO animated:YES];
 }
 
+/*
 #pragma mark - 访问通讯录
 - (void)getAllContacts{
     //这个变量用于记录授权是否成功，即用户是否允许我们访问通讯录
@@ -442,6 +485,7 @@
     }
     CFRelease(addBook);
 }
+ */
 
 #pragma mark - 获取联系人的头像
 - (UIImage *)imageWithABRecordRef:(ABRecordRef)recordRef

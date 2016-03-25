@@ -157,9 +157,9 @@
         }else if (indexPath.row == 6){
             [self updateWithChooseType:XLDataSelectViewControllerDegree content:self.userDegree.text];
         }else if (indexPath.row == 7){
-            [self updateSkillWithTitle:@"个人简介" content:self.userDesc.text placeHolder:@"请填写个人简介" limit:300];
+            [self updateSkillWithTitle:@"个人简介" content:self.userDesc.text placeHolder:@"请填写300字以内个人简介" limit:300];
         }else if (indexPath.row == 8){
-            [self updateSkillWithTitle:@"擅长项目" content:self.userSkills.text placeHolder:@"请填写擅长项目" limit:100];
+            [self updateSkillWithTitle:@"擅长项目" content:self.userSkills.text placeHolder:@"请填写100字以内擅长项目" limit:100];
         }
     }
 }

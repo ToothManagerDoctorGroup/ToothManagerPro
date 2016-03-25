@@ -77,7 +77,12 @@
  *  @return 介绍人数组
  */
 - (NSArray *)getIntroducerByName:(NSString *)name;
-
+/**
+ *  获取介绍人总数
+ *
+ *  @return 介绍人总数
+ */
+- (NSInteger)getIntroducerAllCount;
 /**
  *  获取介绍人介绍的病人个数
  *

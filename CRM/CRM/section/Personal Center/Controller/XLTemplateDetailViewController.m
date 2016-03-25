@@ -15,7 +15,9 @@
 #import "XLMessageTemplateParam.h"
 #import "MBProgressHUD+Add.h"
 
-@interface XLTemplateDetailViewController ()<UITextFieldDelegate,UITextViewDelegate>
+@interface XLTemplateDetailViewController ()<UITextFieldDelegate,UITextViewDelegate>{
+    UILabel *_limitLabel;
+}
 
 @property (nonatomic, weak)UITextField *messageTypeField;
 @property (nonatomic, weak)UITextView *messageContentView;
@@ -71,7 +73,7 @@
         titleLabel.text = @"给患者的提醒";
         titleLabel.textColor = [UIColor colorWithHex:0x333333];
         titleLabel.font = [UIFont systemFontOfSize:15];
-        titleLabel.backgroundColor = MyColor(238, 238, 238);
+        titleLabel.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
         [titleView addSubview:titleLabel];
         [headerView addSubview:titleView];
         
@@ -82,10 +84,21 @@
         messageContentView.returnKeyType = UIReturnKeyDone;
         _messageContentView = messageContentView;
         [headerView addSubview:messageContentView];
+        //添加通知，监听textView的内容的变化
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged) name:UITextViewTextDidChangeNotification object:nil];
+        
+        //内容限制视图
+        NSString *limitStr = @"还可输入5000个字";
+        CGSize limitSzie = [limitStr measureFrameWithFont:[UIFont systemFontOfSize:12] size:CGSizeMake(MAXFLOAT, 20)].size;
+        _limitLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - limitSzie.width - 5, messageContentView.bottom - 20, limitSzie.width, 20)];
+        _limitLabel.textColor = [UIColor colorWithHex:0xbbbbbb];
+        _limitLabel.font = [UIFont systemFontOfSize:12];
+        _limitLabel.text = limitStr;
+        [headerView addSubview:_limitLabel];
 
         //添加提醒视图
         UIView *tintView = [[UIView alloc] initWithFrame:CGRectMake(0, messageContentView.bottom, kScreenWidth, 50)];
-        tintView.backgroundColor = MyColor(238, 238, 238);
+        tintView.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
         NSString *tint = @"特别说明：蓝色部分请勿修改，添加预约时系统会自动填写！";
         CGSize tintSize = [tint sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(kScreenWidth - 20, MAXFLOAT)];
         UILabel *tintLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, kScreenWidth - 20, tintSize.height)];
@@ -96,14 +109,13 @@
         [tintView addSubview:tintLabel];
         [headerView addSubview:tintView];
         
-        
         //添加分割线
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             UIView *divider = [[UIView alloc] init];
-            if (i == 2) {
+            if (i == 3) {
                 divider.frame = CGRectMake(0, 249, kScreenWidth, 1);
             }else{
-                divider.frame = CGRectMake(0, 49 + i * 50, kScreenWidth, 1);
+                divider.frame = CGRectMake(0, i * 50, kScreenWidth, 1);
             }
             
             divider.backgroundColor = [UIColor colorWithHex:0xdddddd];
@@ -144,10 +156,14 @@
         self.title = self.model.message_type;
         self.messageTypeField.text = self.model.message_name;
         self.messageContentView.attributedText = [self changeStrColorWithSourceStr:self.model.message_content];
+        //计算文字的个数
+        _limitLabel.text = [NSString stringWithFormat:@"还可输入%d个字",500 - (int)self.model.message_content.length];
     }else{
         self.title = @"新增预约事项";
         NSString *content = [NSString stringWithFormat:@"您好,我是{5}医生。您已成功预约{6}{7},请按时就诊,如有疑问或时间变动,请提前联系"];
         self.messageContentView.attributedText = [self changeStrColorWithSourceStr:content];
+        //计算文字的个数
+        _limitLabel.text = [NSString stringWithFormat:@"还可输入%d个字",500 - (int)content.length];
     }
 }
 
@@ -266,6 +282,18 @@
     }
     
     return YES;
+}
+
+//监听textView内容的变化
+- (void)textChanged{
+    
+    NSInteger number = [self.messageContentView.text length];
+    if (number > 500) {
+        self.messageContentView.text = [self.messageContentView.text substringToIndex:500];
+        number = 500;
+    }
+    _limitLabel.text = [NSString stringWithFormat:@"还可输入%ld个字",500 - (long)number];
+    
 }
 
 #pragma mark - 修改字符串中指定字符的颜色

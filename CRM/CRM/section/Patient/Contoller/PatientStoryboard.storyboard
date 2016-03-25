@@ -768,7 +768,7 @@
                                             <action selector="addRecordAction:" destination="phL-Cv-zDv" eventType="touchUpInside" id="UUB-Wf-V3V"/>
                                         </connections>
                                     </button>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入病情描述" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="pHk-DG-m9d">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入300字以内病情描述" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="pHk-DG-m9d">
                                         <rect key="frame" x="8" y="8" width="246" height="30"/>
                                         <animations/>
                                         <constraints>

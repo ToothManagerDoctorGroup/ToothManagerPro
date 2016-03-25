@@ -175,7 +175,7 @@
     self.pageIndex = 1;
     NSString *sortFieldText = self.sortFieldText == nil ? @"" : self.sortFieldText;
     BOOL isAsc = self.isAsc == YES ? true : false;
-    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:sortFieldText isAsc:@(isAsc) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:sortFieldText isAsc:@(isAsc) pageIndex:@(self.pageIndex) pageSize:@(CommonPageSize)];
     [self requestWlanDataWithQueryModel:queryModel isHeader:YES];
 }
 #pragma mark - 上拉加载数据
@@ -183,7 +183,7 @@
     self.pageIndex++;
     NSString *sortFieldText = self.sortFieldText == nil ? @"" : self.sortFieldText;
     BOOL isAsc = self.isAsc == YES ? true : false;
-    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:sortFieldText isAsc:@(isAsc) pageIndex:@(self.pageIndex) pageSize:CommonPageSize];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:sortFieldText isAsc:@(isAsc) pageIndex:@(self.pageIndex) pageSize:@(CommonPageSize)];
     [self requestWlanDataWithQueryModel:queryModel isHeader:NO];
 }
 

@@ -9,6 +9,7 @@
 #import "XLContactCell.h"
 #import "UIView+SDAutoLayout.h"
 #import "XLContactModel.h"
+#import "XLContactsManager.h"
 
 @interface XLContactCell (){
     UIImageView *_iconImageView;
@@ -92,11 +93,11 @@
     .centerYEqualToView(self.contentView);
 }
 
-- (void)setContact:(XLContactModel *)contact{
+- (void)setContact:(XLContact *)contact{
     _contact = contact;
     
 //    _iconImageView.image = contact.image;
-    _nameLabel.text = contact.name;
+    _nameLabel.text = contact.fullName;
     
     if (contact.hasAdd) {
         _addButton.enabled = NO;

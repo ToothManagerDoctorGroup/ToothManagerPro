@@ -109,6 +109,13 @@
 - (BOOL)patientIsExist:(Patient *)patient;
 
 /**
+ *  获取患者总数
+ *
+ *  @return 患者总数
+ */
+- (NSInteger)getAllPatientCount;
+
+/**
  *  获取患者信息
  *
  *  @param ckeyid 患者id

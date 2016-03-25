@@ -9,10 +9,12 @@
 #import "XLContentWriteViewController.h"
 #import "XLTextViewPlaceHolder.h"
 #import "NSString+Conversion.h"
+#import "UIColor+Extension.h"
 
 @interface XLContentWriteViewController ()<UITextViewDelegate>
 
 @property (nonatomic, weak)XLTextViewPlaceHolder *textView;
+@property (nonatomic, weak)UILabel *statusLabel;//字数限制
 
 @end
 
@@ -32,15 +34,37 @@
 - (void)initView{
     [super initView];
     
-    XLTextViewPlaceHolder *textView = [[XLTextViewPlaceHolder alloc] initWithFrame:CGRectMake(10, 10, kScreenWidth - 20, 150)];
-    if (![self.currentContent isNotEmpty]) {
-        textView.placeHolder = self.placeHolder;
+    CGFloat textViewH = 150;
+    CGFloat margin = 10;
+    
+    UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0, margin * 2, kScreenWidth, textViewH)];
+    bgView.backgroundColor = [UIColor whiteColor];
+    bgView.layer.borderColor = [UIColor colorWithHex:0xcccccc].CGColor;
+    bgView.layer.borderWidth = .5;
+    [self.view addSubview:bgView];
+    
+    XLTextViewPlaceHolder *textView = [[XLTextViewPlaceHolder alloc] initWithFrame:CGRectMake(margin, 0, kScreenWidth - margin * 2, textViewH)];
+    if ([self.currentContent isNotEmpty]) {
+        textView.hidePlaceHolder = YES;
+    }else{
+        if ([self.placeHolder isNotEmpty]) {
+            textView.hidePlaceHolder = NO;
+            textView.placeHolder = self.placeHolder;
+        }
     }
     textView.delegate = self;
     textView.text = self.currentContent;
     textView.returnKeyType = UIReturnKeyDone;
     self.textView = textView;
-    [self.view addSubview:textView];
+    [bgView addSubview:textView];
+    
+    UILabel *statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - 100 - margin, textView.bottom + margin * 0.5, 100, 30)];
+    statusLabel.font = [UIFont systemFontOfSize:15];
+    statusLabel.textColor = [UIColor colorWithHex:0x888888];
+    statusLabel.textAlignment = NSTextAlignmentRight;
+    statusLabel.text = [NSString stringWithFormat:@"0/%d",self.limit];
+    self.statusLabel = statusLabel;
+    [bgView addSubview:statusLabel];
     
     //添加通知，监听textView的内容的变化
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged) name:UITextViewTextDidChangeNotification object:nil];
@@ -82,12 +106,17 @@
     }
     
     if (self.limit != 0) {
+        self.statusLabel.hidden = NO;
         NSInteger number = [self.textView.text length];
         if (number > self.limit) {
             self.textView.text = [self.textView.text substringToIndex:self.limit];
             number = self.limit;
         }
+        self.statusLabel.text = [NSString stringWithFormat:@"%ld/%d",(long)number,self.limit];
+    }else{
+        self.statusLabel.hidden = YES;
     }
+    
 }
 
 

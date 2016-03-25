@@ -53,7 +53,7 @@
 @property (nonatomic,retain) NSArray *patientInfoArray;
 
 @property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
-
+@property (nonatomic, assign)NSInteger allCount;//所有数据
 @end
 
 @implementation XLPatientDisplayViewController
@@ -101,56 +101,59 @@
 }
 #pragma mark - 下拉刷新事件
 - (void)tableViewDidTriggerHeaderRefresh{
-    self.pageNum = 0;
     //重新请求数据
+    self.pageNum = 0;
     [self requestLocalDataWithPage:self.pageNum isHeader:YES isFooter:NO];
 }
 #pragma mark - 上拉加载事件
 - (void)tableViewDidTriggerFooterRefresh{
     //首先将页码加1
-    [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES];
+    if (self.patientCellModeArray.count < self.allCount) {
+        self.pageNum++;
+        [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES];
+    }else{
+        self.showRefreshFooter = NO;
+    }
 }
 
 //加载本地数据
 - (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter{
-        self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
-        if (self.patientInfoArray.count > 0) {
-            self.pageNum++;
+    self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
+    if (isHeader) {
+        self.allCount = [[DBManager shareInstance] getAllPatientCount];
+        [self.patientCellModeArray removeAllObjects];
+        if (self.patientInfoArray.count < CommonPageSize) {
+            self.showRefreshFooter = NO;
+        }else{
+            self.showRefreshFooter = YES;
         }
-        if (isHeader) {
-            [self.patientCellModeArray removeAllObjects];
+    }
+    for (NSInteger i = 0; i < self.patientInfoArray.count; i++) {
+        Patient *patientTmp = [self.patientInfoArray objectAtIndex:i];
+        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
+        cellMode.patientId = patientTmp.ckeyid;
+        cellMode.introducerId = patientTmp.introducer_id;
+        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+            cellMode.name = patientTmp.nickName;
+        }else{
+            cellMode.name = patientTmp.patient_name;
         }
-        for (NSInteger i = 0; i < self.patientInfoArray.count; i++) {
-            Patient *patientTmp = [self.patientInfoArray objectAtIndex:i];
-            PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-            cellMode.patientId = patientTmp.ckeyid;
-            cellMode.introducerId = patientTmp.introducer_id;
-            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-                cellMode.name = patientTmp.nickName;
-            }else{
-                cellMode.name = patientTmp.patient_name;
-            }
-            cellMode.phone = patientTmp.patient_phone;
-            cellMode.introducerName = patientTmp.intr_name;
-            cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-            cellMode.status = patientTmp.patient_status;
-//            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-            cellMode.countMaterial = patientTmp.expense_num;
-            Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
-            if ([doc.doctor_name isNotEmpty]) {
-                cellMode.isTransfer = YES;
-            }else{
-                cellMode.isTransfer = NO;
-            }
-            [self.patientCellModeArray addObject:cellMode];
+        cellMode.phone = patientTmp.patient_phone;
+        cellMode.introducerName = patientTmp.intr_name;
+        cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
+        cellMode.status = patientTmp.patient_status;
+        //            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
+        cellMode.countMaterial = patientTmp.expense_num;
+        Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
+        if ([doc.doctor_name isNotEmpty]) {
+            cellMode.isTransfer = YES;
+        }else{
+            cellMode.isTransfer = NO;
         }
+        [self.patientCellModeArray addObject:cellMode];
+    }
     
     if (isHeader) {
-        if (self.patientCellModeArray.count > 50) {
-            self.showRefreshFooter = YES;
-        }else{
-            self.showRefreshFooter = NO;
-        }
         [self tableViewDidFinishTriggerHeader:YES reload:NO];
     }else if (isFooter){
         [self tableViewDidFinishTriggerHeader:NO reload:NO];
@@ -318,7 +321,6 @@
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Delete dataEntity:[pateintTemp.keyValues JSONString] syncStatus:@"0"];
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 
-                
                 //获取所有的病历进行删除
                 NSArray *medicalcases = [[DBManager shareInstance] getAllDeleteNeedSyncMedical_case];
                 if (medicalcases.count > 0) {
@@ -368,8 +370,11 @@
                 NSArray *notis = [[DBManager shareInstance] localNotificationListByPatientId:cellMode.patientId];
                 if (notis.count > 0) {
                     for (LocalNotification *noti in notis) {
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Delete dataEntity:[noti.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        
+                        if([[DBManager shareInstance] deleteLocalNotification:noti]){
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Delete dataEntity:[noti.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
                     }
                 }
                 
@@ -411,10 +416,7 @@
             
             [self.searchController.resultsSource addObject:cellMode];
         }
-        
-        
         [self.searchController.searchResultsTableView reloadData];
-    
     }
 }
 

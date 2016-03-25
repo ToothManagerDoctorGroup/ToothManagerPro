@@ -15,12 +15,15 @@
 #import "MJExtension.h"
 #import "JSONKit.h"
 #import "NSString+Conversion.h"
+#import "XLTextViewPlaceHolder.h"
+#import "UIColor+Extension.h"
+#import "NSString+TTMAddtion.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 
 @interface EditAllergyViewController ()<UITextViewDelegate>
 
-@property (nonatomic, weak)UITextView *textView;
+@property (nonatomic, weak)XLTextViewPlaceHolder *textView;
 @property (nonatomic, weak)UILabel *placeHolderLabel;
 @property (nonatomic, strong)NSArray *allergyNames;
 @property (nonatomic, strong)NSArray *anamnesises;
@@ -58,36 +61,41 @@
 #pragma mark - 初始化数据
 - (void)setUp{
     CGFloat margin = 10;
-    UILabel *placeHolderLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, margin, kScreenWidth - margin * 2, 20)];
-    placeHolderLabel.text = @"选择或手动输入过敏史";
-    placeHolderLabel.textColor = MyColor(174, 174, 174);
-    placeHolderLabel.font = [UIFont systemFontOfSize:14];
-    self.placeHolderLabel = placeHolderLabel;
-    [self.view addSubview:placeHolderLabel];
+    CGFloat textViewH = 150;
     
-    UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0, placeHolderLabel.bottom + margin, kScreenWidth, 100)];
+    UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0, margin, kScreenWidth, textViewH)];
+    bgView.backgroundColor = [UIColor whiteColor];
+    bgView.layer.borderColor = [UIColor colorWithHex:0xcccccc].CGColor;
+    bgView.layer.borderWidth = .5;
+    [self.view addSubview:bgView];
+    
+    XLTextViewPlaceHolder *textView = [[XLTextViewPlaceHolder alloc] initWithFrame:CGRectMake(margin, 0, kScreenWidth - 2 * margin, textViewH)];
     textView.backgroundColor = [UIColor whiteColor];
+    textView.placeHolder = @"选择或手动输入200字以内过敏史";
     textView.textColor = [UIColor blackColor];
     textView.font = [UIFont systemFontOfSize:16];
-    textView.returnKeyType = UIReturnKeyDone;
     textView.delegate = self;
-    if (self.content) {
+    if ([self.content isNotEmpty]) {
         textView.text = self.content;
+        textView.hidePlaceHolder = YES;
     }
+    textView.returnKeyType = UIReturnKeyDone;
     self.textView = textView;
-    [self.view addSubview:textView];
+    [bgView addSubview:textView];
+    //添加通知，监听textView的内容的变化
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(textChanged) name:UITextViewTextDidChangeNotification object:nil];
     
     if (self.type == EditAllergyViewControllerRemark || self.type == EditAllergyViewControllerNickName) {
         if (self.type == EditAllergyViewControllerRemark) {
-            placeHolderLabel.text = @"请输入备注";
+            textView.placeHolder = @"请输入300字以内备注信息";
         }else{
-            placeHolderLabel.text = @"请输入备注名";
+            textView.placeHolder = @"请输入备注名";
             self.title = @"备注名";
         }
     }else{
         NSArray *tempArray;
         if (self.type == EditAllergyViewControllerAnamnesis) {
-            placeHolderLabel.text = @"选择或手动输入既往病史";
+            textView.placeHolder = @"选择或手动输入200字以内既往病史";
             tempArray = self.anamnesises;
         }else{
             tempArray = self.allergyNames;
@@ -101,7 +109,7 @@
             int index_y = i % 4;
             
             UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(index_y * (margin + buttonW) + margin, index_x * (margin + buttonH) + margin + self.textView.bottom, buttonW, buttonH);
+            button.frame = CGRectMake(index_y * (margin + buttonW) + margin, index_x * (margin + buttonH) + margin + self.textView.bottom + margin, buttonW, buttonH);
             [button setTitle:tempArray[i] forState:UIControlStateNormal];
             button.backgroundColor = MyColor(19, 152, 234);
             button.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -111,7 +119,7 @@
             [button addTarget:self action:@selector(allergyButtonSelect:) forControlEvents:UIControlEventTouchUpInside];
             [self.view addSubview:button];
             
-            CGSize titleSize = [tempArray[i] sizeWithFont:[UIFont systemFontOfSize:14]];
+            CGSize titleSize = [tempArray[i] measureFrameWithFont:[UIFont systemFontOfSize:14] size:CGSizeMake(MAXFLOAT, MAXFLOAT)].size;
             if (titleSize.width > buttonW) {
                 button.titleLabel.font = [UIFont systemFontOfSize:8];
             }
@@ -139,6 +147,7 @@
     [mstring appendString:str];
     
     self.textView.text = mstring;
+    [self textChanged];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -198,6 +207,25 @@
     
 }
 
+//监听textView内容的变化
+- (void)textChanged{
+    //判断是否有内容
+    if (_textView.text.length) {
+        //隐藏placeHolder
+        _textView.hidePlaceHolder = YES;
+    }else{
+        _textView.hidePlaceHolder = NO;
+    }
+}
 
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text{
+    if ([text isEqualToString:@"\n"]){ //判断输入的字是否是回车，即按下return
+        //在这里做你响应return键的代码
+        [self.textView resignFirstResponder];
+        return NO; //这里返回NO，就代表return键值失效，即页面上按下return，不会出现换行，如果为yes，则输入页面会换行
+    }
+    
+    return YES;
+}
 
 @end
