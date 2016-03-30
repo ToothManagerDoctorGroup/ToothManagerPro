@@ -8,6 +8,7 @@
 
 #import "DBManager+Introducer.h"
 #import "NSString+Conversion.h"
+#import "AccountManager.h"
 
 
 @implementation DBManager (Introducer)
@@ -154,7 +155,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' or intr_phone = '%@'",IntroducerTableName,introducer.ckeyid,introducer.intr_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where (ckeyid = '%@' or intr_phone = '%@') and doctor_id = \"%@\"",IntroducerTableName,introducer.ckeyid,introducer.intr_phone,[AccountManager currentUserid]];
     
     FMResultSet *set = nil;
     set = [db executeQuery:sqlStr];

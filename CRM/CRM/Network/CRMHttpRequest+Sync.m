@@ -96,7 +96,7 @@ NSMutableArray* deletedRepairDoc = nil;
 
 //对于medical case的分批处理
 //每次下载病例最大患者数
-NSInteger const curPatientsNum = 30;
+NSInteger const curPatientsNum = 50;
 
 //临时的数组，用来保存当前需要梳理的patient
 NSMutableArray* curPatients = nil;
@@ -3652,6 +3652,8 @@ NSMutableArray *autoSync_Update_Patients = nil;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
     
+    NSLog(@"病历信息URL:%@&patient_id=%@&sync_time=%@",PATIENTCONSULTATION_GET_URL,strPatientId,@"1970-01-01 08:00:00");
+    
     TimRequestParam *param = [TimRequestParam paramWithURLSting:MEDICAL_CASE_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
@@ -3771,6 +3773,8 @@ NSMutableArray *autoSync_Update_Patients = nil;
     strPatientId = strPatientId == nil ? @"" : strPatientId;
     [paramDic setObject:strPatientId forKey:@"patient_id"];
     [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
+    
+    NSLog(@"会诊信息URL:%@&patient_id=%@&sync_time=%@",PATIENTCONSULTATION_GET_URL,strPatientId,@"1970-01-01 08:00:00");
     
     TimRequestParam *param = [TimRequestParam paramWithURLSting:PATIENTCONSULTATION_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
@@ -4053,7 +4057,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
         
         for (int i=0; i<[patientArray count]; i++) {
             
-            NSDictionary *pat =patientArray[i];
+            NSDictionary *pat = patientArray[i];
             
             Patient *patient = nil;
             
@@ -4069,13 +4073,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
         
-        if (0 == [patientArray count]){
-#pragma mark - ***********************同步结束
-            [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-            [NSThread sleepForTimeInterval:1.0];
-            [SVProgressHUD dismiss];
-            [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
-        }
+        NSLog(@"患者总数:%ld",patientArray.count);
         
         NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
         NSString *patServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]];
@@ -4100,10 +4098,17 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 }
             }
             
-            [weakSelf getPatientConsulationTable];
             [weakSelf getMedicalCaseTable];
+            [weakSelf getPatientConsulationTable];
+            
+        }else{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                [NSThread sleepForTimeInterval:1.0];
+                [SVProgressHUD dismiss];
+                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+            });
         }
-    
     });
     
 }
@@ -4159,17 +4164,8 @@ NSMutableArray *autoSync_Update_Patients = nil;
                         }
                      }
                     }
-
-                    //下载网络图片
-//                    [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageRetryFailed progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-//                    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-//                        if (nil != image) {
-//                            [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
-//                        }
-//                    }];
                 }
 #endif
-                
                 //稍后条件判断是否成功的代码
                 if (nil != downloadMedicalCasesCT) {
                     NSInteger index = [downloadMedicalCasesCT indexOfObject:ctlib.case_id];
@@ -4209,12 +4205,10 @@ NSMutableArray *autoSync_Update_Patients = nil;
             [userDefalut setObject:[NSString currentDateTenMinuteString] forKey:ctServLastSynKey];
             
             [userDefalut synchronize];
-            
             [weakSelf.delegate dataSycnResultWithTable:CTLibTableName isSucesseful: YES];
             
 #pragma mark - ***************************第二次同步结束
             dispatch_async(dispatch_get_main_queue(), ^{
-                
                 [SVProgressHUD showSuccessWithStatus:@"同步完成"];
                 [NSThread sleepForTimeInterval:1.0];
                 [SVProgressHUD dismiss];
@@ -4223,12 +4217,6 @@ NSMutableArray *autoSync_Update_Patients = nil;
             return;
         }
     });
-    
-#pragma mark - ***********************同步结束
-//    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-//    [NSThread sleepForTimeInterval:1.0];
-//    [SVProgressHUD dismiss];
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
 }
 
 - (void)requestGetMedicalCaseSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
@@ -4259,6 +4247,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
         downloadMedicalCasesRS = [[NSMutableArray alloc] init];
     }
     
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
     
         NSArray *medicalCaseArray = [result objectForKey:@"Result"];
@@ -4291,17 +4280,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
                     [downloadMedicalCasesRS addObject:medicalCase.ckeyid];
                 }
                 
-                if (nil != downloadPatients) {
-                    NSInteger index = [downloadMedicalCasesCT indexOfObject:medicalCase.patient_id];
-                    if (NSNotFound != index) {
-                        [downloadPatients removeObjectAtIndex:index];
-                    }
-                    
-                }
-                
+//                if (nil != downloadPatients) {
+//                    NSInteger index = [downloadMedicalCasesCT indexOfObject:medicalCase.patient_id];
+//                    if (NSNotFound != index) {
+//                        [downloadPatients removeObjectAtIndex:index];
+//                    }
+//                }
             }
         }
-        
         
         for (int i=0; i<[curPatients count]; i++) {
             [downloadPatients removeObject:[curPatients objectAtIndex:i]];
@@ -4320,10 +4306,25 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 }
             }
             
-            [self getMedicalCaseTable];
+            [weakSelf getMedicalCaseTable];
+            [weakSelf getPatientConsulationTable];
             
         } else {
+            //设置PatientConsulationTable数据的同步时间
+            NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
+            NSString *docLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientConsultationTableName, [AccountManager currentUserid]];
+            NSString *curDate = [NSString currentDateTenMinuteString];
+            [userDefalut setObject:curDate forKey:docLastSynKey];
+            [userDefalut synchronize];
             
+            //设置MedicalCaseTable的数据同步时间
+            NSString *patServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", MedicalCaseTableName, [AccountManager currentUserid]];
+            [userDefalut setObject:curDate forKey:patServLastSynKey];
+            [userDefalut synchronize];
+            
+            [weakSelf.delegate dataSycnResultWithTable:MedicalCaseTableName isSucesseful: YES];
+            
+            //判断是否有耗材信息
             if (0 != [downloadMedicalCasesME count]) {
                 
                 if (nil == curMC_me) {
@@ -4339,27 +4340,56 @@ NSMutableArray *autoSync_Update_Patients = nil;
                         [curMC_me addObject:[downloadMedicalCasesME objectAtIndex:i]];
                     }
                 }
-                
-                [self getMedicalExpenseTable];
+                [weakSelf getMedicalExpenseTable];
+              
+            }else if (0 != [downloadMedicalCasesMR count]){
+                //如果没有耗材信息，判断是否有病历记录信息
+                if (0 != [downloadMedicalCasesMR count]) {
+                    
+                    if (nil == curMC_mr) {
+                        curMC_mr = [[NSMutableArray alloc] init];
+                    }
+                    
+                    if ([downloadMedicalCasesMR count] <= curPatientsNum) {
+                        for (int i=0; i < [downloadMedicalCasesMR count]; i++) {
+                            [curMC_mr addObject:[downloadMedicalCasesMR objectAtIndex:i]];
+                        }
+                    } else {
+                        for (int i=0; i < curPatientsNum; i++) {
+                            [curMC_mr addObject:[downloadMedicalCasesMR objectAtIndex:i]];
+                        }
+                    }
+                    
+                    [weakSelf getMedicalRecordTable];
+                }
+            }else if (0 != [downloadMedicalCasesCT count]){
+                //如果没有病历记录信息，判断是否有CT信息
+                if (0 != [downloadMedicalCasesCT count]) {
+                    
+                    if (nil == curMC_ct) {
+                        curMC_ct = [[NSMutableArray alloc] init];
+                    }
+                    
+                    if ([downloadMedicalCasesCT count] <= curPatientsNum) {
+                        for (int i=0; i < [downloadMedicalCasesCT count]; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    } else {
+                        for (int i=0; i < curPatientsNum; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    }
+                    [weakSelf getCTLibTable];
+                }
+            }else{
+                //如果信息都没有，则提示同步完成
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                });
             }
-            
-            NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
-            NSString *patServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", MedicalCaseTableName, [AccountManager currentUserid]];
-            NSString *curDate = [NSString currentDateTenMinuteString];
-            
-            [userDefalut setObject:curDate forKey:patServLastSynKey];
-            [userDefalut synchronize];
-            
-            [self.delegate dataSycnResultWithTable:MedicalCaseTableName isSucesseful: YES];
-#pragma mark - ***************************************** 第一次同步结束
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-                [NSThread sleepForTimeInterval:1.0];
-                [SVProgressHUD dismiss];
-                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
-            });
-            
         }
     });
     
@@ -4406,9 +4436,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
                     if (NSNotFound != index) {
                         [downloadMedicalCasesME removeObjectAtIndex:index];
                     }
-                    
                 }
-                
             }
         }
         
@@ -4439,10 +4467,9 @@ NSMutableArray *autoSync_Update_Patients = nil;
             
             [userDefalut setObject:curDate forKey:meServLastSynKey];
             [userDefalut synchronize];
-            
             [self.delegate dataSycnResultWithTable:MedicalExpenseTableName isSucesseful: YES];
             
-            
+            //判断是否有病历记录信息
             if (0 != [downloadMedicalCasesMR count]) {
                 
                 if (nil == curMC_mr) {
@@ -4458,8 +4485,35 @@ NSMutableArray *autoSync_Update_Patients = nil;
                         [curMC_mr addObject:[downloadMedicalCasesMR objectAtIndex:i]];
                     }
                 }
-                
+                //循环下载病历记录信息
                 [weakSelf getMedicalRecordTable];
+            }else if (0 != [downloadMedicalCasesCT count]){
+                //如果没有病历记录信息，判断是否有ct信息
+                if (0 != [downloadMedicalCasesCT count]) {
+                    
+                    if (nil == curMC_ct) {
+                        curMC_ct = [[NSMutableArray alloc] init];
+                    }
+                    
+                    if ([downloadMedicalCasesCT count] <= curPatientsNum) {
+                        for (int i=0; i < [downloadMedicalCasesCT count]; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    } else {
+                        for (int i=0; i < curPatientsNum; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    }
+                    [weakSelf getCTLibTable];
+                }
+            }else{
+                //如果信息都没有，则提示同步完成
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                });
             }
         }
     });
@@ -4484,9 +4538,9 @@ NSMutableArray *autoSync_Update_Patients = nil;
         NSLog(@"value %@", [result valueForKey:aKey]);
     }
     
+    NSArray *patientConsultationArray = [result objectForKey:@"Result"];
+    NSLog(@"会诊信息数量:%ld",(unsigned long)patientConsultationArray.count);
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        
-        NSArray *patientConsultationArray = [result objectForKey:@"Result"];
         
         for (int i=0; i<[patientConsultationArray count]; i++) {
             
@@ -4497,16 +4551,17 @@ NSMutableArray *autoSync_Update_Patients = nil;
             if (0 != [dic count] ) {
                 patientC = [PatientConsultation PCFromPCResult:dic];
                 
-                [[DBManager shareInstance]insertPatientConsultation:patientC];
+                [[DBManager shareInstance] insertPatientConsultation:patientC];
             }
         }
         
-        NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
-        NSString *docLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientConsultationTableName, [AccountManager currentUserid]];
-        NSString *curDate = [NSString currentDateTenMinuteString];
         
-        [userDefalut setObject:curDate forKey:docLastSynKey];
-        [userDefalut synchronize];
+//        NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
+//        NSString *docLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientConsultationTableName, [AccountManager currentUserid]];
+//        NSString *curDate = [NSString currentDateTenMinuteString];
+//        
+//        [userDefalut setObject:curDate forKey:docLastSynKey];
+//        [userDefalut synchronize];
     });
     
     
@@ -4577,6 +4632,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             [userDefalut setObject:curDate forKey:mrServLastSynKey];
             [userDefalut synchronize];
             
+            //判断是否有CT数据
             if (0 != [downloadMedicalCasesCT count]) {
                 
                 if (nil == curMC_ct) {
@@ -4594,7 +4650,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 }
                 
                 [weakSelf getCTLibTable];
-                
+            }else{
+                //如果没有CT数据，则提示同步成功
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                });
             }
         }
     });
