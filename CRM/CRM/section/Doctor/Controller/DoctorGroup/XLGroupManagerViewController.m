@@ -23,6 +23,8 @@
 #import "AccountManager.h"
 #import "MJRefresh.h"
 #import "XLPatientTotalInfoModel.h"
+#import "CRMUserDefalut.h"
+#import "XLGuideImageView.h"
 
 @interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource>{
     BOOL ifNameBtnSelected;
@@ -172,6 +174,15 @@
     NSLog(@"我被销毁了");
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    [CRMUserDefalut isShowedForKey:GroupMemberNew_IsShowedKey showedBlock:^{
+        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_new_tint"]];
+        [guidImageView showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES];
+    }];
+}
+
 - (void)viewDidLoad {
     [super initView];
     [super viewDidLoad];
@@ -235,7 +246,7 @@
             [_tableView reloadData];
             
         } failure:^(NSError *error) {
-            [SVProgressHUD dismiss];
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }
@@ -665,6 +676,7 @@
         }
         
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -692,7 +704,7 @@
             if (error) {
                 NSLog(@"error:%@",error);
             }
-            [SVProgressHUD showErrorWithStatus:@"删除失败"];
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
         }];
     }else{
         if (buttonIndex == 0) return;
@@ -708,7 +720,7 @@
             }
             [SVProgressHUD showErrorWithStatus:@"删除失败"];
         } failure:^(NSError *error) {
-            [SVProgressHUD showErrorWithStatus:@"删除失败"];
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }

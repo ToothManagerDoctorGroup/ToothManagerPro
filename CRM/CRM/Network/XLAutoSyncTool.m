@@ -11,27 +11,8 @@
 #import "AccountManager.h"
 #import "CRMUserDefalut.h"
 #import "PatientManager.h"
+#import "NSString+TTMAddtion.h"
 
-//patient表
-#define POST_PATIENT_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patient&action=edit",DomainName,Method_His_Crm])
-//material表
-#define POST_MATERIAL_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=material&action=edit",DomainName,Method_His_Crm])
-//introducer表
-#define POST_INTRODUCER_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=introducer&action=edit",DomainName,Method_His_Crm])
-//medical_case表
-#define POST_MEDICALCASE_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=edit",DomainName,Method_His_Crm])
-//ctLib表
-#define POST_CTLIB_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=ctlib&action=edit",DomainName,Method_His_Crm])
-//medical_expense表
-#define POST_MEDICALEXPENSE_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalexpense&action=edit",DomainName,Method_His_Crm])
-//medical_record表
-#define POST_MEDICALRECORD_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalrecord&action=edit",DomainName,Method_His_Crm])
-//reserve_record表(LocalNotification表)
-#define POST_RESERVERECORD_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=reserverecord&action=edit",DomainName,Method_His_Crm])
-//repairDoctor表
-#define POST_REPAIRDOCTOR_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=repairdoctor&action=edit",DomainName,Method_His_Crm])
-//patient_consultation表
-#define POST_PATIENTCONSULTATION_EDIT ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientconsultation&action=edit",DomainName,Method_His_Crm])
 
 @implementation XLAutoSyncTool
 Realize_ShareInstance(XLAutoSyncTool);
@@ -100,9 +81,11 @@ Realize_ShareInstance(XLAutoSyncTool);
     else {
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"patient" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] POST:POST_PATIENT_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -138,10 +121,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"material" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    
-    [[CRMHttpTool shareInstance] POST:POST_MATERIAL_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -180,9 +164,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         NSLog(@"%@", jsonString);
     }
     
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"introducer" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] POST:POST_INTRODUCER_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -247,10 +233,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"medicalcase" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_MEDICALCASE_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -265,7 +252,7 @@ Realize_ShareInstance(XLAutoSyncTool);
 - (void)editAllNeedSyncCt_lib:(CTLib *)ct_lib success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
-    NSMutableDictionary *subParamDic = [NSMutableDictionary dictionaryWithCapacity:7];
+    NSMutableDictionary *subParamDic = [NSMutableDictionary dictionaryWithCapacity:8];
     
     [subParamDic setObject:ct_lib.ckeyid forKey:@"ckeyid"];
     [subParamDic setObject:ct_lib.sync_time forKey:@"sync_time"];
@@ -274,6 +261,7 @@ Realize_ShareInstance(XLAutoSyncTool);
     [subParamDic setObject:ct_lib.ct_desc forKey:@"ct_desc"];
     [subParamDic setObject:ct_lib.ct_image forKey:@"ct_image"];
     [subParamDic setObject:ct_lib.doctor_id forKey:@"doctor_id"];
+    [subParamDic setObject:ct_lib.is_main forKey:@"is_main"];
     
     NSError *error;
     NSString *jsonString;
@@ -287,10 +275,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"ctlib" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     //没有图片数据
-    [[CRMHttpTool shareInstance] POST:POST_CTLIB_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -329,11 +318,12 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"medicalexpense" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
     //没有图片数据
-    [[CRMHttpTool shareInstance] POST:POST_MEDICALEXPENSE_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -369,11 +359,12 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"medicalrecord" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
     //没有图片数据
-    [[CRMHttpTool shareInstance] POST:POST_MEDICALRECORD_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -420,10 +411,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"reserverecord" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_RESERVERECORD_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -459,10 +451,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"repairdoctor" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_REPAIRDOCTOR_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -503,9 +496,11 @@ Realize_ShareInstance(XLAutoSyncTool);
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"patientconsultation" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] POST:POST_PATIENTCONSULTATION_EDIT parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

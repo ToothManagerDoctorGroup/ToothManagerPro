@@ -201,6 +201,9 @@ NSString *const UIKeyboardHideNotification = @"UIKeyboardHideNotification";
         }else{
             self.text = [_datePickerView.date dateToNSString];
         }
+        if (self.actiondelegate && [self.actiondelegate respondsToSelector:@selector(pickerViewFinish:)]) {
+            [self.actiondelegate pickerViewFinish:_inputPickerView];
+        }
         
     } else if (self.mode == TextFieldInputModePicker) {
         if (self.pickerDataSource && _inputPickerView) {

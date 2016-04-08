@@ -38,7 +38,7 @@
 #import "XLPatientDetailViewController.h"
 #import "DBManager+LocalNotification.h"
 
-@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,PatientDetailViewControllerDelegate>{
+@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -133,11 +133,12 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
-        }
+        cellMode.name = patientTmp.patient_name;
+//        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+//            cellMode.name = patientTmp.nickName;
+//        }else{
+//            cellMode.name = patientTmp.patient_name;
+//        }
         cellMode.phone = patientTmp.patient_phone;
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
@@ -269,7 +270,6 @@
     PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
     detailVc.patientsCellMode = model;
     detailVc.hidesBottomBarWhenPushed = YES;
-    detailVc.delegate = self;
     [self.navigationController pushViewController:detailVc animated:YES];
     
 //    XLPatientDetailViewController *detailVc = [[XLPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
@@ -672,22 +672,12 @@
         }
         self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
         [self.tableView reloadData];
-        
-        
     }
 }
 
-#pragma mark - PatientDetailViewControllerDelegate
-- (void)didLoadDataSuccessWithModel:(PatientsCellMode *)model{
-    [SVProgressHUD showSuccessWithStatus:@"CT片下载成功，正在加载数据"];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        //跳转到新的患者详情页面
-        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-        detailVc.patientsCellMode = model;
-        detailVc.hidesBottomBarWhenPushed = YES;
-        detailVc.delegate = self;
-        [self.navigationController pushViewController:detailVc animated:YES];
-    });
+#pragma mark - 高级检索功能
+- (void)requestPatientsWithPatientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
+    //判断当前患者的状态
     
 }
 

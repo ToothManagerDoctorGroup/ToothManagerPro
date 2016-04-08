@@ -10,36 +10,21 @@
 #import "DoctorManager.h"
 
 DEF_STATIC_CONST_STRING(PersonalCenter_Prefix,PersonalCenter);
-//DEF_URL Register_URL = @"http://122.114.62.57/ashx/Register2Handler.ashx";
-#define Register_URL [NSString stringWithFormat:@"%@ashx/Register2Handler.ashx",DomainName]
 
-//DEF_URL Login_URL = @"http://122.114.62.57/ashx/loginhandler.ashx";
-#define Login_URL [NSString stringWithFormat:@"%@ashx/loginhandler.ashx",DomainName]
+#define RegisterOrValidate_Common_URL [NSString stringWithFormat:@"%@%@/Register2Handler.ashx",DomainName,Method_Ashx]
 
-//DEF_URL UpdatePasswd_URL = @"http://122.114.62.57/ashx/UserHandler.ashx?action=editpass2";
-//DEF_URL UpdatePasswd_URL = @"http://122.114.62.57/sys/ashx/UserHandler.ashx?action=editpass2";
-#define UpdatePasswd_URL [NSString stringWithFormat:@"%@%@/ashx/UserHandler.ashx?action=editpass2",DomainName,Method_Sys]
+#define Login_URL [NSString stringWithFormat:@"%@%@/loginhandler.ashx",DomainName,Method_Ashx]
 
-//DEF_URL UpdateUserInfo_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=edit";
-#define UpdateUserInfo_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorInfoHandler.ashx?action=edit",DomainName,Method_His_Crm]
+#define UpdateUserInfo_URL [NSString stringWithFormat:@"%@%@/%@/DoctorInfoHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL ApproveIntroducerApply = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx?action=approve";
-#define ApproveIntroducerApply [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx?action=approve",DomainName,Method_His_Crm]
+#define ApproveOrRefuse_IntroducerApply [NSString stringWithFormat:@"%@%@/%@/DoctorIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL RefuseIntroducerApply = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx?action=reject";
-#define RefuseIntroducerApply [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx?action=reject",DomainName,Method_His_Crm]
-
-//DEF_URL Validate_URL =@"http://122.114.62.57/ashx/Register2Handler.ashx?action=getValidateCode";
-#define Validate_URL [NSString stringWithFormat:@"%@ashx/Register2Handler.ashx?action=getValidateCode",DomainName]
-
-//DEF_URL Qrcode_URL = @"http://122.114.62.57/Weixin/CreateTicket.aspx";
+//获取二维码不加密
 #define Qrcode_URL [NSString stringWithFormat:@"%@%@/CreateTicket.aspx",DomainName,Method_Weixin]
+//获取二维码加密
+#define Qrcode_URL_Encrypt [NSString stringWithFormat:@"%@%@/CreateTicketByCrpyt.aspx",DomainName,Method_Weixin]
 
-//DEF_URL Forget_Validate_URL = @"http://122.114.62.57/sys/ashx/UserHandler.ashx?action=getValidateCode";
-#define Forget_Validate_URL [NSString stringWithFormat:@"%@%@/ashx/UserHandler.ashx?action=getValidateCode",DomainName,Method_Sys]
-
-//DEF_URL Forget_Password_URL = @"http://122.114.62.57/sys/ashx/UserHandler.ashx?action=forgetpass";
-#define Forget_Password_URL [NSString stringWithFormat:@"%@%@/ashx/UserHandler.ashx?action=forgetpass",DomainName,Method_Sys]
+#define ForgetOrUpdate_Password_Validate_URL [NSString stringWithFormat:@"%@%@/%@/UserHandler.ashx",DomainName,Method_Sys,Method_Ashx]
 
 @interface CRMHttpRequest (PersonalCenter)
 

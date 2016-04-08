@@ -10,6 +10,9 @@
 #import "MyUploadParam.h"
 #import "CommonMacro.h"
 
+/**
+ *  带加密的网络接口
+ */
 @interface CRMHttpTool : NSObject
 Declare_ShareInstance(CRMHttpTool);
 /**

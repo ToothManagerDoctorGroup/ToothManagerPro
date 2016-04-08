@@ -59,5 +59,23 @@
 }
 
 
++ (void)isShowedForKey:(NSString *)key showedBlock:(void (^)())showedBlock{
+    //获取配置项
+    NSString *isShowed = [CRMUserDefalut objectForKey:key];
+    if (isShowed == nil) {
+        isShowed = Auto_Action_Open;
+        [CRMUserDefalut setObject:isShowed forKey:key];
+    }
+    if ([isShowed isEqualToString:Auto_Action_Open]) {
+        [CRMUserDefalut setObject:Auto_Action_Close forKey:key];
+        if (showedBlock) {
+            showedBlock();
+        }
+    }else{
+        return;
+    }
+}
+
+
 
 @end

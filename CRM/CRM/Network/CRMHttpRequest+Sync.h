@@ -105,48 +105,16 @@ DEF_STATIC_CONST_STRING(DataSyncDelete_Prefix, DataSyncDelete);
 //DEF_URL PATIENTCONSULTATION_DELETE_URL = @"http://122.114.62.57/his.crm/ashx/SyncPost.ashx?table=patientconsultation&action=delete";
 #define PATIENTCONSULTATION_DELETE_URL [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientconsultation&action=delete",DomainName,Method_His_Crm]
 
+
+
 DEF_STATIC_CONST_STRING(DataSyncGet_Prefix, DataSyncGet);
-//DEF_URL DOC_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=doctorinfo";
-//DEF_URL DOC_GET_URL = @"http://122.114.62.57/his.crm/ashx/DoctorIntroducerMapHandler.ashx?action=getdoctor";
-#define DOC_GET_URL [NSString stringWithFormat:@"%@%@/ashx/DoctorIntroducerMapHandler.ashx?action=getdoctor",DomainName,Method_His_Crm]
 
-//DEF_URL MATERIAL_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=material";
-#define MATERIAL_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=material",DomainName,Method_His_Crm]
+#define DOC_GET_URL [NSString stringWithFormat:@"%@%@/%@/DoctorIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL INTRODUCE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=introducer";
-#define INTRODUCE_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=introducer",DomainName,Method_His_Crm]
+#define SYNC_COMMON_GET_URL [NSString stringWithFormat:@"%@%@/%@/SyncGet.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL PATIENT_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=patient";
-#define PATIENT_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=patient",DomainName,Method_His_Crm]
+#define PATIENT_INTRODUCER_MAP_GET_URL [NSString stringWithFormat:@"%@%@/%@/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL REPAIRDOCTOR_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=repairdoctor";
-#define REPAIRDOCTOR_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=repairdoctor",DomainName,Method_His_Crm]
-
-//DEF_URL RESERVERECORD_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=reserverecord";
-#define RESERVERECORD_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=reserverecord",DomainName,Method_His_Crm]
-
-//DEF_URL CTLIB_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=ctlib";
-#define CTLIB_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=ctlib",DomainName,Method_His_Crm]
-
-//DEF_URL MEDICAL_CASE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalcase";
-#define MEDICAL_CASE_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalcase",DomainName,Method_His_Crm]
-
-//DEF_URL MEDICAL_EXPENSE_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalexpense";
-#define MEDICAL_EXPENSE_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalexpense",DomainName,Method_His_Crm]
-
-//DEF_URL MEDICAL_RECORD_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalrecord";
-#define MEDICAL_RECORD_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalrecord",DomainName,Method_His_Crm]
-
-//DEF_URL MEDICAL_RESEV_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=medicalreserve";
-#define MEDICAL_RESEV_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=medicalreserve",DomainName,Method_His_Crm]
-
-//DEF_URL PATIENT_INTRODUCER_MAP_GET_URL = @"http://122.114.62.57/his.crm/ashx/PatientIntroducerMapHandler.ashx?action=getdoctor";
-#define PATIENT_INTRODUCER_MAP_GET_URL [NSString stringWithFormat:@"%@%@/ashx/PatientIntroducerMapHandler.ashx?action=getdoctor",DomainName,Method_His_Crm]
-
-//DEF_URL PATIENTCONSULTATION_GET_URL = @"http://122.114.62.57/his.crm/ashx/SyncGet.ashx?table=patientconsultation";
-#define PATIENTCONSULTATION_GET_URL [NSString stringWithFormat:@"%@%@/ashx/SyncGet.ashx?table=patientconsultation",DomainName,Method_His_Crm]
-
-//DEF_URL ImageDown = @"http://122.114.62.57/his.crm/UploadFiles/";
 #define ImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 
 @protocol dataSyncResult <NSObject>
@@ -247,6 +215,9 @@ DEF_STATIC_CONST_STRING(DataSyncGet_Prefix, DataSyncGet);
 
 
 -(void)deleteAllNeedSyncPatient_consultation:(NSArray *)patient_consultation;
+
+
+
 
 //get
 

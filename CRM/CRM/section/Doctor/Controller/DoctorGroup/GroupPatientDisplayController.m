@@ -12,7 +12,6 @@
 #import "DBManager+Materials.h"
 #import "PatientsTableViewCell.h"
 #import "PatientInfoViewController.h"
-#import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
@@ -111,7 +110,7 @@
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
 }
 
@@ -138,7 +137,7 @@
                 [self popViewControllerAnimated:YES];
             }
         } failure:^(NSError *error) {
-            [SVProgressHUD showErrorWithStatus:@"添加失败"];
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }
@@ -436,29 +435,6 @@
     return YES;
 }
 
-#pragma mark - MudItemsBarDelegate
-- (void)itemsBar:(MudItemsBar *)itemsBar clickedButtonAtIndex:(NSInteger)buttonIndex {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    switch (buttonIndex) {
-        case 0:
-        {
-            AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
-            addressBook.type = ImportTypePatients;
-            addressBook.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:addressBook animated:YES];
-        }
-            break;
-        case 1:
-        {
-            CreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreatePatientViewController"];
-            newPatientVC.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:newPatientVC animated:YES];
-        }
-            break;
-        default:
-            break;
-    }
-}
 
 #pragma mark - GroupPatientCellDelegate
 - (void)didChooseCell:(GroupPatientCell *)cell withChooseStatus:(BOOL)status{

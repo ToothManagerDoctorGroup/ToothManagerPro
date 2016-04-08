@@ -93,12 +93,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if (self.isHome) {
-        //去除多余的视图
-        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        UIView *view = keyWindow.subviews[1];
-        [view removeFromSuperview];
-    }
     
     self.dataSuperArray = [NSMutableArray array];
     

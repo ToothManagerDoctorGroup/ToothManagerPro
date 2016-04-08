@@ -8,7 +8,7 @@
 
 #import "DBManager+Introducer.h"
 #import "NSString+Conversion.h"
-
+#import "AccountManager.h"
 
 @implementation DBManager (Introducer)
 #pragma mark - IntroducerTableName
@@ -118,7 +118,6 @@
     if (phone == nil) {
         return YES;
     }
-    __block BOOL ret = NO;
     __block int count = 0;
     NSString *sqlStr = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where intr_phone = '%@' and user_id = '%@' and creation_date > datetime('%@')",IntroducerTableName,phone,[AccountManager currentUserid], [NSString defaultDateString]];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -154,7 +153,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' or intr_phone = '%@'",IntroducerTableName,introducer.ckeyid,introducer.intr_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where (ckeyid = '%@' or intr_phone = '%@') and doctor_id = \"%@\"",IntroducerTableName,introducer.ckeyid,introducer.intr_phone,[AccountManager currentUserid]];
     
     FMResultSet *set = nil;
     set = [db executeQuery:sqlStr];

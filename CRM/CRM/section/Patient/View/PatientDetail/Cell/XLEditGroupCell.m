@@ -8,6 +8,7 @@
 
 #import "XLEditGroupCell.h"
 #import "UIView+SDAutoLayout.h"
+#import "DoctorGroupModel.h"
 #import "UIColor+Extension.h"
 
 #define TitleFont [UIFont systemFontOfSize:15]
@@ -64,10 +65,11 @@
     .rightSpaceToView(_selectButton,20);
 }
 
-- (void)setContent:(NSString *)content{
-    _content = content;
+- (void)setModel:(DoctorGroupModel *)model{
+    _model = model;
     
-    _titleLabel.text = content;
+    _titleLabel.text = [NSString stringWithFormat:@"%@(%d)",model.group_name,model.patient_count];
+    _selectButton.selected = model.isSelect;
 }
 
 + (NSInteger)fixHeight{

@@ -13,6 +13,7 @@
 #import "AssistCountModel.h"
 #import "ClinicDetailModel.h"
 #import "MaterialCountModel.h"
+#import "NSString+TTMAddtion.h"
 
 #define requestActionParam @"action"
 #define doctorIdParam @"doctor_id"
@@ -31,10 +32,10 @@
 + (void)requestClinicInfoWithDoctorId:(NSString *)doctocId success:(void (^)(NSArray *))success failure:(void (^)(NSError *))failure{
 
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"getClinic";
-    params[doctorIdParam] = doctocId;
+    params[requestActionParam] = [@"getClinic" TripleDESIsEncrypt:YES];
+    params[doctorIdParam] = [doctocId TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -58,11 +59,11 @@
 
 + (void)searchClinicInfoWithDoctorId:(NSString *)doctorId clinicName:(NSString *)clinicName success:(void(^)(NSArray *clinics))success failure:(void(^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"searchClinic";
-    params[doctorIdParam] = doctorId;
-    params[clinicNameParam] = clinicName;
+    params[requestActionParam] = [@"searchClinic" TripleDESIsEncrypt:YES];
+    params[doctorIdParam] = [doctorId TripleDESIsEncrypt:YES];
+    params[clinicNameParam] = [clinicName TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -85,11 +86,11 @@
 
 + (void)requestClinicDetailWithClinicId:(NSString *)clinicId accessToken:(NSString *)accessToken success:(void (^)(ClinicDetailModel *result))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicHandler.ashx",DomainName,Method_ClinicServer];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"getalldetail";
-    params[clinicIdParam] = clinicId;
-    params[accessTokenParam] = accessToken;
+    params[requestActionParam] = [@"getalldetail" TripleDESIsEncrypt:YES];
+    params[clinicIdParam] = [clinicId TripleDESIsEncrypt:YES];
+    params[accessTokenParam] = [accessToken TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         //将数据转换成模型对象，试用MJExtention
@@ -109,10 +110,10 @@
 
 + (void)requestClinicInfoWithAreacode:(NSString *)areacode success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicHandler.ashx",DomainName,Method_ClinicServer];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"getList";
-    params[areacodeParam] = areacode;
+    params[requestActionParam] = [@"getList" TripleDESIsEncrypt:YES];
+    params[areacodeParam] = [areacode TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -135,11 +136,11 @@
 
 + (void)requestClinicInfoWithAreacode:(NSString *)areacode clinicName:(NSString *)clinicName success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/ClinicHandler.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicHandler.ashx",DomainName,Method_ClinicServer];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"getListByNameAndArea";
-    params[@"clinicname"] = clinicName;
-    params[@"clinicarea"] = areacode;
+    params[requestActionParam] = [@"getListByNameAndArea" TripleDESIsEncrypt:YES];
+    params[@"clinicname"] = [clinicName TripleDESIsEncrypt:YES];
+    params[@"clinicarea"] = [areacode TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -162,11 +163,11 @@
 
 + (void)applyForClinicWithDoctorID:(NSString *)doctorId clinicId:(NSString *)clinicId success:(void (^)(NSString *result,NSNumber *status))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ClinicMessage.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"sign";
-    params[doctorIdParam] = doctorId;
-    params[clinic_idParam] = clinicId;
+    params[requestActionParam] = [@"sign" TripleDESIsEncrypt:YES];
+    params[doctorIdParam] = [doctorId TripleDESIsEncrypt:YES];
+    params[clinic_idParam] = [clinicId TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {
@@ -181,10 +182,10 @@
 
 + (void)getAssistentListWithClinicId:(NSString *)clinicId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/AssistantHandler.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/AssistantHandler.ashx",DomainName,Method_ClinicServer];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/AssistantHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"getList";
-    params[clinicIdParam] = clinicId;
+    params[requestActionParam] = [@"getList" TripleDESIsEncrypt:YES];
+    params[clinicIdParam] = [clinicId TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -209,11 +210,11 @@
 
 + (void)getMaterialListWithClinicId:(NSString *)clinicId matType:(NSString *)type success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/clinicServer/ashx/MaterialHandler.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MaterialHandler.ashx",DomainName,Method_ClinicServer];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MaterialHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = @"getList";
-    params[clinicIdParam] = clinicId;
-    params[mat_typeParam] = type;
+    params[requestActionParam] = [@"getList" TripleDESIsEncrypt:YES];
+    params[clinicIdParam] = [clinicId TripleDESIsEncrypt:YES];
+    params[mat_typeParam] = [type TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         

@@ -92,6 +92,28 @@
  */
 - (NSArray *)getPatientsWithStatus:(PatientStatus )status page:(int)page;
 /**
+ *  根据类型和时间查询患者
+ *
+ *  @param status    患者状态 （已种植和已修复）
+ *  @param startTime 开始时间 （种植时间或修复时间）
+ *  @param endTime   结束时间 （种植时间或修复时间）
+ *  @param cureDoctors 治疗医生
+ *  @param page      分页
+ *
+ *  @return 患者数
+ */
+- (NSArray *)getPatientsWithStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors page:(int)page;
+/**
+ *  根据创建时间查询患者
+ *
+ *  @param startTime 开始时间
+ *  @param endTime   结束时间
+ *  @param page      页数
+ *
+ *  @return 患者数
+ */
+- (NSArray *)getPatientsWithStartTime:(NSString *)startTime endTime:(NSString *)endTime page:(int)page;
+/**
  *  根据类型获取患者统计数量
  *
  *  @param status 患者状态
@@ -146,6 +168,14 @@
  *  @return 成功YES,失败NO
  */
 - (BOOL)insertPatientIntroducerMap:(PatientIntroducerMap *)PatIntro;
+/**
+ *  插入一条Patient Introducer Map,同步时用到
+ *
+ *  @param PatientIntroducerMap 患者介绍人对应表
+ *
+ *  @return 成功YES,失败NO
+ */
+- (BOOL)insertPatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro;
 
 /**
  *  更新患者介绍人对应表
@@ -155,6 +185,14 @@
  *  @return 成功YES,失败NO
  */
 - (BOOL)updatePatientIntroducerMap:(PatientIntroducerMap *)PatIntro;
+/**
+ *  更新患者介绍人对应表,同步时使用
+ *
+ *  @param PatientIntroducerMap 患者介绍人对应表
+ *
+ *  @return 成功YES,失败NO
+ */
+- (BOOL)updatePatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro;
 
 /**
  *  插入一条atient Introducer Map
@@ -326,8 +364,14 @@
 - (BOOL)deleteCTlibWithLibId_sync:(NSString *)libid;
 //删除一条ct数据，然后自动上传
 - (BOOL)deleteCTlibWithCTLib_AutoSync:(CTLib *)ctLib;
-
+//获取ct片数据
 - (CTLib *)getCTLibWithCKeyId:(NSString *)ckeyId;
+//设置ct片为主ct
+- (BOOL)setUpMainCT:(CTLib *)ctLib;
+//获取当前病历下的主ct片
+- (NSArray *)getMainCT:(NSString *)case_id;
+//更新ct片
+- (BOOL)updateMainCTLib:(CTLib *)ctLib;
 
 /**
  *  获取CTLib中所有数据，也就是照片合集

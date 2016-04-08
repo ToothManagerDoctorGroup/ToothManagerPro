@@ -15,11 +15,11 @@
 #import "Share.h"
 #import "DBManager+Doctor.h"
 #import "DBManager+User.h"
-#import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
 #import "XLGuideView.h"
 #import "CRMUserDefalut.h"
 #import "XLContactsViewController.h"
+#import "XLCreatePatientViewController.h"
 
 #define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
 @interface QrCodePatientViewController ()<WXApiDelegate,XLGuideViewDelegate,UIActionSheetDelegate>{
@@ -32,23 +32,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-//    UIView *view = keyWindow.subviews[1];
-//    if (view != nil) {
-//        [view removeFromSuperview];
-//    }
     
     self.title = @"添加患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    
-    /*
-    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-    [self refreshView];
-    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
-     */
+
     
     //判断本地是否存在二维码的url
     NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
@@ -59,7 +46,7 @@
         }];
     }else{
         //下载图片，不带缓存
-        [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:qrcodeUrl] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
+        [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
     }
 }
 //获取用户的医生列表
@@ -82,7 +69,7 @@
     NSString *imageUrl = [result objectForKey:@"Message"];
     [CRMUserDefalut setObject:imageUrl forKey:QRCODE_URL_KEY];
     
-    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:imageUrl] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
+    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
     weiXinPageUrl = imageUrl;
 }
 - (void)qrCodeImageFailedWithError:(NSError *)error{
@@ -107,7 +94,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = [NSString stringWithFormat:@"Hi，我是%@医生，请关注我的种牙管家微信平台",[AccountManager shareInstance].currentUser.name];
         mode.message = @"关注后，您将通过种牙管家微信公众号获得预约通知和诊疗医嘱";
-        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",Method_Weixin,[[AccountManager shareInstance] currentUser].userid];
+        mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainRealName,Method_Weixin,[[AccountManager shareInstance] currentUser].userid];
         mode.image = self.QrCodeImageView.image;
         
         if (buttonIndex == 0) {
@@ -121,8 +108,8 @@
 }
 
 - (IBAction)shouGongClick:(id)sender {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    CreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreatePatientViewController"];
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+    XLCreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLCreatePatientViewController"];
     [self pushViewController:newPatientVC animated:YES];
 }
 

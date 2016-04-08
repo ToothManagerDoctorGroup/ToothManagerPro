@@ -11,7 +11,21 @@
 @class DoctorInfoModel,CRMHttpRespondModel,XLQueryModel;
 @interface DoctorTool : NSObject
 
-/*获取医生的详细信息*/
+
+/**
+ *  获取个人的医生列表
+ *
+ *  @param userid 个人id
+ */
++ (void)getDoctorListWithUserid:(NSString *)userid success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+
+/**
+ *  获取医生的详细信息
+ *
+ *  @param doctorId 医生id
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
 + (void)requestDoctorInfoWithDoctorId:(NSString *)doctorId success:(void(^)(DoctorInfoModel *dcotorInfo))success failure:(void(^)(NSError *error))failure;
 /**
  *  更新医生的个人信息
@@ -123,4 +137,15 @@
  *  @param failure 失败回调
  */
 + (void)getAllUsingHelpSuccess:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
+/**
+ *  获取医生或者患者二维码
+ *
+ *  @param user_id      用户id
+ *  @param AccessToken  AccessToken
+ *  @param patientKeyId 患者的keyid（从服务器获取）
+ *  @param isDoctor     是否是医生（YES/NO）
+ *  @param success      成功回调
+ *  @param failure      失败回调
+ */
++ (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 @end

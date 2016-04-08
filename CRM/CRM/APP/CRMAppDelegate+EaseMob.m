@@ -22,6 +22,8 @@
     NSString *appKeyStr;
     if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
         appKeyStr = @"zijingyiyuan#zygjtest";
+    }else if([DomainName isEqualToString:@"http://211.149.247.149/"]){
+        appKeyStr = @"zijingyiyuan#betazygj";
     }else{
         appKeyStr = @"zijingyiyuan#zygj";
     }

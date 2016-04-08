@@ -13,23 +13,14 @@
 #import "AccountManager.h"
 #import "CRMUserDefalut.h"
 #import "NSString+TTMAddtion.h"
-
+#import "JSONKit.h"
 
 @implementation XLLoginTool
 
 + (void)loginWithNickName:(NSString *)nickName password:(NSString *)password success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
     
-    ValidationResult ret = ValidationResultValid; //[nickname isValidWithFormat:@"^[\u4e00-\u9fa5]{3,15}$"];
-    if (ret == ValidationResultInValid)
-    {
-        [SVProgressHUD showImage:nil status:@"昵称格式错误"];
-        return;
-    }
-    if (ret == ValidationResultValidateStringIsEmpty)
-    {
-        [SVProgressHUD showImage:nil status:@"昵称不能为空"];
-        return;
-    }
+    ValidationResult ret = ValidationResultValid;
+    
     ret = [password isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
@@ -43,7 +34,6 @@
     }
     
     NSString *urlStr =  [NSString stringWithFormat:@"%@ashxzj/loginhandler.ashx",DomainName];
-    
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"username"] = [NSString TripleDES:nickName encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
     params[@"password"] = [NSString TripleDES:password encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
@@ -62,8 +52,9 @@
         NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         //解密数据
         NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+        
         //将json转化成字典
-        NSDictionary *dic = [NSString dicFromJsonStr:sourceStr];
+        NSDictionary *dic = [sourceStr objectFromJSONString];
         //字典转模型
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:dic];
         NSLog(@"data:%@,url:%@",sourceStr,operation.request.URL);

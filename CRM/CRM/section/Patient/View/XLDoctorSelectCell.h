@@ -10,7 +10,7 @@
 #import "XLDoctorSelectViewController.h"
 
 @class Doctor,XLDoctorSelectCell;
-@protocol XLDoctorSelectCell <NSObject>
+@protocol XLDoctorSelectCellDelegate <NSObject>
 
 @optional
 - (void)doctorSelectCell:(XLDoctorSelectCell *)cell withChooseStatus:(BOOL)status;
@@ -21,7 +21,7 @@
 
 @property (nonatomic, strong)Doctor *doctor;
 
-@property (nonatomic, weak)id<XLDoctorSelectCell> delegate;
+@property (nonatomic, weak)id<XLDoctorSelectCellDelegate> delegate;
 
 @property (nonatomic, assign)DoctorSelectType type;
 

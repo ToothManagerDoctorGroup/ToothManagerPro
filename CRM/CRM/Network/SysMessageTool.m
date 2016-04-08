@@ -11,14 +11,16 @@
 #import "SysMessageModel.h"
 #import "JSONKit.h"
 #import "AccountManager.h"
+#import "NSString+TTMAddtion.h"
+#import "CRMUnEncryptedHttpTool.h"
 
 @implementation SysMessageTool
 
 + (void)getUnReadMessagesWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"getUnReadMsg";
-    params[@"doctor_id"] = doctorId;
+    params[@"action"] = [@"getUnReadMsg" TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -41,12 +43,12 @@
 }
 
 + (void)getReadedMessagesWithDoctorId:(NSString *)doctorId pageIndex:(NSInteger)pageIndex pageSize:(NSInteger)pageSize success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"getReadedMsgByPage";
-    params[@"doctor_id"] = doctorId;
-    params[@"pageIndex"] = @(pageIndex);
-    params[@"pageSize"] = @(pageSize);
+    params[@"action"] = [@"getReadedMsgByPage" TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
+    params[@"pageIndex"] = [[@(pageIndex) stringValue] TripleDESIsEncrypt:YES];
+    params[@"pageSize"] = [[@(pageSize) stringValue] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -68,10 +70,10 @@
 }
 
 + (void)deleteMessageWithMessageId:(NSInteger)messageId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"deleteMsg";
-    params[@"keyId"] = @(messageId);
+    params[@"action"] = [@"deleteMsg" TripleDESIsEncrypt:YES];
+    params[@"keyId"] = [[@(messageId) stringValue] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
@@ -87,10 +89,10 @@
 }
 
 + (void)setMessageReadedWithMessageId:(NSInteger)messageId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"setMsgReaded";
-    params[@"keyId"] = @(messageId);
+    params[@"action"] = [@"setMsgReaded" TripleDESIsEncrypt:YES];
+    params[@"keyId"] = [[@(messageId) stringValue] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         
@@ -106,12 +108,12 @@
 }
 
 + (void)sendWeiXinReserveNotificationWithNewReserveId:(NSString *)newId oldReserveId:(NSString *)oldId isCancel:(BOOL)isCancel notification:(LocalNotification *)noti type:(NSString *)type success:(void (^)())success failure:(void (^)())failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ReserveRecordHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ReserveRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"reservenotify";
-    params[@"newReserveId"] = newId;
-    params[@"oldReserveId"] = oldId;
-    params[@"type"] = type;
+    params[@"action"] = [@"reservenotify" TripleDESIsEncrypt:YES];
+    params[@"newReserveId"] = [newId TripleDESIsEncrypt:YES];
+    params[@"oldReserveId"] = [oldId TripleDESIsEncrypt:YES];
+    params[@"type"] = [type TripleDESIsEncrypt:YES];
     if (isCancel) {
         NSMutableDictionary *dataEntityParams = [NSMutableDictionary dictionary];
         dataEntityParams[@"therapy_doctor_id"] = noti.therapy_doctor_id;
@@ -123,7 +125,7 @@
         dataEntityParams[@"reserve_time"] = noti.reserve_time;
         dataEntityParams[@"patient_id"] = noti.patient_id;
         
-        params[@"reserve_entity"] = [dataEntityParams JSONString];
+        params[@"reserve_entity"] = [[dataEntityParams JSONString] TripleDESIsEncrypt:YES];
     }
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
@@ -138,10 +140,10 @@
 }
 + (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ReserveRecordHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ReserveRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"updatereservestatus";
-    params[@"reserve_id"] = reserve_id;
+    params[@"action"] = [@"updatereservestatus" TripleDESIsEncrypt:YES];
+    params[@"reserve_id"] = [reserve_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -156,10 +158,10 @@
 }
 
 + (void)getReserveRecordByReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/ReserveRecordHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ReserveRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"getreservebyckeyid";
-    params[@"ckeyid"] = reserve_id;
+    params[@"action"] = [@"getreservebyckeyid" TripleDESIsEncrypt:YES];
+    params[@"ckeyid"] = [reserve_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -174,13 +176,13 @@
 }
 
 + (void)sendHuanXiMessageToPatientWithPatientId:(NSString *)patient_id contentType:(NSString *)content_type sendContent:(NSString *)send_content doctorId:(NSString *)doctor_id success:(void (^)())success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SendMsgHandler.ashx",DomainName,Method_Weixin];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/SendMsgHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"to_patient";
-    params[@"patient_id"] = patient_id;
-    params[@"content_type"] = content_type;
-    params[@"send_content"] = send_content;
-    params[@"doctor_id"] = doctor_id;
+    params[@"action"] = [@"to_patient" TripleDESIsEncrypt:YES];
+    params[@"patient_id"] = [patient_id TripleDESIsEncrypt:YES];
+    params[@"content_type"] = [content_type TripleDESIsEncrypt:YES];
+    params[@"send_content"] = [send_content TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         if (success) {
@@ -194,14 +196,14 @@
 }
 
 + (void)sendMessageWithDoctorId:(NSString *)doctor_id patientId:(NSString *)patient_id isWeixin:(BOOL)isWeixin isSms:(BOOL)isSms txtContent:(NSString *)content success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SendMsgHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/SendMsgHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"ToPatient";
-    params[@"doctor_id"] = doctor_id;
-    params[@"patient_id"] = patient_id;
-    params[@"is_weixin"] = isWeixin ? @"1" : @"0";
-    params[@"is_sms"] =  isSms ? @"1" : @"0";
-    params[@"txt_content"] = content;
+    params[@"action"] = [@"ToPatient" TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
+    params[@"patient_id"] = [patient_id TripleDESIsEncrypt:YES];
+    params[@"is_weixin"] = isWeixin ? [@"1" TripleDESIsEncrypt:YES] : [@"0" TripleDESIsEncrypt:YES];
+    params[@"is_sms"] =  isSms ? [@"1" TripleDESIsEncrypt:YES] : [@"0" TripleDESIsEncrypt:YES];
+    params[@"txt_content"] = [content TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];

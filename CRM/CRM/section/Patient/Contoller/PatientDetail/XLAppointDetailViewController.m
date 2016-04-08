@@ -97,7 +97,7 @@
     self.title = @"预约详情";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
-    self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"医院",@"治疗医生",@"预约人",@"备注"];
+    self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"治疗医生",@"预约人",@"医院",@"备注"];
 }
 
 
@@ -124,10 +124,8 @@
         }else if (i == 4){
             model.content = [NSString stringWithFormat:@"%@小时",notification.duration];
         }else if (i == 5){
-            model.content = notification.medical_place;
-        }else if(i == 6){
             model.content = notification.therapy_doctor_name;
-        }else if(i == 7){
+        }else if(i == 6){
             //预约人
             if ([notification.doctor_id isEqualToString:[AccountManager currentUserid]]) {
                 model.content = [[AccountManager shareInstance] currentUser].name;
@@ -137,6 +135,8 @@
                     model.content = doc.doctor_name;
                 }
             }
+        }else if(i == 7){
+            model.content = notification.medical_place;
         }else{
             model.content = notification.reserve_content;
         }
@@ -237,7 +237,7 @@
                 
                 [SVProgressHUD showSuccessWithStatus:@"预约取消成功"];
                 __weak typeof(self) weakSelf = self;
-                [DoctorTool yuYueMessagePatient:self.localNoti.patient_id fromDoctor:[AccountManager currentUserid] withMessageType:@"取消预约" withSendType:@"0" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *result) {
+                [DoctorTool yuYueMessagePatient:self.localNoti.patient_id fromDoctor:[AccountManager currentUserid] withMessageType:@"取消预约" withSendType:@"0" withSendTime:self.localNoti.reserve_time success:^(CRMHttpRespondModel *result) {
 
                     XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
                          [self popViewControllerAnimated:YES];

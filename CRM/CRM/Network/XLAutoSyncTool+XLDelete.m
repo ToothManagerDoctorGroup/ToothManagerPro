@@ -13,26 +13,9 @@
 #import "PatientManager.h"
 #import "NSJSONSerialization+jsonString.h"
 #import "JSONKit.h"
-//patient表
-#define POST_PATIENT_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patient&action=delete",DomainName,Method_His_Crm])
-//material表
-#define POST_MATERIAL_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=material&action=delete",DomainName,Method_His_Crm])
-//introducer表
-#define POST_INTRODUCER_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=introducer&action=delete",DomainName,Method_His_Crm])
-//medical_case表
-#define POST_MEDICALCASE_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=delete",DomainName,Method_His_Crm])
-//ctLib表
-#define POST_CTLIB_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=ctlib&action=delete",DomainName,Method_His_Crm])
-//medical_expense表
-#define POST_MEDICAL_EXPENSE_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalexpense&action=delete",DomainName,Method_His_Crm])
-//medical_record表
-#define POST_MEDICAL_RECORD_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalrecord&action=delete",DomainName,Method_His_Crm])
-//reserve_record表(LocalNotification表)
-#define POST_RESERVE_RECORD_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=reserverecord&action=delete",DomainName,Method_His_Crm])
-//repairDoctor表
-#define POST_REPAIRDOCTOR_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=repairdoctor&action=delete",DomainName,Method_His_Crm])
-//patient_consultation表
-#define POST_PATIENT_CONSULTATION_DELETE ([NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=patientconsultation&action=delete",DomainName,Method_His_Crm])
+#import "NSString+TTMAddtion.h"
+
+
 @implementation XLAutoSyncTool (XLDelete)
 
 - (void)deleteAllNeedSyncPatient:(Patient *)patient success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{
@@ -55,10 +38,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"patient" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_PATIENT_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -96,10 +80,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"material" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_MATERIAL_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -137,10 +122,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"introducer" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_INTRODUCER_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -171,9 +157,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"medicalcase" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] POST:POST_MEDICALCASE_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -204,10 +192,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"ctlib" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_CTLIB_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -238,10 +227,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"medicalexpense" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_MEDICAL_EXPENSE_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -272,10 +262,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"medicalrecord" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_MEDICAL_RECORD_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -307,10 +298,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"reserverecord" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_RESERVE_RECORD_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -341,10 +333,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"repairdoctor" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_REPAIRDOCTOR_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -376,10 +369,11 @@
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         NSLog(@"%@", jsonString);
     }
+    params[@"table"] = [@"patientconsultation" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [params setObject:jsonString forKey:@"DataEntity"];
-    
-    [[CRMHttpTool shareInstance] POST:POST_PATIENT_CONSULTATION_DELETE parameters:[self addCommenParams:params] success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);

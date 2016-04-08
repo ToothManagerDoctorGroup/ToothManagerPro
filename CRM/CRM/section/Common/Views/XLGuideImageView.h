@@ -12,4 +12,6 @@
 
 - (void)showInView:(UIView *)view;
 
+- (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss;
+
 @end

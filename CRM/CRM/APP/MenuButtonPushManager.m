@@ -8,10 +8,10 @@
 
 #import "MenuButtonPushManager.h"
 #import "AddReminderViewController.h"
-#import "QrCodePatientViewController.h"
 #import "AccountManager.h"
 #import "AppoinmentMenuViewController.h"
 #import "XLSelectYuyueViewController.h"
+#import "XLQrcodePatientViewController.h"
 
 @implementation MenuButtonPushManager
 -(void)yuyueButtonDidSelected{
@@ -24,7 +24,7 @@
 }
 -(void)huanzheButtonDidSeleted{
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    QrCodePatientViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodePatientViewController"];
+    XLQrcodePatientViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLQrcodePatientViewController"];
     qrVC.hidesBottomBarWhenPushed = YES;
     [self.viewController pushViewController:qrVC animated:YES];
 }

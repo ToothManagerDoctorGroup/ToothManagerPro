@@ -19,6 +19,8 @@
 #import "PatientDetailViewController.h"
 #import "MyPatientTool.h"
 #import "XLPatientTotalInfoModel.h"
+#import "XLGuideImageView.h"
+#import "CRMUserDefalut.h"
 
 @interface XLGroupPatientDisplayViewController ()<GroupPatientCellDelegate,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
@@ -128,6 +130,12 @@
     }
     return _searchController;
 }
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+}
+
 
 - (void)viewDidLoad {
     [super initView];
@@ -508,20 +516,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    if ([searchText isNotEmpty]) {
-        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(true) pageIndex:@(1) pageSize:@(1000)];
-        [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
-            
-            [self.searchController.resultsSource removeAllObjects];
-            [self.searchController.resultsSource addObjectsFromArray:result];
-            [self.searchController.searchResultsTableView reloadData];
-            
-        } failure:^(NSError *error) {
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];
-    }else{
+    if (![searchText isNotEmpty]) {
         NSString *title = [searchBar currentTitle];
         if ([title isEqualToString:@"完成"]) {
             [searchBar changeCancelButtonTitle:@"取消"];
@@ -538,6 +533,21 @@
 {
     NSLog(@"searchBarSearchButtonClicked");
     [searchBar resignFirstResponder];
+    [SVProgressHUD showWithStatus:@"正在查询"];
+    XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchBar.text sortField:@"" isAsc:@(true) pageIndex:@(1) pageSize:@(1000)];
+    [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
+        [SVProgressHUD dismiss];
+        
+        [self.searchController.resultsSource removeAllObjects];
+        [self.searchController.resultsSource addObjectsFromArray:result];
+        [self.searchController.searchResultsTableView reloadData];
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar

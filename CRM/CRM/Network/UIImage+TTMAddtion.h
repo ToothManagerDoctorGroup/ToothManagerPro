@@ -89,5 +89,13 @@
  *  @return 绘制好的圆
  */
 + (UIImage *)drowRoundImageWithContent:(NSInteger)num;
+/**
+ *  加载图片
+ *
+ *  @param fileName 图片名称
+ *
+ *  @return 加载后的图片
+ */
++ (UIImage *)imageWithFileName:(NSString *)fileName;
 
 @end

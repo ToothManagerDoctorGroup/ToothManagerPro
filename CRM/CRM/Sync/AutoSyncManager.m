@@ -18,6 +18,7 @@
 #import "XLAutoSyncTool+XLInsert.h"
 #import "XLAutoSyncTool+XLDelete.h"
 #import "CRMHttpRespondModel.h"
+#import "DoctorGroupTool.h"
 
 #import "DBManager+Patients.h"
 #import "DBManager+Materials.h"
@@ -33,12 +34,19 @@ Realize_ShareInstance(AutoSyncManager);
 /**
  *  开始自动同步
  */
-- (void)startAutoSync{
+- (BOOL)startAutoSync{
     [self autoSyncUpdate];
     [self autoSyncInsert];
     [self autoSyncDelete];
     //查询数据库中是否有超过上传次数的数据
     [self postErrorData];
+    
+    NSArray *array = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"4"];
+    if (array.count > 0) {
+        return YES;
+    }else{
+        return NO;
+    }
 }
 #pragma mark - 将json字符串转换为字典
 - (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr{
@@ -292,7 +300,15 @@ Realize_ShareInstance(AutoSyncManager);
 #pragma mark -上传新增的微信信息（只有新增的功能）
             }else if ([info.data_type isEqualToString:AutoSync_WeiXinMessageSend]){
                 
-                
+#pragma mark -上传新增的患者分组信息(只有新增和删除功能)
+            }else if ([info.data_type isEqualToString:AutoSync_AddPatientToGroups]){
+                [DoctorGroupTool addPateintToGroupsWithGroupMemberEntity:info.dataEntity success:^(CRMHttpRespondModel *respondModel) {
+                    //上传成功
+                    [self updateSuccessWithRespondModel:respondModel infoModel:info];
+                } failure:^(NSError *error) {
+                    //上传失败
+                    [self updateFailWithError:error infoModel:info];
+                }];
             }
         }
     }
@@ -432,6 +448,16 @@ Realize_ShareInstance(AutoSyncManager);
                     //上传失败
                     [self updateFailWithError:error infoModel:info];
                 }];
+#pragma mark -上传删除的分组信息（只有新增和删除功能）
+            }else if ([info.data_type isEqualToString:AutoSync_AddPatientToGroups]){
+                GroupAndPatientParam *param = [GroupAndPatientParam objectWithKeyValues:[self dicFromJsonStr:info.dataEntity]];
+                [DoctorGroupTool deleteGroupMemberWithModel:param success:^(CRMHttpRespondModel *respondModel) {
+                    //上传成功
+                    [self updateSuccessWithRespondModel:respondModel infoModel:info];
+                } failure:^(NSError *error) {
+                    //上传失败
+                    [self updateFailWithError:error infoModel:info];
+                }];
             }
         }
     }
@@ -468,7 +494,7 @@ Realize_ShareInstance(AutoSyncManager);
 }
 
 #pragma mark - 上传异常数据给服务器
-- (void)postErrorData{
+- (BOOL)postErrorData{
     //获取所有状态为3的并且超过上传次数的异常数据
     NSArray *array = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"3"];
     if (array.count > 0) {
@@ -482,7 +508,9 @@ Realize_ShareInstance(AutoSyncManager);
                 }
             }];
         }
+        return YES;
     }
+    return NO;
 }
 
 @end

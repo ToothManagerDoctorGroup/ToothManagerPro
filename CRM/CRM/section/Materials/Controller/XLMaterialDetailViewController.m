@@ -83,11 +83,12 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
-        }
+        cellMode.name = patientTmp.patient_name;
+//        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+//            cellMode.name = patientTmp.nickName;
+//        }else{
+//            cellMode.name = patientTmp.patient_name;
+//        }
         cellMode.phone = patientTmp.patient_phone;
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];

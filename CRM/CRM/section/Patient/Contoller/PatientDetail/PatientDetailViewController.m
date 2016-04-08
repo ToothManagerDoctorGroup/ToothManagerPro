@@ -52,6 +52,8 @@
 #import "DoctorManager.h"
 #import "AccountManager.h"
 #import "MyDateTool.h"
+#import "NSString+TTMAddtion.h"
+#import "DoctorGroupTool.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -93,11 +95,19 @@
 @property (nonatomic, strong)NSMutableArray *cTLibs;
 
 @property (nonatomic, strong)MedicalCase *selectCase;
+@property (nonatomic, strong)NSMutableArray *orginExistGroups;//用户所在分组信息
 
 @property (nonatomic, assign)BOOL isBind;//是否绑定微信
 @end
 
 @implementation PatientDetailViewController
+
+- (NSMutableArray *)orginExistGroups{
+    if (!_orginExistGroups) {
+        _orginExistGroups = [NSMutableArray array];
+    }
+    return _orginExistGroups;
+}
 
 - (MLKMenuPopover *)menuPopover{
     if (!_menuPopover) {
@@ -171,6 +181,9 @@
     
     //加载子视图
     [self setUpSubView];
+    
+    //获取患者分组信息
+    [self requestGroupData];
 }
 
 #pragma mark -添加监听
@@ -240,6 +253,7 @@
 
         //为控件赋值
     _headerMedicalView.medicalCases = array;
+    
 }
 
 - (void)refreshView {
@@ -260,6 +274,7 @@
     } failure:^(NSError *error) {
         //未绑定
         _headerInfoView.isWeixin = NO;
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
              NSLog(@"error:%@",error);
         }
@@ -278,17 +293,21 @@
         _headerInfoView.introducerName = selectIntroducer.intr_name;
         _headerInfoView.introduceCanEdit = YES;
     }else{
-        //表明是本地介绍人
-        if([map.intr_source rangeOfString:@"B"].location != NSNotFound){
-            Introducer *introducer = [[DBManager shareInstance]getIntroducerByCkeyId:map.intr_id];
-            NSLog(@"介绍人姓名=%@",introducer.intr_name);
-            _headerInfoView.introducerName = introducer.intr_name;
+        if (map == nil) {
             _headerInfoView.introduceCanEdit = YES;
         }else{
-            //如果介绍人表中没有数据，就查询好友
-            Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:map.intr_id];
-            if (doctor != nil) {
-                _headerInfoView.introducerName = doctor.doctor_name;
+            //表明是本地介绍人
+            if([map.intr_source isContainsString:@"B"]){
+                Introducer *introducer = [[DBManager shareInstance]getIntroducerByCkeyId:map.intr_id];
+                NSLog(@"介绍人姓名=%@",introducer.intr_name);
+                _headerInfoView.introducerName = introducer.intr_name;
+                _headerInfoView.introduceCanEdit = YES;
+            }else{
+                //如果介绍人表中没有数据，就查询好友
+                Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:map.intr_id];
+                if (doctor != nil) {
+                    _headerInfoView.introducerName = doctor.doctor_name;
+                }
             }
         }
     }
@@ -303,6 +322,18 @@
     _headerMedicalView.medicalCases = array;
     
     [_tableView reloadData];
+}
+#pragma mark - 获取患者分组信息
+- (void)requestGroupData{
+    [DoctorGroupTool getGroupListWithDoctorId:[AccountManager currentUserid] ckId:@"" patientId:_detailPatient.ckeyid success:^(NSArray *result) {
+        _headerInfoView.currentGroups = result;
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 #pragma mark -加载子视图
@@ -364,7 +395,9 @@
 
 - (void)onBackButtonAction:(id)sender{
     if (self.isNewPatient) {
-        [self popToRootViewControllerAnimated:YES];
+        UITabBarController *rootVC = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        [rootVC setSelectedViewController:[rootVC.viewControllers objectAtIndex:1]];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }else{
         [self popViewControllerAnimated:YES];
     }
@@ -537,7 +570,7 @@
             }
             
         } failure:^(NSError *error) {
-            [SVProgressHUD showErrorWithStatus:@"患者CT片更新失败"];
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }
@@ -766,24 +799,22 @@
     //获取原来的介绍人信息
     PatientIntroducerMap *mapOrigin = [[DBManager shareInstance]getPatientIntroducerMapByPatientId:self.detailPatient.ckeyid];
     if (mapOrigin != nil) {
-        if([mapOrigin.intr_source rangeOfString:@"B"].location != NSNotFound){
-            //表明存在本地介绍人,当前操作是修改
-            mapOrigin.intr_id = selectIntroducer.ckeyid;
-            mapOrigin.intr_source = @"B";
-            mapOrigin.patient_id = self.patientsCellMode.patientId;
-            mapOrigin.doctor_id = [AccountManager shareInstance].currentUser.userid;
-            mapOrigin.intr_time = [NSString currentDateString];
-            
-            
-            if([[DBManager shareInstance] updatePatientIntroducerMap:mapOrigin]){
-                //获取介绍人患者信息
-                PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:mapOrigin.patient_id doctorId:mapOrigin.doctor_id intrId:mapOrigin.intr_id];
-                if (tempMap != nil) {
-                    //添加一条自动同步信息
-                    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
-                    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                }
+        //表明存在本地介绍人,当前操作是修改
+        mapOrigin.intr_id = selectIntroducer.ckeyid;
+        mapOrigin.intr_source = @"B";
+        mapOrigin.patient_id = self.patientsCellMode.patientId;
+        mapOrigin.doctor_id = [AccountManager shareInstance].currentUser.userid;
+        mapOrigin.intr_time = [NSString currentDateString];
+        
+        if([[DBManager shareInstance] updatePatientIntroducerMap:mapOrigin]){
+            //获取介绍人患者信息
+            PatientIntroducerMap *tempMap = [[DBManager shareInstance] getPatientIntroducerMapByPatientId:mapOrigin.patient_id doctorId:mapOrigin.doctor_id intrId:mapOrigin.intr_id];
+            if (tempMap != nil) {
+                //添加一条自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
+            [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
         }
     }else{
         //表明是新增介绍人
@@ -802,6 +833,8 @@
                 //添加一条自动同步信息
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientIntroducerMap postType:Insert dataEntity:[tempMap.keyValues JSONString] syncStatus:@"0"];
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
             }
         }
     }
@@ -868,7 +901,6 @@
     [self.cTLibs removeAllObjects];
     self.cTLibs = nil;
     self.selectCase = nil;
-    self.isBind = nil;
 }
 
 @end

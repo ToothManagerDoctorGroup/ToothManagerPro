@@ -173,7 +173,8 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *creationdate;   //创建时间
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
-@property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
+@property (nonatomic,copy) NSString *creation_date_sync;      //创建日期,用于同步
+@property (nonatomic, copy)NSString *is_main;//1:主照片  0:不是主照片
 
 +(CTLib *)libWithResult:(FMResultSet *)result;
 +(CTLib *)CTLibFromCTLibResult:(NSDictionary *)medCT;
@@ -239,6 +240,11 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
+
+/**
+ *  创建人姓名，临时字段
+ */
+@property (nonatomic, copy)NSString *doctor_name;
 
 + (MedicalRecord *)medicalRecordWithResult:(FMResultSet *)result;
 + (MedicalRecord *)MRFromMRResult:(NSDictionary *)medRe;

@@ -154,7 +154,6 @@
                 self.addDoctor = tmpDoctor;
                 
                 [[AccountManager shareInstance] approveIntroducerApply:tmpDoctor.ckeyid successBlock:^{
-                    
                 } failedBlock:^(NSError *error) {
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
                 }];

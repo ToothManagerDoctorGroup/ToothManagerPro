@@ -85,7 +85,11 @@
         [valueArray addObject:patient.ori_user_id];
         [valueArray addObject:patient.user_id];
         [valueArray addObject:patient.introducer_id];
-        [valueArray addObject:[NSString currentDateString]];
+        if (patient.creation_date == nil) {
+            [valueArray addObject:[NSString currentDateString]];
+        }else{
+            [valueArray addObject:patient.creation_date];
+        }
         [valueArray addObject:[NSString currentDateString]];
         if (patient.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];
@@ -104,8 +108,7 @@
         [valueArray addObject:patient.patient_address];
         [valueArray addObject:patient.anamnesis];
         [valueArray addObject:patient.nickName];
-
-       
+        
 
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -203,7 +206,8 @@
         [valueArray addObject:patient.ori_user_id];
         [valueArray addObject:patient.user_id];
         [valueArray addObject:patient.introducer_id];
-        [valueArray addObject:[NSString currentDateString]];
+//        [valueArray addObject:[NSString currentDateString]];
+        [valueArray addObject:patient.creation_date];
         [valueArray addObject:patient.update_date];
         if (patient.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];
@@ -435,6 +439,7 @@
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"introducer_id"]; //介绍人编号
         [columeArray addObject:@"update_date"];
+        [columeArray addObject:@"creation_date"];
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         
@@ -462,6 +467,11 @@
         }
         else {
             [valueArray addObject:patient.update_date];
+        }
+        if (nil == patient.creation_date) {
+            [valueArray addObject:[NSString currentDateString]];
+        }else{
+            [valueArray addObject:patient.creation_date];
         }
         
         if (patient.sync_time == nil) {
@@ -519,15 +529,13 @@
         [columeArray addObject:@"introducer_id"]; //介绍人编号
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
-        
+        [columeArray addObject:@"creation_date"];
         [columeArray addObject:@"patient_allergy"];
         [columeArray addObject:@"patient_remark"];
         [columeArray addObject:@"idCardNum"];
         [columeArray addObject:@"patient_address"];
         [columeArray addObject:@"anamnesis"];
         [columeArray addObject:@"nickName"];
-        
-        
         
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
@@ -540,7 +548,6 @@
         [valueArray addObject:patient.introducer_id];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
-
         
         if (patient.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];
@@ -548,6 +555,7 @@
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
+        [valueArray addObject:patient.creation_date];
         
         [valueArray addObject:patient.patient_allergy];
         if (patient.patient_remark == nil) {
@@ -746,7 +754,8 @@
          }else{
              doctor_id = [AccountManager currentUserid];
              intr_id = userid;
-             sqlExtension = [NSString stringWithFormat:@"(select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select distinct patient_id from %@ where repair_doctor = \"%@\"))",[NSString defaultDateString],MedicalCaseTableName,userid];
+
+             sqlExtension = [NSString stringWithFormat:@"(select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select distinct patient_id from %@ where repair_doctor = \"%@\" and user_id = '%@'))",[NSString defaultDateString],MedicalCaseTableName,userid,doctor_id];
              //我修复的
 //             sqlString = [NSString stringWithFormat:@"select * from '%@'  where ckeyid in ( select distinct patient_id from '%@' where repair_doctor= '%@') and user_id = '%@' and creation_date > datetime('%@')",PatientTableName,MedicalCaseTableName,userid,[AccountManager currentUserid],[NSString defaultDateString]];
          }
@@ -843,7 +852,6 @@
          result = [db executeQuery:sqlString];
          while ([result next])
          {
-//             Patient * patient = [Patient patientlWithResult:result];
              Patient * patient = [Patient patientWithMixResult:result];
              [resultArray addObject:patient];
          }
@@ -853,6 +861,116 @@
     
     return resultArray;
 }
+
+/**
+ *  根据类型和时间查询患者
+ *
+ *  @param status    患者状态 （已种植和已修复）
+ *  @param startTime 开始时间 （种植时间或修复时间）
+ *  @param endTime   结束时间 （种植时间或修复时间）
+ *  @param page      分页
+ *
+ *  @return 患者数
+ */
+- (NSArray *)getPatientsWithStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime page:(int)page{
+    
+    __block FMResultSet* result = nil;
+
+    if (status == PatientStatusUnrepaired) {
+        //已种未修
+        
+    }else if (status == PatientStatusRepaired){
+        //已修复
+        
+    }
+    NSString *sqlExtension = [NSString stringWithFormat:@" and patient_status = %ld",(long)status];
+    
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@') %@ and doctor_id=\"%@\" union select * from patient_version2 where creation_date > datetime('%@') %@ and ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id=\"%@\" or intr_id=\"%@\")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc limit %i,%i",[NSString defaultDateString],sqlExtension,[AccountManager shareInstance].currentUser.userid,[NSString defaultDateString],sqlExtension,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName,page * CommonPageSize,CommonPageSize];
+         
+         result = [db executeQuery:sqlString];
+         while ([result next])
+         {
+             Patient * patient = [Patient patientWithMixResult:result];
+             [resultArray addObject:patient];
+         }
+         [result close];
+         
+     }];
+    
+    return resultArray;
+}
+
+/**
+ *  根据类型和时间查询患者
+ *
+ *  @param status    患者状态 （已种植和已修复）
+ *  @param startTime 开始时间 （种植时间或修复时间）
+ *  @param endTime   结束时间 （种植时间或修复时间）
+ *  @param cureDoctors 治疗医生
+ *  @param page      分页
+ *
+ *  @return 患者数
+ */
+- (NSArray *)getPatientsWithStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors page:(int)page{
+    __block FMResultSet* result = nil;
+    
+    //判断是否有修复医生
+    NSString *sqlExtension;
+    if (cureDoctors.count == 0 || cureDoctors == nil) {
+        //无修复医生
+        
+    }else{
+        
+        NSString *keyParam;
+        //有修复医生
+        NSString *repairDoctorId;
+        if (cureDoctors.count == 1) {
+            Doctor *doc = cureDoctors[0];
+            repairDoctorId = doc.ckeyid;
+        }else{
+            NSMutableString *mString = [NSMutableString string];
+            for (Doctor *doc in cureDoctors) {
+                [mString appendFormat:@"%@,",doc.ckeyid];
+            }
+            repairDoctorId = [mString substringToIndex:mString.length - 1];
+        }
+        sqlExtension = [NSString stringWithFormat:@"(select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and implant_time >= datetime('%@')  and implant_time<=datetime('%@') and repair_doctor in (%@) and patient_status = %ld and p.doctor_id='%@' union select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and implant_time > datetime('%@')  and implant_time<=datetime('%@') and repair_doctor in (%@) and patient_status = %ld and p.ckeyid in (select patient_id from %@ where doctor_id='%@' or intr_id='%@'))",PatientTableName,MedicalCaseTableName,startTime,endTime,repairDoctorId,(long)status,[AccountManager currentUserid],PatientTableName,MedicalCaseTableName,startTime,endTime,repairDoctorId,(long)status,PatIntrMapTableName,[AccountManager currentUserid],[AccountManager currentUserid]];
+    }
+    
+    
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+//         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and implant_time >= datetime('%@')  and implant_time<=datetime('%@') and repair_doctor=159 and patient_status = 2 and p.doctor_id="156" union select p.* from patient_version2 p,medical_case_version2 mc where p.ckeyid=mc.patient_id and implant_time > datetime('2006-01-01 08:00:00') and implant_time<=datetime('2016-04-01') and repair_doctor=159 and patient_status = 2 and p.ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id="156" or intr_id="156")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%B' and m.doctor_id="156" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%I' and m.doctor_id="156") b on a.ckeyid=b.patient_id left join (select * from medical_expense_version2 ee join material_version2 m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_nameorder by a.update_date desc limit 0,200",PatientTableName,MedicalCaseTableName,startTime,endTime];
+         
+//         result = [db executeQuery:sqlString];
+         while ([result next])
+         {
+             Patient * patient = [Patient patientWithMixResult:result];
+             [resultArray addObject:patient];
+         }
+         [result close];
+         
+     }];
+    
+    return resultArray;
+}
+
+
+/**
+ *  根据创建时间查询患者
+ *
+ *  @param startTime 开始时间
+ *  @param endTime   结束时间
+ *  @param page      页数
+ *
+ *  @return 患者数
+ */
 
 - (int)getPatientsCountWithStatus:(PatientStatus )status{
     
@@ -885,7 +1003,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and doctor_id = \"%@\"",PatientTableName,patient.ckeyid,[AccountManager currentUserid]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where doctor_id = \"%@\" and patient_name = '%@' and patient_phone = '%@'",PatientTableName,[AccountManager currentUserid],patient.patient_name,patient.patient_phone];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -1082,6 +1200,95 @@
     return ret;
 }
 
+- (BOOL)insertPatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro{
+    if (PatIntro == nil) {
+        return NO;
+    }
+    __block BOOL ret = NO;
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_source = '%@'",PatIntrMapTableName,PatIntro.patient_id,PatIntro.doctor_id,PatIntro.intr_source];
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        __block FMResultSet *set = nil;
+        set = [db executeQuery:sqlStr];
+        if (set && [set next]) {
+            ret = YES;
+        }
+        [set close];
+    }];
+    if (ret == YES) {
+        ret = [self updatePatientIntroducerMap:PatIntro];
+        return ret;
+    }
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        
+        /*
+         @property (nonatomic,copy) NSString *patient_id;        //患者id
+         @property (nonatomic,copy) NSString *introducer_id;     //介绍人id
+         @property (nonatomic,copy) NSString *intr_time;         //介绍时间
+         @property (nonatomic,copy) NSString *remark;            //备注
+         @property (nonatomic,copy) NSString *creation_date; //创建时间
+         @property (nonatomic,copy) NSString *update_date;
+         @property (nonatomic,copy) NSString *sync_time;      //同步时间
+         */
+        
+        NSMutableArray *columeArray = [NSMutableArray arrayWithCapacity:0];
+        NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
+        NSMutableArray *titleArray = [NSMutableArray arrayWithCapacity:0];
+        
+        [columeArray addObject:@"ckeyid"];
+        [columeArray addObject:@"patient_id"];
+        [columeArray addObject:@"intr_id"];
+        [columeArray addObject:@"intr_time"];
+        [columeArray addObject:@"intr_source"];
+        [columeArray addObject:@"remark"];
+        [columeArray addObject:@"creation_date"]; //创建时间
+        [columeArray addObject:@"update_date"];
+        [columeArray addObject:@"sync_time"];
+        [columeArray addObject:@"user_id"];
+        [columeArray addObject:@"doctor_id"];
+        
+        [valueArray addObject:PatIntro.ckeyid];
+        [valueArray addObject:PatIntro.patient_id];
+        [valueArray addObject:PatIntro.intr_id];
+        [valueArray addObject:PatIntro.intr_time];
+        [valueArray addObject:PatIntro.intr_source];
+        [valueArray addObject:PatIntro.remark];
+        [valueArray addObject:[NSString currentDateString]];
+        [valueArray addObject:[NSString currentDateString]];
+        if (nil == PatIntro.sync_time) {
+            [valueArray addObject:[NSString defaultDateString]];
+        } else {
+            [valueArray addObject:PatIntro.sync_time];
+        }
+        [valueArray addObject:PatIntro.user_id];
+        [valueArray addObject:PatIntro.doctor_id];
+        
+        
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        
+        // 3. 写入数据库
+        NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@) ", PatIntrMapTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
+        ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
+        
+        if (ret == NO) {
+            
+        }
+    }];
+    return ret;
+}
+
+
 /**
  *  更新患者介绍人对应表
  *
@@ -1111,6 +1318,70 @@
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"doctor_id"];
 
+        [valueArray addObject:PatIntro.patient_id];
+        [valueArray addObject:PatIntro.intr_id];
+        [valueArray addObject:PatIntro.intr_time];
+        [valueArray addObject:PatIntro.intr_source];
+        [valueArray addObject:PatIntro.remark];
+        //用update_date来区分是真的update还是从服务器同步后的update
+        //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
+        if (nil == PatIntro.update_date) {
+            [valueArray addObject:[NSString currentDateString]];
+        }
+        else {
+            [valueArray addObject:PatIntro.update_date];
+        }
+        if (nil == PatIntro.sync_time) {
+            [valueArray addObject:[NSString defaultDateString]];
+        } else {
+            [valueArray addObject:PatIntro.sync_time];
+        }
+        [valueArray addObject:PatIntro.user_id];
+        [valueArray addObject:PatIntro.doctor_id];
+        
+        
+        // 3. 写入数据库
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where patient_id = \"%@\" and doctor_id = \"%@\" and intr_source like '%%B'", PatIntrMapTableName, [columeArray componentsJoinedByString:@"=?,"],PatIntro.patient_id,PatIntro.doctor_id];
+        ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
+        
+        if (ret == NO) {
+            
+        }
+        
+    }];
+    return ret;
+
+}
+
+/**
+ *  更新患者介绍人对应表,同步时使用
+ *
+ *  @param PatientIntroducerMap 患者介绍人对应表
+ *
+ *  @return 成功YES,失败NO
+ */
+- (BOOL)updatePatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro{
+    if (PatIntro == nil || [NSString isEmptyString:PatIntro.patient_id]) {
+        return NO;
+    }
+    
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        
+        
+        NSMutableArray *columeArray = [NSMutableArray arrayWithCapacity:0];
+        NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
+        
+        [columeArray addObject:@"patient_id"];
+        [columeArray addObject:@"intr_id"];
+        [columeArray addObject:@"intr_time"];
+        [columeArray addObject:@"intr_source"];
+        [columeArray addObject:@"remark"];
+        [columeArray addObject:@"update_date"];
+        [columeArray addObject:@"sync_time"];
+        [columeArray addObject:@"user_id"];
+        [columeArray addObject:@"doctor_id"];
+        
         
         [valueArray addObject:PatIntro.patient_id];
         [valueArray addObject:PatIntro.intr_id];
@@ -1135,7 +1406,7 @@
         
         
         // 3. 写入数据库
-        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where patient_id = \"%@\"", PatIntrMapTableName, [columeArray componentsJoinedByString:@"=?,"],PatIntro.patient_id];
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where patient_id = \"%@\" and doctor_id = \"%@\" and intr_source = '%@'", PatIntrMapTableName, [columeArray componentsJoinedByString:@"=?,"],PatIntro.patient_id,PatIntro.doctor_id,PatIntro.intr_source];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
         
         if (ret == NO) {
@@ -1144,7 +1415,6 @@
         
     }];
     return ret;
-
 }
 
 - (BOOL)updateUpdateDate:(NSString *)patientId{
@@ -1240,9 +1510,9 @@
         [valueArray addObject:medicalCase.ckeyid];
         [valueArray addObject:medicalCase.case_name];
         [valueArray addObject:medicalCase.patient_id];
-        [valueArray addObject:medicalCase.implant_time];
-        [valueArray addObject:medicalCase.next_reserve_time];
-        [valueArray addObject:medicalCase.repair_time];
+        [valueArray addObject:[self isDefaultDate:medicalCase.implant_time]];
+        [valueArray addObject:[self isDefaultDate:medicalCase.next_reserve_time]];
+        [valueArray addObject:[self isDefaultDate:medicalCase.repair_time]];
         [valueArray addObject:medicalCase.repair_doctor];
         [valueArray addObject:medicalCase.user_id];
         [valueArray addObject:[NSNumber numberWithInteger:medicalCase.case_status]];
@@ -1307,6 +1577,17 @@
     return ret;
 }
 
+#pragma mark - 判断时间是否是默认时间
+- (NSString *)isDefaultDate:(NSString *)dateStr{
+    NSString *dateTmp = [dateStr componentsSeparatedByString:@" "][0];
+    if ([dateTmp isEqualToString:@"1900-01-01"]) {
+        return @"";
+    }else{
+        return dateStr;
+    }
+}
+
+
 /**
  *  更新病例
  *
@@ -1346,9 +1627,9 @@
         
         [valueArray addObject:medicalCase.case_name];
         [valueArray addObject:medicalCase.patient_id];
-        [valueArray addObject:medicalCase.implant_time];
-        [valueArray addObject:medicalCase.next_reserve_time];
-        [valueArray addObject:medicalCase.repair_time];
+        [valueArray addObject:[self isDefaultDate:medicalCase.implant_time]];
+        [valueArray addObject:[self isDefaultDate:medicalCase.next_reserve_time]];
+        [valueArray addObject:[self isDefaultDate:medicalCase.repair_time]];
         [valueArray addObject:medicalCase.repair_doctor];
         [valueArray addObject:medicalCase.user_id];
         [valueArray addObject:[NSNumber numberWithInteger:medicalCase.case_status]];
@@ -1958,7 +2239,7 @@
         
         
         // 3. 写入数据库
-        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where patient_id = \"%@\"", PatientConsultationTableName, [columeArray componentsJoinedByString:@"=?,"],patientConsultation.patient_id];
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", PatientConsultationTableName, [columeArray componentsJoinedByString:@"=?,"],patientConsultation.patient_id];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
         
         if (ret == NO) {
@@ -2356,17 +2637,6 @@
 
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         
-        /*
-         @property (nonatomic,copy) NSString *patient_id;   //患者id
-         @property (nonatomic,copy) NSString *case_id;      //病例id
-         @property (nonatomic,copy) NSString *ct_image;             //CT图片地址
-         @property (nonatomic,copy) NSString *ct_desc;              //CT描述
-         @property (nonatomic,copy) NSString *creationdate;   //创建时间
-         @property (nonatomic,copy) NSString *user_id;    //医生id
-         @property (nonatomic,copy) NSString *update_date;
-         @property (nonatomic,copy) NSString *sync_time;      //同步时间
-         */
-        
         NSMutableArray *columeArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *titleArray = [NSMutableArray arrayWithCapacity:0];
@@ -2382,6 +2652,7 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"creation_date"];
+        [columeArray addObject:@"is_main"];
         
         [valueArray addObject:ctlib.ckeyid];
         [valueArray addObject:ctlib.user_id];
@@ -2403,7 +2674,13 @@
         }
         [valueArray addObject:ctlib.doctor_id];
         [valueArray addObject:ctlib.creationdate];
+        if (ctlib.is_main == nil) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:ctlib.is_main];
+        }
         
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -2446,6 +2723,7 @@
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
         [columeArray addObject:@"creation_date"];
+        [columeArray addObject:@"is_main"];
         
         [valueArray addObject:ctlib.user_id];
         if (nil == ctlib.patient_id) {
@@ -2468,6 +2746,12 @@
         }
         [valueArray addObject:ctlib.doctor_id];
         [valueArray addObject:ctlib.creationdate];
+        if (ctlib.is_main == nil) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:ctlib.is_main];
+        }
+        
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", CTLibTableName, [columeArray componentsJoinedByString:@"=?,"],ctlib.ckeyid];
@@ -2600,6 +2884,67 @@
         [result close];
     }];
     return ctLib;
+}
+
+- (BOOL)setUpMainCT:(CTLib *)ctLib{
+    if (ctLib == nil) {
+        return NO;
+    }
+    //获取当前病历下的主ct片
+    NSArray *mainCts = [self getMainCT:ctLib.case_id];
+    if (mainCts.count > 0) {
+        //将主照片的状态设置为0
+        for (CTLib *ct in mainCts) {
+            ct.is_main = @"0";
+            if([self updateMainCTLib:ct]){
+                //添加一条更新ct片的自动同步数据
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Update dataEntity:[ct.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+        }
+    }
+    //设置新的主照片
+    BOOL ret = [self updateMainCTLib:ctLib];
+    if (ret) {
+        //添加一条更新ct片的自动同步数据
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Update dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    }
+    return ret;
+}
+
+//获取病历下的主ct
+- (NSArray *)getMainCT:(NSString *)case_id{
+    if ([NSString isEmptyString:case_id]) {
+        return  nil;
+    }
+    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where case_id = \"%@\" and user_id = \"%@\" and creation_date_sync > datetime('%@') and is_main = \"1\"",CTLibTableName,case_id,[AccountManager currentUserid],[NSString defaultDateString]];
+    
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        while (result && [result next]) {
+            CTLib *ctlib = [CTLib libWithResult:result];
+            [resultArray addObject:ctlib];
+        }
+        [result close];
+        
+    }];
+    return resultArray;
+}
+
+- (BOOL)updateMainCTLib:(CTLib *)ctLib{
+    __block BOOL result = NO;
+    if (ctLib == nil) {
+        return result;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"UPDATE %@ SET is_main = \"%@\" where ckeyid = \"%@\"",CTLibTableName,ctLib.is_main,ctLib.ckeyid];
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeUpdate:sqlStr];
+    }];
+    return result;
 }
 
 /**

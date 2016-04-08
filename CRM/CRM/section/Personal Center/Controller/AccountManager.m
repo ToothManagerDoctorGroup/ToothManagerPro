@@ -75,27 +75,6 @@ Realize_ShareInstance(AccountManager);
  */
 - (void)registerWithNickName:(NSString *)nickname passwd:(NSString *)pwd phone:(NSString *)phone recommender:(NSString *)recommender validate:(NSString *)validate successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
     ValidationResult ret = ValidationResultValid;//[nickname isValidWithFormat:@"^[a-zA-Z0-9]{3,15}$"];
-    if (ret == ValidationResultInValid)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"昵称格式错误" errorCode:400]);
-        return;
-    }
-    
-    if (ret == ValidationResultValidateStringIsEmpty)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"昵称不能为空" errorCode:400]);
-        return;
-    }
-    
-    if ([nickname charaterCount] > 32) {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"用户名过长" errorCode:400]);
-        return;
-    }
-    
-    if (![nickname isNotEmpty]) {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"用户名不能为空" errorCode:400]);
-        return;
-    }
     
     ret = [phone isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)

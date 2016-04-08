@@ -62,7 +62,6 @@
 -(void)viewTapped:(UITapGestureRecognizer*)tapGr
 {
     [self.passwdTextField resignFirstResponder];
-    [self.nicknameTextField resignFirstResponder];
     [self.phoneTextField resignFirstResponder];
     [self.validateTextField resignFirstResponder];
     [self.recommenderTextField resignFirstResponder];
@@ -79,8 +78,7 @@
 - (IBAction)signupAction:(id)sender {
     [self.view endEditing:YES];
     
-    
-    [[AccountManager shareInstance] registerWithNickName:self.nicknameTextField.text passwd:self.passwdTextField.text phone:self.phoneTextField.text recommender:self.recommenderTextField.text validate:self.validateTextField.text successBlock:^{
+    [[AccountManager shareInstance] registerWithNickName:self.phoneTextField.text passwd:self.passwdTextField.text phone:self.phoneTextField.text recommender:self.recommenderTextField.text validate:self.validateTextField.text successBlock:^{
         [SVProgressHUD showWithStatus:@"正在注册..."];
     } failedBlock:^(NSError *error) {
         [SVProgressHUD showTextWithStatus:[error localizedDescription]];
@@ -169,7 +167,7 @@
 //    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
     
     [SVProgressHUD showWithStatus:@"注册成功，正在登陆"];
-    [XLLoginTool loginWithNickName:self.nicknameTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
+    [XLLoginTool loginWithNickName:self.phoneTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
             [self loginSucessWithResult:respond.result];
         }else{

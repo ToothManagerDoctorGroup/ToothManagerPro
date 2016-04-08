@@ -10,7 +10,8 @@
 #import <AFNetworking.h>
 #import "NSDictionary+Extension.h"
 #import <objc/message.h>
-
+#import "NSString+TTMAddtion.h"
+#import "JSONKit.h"
 
 @interface CRMHttpRequest ()
 {
@@ -28,6 +29,10 @@ Realize_ShareInstance(CRMHttpRequest);
         self.BaseURL = [NSURL URLWithString:@""];
         _responderManager = [TimRequest deafalutRequest];
         requestManager = [[AFHTTPRequestOperationManager alloc]initWithBaseURL:self.BaseURL];
+//        requestManager.requestSerializer = [AFJSONRequestSerializer serializer];//请求
+        if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+            requestManager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
+        }
     }
     return self;
 }
@@ -42,7 +47,6 @@ Realize_ShareInstance(CRMHttpRequest);
         [self POST:params.requestUrl parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
              for (NSString *key in params.additionalParams.allKeys) {
                  if ([key isEqualToString:@"pic"]) {
-                     
                      [formData appendPartWithFileData:[params.additionalParams objectForKey:@"key"]
                                                  name:@"uploadfile"
                                              fileName:[params.additionalParams objectForKey:@"pic"]
@@ -204,11 +208,26 @@ Realize_ShareInstance(CRMHttpRequest);
     if (responseObject == nil) {
         responseObject = @{};
     }
-    
-    if (params != nil && params.callbackPrefix != nil) {
-        SEL selector = NSSelectorFromString([NSString stringWithFormat:@"on%@RequestSuccessWithResponse:withParam:", params.callbackPrefix]);
-        if ([self respondsToSelector:selector]) {
-            ((void(*)(id, SEL op, id,TimRequestParam *))objc_msgSend)(self, selector,responseObject,params);
+    if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+        //解密数据
+        NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        //解密数据
+        NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+        NSLog(@"请求的url:%@---解密后的数据:%@",operation.request.URL,sourceStr);
+        id resultSource = [sourceStr objectFromJSONString];
+        
+        if (params != nil && params.callbackPrefix != nil) {
+            SEL selector = NSSelectorFromString([NSString stringWithFormat:@"on%@RequestSuccessWithResponse:withParam:", params.callbackPrefix]);
+            if ([self respondsToSelector:selector]) {
+                ((void(*)(id, SEL op, id,TimRequestParam *))objc_msgSend)(self, selector,resultSource,params);
+            }
+        }
+    }else{
+        if (params != nil && params.callbackPrefix != nil) {
+            SEL selector = NSSelectorFromString([NSString stringWithFormat:@"on%@RequestSuccessWithResponse:withParam:", params.callbackPrefix]);
+            if ([self respondsToSelector:selector]) {
+                ((void(*)(id, SEL op, id,TimRequestParam *))objc_msgSend)(self, selector,responseObject,params);
+            }
         }
     }
 }

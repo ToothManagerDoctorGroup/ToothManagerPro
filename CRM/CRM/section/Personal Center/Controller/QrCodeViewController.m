@@ -65,7 +65,7 @@
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }else{
-            [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:qrcodeUrl] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
+            [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
         }
     }else{
         [MyPatientTool getPateintKeyIdWithPatientCKeyId:self.patient.ckeyid success:^(CRMHttpRespondModel *respondModel) {
@@ -78,6 +78,7 @@
             }
             
         } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }
@@ -116,7 +117,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = [NSString stringWithFormat:@"%@医生的二维码名片",[AccountManager shareInstance].currentUser.name];
         mode.message = [NSString stringWithFormat:@"这是来自%@医生的微信二维码,现在推荐给你.",[AccountManager shareInstance].currentUser.name];
-        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",Method_Weixin,userobj.userid];
+        mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@",DomainRealName,Method_Weixin,userobj.userid];
         mode.image = self.QrCodeImageView.image;
         if (buttonIndex == 0) {
             //微信
@@ -133,7 +134,7 @@
     if (self.isDoctor) {
         [CRMUserDefalut setObject:imageUrl forKey:QRCODE_URL_KEY];
     }
-    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:imageUrl] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
+    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
     weiXinPageUrl = imageUrl;
 }
 

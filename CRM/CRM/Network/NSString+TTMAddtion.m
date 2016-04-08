@@ -344,6 +344,18 @@
     return result;
 }
 
+- (NSString *)TripleDESIsEncrypt:(BOOL)isEncrypt{
+    if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+        if (isEncrypt) {
+            return [NSString TripleDES:self encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
+        }else{
+            return [NSString TripleDES:self encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+        }
+    }else{
+        return self;
+    }
+}
+
 
 - (id)JSONObject {
     return [NSJSONSerialization JSONObjectWithData:[self dataUsingEncoding:NSUTF8StringEncoding]
@@ -572,4 +584,15 @@
     return [NSString stringWithFormat:@"%@", number];
 }
 
+
+#pragma mark - 判断是否是数字
+- (BOOL)isPureNumandCharacters
+{
+    NSString *string = [self stringByTrimmingCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]];
+    if(string.length > 0)
+    {
+        return NO;
+    }
+    return YES;
+}
 @end

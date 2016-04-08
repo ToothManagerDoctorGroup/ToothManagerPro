@@ -55,7 +55,7 @@
     if (self.edit) {
         self.title = @"编辑介绍人";
     } else {
-        self.title = @"新建介绍人";
+        self.title = @"手工新建介绍人";
     }
     
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
@@ -104,7 +104,7 @@
     }
     
     //判断当前介绍人是否存在
-    BOOL exit = [[DBManager shareInstance] isInIntroducerTable:self.introducer.ckeyid];
+    BOOL exit = [[DBManager shareInstance] isInIntroducerTable:self.phoneTextField.text];
     if (exit) {
         [SVProgressHUD showImage:nil status:@"该电话号码已存在，请重新输入"];
         return;

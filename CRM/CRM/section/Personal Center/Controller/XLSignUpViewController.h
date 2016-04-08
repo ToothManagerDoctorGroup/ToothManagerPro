@@ -14,7 +14,6 @@
     NSTimer *myTimer;
     int timeCount;
 }
-@property (weak, nonatomic) IBOutlet UITextField *nicknameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *phoneTextField;
 @property (weak, nonatomic) IBOutlet UITextField *passwdTextField;
 @property (weak, nonatomic) IBOutlet UIButton *lisensebutton;

@@ -85,7 +85,7 @@
                     ShareMode *mode = [[ShareMode alloc]init];
                     mode.title = @"介绍朋友给医生";
                     mode.message = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,填写您朋友的信息,以便后续就诊",[AccountManager shareInstance].currentUser.name];
-                    mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",DomainName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+                    mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",DomainRealName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
                     mode.image = [UIImage imageNamed:@"crm_logo"];
                     
                     //微信

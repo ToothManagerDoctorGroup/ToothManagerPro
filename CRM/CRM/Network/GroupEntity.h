@@ -15,7 +15,6 @@
 
 @interface GroupEntity : NSObject
 
-
 /**
  *  分组名称
  */

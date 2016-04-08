@@ -27,6 +27,7 @@
 #import "DBManager+Doctor.h"
 #import "MLKMenuPopover.h"
 #import "XLContactsViewController.h"
+#import "XLCreatePatientViewController.h"
 
 @interface XLPatientSelectViewController () <UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,MLKMenuPopoverDelegate>{
     BOOL ifNameBtnSelected;
@@ -194,11 +195,12 @@
             PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
             cellMode.patientId = patientTmp.ckeyid;
             cellMode.introducerId = patientTmp.introducer_id;
-            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-                cellMode.name = patientTmp.nickName;
-            }else{
-                cellMode.name = patientTmp.patient_name;
-            }
+            cellMode.name = patientTmp.patient_name;
+//            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+//                cellMode.name = patientTmp.nickName;
+//            }else{
+//                cellMode.name = patientTmp.patient_name;
+//            }
             cellMode.phone = patientTmp.patient_phone;
             cellMode.introducerName = patientTmp.intr_name;
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
@@ -245,10 +247,11 @@
 
 - (void)menuPopover:(MLKMenuPopover *)menuPopover didSelectMenuItemAtIndex:(NSInteger)selectedIndex
 {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    
     [self.menuPopover dismissMenuPopover];
     if (selectedIndex == 0) {
-        CreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreatePatientViewController"];
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
+        XLCreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLCreatePatientViewController"];
         newPatientVC.hidesBottomBarWhenPushed = YES;
         [self pushViewController:newPatientVC animated:YES];
     }else if (selectedIndex == 1){
@@ -256,11 +259,6 @@
         contactVc.type = ContactsImportTypePatients;
         contactVc.hidesBottomBarWhenPushed = YES;
         [self pushViewController:contactVc animated:YES];
-        
-//        AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
-//        addressBook.type = ImportTypePatients;
-//        addressBook.hidesBottomBarWhenPushed = YES;
-//        [self pushViewController:addressBook animated:YES];
     }
 }
 

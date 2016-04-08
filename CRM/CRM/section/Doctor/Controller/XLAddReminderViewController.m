@@ -123,7 +123,7 @@
                     [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                 }
             } failure:^(NSError *error) {
-                [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
                 if (error) {
                     NSLog(@"error:%@",error);
                 }

@@ -12,6 +12,6 @@
 @interface AutoSyncManager : NSObject
 Declare_ShareInstance(AutoSyncManager);
 
-- (void)startAutoSync;
+- (BOOL)startAutoSync;
 
 @end

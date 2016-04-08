@@ -13,15 +13,16 @@
 #import "JSONKit.h"
 #import "XLMessageTemplateParam.h"
 #import "CRMHttpRespondModel.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation XLMessageTemplateTool
 
 + (void)getMessageTemplateByDoctorId:(NSString *)doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MessageTemplate.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MessageTemplate.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"gettemplateitem";
-    params[@"uid"] = doctor_id;
-    params[@"templateid"] = @"U_DIY";
+    params[@"action"] = [@"gettemplateitem" TripleDESIsEncrypt:YES];
+    params[@"uid"] = [doctor_id TripleDESIsEncrypt:YES];
+    params[@"templateid"] = [@"U_DIY" TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -42,10 +43,10 @@
 }
 
 + (void)addMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"add";
-    params[@"DataEntity"] = [param.keyValues JSONString];
+    params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[param.keyValues JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -61,10 +62,10 @@
 
 + (void)editMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"edit";
-    params[@"DataEntity"] = [param.keyValues JSONString];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[param.keyValues JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -79,10 +80,10 @@
 }
 
 + (void)deleteMessageTemplateWithParam:(XLMessageTemplateParam *)param success:(void (^)(CRMHttpRespondModel *model))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageTemplateDetailHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"delete";
-    params[@"DataEntity"] = [param.keyValues JSONString];
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[param.keyValues JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];

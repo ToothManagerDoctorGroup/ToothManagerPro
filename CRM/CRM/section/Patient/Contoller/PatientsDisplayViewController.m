@@ -13,7 +13,6 @@
 #import "DBManager+Materials.h"
 #import "PatientsTableViewCell.h"
 #import "PatientInfoViewController.h"
-#import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
@@ -31,6 +30,7 @@
 #import "JSONKit.h"
 #import "DBManager+AutoSync.h"
 #import "DBManager+sync.h"
+#import "AutoSyncGetManager.h"
 
 @interface PatientsDisplayViewController () <MudItemsBarDelegate>{
     BOOL ifNameBtnSelected;
@@ -83,7 +83,8 @@
     }
 }
 - (void)callSync {
-    [[SyncManager shareInstance] startSync];
+//    [[SyncManager shareInstance] startSync];
+    [[AutoSyncGetManager shareInstance] startSyncGet];
 }
 - (void)setupView {
     self.title = @"患者";
@@ -111,11 +112,12 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
-        }
+        cellMode.name = patientTmp.patient_name;
+//        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+//            cellMode.name = patientTmp.nickName;
+//        }else{
+//            cellMode.name = patientTmp.patient_name;
+//        }
         cellMode.phone = patientTmp.patient_phone;
 //        cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
         cellMode.introducerName = patientTmp.intr_name;
@@ -662,32 +664,6 @@
     return YES;
 }
 
-#pragma mark - MudItemsBarDelegate
-- (void)itemsBar:(MudItemsBar *)itemsBar clickedButtonAtIndex:(NSInteger)buttonIndex {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    switch (buttonIndex) {
-        case 0:
-        {
-            AddressBookViewController *addressBook =[storyBoard instantiateViewControllerWithIdentifier:@"AddressBookViewController"];
-            addressBook.type = ImportTypePatients;
-            addressBook.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:addressBook animated:YES];
-        }
-            break;
-        case 1:
-        {
-            CreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"CreatePatientViewController"];
-            newPatientVC.hidesBottomBarWhenPushed = YES;
-            [self pushViewController:newPatientVC animated:YES];
-        }
-            break;
-        default:
-            break;
-    }
-}
 
-- (void)itemsBarWillDisAppear {
-    self.isBarHidden = YES;
-}
 
 @end

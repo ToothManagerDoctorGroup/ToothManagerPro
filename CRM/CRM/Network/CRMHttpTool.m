@@ -9,6 +9,8 @@
 #import "CRMHttpTool.h"
 #import "AFHTTPRequestOperationManager.h"
 #import "AFHTTPRequestOperationManager+Synchronous.h"
+#import "NSString+TTMAddtion.h"
+#import "JSONKit.h"
 
 @interface CRMHttpTool ()
 
@@ -22,8 +24,10 @@ Realize_ShareInstance(CRMHttpTool);
     self = [super init];
     if (self) {
         _manager = [AFHTTPRequestOperationManager manager];
-        //    manager.requestSerializer = [AFJSONRequestSerializer serializer];//请求
-        //    manager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
+//        _manager.requestSerializer = [AFJSONRequestSerializer serializer];//请求
+        if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+            _manager.responseSerializer = [AFHTTPResponseSerializer serializer];//响应
+        }
         _manager.requestSerializer.timeoutInterval = 40.f; //设置请求超时时间
     }
     return self;
@@ -32,9 +36,20 @@ Realize_ShareInstance(CRMHttpTool);
 - (void)GET:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     
     [self.manager GET:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
-        if (success) {
-            success(responseObject);
+        
+        if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+            NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            //解密数据
+            NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+            if (success) {
+                success([sourceStr objectFromJSONString]);
+            }
+        }else{
+            if (success) {
+                success(responseObject);
+            }
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
@@ -45,11 +60,24 @@ Realize_ShareInstance(CRMHttpTool);
 }
 
 - (void)POST:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    
     [self.manager POST:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
-        if (success) {
-            success(responseObject);
+        
+         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
+        
+        if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+            NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            //解密数据
+            NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+            if (success) {
+                success([sourceStr objectFromJSONString]);
+            }
+        }else{
+            if (success) {
+                success(responseObject);
+            }
         }
+        
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
         if (failure) {
@@ -66,8 +94,18 @@ Realize_ShareInstance(CRMHttpTool);
     [self.manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:uploadParam.data name:uploadParam.name fileName:uploadParam.fileName mimeType:uploadParam.mimeType];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        if (success) {
-            success(responseObject);
+        
+        if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
+            NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            //解密数据
+            NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+            if (success) {
+                success([sourceStr objectFromJSONString]);
+            }
+        }else{
+            if (success) {
+                success(responseObject);
+            }
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if (failure) {

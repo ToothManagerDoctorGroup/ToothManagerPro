@@ -26,6 +26,8 @@
 
 #import "CRMAppDelegate.h"
 #import "Reachability.h"
+#import "UITabBar+BadgeView.h"
+#import "XLMenuButtonView.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -34,9 +36,9 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 @interface TimTabBarViewController ()<EMChatManagerDelegate,XLGuideViewDelegate>{
     UIButton *menuButton;
-    MenuView *menuView;
-    MenuButtonPushManager *manager;
-    UIView *clearView;
+//    MenuView *menuView;
+//    MenuButtonPushManager *manager;
+//    UIView *clearView;
     
     MyScheduleReminderViewController *_scheduleReminderVC;
     XLIntroducerViewController *_introducerVC;
@@ -86,7 +88,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [self registerNotifications];
     //设置未读数
     [self setupUnreadMessageCount];
-    
     //初始化
     [self makeMainView];
 }
@@ -116,7 +117,12 @@ static NSString *kConversationChatter = @"ConversationChatter";
 #pragma mark - 定时器,自动上传
 - (void)autoSyncAction:(NSTimer *)timer{
     //开始同步
-    [[AutoSyncManager shareInstance] startAutoSync];
+    BOOL ret = [[AutoSyncManager shareInstance] startAutoSync];
+    if (ret) {
+        [self.tabBar showBadgeOnItemIndex:4];
+    }else{
+        [self.tabBar hideBadgeOnItemIndex:4];
+    }
 }
 
 - (void)makeMainView
@@ -152,50 +158,21 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [self setViewControllers:array];
     
     menuButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    menuButton.frame = CGRectMake(0, 0, SCREEN_WIDTH/5, self.tabBar.height);
+    menuButton.frame = CGRectMake(0, 0, SCREEN_WIDTH / 5, self.tabBar.height);
     [menuButton setImage:[UIImage imageNamed:@"menuButton"] forState:UIControlStateNormal];
     [menuButton setImage:[UIImage imageNamed:@"menuButton"] forState:UIControlStateSelected];
     [menuButton addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
     [menuButton setCenter:CGPointMake(SCREEN_WIDTH/2,(self.tabBar.frame.size.height)/2)];
     [self.tabBar addSubview:menuButton];
     
-    
-    //获取配置项
-//    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-//    NSString *isShowedKey = @"isShowedKey";
-//    BOOL isShowed = [userDefaults boolForKey:isShowedKey];
-//    if (!isShowed) {
-//        XLGuideView *guideView = [XLGuideView new];
-//        guideView.delegate = self;
-//        guideView.step = XLGuideViewStepOne;
-//        guideView.type = XLGuideViewTypePatient;
-//        [guideView showInView:self.view maskViewFrame:CGRectMake((kScreenWidth - menuButton.width) / 2, kScreenHeight - self.tabBar.height, SCREEN_WIDTH / 5 - 15, self.tabBar.height)];
-//    }
-    
 }
 
 -(void)click:(id)sender{
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    XLMenuButtonView *menuView = [[XLMenuButtonView alloc] init];
+    menuView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+    menuView.viewController = (UINavigationController *)self.selectedViewController;
+    [menuView show];
     
-    clearView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth,kScreenHeight)];
-    UITapGestureRecognizer *tapges = [[UITapGestureRecognizer alloc]init];
-    [tapges addTarget:self action:@selector(disMissView)];
-    tapges.numberOfTapsRequired = 1;
-    [clearView addGestureRecognizer:tapges];
-    [window addSubview:clearView];
-    
-    menuView = [[MenuView alloc]init];
-    [menuView setFrame:CGRectMake(SCREEN_WIDTH/2-104/2, SCREEN_HEIGHT-self.tabBar.frame.size.height-88, 104, 88)];
-    [menuView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"menuView"]]];
-    [window addSubview:menuView];
-    
-    manager = [[MenuButtonPushManager alloc]init];
-    manager.viewController = (UINavigationController *)self.selectedViewController;
-    menuView.delegate = manager;
-}
--(void)disMissView{
-    [clearView removeFromSuperview];
-    [menuView removeFromSuperview];
 }
 
 -(void)setTabbarItemState:(UIViewController *)viewController withTitle:(NSString *)title withImage1:(NSString*)image1 withImage2:(NSString *)image2{
@@ -220,9 +197,11 @@ static NSString *kConversationChatter = @"ConversationChatter";
     }
     if (_patientVc) {
         if (unreadCount > 0) {
-            _patientVc.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
+//            _patientVc.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
+            [self.tabBar showBadgeOnItemIndex:1];
         }else{
-            _patientVc.tabBarItem.badgeValue = nil;
+//            _patientVc.tabBarItem.badgeValue = nil;
+            [self.tabBar hideBadgeOnItemIndex:1];
         }
     }
     

@@ -10,7 +10,6 @@
 
 @interface MaterialTableViewCell : UITableViewCell
 
-@property (nonatomic, retain) UIImageView * imageView;
 @property (nonatomic, retain) UILabel * info_lable;
 @property (nonatomic, retain) UILabel * price_label;
 @property (nonatomic, retain) UILabel * type_label;

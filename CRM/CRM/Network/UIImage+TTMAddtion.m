@@ -315,4 +315,11 @@
     return roundAndNumImage;
 }
 
++ (UIImage *)imageWithFileName:(NSString *)fileName{
+    BOOL exist = [fileName isContainsString:@"."];
+    NSString *path = [[NSBundle mainBundle] pathForResource:fileName
+                                                     ofType:exist ? nil : @".png"];
+    return [UIImage imageWithContentsOfFile:path];
+}
+
 @end

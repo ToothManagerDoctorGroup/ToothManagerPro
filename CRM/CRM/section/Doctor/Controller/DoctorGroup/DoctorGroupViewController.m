@@ -17,6 +17,8 @@
 #import "DoctorGroupModel.h"
 #import "XLGroupManagerViewController.h"
 #import "NSString+Conversion.h"
+#import "CRMUserDefalut.h"
+#import "XLGuideImageView.h"
 
 @interface DoctorGroupViewController ()<CustomAlertViewDelegate,UIAlertViewDelegate>
 
@@ -38,8 +40,25 @@
 }
 
 - (void)dealloc{
+    [self.dataList removeAllObjects];
+    self.selectModel = nil;
+    self.dataList = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    
     [SVProgressHUD dismiss];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    //是否显示提示页
+    [CRMUserDefalut isShowedForKey:GroupNew_IsShowedKey showedBlock:^{
+        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_alert"]];
+        [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
+    }];
 }
 
 - (void)viewDidLoad {
@@ -82,7 +101,7 @@
 #pragma mark - 请求分组信息
 - (void)requestGroupData{
     [SVProgressHUD showWithStatus:@"正在加载"];
-    [DoctorGroupTool getGroupListWithDoctorId:[[AccountManager shareInstance] currentUser].userid ckId:@"" success:^(NSArray *result) {
+    [DoctorGroupTool getGroupListWithDoctorId:[[AccountManager shareInstance] currentUser].userid ckId:@"" patientId:@"" success:^(NSArray *result) {
         [SVProgressHUD dismiss];
         [self.dataList removeAllObjects];
         [self.dataList addObjectsFromArray:result];
@@ -95,7 +114,7 @@
         }
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -165,13 +184,20 @@
     [DoctorGroupTool addNewGroupWithGroupEntity:group success:^(CRMHttpRespondModel *respondModel) {
         
         if ([respondModel.code integerValue] == 200) {
+            //跳转到分组页面
             [self requestGroupData];
+            //跳转到分组页面
+            DoctorGroupModel *groupM = [[DoctorGroupModel alloc] initWithGroupEntity:group];
+            XLGroupManagerViewController *manageVc = [[XLGroupManagerViewController alloc] init];
+            manageVc.group = groupM;
+            manageVc.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:manageVc animated:YES];
         }else{
             [SVProgressHUD showErrorWithStatus:respondModel.result];
         }
     
     } failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:@"分组创建失败"];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -195,11 +221,9 @@
         if (error) {
             NSLog(@"error:%@",error);
         }
-        [SVProgressHUD showErrorWithStatus:@"删除失败"];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
     }];
-
 }
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

@@ -328,7 +328,7 @@
     }
     
     //赋值
-    [cell.imageView setImage:[self drawRoundWithNum:indexPath.row]];
+//    [cell.imageView setImage:[self drawRoundWithNum:indexPath.row]];
     Material *material = [sourceArray objectAtIndex:indexPath.row];
     [cell.info_lable setText:material.mat_name];
     [cell.price_label setText:[NSString stringWithFormat:@"%d",(int)material.mat_price]];
@@ -368,11 +368,12 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    NSArray *searchResults;
     if ([searchText isNotEmpty]) {
-        searchResults = [ChineseSearchEngine resultArraySearchMaterialOnArray:dataArray withSearchText:searchText];
+        //查询本地数组
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"mat_name CONTAINS %@", searchText]; //predicate只能是对象
+        NSArray *filteredArray = [dataArray filteredArrayUsingPredicate:predicate];
         [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:searchResults];
+        [self.searchController.resultsSource addObjectsFromArray:filteredArray];
         [self.searchController.searchResultsTableView reloadData];
     }
 }

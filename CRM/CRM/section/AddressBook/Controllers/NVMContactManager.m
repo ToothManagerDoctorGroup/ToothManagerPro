@@ -258,7 +258,7 @@ NSString *const NVMContactAccessFailedNotification = @"NVMContactAccessFailedNot
     }
     CFRelease(people);
     //对数组进行排序
-    [self setUpTableSectionWithArray:self.people];
+//    [self setUpTableSectionWithArray:self.people];
 #pragma clang diagnostic pop
 }
 

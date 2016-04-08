@@ -19,26 +19,33 @@
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"
 #import "ChatViewController.h"
+#import "NSString+TTMAddtion.h"
+#import "DoctorGroupModel.h"
+#import "XLEditGroupViewController.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
+#import "GroupMemberEntity.h"
+#import "DoctorGroupTool.h"
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]
 #define CommenTitleColor MyColor(142, 143, 144)
 #define CommenTextColor MyColor(47, 47, 48)
 #define LineViewH 1
-#define RowHeight 36
+#define RowHeight 50
 #define AllergyW 16
 #define DividerH 16
 #define arrowW 13
 #define arrowH 18
 
-@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate,UIAlertViewDelegate>{
+@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate,UIAlertViewDelegate,XLEditGroupViewControllerDelegate>{
     Introducer *selectIntroducer;
 }
 
 @property (nonatomic, weak)UIView *nameAndPhoneSuperView;//姓名和电话父视图
 @property (nonatomic, weak)UILabel *patientNameLabel; //患者姓名
-@property (nonatomic, weak)UILabel *patientPhoneLabel; //联系电话
-//@property (nonatomic, weak)UILabel *remarkLabel;//备注
+//@property (nonatomic, weak)UILabel *patientPhoneLabel; //联系电话
 @property (nonatomic, weak)UILabel *introducerNameLabel; //介绍人姓名
 @property (nonatomic, weak)UIImageView *introducerImage;//介绍人编辑图片
 
@@ -48,9 +55,48 @@
 @property (nonatomic, weak)UIButton *addReserveButton;//添加预约
 @property (nonatomic, weak)UIImageView *allergyView;//是否过敏
 
+@property (nonatomic, strong)UIView *groupSuperView;//分组父视图
+@property (nonatomic, weak)UILabel *groupTitle;//标题
+@property (nonatomic, weak)UITextField *groupName;//分组名称
+@property (nonatomic, weak)UIImageView *arrowView;//箭头
+
+@property (nonatomic, strong)NSArray *curExistGroups;
+
 @end
 
 @implementation PatientDetailHeadInfoView
+
+- (UIView *)groupSuperView{
+    if (!_groupSuperView) {
+        _groupSuperView = [[UIView alloc] init];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+        tap.numberOfTouchesRequired = 1;
+        [_groupSuperView addGestureRecognizer:tap];
+        [self addSubview:_groupSuperView];
+        //标题
+        UILabel *groupTitle = [[UILabel alloc] init];
+        groupTitle.textColor = MyColor(136, 136, 136);
+        groupTitle.font = CommenTitleFont;
+        groupTitle.text = @"分组：   ";
+        [_groupSuperView addSubview:groupTitle];
+        self.groupTitle = groupTitle;
+        
+        //分组名称
+        UITextField *groupName = [[UITextField alloc] init];
+        groupName.font = CommenTitleFont;
+        groupName.textColor = [UIColor colorWithHex:0x333333];
+        groupName.placeholder = @"将患者添加到分组";
+        groupName.enabled = NO;
+        self.groupName = groupName;
+        [_groupSuperView addSubview:groupName];
+        
+        //箭头
+        UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
+        self.arrowView = arrowView;
+        [_groupSuperView addSubview:arrowView];
+    }
+    return _groupSuperView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -86,11 +132,11 @@
     self.patientNameLabel = patientNameLabel;
     
     //联系电话内容视图
-    UILabel *patientPhoneLabel = [[UILabel alloc] init];
-    patientPhoneLabel.textColor = CommenTextColor;
-    patientPhoneLabel.font = CommenTitleFont;
-    [nameAndPhoneSuperView addSubview:patientPhoneLabel];
-    self.patientPhoneLabel = patientPhoneLabel;
+//    UILabel *patientPhoneLabel = [[UILabel alloc] init];
+//    patientPhoneLabel.textColor = CommenTextColor;
+//    patientPhoneLabel.font = CommenTitleFont;
+//    [nameAndPhoneSuperView addSubview:patientPhoneLabel];
+//    self.patientPhoneLabel = patientPhoneLabel;
     
     //介绍人内容视图
     UILabel *introducerNameLabel = [[UILabel alloc] init];
@@ -149,12 +195,15 @@
     UIImageView *allergyView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"patient_min"]];
     self.allergyView = allergyView;
     [self.nameAndPhoneSuperView addSubview:allergyView];
+    
+    //初始化分组视图
+    [self groupSuperView];
 }
 
 - (void)setDetailPatient:(Patient *)detailPatient{
     _detailPatient = detailPatient;
     
-    self.nameAndPhoneSuperView.frame = CGRectMake(0, 0, kScreenWidth, RowHeight * 2);
+    self.nameAndPhoneSuperView.frame = CGRectMake(0, 0, kScreenWidth, RowHeight);
     
     //患者姓名
     NSString *name;
@@ -167,7 +216,6 @@
     self.patientNameLabel.frame = CGRectMake(Margin, 0, nameSize.width, RowHeight);
     self.patientNameLabel.attributedText = [name changeStrColorWithIndex:3];
     
-    
     //过敏史
     if (self.detailPatient.patient_allergy && [self.detailPatient.patient_allergy isNotEmpty]) {
         self.allergyView.hidden = NO;
@@ -176,43 +224,37 @@
         self.allergyView.hidden = YES;
     }
     
-    //联系方式
-    NSString *phone;
-    if (self.detailPatient.patient_phone && [self.detailPatient.patient_phone isNotEmpty]) {
-        phone = [NSString stringWithFormat:@"电话：   %@",self.detailPatient.patient_phone];
-    }else{
-        phone = @"电话：   无";
-    }
-    CGSize phoneSize = [phone sizeWithFont:CommenTitleFont];
-    self.patientPhoneLabel.frame = CGRectMake(Margin, self.patientNameLabel.bottom, phoneSize.width, RowHeight);
-    self.patientPhoneLabel.attributedText = [phone changeStrColorWithIndex:3];
-    
-
     //介绍人
-    self.introducerNameLabel.frame = CGRectMake(Margin, self.patientPhoneLabel.bottom, kScreenWidth / 2 - Margin, RowHeight);
-    self.introducerNameLabel.text = @"介绍人：无";
+    self.introducerNameLabel.frame = CGRectMake(Margin, self.patientNameLabel.bottom, kScreenWidth / 2 - Margin, RowHeight);
+    self.introducerNameLabel.attributedText = [@"介绍人：无" changeStrColorWithIndex:4];
     
     //介绍人编辑图片
     self.introducerImage.frame = CGRectMake(self.introducerNameLabel.width - 14 - 5, (RowHeight - 14) / 2, 14, 14);
     
-    
     //分割线
-    [self dividerViewWithFrame:CGRectMake((kScreenWidth - 1) *.5, (RowHeight - DividerH) * .5 + self.patientPhoneLabel.bottom, 1, DividerH)];
+    [self dividerViewWithFrame:CGRectMake((kScreenWidth - 1) *.5, (RowHeight - DividerH) * .5 + self.patientNameLabel.bottom, 1, DividerH)];
     
     //转诊到
-    self.transferToLabel.frame = CGRectMake(self.introducerNameLabel.right + Margin, self.patientPhoneLabel.bottom, kScreenWidth / 2 - Margin, RowHeight);
+    self.transferToLabel.frame = CGRectMake(self.introducerNameLabel.right + Margin, self.patientNameLabel.bottom, kScreenWidth / 2 - Margin, RowHeight);
     
     //4个按钮
     CGFloat buttonW = 40;
     CGFloat buttonH = 25;
-    self.addReserveButton.frame = CGRectMake(kScreenWidth - buttonW - Margin, (RowHeight * 2 - buttonH) / 2, buttonW, buttonH);
-    self.weixinButton.frame = CGRectMake(self.addReserveButton.left - buttonW - Margin, (RowHeight * 2 - buttonH) / 2, buttonW, buttonH);
-    self.phoneButton.frame = CGRectMake(self.weixinButton.left - buttonW, (RowHeight * 2 - buttonH) / 2, buttonW, buttonH);
+    self.addReserveButton.frame = CGRectMake(kScreenWidth - buttonW - Margin, (RowHeight - buttonH) / 2, buttonW, buttonH);
+    self.weixinButton.frame = CGRectMake(self.addReserveButton.left - buttonW - Margin, (RowHeight - buttonH) / 2, buttonW, buttonH);
+    self.phoneButton.frame = CGRectMake(self.weixinButton.left - buttonW, (RowHeight - buttonH) / 2, buttonW, buttonH);
     
     //添加各行之间的分割线
     for (int i = 0; i < 3; i++) {
-        [self dividerViewWithFrame:CGRectMake(0, (i + 2) * RowHeight, kScreenWidth, 1)];
+        [self dividerViewWithFrame:CGRectMake(0, (i + 1) * RowHeight, kScreenWidth, 1)];
     }
+    
+    //分组
+    self.groupSuperView.frame = CGRectMake(0, self.introducerNameLabel.bottom, kScreenWidth, RowHeight);
+    CGSize groupTitleSize = [self.groupTitle.text measureFrameWithFont:CommenTitleFont size:CGSizeMake(MAXFLOAT, MAXFLOAT)].size;
+    self.groupTitle.frame = CGRectMake(Margin, 0, groupTitleSize.width, RowHeight);
+    self.arrowView.frame = CGRectMake(kScreenWidth - arrowW - Margin, (RowHeight - arrowH) / 2, arrowW, arrowH);
+    self.groupName.frame = CGRectMake(self.groupTitle.right, 0, kScreenWidth - self.groupTitle.right - arrowW - Margin * 2, RowHeight);
 }
 //添加分割线
 - (void)dividerViewWithFrame:(CGRect)frame{
@@ -364,7 +406,70 @@
         }
     }
 }
+#pragma mark - 设置分组
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    XLEditGroupViewController *editGroupVc = [[XLEditGroupViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    editGroupVc.delegate = self;
+    editGroupVc.isEdit = YES;
+    editGroupVc.currentGroups = self.curExistGroups == nil ? self.currentGroups : self.curExistGroups;
+    editGroupVc.orginExistGroups = self.currentGroups;
+    [self.viewController.navigationController pushViewController:editGroupVc animated:YES];
+}
 
+- (void)setCurrentGroups:(NSArray *)currentGroups{
+    _currentGroups = currentGroups;
+    
+    NSMutableString *mStr = [NSMutableString string];
+    for (DoctorGroupModel *groupM in currentGroups) {
+        [mStr appendFormat:@"%@、",groupM.group_name];
+    }
+    NSString *groupName = mStr.length > 0 ? [mStr substringToIndex:mStr.length - 1] : @"";
+    
+    self.groupName.text = groupName;
+}
+
+#pragma mark - XLEditGroupViewControllerDelegate
+- (void)editGroupViewController:(XLEditGroupViewController *)editGroupVc didAddGroups:(NSArray *)addGroups delectGroups:(NSArray *)deleteGroups groupName:(NSString *)groupName{
+    self.curExistGroups = addGroups;
+    //上传新增的分组信息
+    if (addGroups.count > 0) {
+        NSMutableArray *selectMemberArr = [NSMutableArray array];
+        for (DoctorGroupModel *model in addGroups) {
+            BOOL exist = NO;
+            for (DoctorGroupModel *orginModel in self.currentGroups) {
+                if ([model.ckeyid isEqualToString:orginModel.ckeyid]) {
+                    exist = YES;
+                    break;
+                }
+            }
+            if (!exist) {
+                GroupMemberEntity *member = [[GroupMemberEntity alloc] initWithGroupName:model.group_name groupId:model.ckeyid doctorId:model.doctor_id patientId:self.detailPatient.ckeyid patientName:self.detailPatient.patient_name ckeyId:@""];
+                [selectMemberArr addObject:member.keyValues];
+            }
+        }
+        if (selectMemberArr.count > 0) {
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_AddPatientToGroups postType:Insert dataEntity:[selectMemberArr JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        } 
+    }
+    [self setCurrentGroups:addGroups];
+    
+    //上传删除的分组信息
+    if (deleteGroups.count > 0) {
+        NSMutableString *mStr = [NSMutableString string];
+        for (DoctorGroupModel *model in deleteGroups) {
+            [mStr appendFormat:@"%@,",model.ckeyid];
+        }
+        NSString *groupIds = [mStr substringToIndex:mStr.length - 1];
+        GroupAndPatientParam *param = [[GroupAndPatientParam alloc] init];
+        param.patientIds = self.detailPatient.ckeyid;
+        param.groupIds = groupIds;
+        
+        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_AddPatientToGroups postType:Delete dataEntity:[param.keyValues JSONString] syncStatus:@"0"];
+        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+    }
+    
+}
 
 
 @end

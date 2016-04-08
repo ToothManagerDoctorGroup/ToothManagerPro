@@ -41,6 +41,7 @@
 #import "XLGuideImageView.h"
 #import "CRMUserDefalut.h"
 #import "MyDateTool.h"
+#import "CRMAppDelegate.h"
 
 @interface MyScheduleReminderViewController ()<MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -95,7 +96,7 @@
     [super viewDidLoad];
     
     
-    self.title = @"日程提醒";
+    self.title = @"日程表";
 //    self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     //设置消息按钮
@@ -161,6 +162,7 @@
         
         }
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -196,23 +198,21 @@
         [self didClickDateButton];
         self.isHide = YES;
     }
-    
-    //获取配置项
-    NSString *isShowed = [CRMUserDefalut objectForKey:Schedule_IsShowedKey];
-    if (isShowed == nil) {
-        isShowed = Auto_Action_Open;
-        [CRMUserDefalut setObject:isShowed forKey:Schedule_IsShowedKey];
-    }
-    if ([isShowed isEqualToString:Auto_Action_Open]) {
-        [CRMUserDefalut setObject:Auto_Action_Close forKey:Schedule_IsShowedKey];
+    //判断是否显示提示页
+    [CRMUserDefalut isShowedForKey:Schedule_IsShowedKey showedBlock:^{
         XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alert"]];
         [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
-    }
+    }];
 }
 
 -(void)onLeftButtonAction:(id)sender{
     
-    
+    //判断当前是否有网络
+    CRMAppDelegate *appDelegate = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
+    if(appDelegate.connectionStatus == NotReachable){
+        [SVProgressHUD showImage:nil status:@"当前无网络"];
+        return;
+    }
     [SVProgressHUD showWithStatus:@"同步中..."];
     if ([[AccountManager shareInstance] isLogin]) {
         [NSTimer scheduledTimerWithTimeInterval:0.2
@@ -530,7 +530,7 @@
         if( [MFMessageComposeViewController canSendText] ){
             MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
             controller.recipients = @[self.selectPatient.patient_phone];
-            controller.body = notifi.reserve_type;
+            controller.body = @"";
             controller.messageComposeDelegate = self;
             //跳转到发送短信的页面
             [self presentViewController:controller animated:YES completion:nil];

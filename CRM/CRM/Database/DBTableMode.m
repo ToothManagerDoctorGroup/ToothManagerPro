@@ -303,6 +303,7 @@ NSString * const Repaired = @"已修复";
     patient.sync_time = [result stringForColumn:@"sync_time"];
     patient.doctor_id = [result stringForColumn:@"doctor_id"];
     patient.intr_name = [result stringForColumn:@"intr_name"];
+    patient.creation_date = [result stringForColumn:@"creation_date"];
     
     patient.patient_allergy = [result stringForColumn:@"patient_allergy"];
     patient.patient_remark = [result stringForColumn:@"patient_remark"];
@@ -352,6 +353,7 @@ NSString * const Repaired = @"已修复";
     tmpPatient.user_id = [AccountManager currentUserid];
     tmpPatient.intr_name = [pat stringForKey:@"intr_name"];
     tmpPatient.update_date = [pat stringForKey:@"update_time"];
+    tmpPatient.creation_date = [pat stringForKey:@"creation_time"];
     
     tmpPatient.patient_allergy = [pat stringForKey:@"patient_allergy"];
     tmpPatient.patient_remark = [pat stringForKey:@"patient_remark"];
@@ -604,6 +606,7 @@ NSString * const Repaired = @"已修复";
     lib.user_id = [result stringForColumn:@"user_id"];
     lib.doctor_id = [result stringForColumn:@"doctor_id"];
     lib.creation_date_sync = [result stringForColumn:@"creation_date_sync"];
+    lib.is_main = [result stringForColumn:@"is_main"];
     return lib;
 }
 
@@ -621,6 +624,7 @@ NSString * const Repaired = @"已修复";
     templib.sync_time = [medCT stringForKey:@"sync_time"];
     templib.doctor_id = [medCT stringForKey:@"doctor_id"];
     templib.creationdate = [medCT stringForKey:@"creation_time"];
+    templib.is_main = [medCT stringForKey:@"is_main"];
     
     return templib;
     

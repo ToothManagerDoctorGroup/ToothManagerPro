@@ -45,25 +45,35 @@
     //显示已有数据
     if ([self.hengYaString isEqualToString:@"无"]) {
         return;
-    }else if ([self.hengYaString isEqualToString:@"上颌"]) {
+    }
+    if ([self.hengYaString isEqualToString:@"上颌"]) {
         [self shClick:shangHeBtn];
-    }else if([self.hengYaString isEqualToString:@"下颌"]){
+        return;
+    }
+    if([self.hengYaString isEqualToString:@"下颌"]){
         [self xhClick:xiaHeBtn];
-    }else if ([self.hengYaString isEqualToString:@"全口"]){
+        return;
+    }
+    if ([self.hengYaString isEqualToString:@"全口"]){
         [self qkClick:quanKouBtn];
-    }else if (self.hengYaString.length > 0 && [self isPureNumandCharacters:self.hengYaString] && ![self.hengYaString isContainsString:@","]){
+        return;
+    }
+    if (self.hengYaString.length > 0 && [self isPureNumandCharacters:self.hengYaString] && ![self.hengYaString isContainsString:@","]){
         UIButton *button = (UIButton *)[_henyaCell.contentView viewWithTag:[self.hengYaString integerValue]];
         button.selected = YES;
         [hengYaArray addObject:self.hengYaString];
-    }else if(self.hengYaString.length > 0 && [self.hengYaString isContainsString:@","]){
-        if(self.hengYaString.length > 0 && [self isPureNumandCharacters:self.hengYaString]){
-            NSArray *hen = [self.hengYaString componentsSeparatedByString:@","];
-            for(NSInteger i = 0;i<[hen count];i++){
-                UIButton *button = (UIButton *)[_henyaCell.contentView viewWithTag:[[hen objectAtIndex:i]integerValue]];
+        return;
+    }
+    if(self.hengYaString.length > 0 && [self.hengYaString isContainsString:@","]){
+        NSArray *hen = [self.hengYaString componentsSeparatedByString:@","];
+        for(NSInteger i = 0;i<[hen count];i++){
+            if ([self isPureNumandCharacters:[hen objectAtIndex:i]]) {
+                UIButton *button = (UIButton *)[_henyaCell.contentView viewWithTag:[[hen objectAtIndex:i] integerValue]];
                 button.selected = YES;
                 [hengYaArray addObject:hen[i]];
             }
         }
+        return;
     }
 }
 - (void)setUpView{

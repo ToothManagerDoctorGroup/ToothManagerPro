@@ -9,6 +9,8 @@
 #import "XLRecordCell.h"
 #import "DBTableMode.h"
 #import "UIColor+Extension.h"
+#import "MyDateTool.h"
+
 #define CommenFont [UIFont systemFontOfSize:12]
 
 @interface XLRecordCell ()
@@ -52,7 +54,6 @@
     
     UILabel *nameLabel = [[UILabel alloc] init];
     nameLabel.textColor = MyColor(51, 51, 51);
-    nameLabel.hidden = YES;
     nameLabel.font = CommenFont;
     self.nameLabel = nameLabel;
     [self.contentView addSubview:nameLabel];
@@ -61,7 +62,6 @@
     timeLabel.textColor = MyColor(51, 51, 51);
     timeLabel.font = CommenFont;
     self.timeLabel = timeLabel;
-    timeLabel.hidden = YES;
     [self.contentView addSubview:self.timeLabel];
     
     UIButton *contentButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -86,20 +86,20 @@
     
     self.headImageView.frame = CGRectMake(marginX, marginY, imageW, imageH);
     
-    NSString *name = @"张三";
+    NSString *name = record.doctor_name;
     CGSize nameSize = [name sizeWithFont:CommenFont];
     self.nameLabel.frame = CGRectMake(self.headImageView.right + marginY, marginY, nameSize.width, 20);
     self.nameLabel.text = name;
     
     
-    NSString *time = record.creation_date;
+    NSString *time = [MyDateTool stringWithDateNoSec:[MyDateTool dateWithStringWithSec:record.creation_date]];
     CGSize timeSize = [time sizeWithFont:CommenFont];
     self.timeLabel.frame = CGRectMake(kScreenWidth - timeSize.width - marginX, marginY, timeSize.width, 20);
     self.timeLabel.text = time;
     
     
     CGSize contentSize = [record.record_content sizeWithFont:[UIFont systemFontOfSize:14] constrainedToSize:CGSizeMake(kScreenWidth - 15 * 2 - 10 - 40 - 35, MAXFLOAT) lineBreakMode:NSLineBreakByCharWrapping];
-    self.contentButton.frame = CGRectMake(self.headImageView.right + marginY, 30, contentSize.width + 35, contentSize.height + 30);
+    self.contentButton.frame = CGRectMake(self.headImageView.right + marginY, self.nameLabel.bottom, contentSize.width + 35, contentSize.height + 30);
     [self.contentButton setTitle:record.record_content forState:UIControlStateNormal];
     UIImage *imageNor = [UIImage imageNamed:@"chat_recive_nor"];
     //设置图片以平铺对方式拉伸

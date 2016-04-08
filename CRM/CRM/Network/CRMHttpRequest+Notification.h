@@ -9,17 +9,12 @@
 #import "CRMHttpRequest.h"
 
 DEF_STATIC_CONST_STRING(Notification_Prefix,Notification);
-//DEF_URL NotificationFriends_URL = @"http://122.114.62.57/his.crm/ashx/NotificationFriendHandler.ashx?action=getdata";
-#define NotificationFriends_URL [NSString stringWithFormat:@"%@%@/ashx/NotificationFriendHandler.ashx?action=getdata",DomainName,Method_His_Crm]
 
-//DEF_URL NotificationSystem_URL = @"http://122.114.62.57/his.crm/ashx/NotificationSystemHandler.ashx?action=getdata";
-#define NotificationSystem_URL [NSString stringWithFormat:@"%@%@/ashx/NotificationSystemHandler.ashx?action=getdata",DomainName,Method_His_Crm]
+#define NotificationFriends_URL [NSString stringWithFormat:@"%@%@/%@/NotificationFriendHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL NotificationInpatient_URL = @"http://122.114.62.57/his.crm/ashx/GetMessage.ashx?action=inpatient";
-#define NotificationInpatient_URL [NSString stringWithFormat:@"%@%@/ashx/GetMessage.ashx?action=inpatient",DomainName,Method_His_Crm]
+#define NotificationSystem_URL [NSString stringWithFormat:@"%@%@/%@/NotificationSystemHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
-//DEF_URL NotificationOutpatient_URL = @"http://122.114.62.57/his.crm/ashx/GetMessage.ashx?action=outpatient";
-#define NotificationOutpatient_URL [NSString stringWithFormat:@"%@%@/ashx/GetMessage.ashx?action=outpatient",DomainName,Method_His_Crm]
+#define NotificationPatient_Common_URL [NSString stringWithFormat:@"%@%@/%@/GetMessage.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
 @interface CRMHttpRequest (Notification)
 

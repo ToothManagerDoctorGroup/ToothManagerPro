@@ -11,7 +11,6 @@
 #import "CRMMacro.h"
 #import "PatientsTableViewCell.h"
 #import "PatientInfoViewController.h"
-#import "CreatePatientViewController.h"
 #import "AddressBookViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
@@ -138,7 +137,7 @@
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -497,6 +496,7 @@
         }
         
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -521,10 +521,10 @@
             }
             [SVProgressHUD dismiss];
         } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }
-            [SVProgressHUD showErrorWithStatus:@"删除失败"];
         }];
     }else{
         if (buttonIndex == 0) return;
@@ -540,7 +540,7 @@
             }
             [SVProgressHUD showErrorWithStatus:@"删除失败"];
         } failure:^(NSError *error) {
-            [SVProgressHUD showErrorWithStatus:@"删除失败"];
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
                 NSLog(@"error:%@",error);
             }

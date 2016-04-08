@@ -161,7 +161,7 @@
 - (NSString*) sha1;
 #pragma mark - ThreeDES加密方法二
 + (NSString *)TripleDES:(NSString *)plainText encryptOrDecrypt:(CCOperation)encryptOrDecrypt encryptOrDecryptKey:(NSString *)encryptOrDecryptKey;
-
+- (NSString *)TripleDESIsEncrypt:(BOOL)isEncrypt;
 #pragma mark - 返回json对象
 - (id)JSONObject;
 
@@ -238,6 +238,14 @@
  *  @return 字符串
  */
 + (NSString *)stringwithNumber:(NSNumber *)number;
+
+
+/**
+ *  判断是否是纯数字
+ *
+ *  @return 是否为数字
+ */
+- (BOOL)isPureNumandCharacters;
 
 
 @end

@@ -9,6 +9,7 @@
 #import "TimRequestBase.h"
 #import "AccountManager.h"
 #import "CRMUserDefalut.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation ResponderObject
 
@@ -21,13 +22,12 @@
     //所有接口添加 userid 和 accesstoken参数
     if ([[AccountManager shareInstance] isLogin]) {
        // [reqParam.params setObject:[AccountManager shareInstance].currentUser.accesstoken forKey:@"Accesstoken"];
-        
         if ([reqParam.params objectForKey:@"userid"] == nil && [reqParam.params objectForKey:@"userId"] == nil)
-        [reqParam.params setObject:[AccountManager shareInstance].currentUser.userid forKey:@"userid"];
+        [reqParam.params setObject:[[AccountManager shareInstance].currentUser.userid TripleDESIsEncrypt:YES] forKey:@"userid"];
     }
-    [reqParam.params setObject:@"ios" forKey:@"devicetype"];
+    [reqParam.params setObject:[@"ios" TripleDESIsEncrypt:YES] forKey:@"devicetype"];
     if ([CRMUserDefalut objectForKey:DeviceToken]) {
-        [reqParam.params setObject:[CRMUserDefalut objectForKey:DeviceToken] forKey:@"devicetoken"];
+        [reqParam.params setObject:[[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES] forKey:@"devicetoken"];
     }
     reqParam.requestUrl = requestUrl;
     reqParam.method = RequestMethodPOST;

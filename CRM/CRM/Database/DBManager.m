@@ -116,7 +116,7 @@ Realize_ShareInstance(DBManager);
     
     [self createDBTableWithTableName:PatientTableName andParams:@"patient_name text, patient_phone text,patient_avatar text,patient_gender text,patient_age text, introducer_id text , patient_status integer , ori_user_id text, user_id text, creation_date text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text,patient_allergy text,patient_remark text,idCardNum text,patient_address text,anamnesis text,nickName text"];
     
-    [self createDBTableWithTableName:CTLibTableName andParams:@"patient_id text, case_id text, ct_image text, ct_desc text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text"];
+    [self createDBTableWithTableName:CTLibTableName andParams:@"patient_id text, case_id text, ct_image text, ct_desc text, creation_date text, user_id text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text,is_main text"];
 
     [self createDBTableWithTableName:MedicalCaseTableName andParams:@"case_name text, creation_date text , patient_id text, case_status integer, repair_time text,next_reserve_time text,implant_time text,user_id text,repair_doctor text, creation_date_sync text, update_date text, ckeyid text PRIMARY KEY, sync_time text, doctor_id text,repair_doctor_name text,tooth_position text,team_notice text,hxGroupId text"];
     
@@ -152,6 +152,9 @@ Realize_ShareInstance(DBManager);
     [self updateTableWithColumName:@"doctor_gender" tableName:UserTableName type:@"text" defaultStr:nil];
     [self updateTableWithColumName:@"doctor_cv" tableName:UserTableName type:@"text" defaultStr:nil];
     [self updateTableWithColumName:@"doctor_skill" tableName:UserTableName type:@"text" defaultStr:nil];
+    
+    //CTLibTableName
+    [self updateTableWithColumName:@"is_main" tableName:CTLibTableName type:@"text" defaultStr:@(0)];
 }
 
 //为表添加字段

@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, TextFieldDateMode) {
 @optional
 //按取消按钮的回调
 - (void)pickerViewCancel:(UIPickerView *)pickerView;
-//按取消按钮的回调
+//按完成按钮的回调
 - (void)pickerViewFinish:(UIPickerView *)pickerView;
 //按完成按钮的回调
 - (void)pickerView:(UIPickerView *)pickerView finishSelectWithRow:(NSInteger)row inComponent:(NSInteger)component;

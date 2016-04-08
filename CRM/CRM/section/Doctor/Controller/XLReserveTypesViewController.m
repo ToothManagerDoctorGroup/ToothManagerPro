@@ -47,8 +47,9 @@
  
     [self.tableView.header beginRefreshing];
 }
-//上拉刷新
+//下拉刷新
 - (void)headerRefreshAction{
+    [self.dataList removeAllObjects];
     [self requestWlanData];
 }
 
@@ -81,7 +82,7 @@
         
     } failure:^(NSError *error) {
         if ([self.tableView.header isRefreshing]) [self.tableView.header endRefreshing];
-        
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }

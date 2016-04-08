@@ -20,16 +20,16 @@
 #import "XLTeamPatientModel.h"
 #import "XLJoinTeamModel.h"
 #import "XLCureCountModel.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation XLTeamTool
 
 + (void)addMedicalCaseWithMCase:(MedicalCase *)mCase success:(void (^)(MedicalCase *resultCase))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/SyncPost.ashx?table=medicalcase&action=add",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/SyncPost.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
     
     NSMutableDictionary *subParamDic = [NSMutableDictionary dictionaryWithCapacity:11];
-    
     [subParamDic setObject:mCase.ckeyid forKey:@"ckeyid"];
     [subParamDic setObject:[MyDateTool stringWithDateWithSec:[NSDate date]] forKey:@"sync_time"];
     [subParamDic setObject:mCase.patient_id forKey:@"patient_id"];
@@ -58,8 +58,9 @@
     [subParamDic setObject:mCase.doctor_id forKey:@"doctor_id"];
     
     NSString *jsonString = [subParamDic JSONString];
-    
-    [params setObject:jsonString forKey:@"DataEntity"];
+    params[@"table"] = [@"medicalcase" TripleDESIsEncrypt:YES];
+    params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         MedicalCase *mcase = [MedicalCase MedicalCaseFromPatientMedicalCase:responseObject[@"Result"]];
@@ -76,11 +77,11 @@
 
 + (void)queryMedicalCasesWithPatientId:(NSString *)patient_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MedicalCaseHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalCaseHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listcasebypatientid";
-    params[@"patient_id"] = patient_id;
+    params[@"action"] = [@"listcasebypatientid" TripleDESIsEncrypt:YES];
+    params[@"patient_id"] = [patient_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -93,11 +94,11 @@
 }
 
 + (void)queryMedicalCasesDetailWithPatientId:(NSString *)patient_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MedicalCaseHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalCaseHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listcaseallinfobypatientid";
-    params[@"patient_id"] = patient_id;
+    params[@"action"] = [@"listcaseallinfobypatientid" TripleDESIsEncrypt:YES];
+    params[@"patient_id"] = [patient_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -110,11 +111,11 @@
 }
 
 + (void)addTeamMemberWithParam:(XLTeamMemberParam *)param success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"add";
-    params[@"DataEntity"] = [param.keyValues JSONString];
+    params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[param.keyValues JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -130,11 +131,11 @@
 }
 
 + (void)addTeamMemberWithArray:(NSArray *)array success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"batchadd";
-    params[@"DataEntity"] = [array JSONString];
+    params[@"action"] = [@"batchadd" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[array JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -150,11 +151,11 @@
 }
 
 + (void)removeTeamMemberWithMemberId:(NSNumber *)member_id success:(void (^)    (CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"delete";
-    params[@"KeyId"] = member_id;
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"KeyId"] = [[member_id stringValue] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respondTmp = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -170,11 +171,11 @@
 }
 
 + (void)removeTeamMemberWithIds:(NSString *)ids success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"batchdelete";
-    params[@"KeyIds"] = ids;
+    params[@"action"] = [@"batchdelete" TripleDESIsEncrypt:YES];
+    params[@"KeyIds"] = [ids TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respondTmp = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -190,11 +191,11 @@
 
 
 + (void)queryMedicalCaseMembersWithCaseId:(NSString *)case_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listmemberbycaseid";
-    params[@"case_id"] = case_id;
+    params[@"action"] = [@"listmemberbycaseid" TripleDESIsEncrypt:YES];
+    params[@"case_id"] = [case_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         NSMutableArray *arrayM = [NSMutableArray array];
@@ -214,11 +215,11 @@
 
 //-------------------------治疗方案相关----------------------------------
 + (void)addNewCureProWithParam:(XLCureProjectParam *)param success:(void (^)( XLCureProjectModel *model))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureProjectHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureProjectHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"add";
-    params[@"DataEntity"] = [param.keyValues JSONString];
+    params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[param.keyValues JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         XLCureProjectModel *modelTmp = [XLCureProjectModel objectWithKeyValues:responseObject[@"Result"]];
@@ -233,11 +234,11 @@
 }
 
 + (void)deleteCureProWithKeyId:(NSString *)keyId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureProjectHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureProjectHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"delete";
-    params[@"KeyId"] = keyId;
+    params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    params[@"KeyId"] = [keyId TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respondTmp = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -251,11 +252,11 @@
     }];
 }
 + (void)editNewCureProWithModel:(XLCureProjectModel *)model success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))  failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureProjectHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureProjectHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"edit";
-    params[@"DataEntity"] = [model.keyValues JSONString];
+    params[@"action"] = [@"edit" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[model.keyValues JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respondTmp = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -270,11 +271,11 @@
 }
 
 + (void)queryCureProsWithCaseId:(NSString *)case_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureProjectHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureProjectHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listitembycaseid";
-    params[@"case_id"] = case_id;
+    params[@"action"] = [@"listitembycaseid" TripleDESIsEncrypt:YES];
+    params[@"case_id"] = [case_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -298,11 +299,11 @@
 //-------------------------病程记录相关----------------------------------
 + (void)queryAllDiseaseRecordWithCaseId:(NSString *)case_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MedicalCourseHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalCourseHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listcoursebycaseid";
-    params[@"case_id"] = case_id;
+    params[@"action"] = [@"listcoursebycaseid" TripleDESIsEncrypt:YES];
+    params[@"case_id"] = [case_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         if (success) {
@@ -317,11 +318,11 @@
 }
 //-------------------------耗材相关----------------------------------
 + (void)queryAllExpensesWithCaseId:(NSString *)case_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/MedicalExpenseHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalExpenseHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listexpensebycaseid";
-    params[@"case_id"] = case_id;
+    params[@"action"] = [@"listexpensebycaseid" TripleDESIsEncrypt:YES];
+    params[@"case_id"] = [case_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -344,12 +345,12 @@
 //-------------------------医生好友相关----------------------------------
 
 + (void)queryTransferPatientsWithDoctorId:(NSString *)doctor_id intrId:(NSString *)intr_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listtransferpatient";
-    params[@"intr_id"] = intr_id;
-    params[@"doctor_id"] = doctor_id;
+    params[@"action"] = [@"listtransferpatient" TripleDESIsEncrypt:YES];
+    params[@"intr_id"] = [intr_id TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         NSMutableArray *arrayM = [NSMutableArray array];
@@ -369,12 +370,12 @@
 
 + (void)queryJoinTreatePatientsWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureProjectHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureProjectHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listpateint";
-    params[@"Therapt_ doctor_id"] = therapt_doctor_id;
-    params[@"doctor_id"] = doctor_id;
+    params[@"action"] = [@"listpateint" TripleDESIsEncrypt:YES];
+    params[@"Therapt_ doctor_id"] = [therapt_doctor_id TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         NSMutableArray *arrayM = [NSMutableArray array];
@@ -393,12 +394,12 @@
 }
 
 + (void)queryAllCountOfPatientWithDoctorId:(NSString *)doctor_id theraptDocId:(NSString *)therapt_doctor_id success:(void (^)(XLCureCountModel *model))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/PatientHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"patientByDoctorIdAndIntroId";
-    params[@"therapt_doctor_id"] = therapt_doctor_id;
-    params[@"doctor_id"] = doctor_id;
+    params[@"action"] = [@"patientByDoctorIdAndIntroId" TripleDESIsEncrypt:YES];
+    params[@"therapt_doctor_id"] = [therapt_doctor_id TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         XLCureCountModel *model = [XLCureCountModel objectWithKeyValues:responseObject[@"Result"]];
@@ -414,11 +415,11 @@
 
 //----------------------------团队协作相关----------------------------------
 + (void)queryJoinConsultationPatientsWithDoctorId:(NSString *)doctor_id success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listpartpatient";
-    params[@"doctor_id"] = doctor_id;
+    params[@"action"] = [@"listpartpatient" TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
             NSMutableArray *arrayM = [NSMutableArray array];
@@ -437,12 +438,12 @@
 }
 
 + (void)queryJoinOtherCurePatientsWithDoctorId:(NSString *)doctor_id status:(NSNumber *)status success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/ashx/CureTeamHandler.ashx",DomainName,Method_His_Crm];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CureTeamHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"action"] = @"listcurepatient";
-    params[@"doctor_id"] = doctor_id;
-    params[@"status"] = status;
+    params[@"action"] = [@"listcurepatient" TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctor_id TripleDESIsEncrypt:YES];
+    params[@"status"] = [[status stringValue] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
             NSMutableArray *arrayM = [NSMutableArray array];

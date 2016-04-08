@@ -10,6 +10,7 @@
 #import "AccountManager.h"
 #import "NSError+Extension.h"
 #import "NSJSONSerialization+jsonString.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation CRMHttpRequest (Introducer)
 
@@ -43,7 +44,9 @@
     NSDate *date = [NSDate date];
     [subParamDic setValue:[date description] forKey:@"creation_time"];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:subParamDic];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
+
+    [paramDic setObject:[@"add" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:ApplyToBecomeIntroducer_URL andParams:paramDic withPrefix:Introducer_Prefix];
     [self requestWithParams:param];
 }
@@ -83,8 +86,10 @@
 
 -(void)getPatientIntroducerMap:(NSString *)userId{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:userId forKey:@"uid"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:PatientIntroducerMap_URL andParams:paramDic withPrefix:Introducer_Prefix];
+
+    [paramDic setObject:[@"getdoctor" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[userId TripleDESIsEncrypt:YES] forKey:@"uid"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:PatientIntroducerMap_Common_URL andParams:paramDic withPrefix:Introducer_Prefix];
     [self requestWithParams:param];
 }
 
@@ -98,8 +103,10 @@
     [dataEntity setObject:[NSString currentDateString] forKey:@"intr_time"];
     
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:PatientIntroducerMap_ADD_URL andParams:paramDic withPrefix:Introducer_Prefix];
+
+    [paramDic setObject:[@"add" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:PatientIntroducerMap_Common_URL andParams:paramDic withPrefix:Introducer_Prefix];
     [self requestWithParams:param];
 }
 
@@ -113,11 +120,11 @@
  */
 - (void)patientToIntroducer:(NSString *)userId withCkeyId:(NSString *)ckeyid withName:(NSString *)name withPhone:(NSString *)phone{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:@"patient" forKey:@"Action"];
-    [paramDic setObject:userId forKey:@"uid"];
-    [paramDic setObject:ckeyid forKey:@"pid"];
-    [paramDic setObject:name forKey:@"pName"];
-    [paramDic setObject:phone forKey:@"pPhone"];
+    [paramDic setObject:[@"patient" TripleDESIsEncrypt:YES] forKey:@"Action"];
+    [paramDic setObject:[userId TripleDESIsEncrypt:YES] forKey:@"uid"];
+    [paramDic setObject:[ckeyid TripleDESIsEncrypt:YES] forKey:@"pid"];
+    [paramDic setObject:[name TripleDESIsEncrypt:YES] forKey:@"pName"];
+    [paramDic setObject:[phone TripleDESIsEncrypt:YES] forKey:@"pPhone"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:PatientToIntroducer_URL andParams:paramDic withPrefix:Introducer_Prefix];
     [self requestWithParams:param];
 }
@@ -182,10 +189,12 @@
         [self requestLongUrlToShortUrlSuccess:result andParam:param];
     }else if ([param.requestUrl isEqualToString:PatientToIntroducer_URL]){
         [self requestPatientToIntroducerSuccess:result andParam:param];
-    }else if ([param.requestUrl isEqualToString:PatientIntroducerMap_URL]){
-        [self requestPatientIntroducerMapSuccess:result andParam:param];
-    }else if ([param.requestUrl isEqualToString:PatientIntroducerMap_ADD_URL]){
-        [self requestPostPatientIntroducerMapSuccess:result andParam:param];
+    }else if ([param.requestUrl isEqualToString:PatientIntroducerMap_Common_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getdoctor"]) {
+            [self requestPatientIntroducerMapSuccess:result andParam:param];
+        }else if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"add"]){
+            [self requestPostPatientIntroducerMapSuccess:result andParam:param];
+        }
     }
 }
 - (void)requestLongUrlToShortUrlSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
@@ -213,10 +222,12 @@
         [self requestLongUrlToShortUrlFailure:error andParam:param];
     }else if ([param.requestUrl isEqualToString:PatientToIntroducer_URL]){
         [self requestPatientToIntroducerFailure:error andParam:param];
-    }else if ([param.requestUrl isEqualToString:PatientIntroducerMap_URL]){
-        [self requestPatientIntroducerMapFailure:error andParam:param];
-    }else if ([param.requestUrl isEqualToString:PatientIntroducerMap_ADD_URL]){
-        [self requestPostPatientIntroducerMapFailure:error andParam:param];
+    }else if ([param.requestUrl isEqualToString:PatientIntroducerMap_Common_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getdoctor"]) {
+            [self requestPatientIntroducerMapFailure:error andParam:param];
+        }else if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"add"]){
+            [self requestPostPatientIntroducerMapFailure:error andParam:param];
+        } 
     }
 }
 - (void)requestPatientToIntroducerFailure:(NSError *)error andParam:(TimRequestParam *)param {

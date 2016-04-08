@@ -51,6 +51,7 @@
 #import "XLContactsViewController.h"
 #import "XLBackUpViewController.h"
 #import "DBManager+AutoSync.h"
+#import "NSString+TTMAddtion.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -124,11 +125,7 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
-    XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
-    oneVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:oneVc animated:YES];
+
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -181,6 +178,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     _tableView.delegate = self;
     _tableView.dataSource = self;
 //    UserObject *userobj = [[AccountManager shareInstance] currentUser];
@@ -198,7 +196,7 @@
     //查询数据库，是否有未同步的数据
     NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"4"];
     if (array.count > 0) {
-        self.tableView.hidden = NO;
+        self.targetView.hidden = NO;
     }else{
         self.targetView.hidden = YES;
     }
@@ -452,7 +450,7 @@
         ShareMode *mode = [[ShareMode alloc]init];
         mode.title = @"牙医新生活倡导者：年种植上千颗不是梦";
         mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
-        mode.url = [NSString stringWithFormat:@"http://www.zhongyaguanjia.com/%@/view/InviteFriends.aspx?doctorId=%@",Method_Weixin,userobj.userid];
+        mode.url = [NSString stringWithFormat:@"%@%@/view/InviteFriends.aspx?doctorId=%@",DomainRealName,Method_Weixin,userobj.userid];
         mode.image = [UIImage imageNamed:@"crm_logo"];
         
         

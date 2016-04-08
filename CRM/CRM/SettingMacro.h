@@ -35,6 +35,10 @@
 
 //引导页面是否显示
 #define Schedule_IsShowedKey @"Schedule_IsShowedKey"
+//患者分组页面提示是否显示
+#define GroupNew_IsShowedKey @"GroupNew_IsShowedKey"
+//分组下添加患者页面提示是否显示
+#define GroupMemberNew_IsShowedKey @"GroupMemberNew_IsShowedKey"
 
 //当用户关闭通讯录权限的时候，提醒用户打开权限
 #define AddressBook_IsShowKey @"AddressBook_IsShowKey"

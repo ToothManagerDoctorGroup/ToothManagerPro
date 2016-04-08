@@ -10,16 +10,22 @@
 #define NetworkConfigMacro_h
 
 // 域名
-//#define DomainName @"http://122.114.62.57/"
+//#define DomainName @"http://122.114.62.57/"  //正式环境
+#define DomainName @"http://118.244.234.207/"  //内测环境
+//#define DomainName @"http://211.149.247.149/"//公测环境
 
-#define DomainName @"http://118.244.234.207/"
+#define DomainRealName (([DomainName isEqualToString:@"http://122.114.62.57/"]) ? @"www.zhongyaguanjia.com/" : ([DomainName isEqualToString:@"http://211.149.247.149/"]) ? @"http://www.nifaxian.com/" : @"www.ibeituan.com/")
+
+//是否开启数据加密 open/close
+#define EncryptionOpen @"open"
 
 #define Method_His_Crm @"his.crm"
 #define Method_Weixin @"NewWeixin"
 #define Method_ClinicServer @"clinicServer"
 #define Method_Sys @"sys"
+#define Method_Ashx ([EncryptionOpen isEqualToString:@"open"] ? @"ashxzj" : @"ashx")
 
-#define RealURL(path,method) [NSString stringWithFormat:"@%@%@/ashx/%@",DomainName,method,path]
+#define RealURL(path,method) [NSString stringWithFormat:"%@%@/ashx/%@",DomainName,method,path]
 //////////////////////////////////////////////////////////////////////
 //                           团队协作                                //
 //////////////////////////////////////////////////////////////////////

@@ -228,40 +228,48 @@
         return;
     }
     
-    //获取所有患者的个数
-    NSArray *patients = [[DBManager shareInstance] getAllPatientWithID:[AccountManager currentUserid]];
-    NSMutableArray *existPatients = [NSMutableArray array];
-    NSMutableArray *needPostPatients = [NSMutableArray array];
-    for (Patient *tmpP in patients) {
-        //判断患者是否存在于通讯录
-        BOOL exist = [[AddressBoolTool shareInstance] getContactsWithName:tmpP.patient_name phone:tmpP.patient_phone];
-        if (exist) {
-            [existPatients addObject:tmpP];
-        }else{
-            [needPostPatients addObject:tmpP];
+    [SVProgressHUD showWithStatus:@"正在加载患者数据"];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        //获取所有患者的个数
+        NSArray *patients = [[DBManager shareInstance] getAllPatientWithID:[AccountManager currentUserid]];
+        NSMutableArray *existPatients = [NSMutableArray array];
+        NSMutableArray *needPostPatients = [NSMutableArray array];
+        for (Patient *tmpP in patients) {
+            //判断患者是否存在于通讯录
+            BOOL exist = [[AddressBoolTool shareInstance] getContactsWithName:tmpP.patient_name phone:tmpP.patient_phone];
+            if (exist) {
+                [existPatients addObject:tmpP];
+            }else{
+                [needPostPatients addObject:tmpP];
+            }
         }
-    }
-    if (existPatients.count == patients.count) {
-        [SVProgressHUD showImage:nil status:@"暂时没有需要同步的患者"];
-    }else{
-        NSString *message = [NSString stringWithFormat:@"已有%lu的患者存在于通讯录，是否将剩余%lu个患者导入通讯录?",(unsigned long)existPatients.count,(unsigned long)needPostPatients.count];
-        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"导入患者" message:message cancelHandler:^{
-        } comfirmButtonHandlder:^{
-            //完成通讯录导入
-            [SVProgressHUD showWithStatus:@"正在导入"];
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                for (Patient *p in needPostPatients) {
-                    //如果不存在，将患者导入通讯录
-                    [[AddressBoolTool shareInstance] addContactToAddressBook:p];
-                }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (existPatients.count == patients.count) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                   [SVProgressHUD showSuccessWithStatus:@"导入完成"];
+                    [SVProgressHUD showImage:nil status:@"暂时没有需要同步的患者"];
                 });
-
-            });
-        }];
-        [alertView show];
-    }
+            }else{
+                [SVProgressHUD dismiss];
+                NSString *message = [NSString stringWithFormat:@"已有%lu个患者存在于通讯录，是否将剩余%lu个患者导入通讯录?",(unsigned long)existPatients.count,(unsigned long)needPostPatients.count];
+                TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"导入患者" message:message cancelHandler:^{
+                } comfirmButtonHandlder:^{
+                    //完成通讯录导入
+                    [SVProgressHUD showWithStatus:@"正在导入"];
+                    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                        for (Patient *p in needPostPatients) {
+                            //如果不存在，将患者导入通讯录
+                            [[AddressBoolTool shareInstance] addContactToAddressBook:p];
+                        }
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [SVProgressHUD showSuccessWithStatus:@"导入完成"];
+                        });
+                    });
+                }];
+                [alertView show];
+            }
+        });
+    });
+    
 }
 
 @end

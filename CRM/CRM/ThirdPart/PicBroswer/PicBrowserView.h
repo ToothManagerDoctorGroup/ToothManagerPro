@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class CTLib;
 @interface BrowserPicture : NSObject
 @property (nonatomic) NSInteger keyidInt;        //区分图片的id (整形)
 @property (nonatomic,copy) NSString *keyidStr;   //区分图片的id (字符串)
 @property (nonatomic,copy) NSString *title;      //图片描述文字
 @property (nonatomic,copy) NSString *url;        //如果是网络图片 给地址
+
+@property (nonatomic, strong)CTLib *ctLib;//图片模型
 @end
 
 @protocol PicBrowserViewDelegate;
@@ -25,6 +28,7 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *deleteButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *pageupButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *pagedownButton;
+@property (weak, nonatomic) IBOutlet UILabel *indexLabel;
 
 //初始化
 - (void)setupImageViews:(NSInteger)imageNum;
@@ -46,5 +50,6 @@
 - (void)pageupAction:(id)sender;
 - (void)pagedownAction:(id)sender;
 - (void)deleteAction:(id)sender;
+- (void)mainImgAction:(id)sender;
 
 @end

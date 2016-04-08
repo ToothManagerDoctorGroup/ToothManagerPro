@@ -61,7 +61,7 @@
     [[DBManager shareInstance] createdbFile];
     [[DBManager shareInstance] createTables];
     //更新数据库表结构
-//    [[DBManager shareInstance] updateDB];
+    [[DBManager shareInstance] updateDB];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -137,7 +137,7 @@
             }
         }else{
             //更新数据库表结构
-            [[DBManager shareInstance] updateDB];
+//            [[DBManager shareInstance] updateDB];
             
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
             guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
@@ -173,7 +173,7 @@
         self.window.rootViewController = nav;
     }else{
         //更新数据库表结构
-        [[DBManager shareInstance] updateDB];
+//        [[DBManager shareInstance] updateDB];
         
         TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
         guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];

@@ -49,4 +49,12 @@
  */
 + (void)obtainAppVersion;
 
+/**
+ *  判断是否显示
+ *
+ *  @param key         key
+ *  @param showedBlock 已显示的回调
+ */
++ (void)isShowedForKey:(NSString *)key showedBlock:(void (^)())showedBlock;
+
 @end

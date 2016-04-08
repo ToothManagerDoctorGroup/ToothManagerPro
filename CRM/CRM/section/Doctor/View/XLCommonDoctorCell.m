@@ -67,10 +67,13 @@
     [self.contentView addSubview:_contentLabel];
     
     _addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _addButton.layer.cornerRadius = 5;
+    _addButton.layer.masksToBounds = YES;
     [_addButton setTitle:@"接受" forState:UIControlStateNormal];
     [_addButton setTitle:@"已接受" forState:UIControlStateSelected];
     [_addButton setTitleColor:BUTTON_TITLE_COLOR forState:UIControlStateNormal];
     _addButton.titleLabel.font = BUTTON_TITLT_FONT;
+    [_addButton addTarget:self action:@selector(addButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:_addButton];
     
     _descLabel = [[UILabel alloc] init];
@@ -194,6 +197,13 @@
     _descLabel.text = doctor.doctor_degree;
     _contentLabel.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
     _iconImageView.urlStr = doctor.doctor_image;
+}
+
+#pragma mark - addButtonAction
+- (void)addButtonAction:(UIButton *)button{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(commonDoctorCell:addButtonDidSelect:)]) {
+        [self.delegate commonDoctorCell:self addButtonDidSelect:button];
+    }
 }
 
 @end

@@ -26,7 +26,7 @@
 #import "JSONKit.h"
 #import "XLTeamMemberModel.h"
 
-@interface XLDoctorSelectViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,XLDoctorSelectCell,UISearchDisplayDelegate>{
+@interface XLDoctorSelectViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,XLDoctorSelectCellDelegate,UISearchDisplayDelegate>{
     UITableView *_tableView;
 }
 

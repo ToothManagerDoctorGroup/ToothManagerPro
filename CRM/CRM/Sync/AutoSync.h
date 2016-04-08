@@ -23,6 +23,7 @@
 #define AutoSync_PatientIntroducerMap @"AutoSync_PatientIntroducerMap"
 #define AutoSync_WeiXinMessageSend @"AutoSync_WeiXinMessageSend"
 #define AutoSync_ReserveRecord_ForOther @"AutoSync_ReserveRecord_ForOther"
+#define AutoSync_AddPatientToGroups @"AutoSync_AddPatientToGroups"
 
 //Post_type
 #define Update @"update"

@@ -33,6 +33,7 @@
 #import "XLDoctorDetailViewController.h"
 #import "XLNewFriendNotiViewController.h"
 #import "XLCommonDoctorCell.h"
+#import "DoctorInfoModel.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate,XLCommonDoctorCellDelegte>{
     UITableView *_tableView;
@@ -162,6 +163,7 @@
         } failedBlock:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
         }];
+        
     }
     //加载数据
     [self initSubViews];
@@ -215,7 +217,20 @@
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         if (isHeader) {
             [self.searchHistoryArray removeAllObjects];
+            //判断是否是选择治疗医生的状态
+            if (self.isTherapyDoctor) {
+                UserObject *user = [AccountManager shareInstance].currentUser;
+                Doctor *owner = [[Doctor alloc] init];
+                owner.doctor_name = user.name;
+                owner.doctor_degree = user.degree;
+                owner.doctor_hospital = user.hospitalName;
+                owner.doctor_position = user.title;
+                owner.doctor_image = user.img;
+            
+                [self.searchHistoryArray addObject:owner];
+            }
         }
+        
         //将数据添加到数组中
         [self.searchHistoryArray addObjectsFromArray:array];
         
@@ -234,6 +249,12 @@
         [_tableView reloadData];
         
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (isHeader) {
+            [_tableView.header endRefreshing];
+        }else{
+            [_tableView.footer endRefreshing];
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -442,14 +463,15 @@
                 //添加患者自动同步信息
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[tmppatient.keyValues JSONString] syncStatus:@"0"];
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                
                 //插入患者介绍人
+                [weakSelf insertDoctorWithDoctorId:self.selectDoctor.ckeyid];
                 [weakSelf insertPatientIntroducerMap];
                 weakSelf.selectDoctor = nil;
                 //发送通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
                 [weakSelf popViewControllerAnimated:YES];
             }
+            
             //发送微信消息
             [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
             } failedBlock:^(NSError *error){
@@ -470,6 +492,22 @@
     map.doctor_id = self.selectDoctor.doctor_id;
     map.intr_time = [NSString currentDateString];
     [[DBManager shareInstance] insertPatientIntroducerMap:map];
+}
+#pragma mark - 插入好友信息
+- (void)insertDoctorWithDoctorId:(NSString *)doctor_id{
+    //判断本地是否有此好友
+    Doctor *doc = [[DBManager shareInstance] getDoctorWithCkeyId:doctor_id];
+    if (doc == nil) {
+        //下载医生信息，同时添加到数据库
+        [DoctorTool requestDoctorInfoWithDoctorId:doctor_id success:^(DoctorInfoModel *doctorInfo) {
+            Doctor *doctor = [Doctor DoctorFromDoctorResult:doctorInfo.keyValues];
+            [[DBManager shareInstance] insertDoctorWithDoctor:doctor];
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
 }
 
 - (void)transferPatientFailedWithError:(NSError *)error

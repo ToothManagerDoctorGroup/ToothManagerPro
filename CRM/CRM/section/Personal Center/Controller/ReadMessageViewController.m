@@ -67,7 +67,7 @@
         self.pageIndex++;
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -88,6 +88,7 @@
         
     } failure:^(NSError *error) {
         [self.tableView.legendFooter endRefreshing];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -154,7 +155,7 @@
                     [SVProgressHUD showErrorWithStatus:@"删除失败"];
                 }
             } failure:^(NSError *error) {
-                [SVProgressHUD showErrorWithStatus:@"删除失败"];
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
                 if (error) {
                     NSLog(@"error:%@",error);
                 }

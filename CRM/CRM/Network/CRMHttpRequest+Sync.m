@@ -27,6 +27,7 @@
 #import "SyncManager.h"
 #import "AFHTTPRequestOperation.h"
 #import "SDWebImageManager.h"
+#import "NSString+TTMAddtion.h"
 
 char* const ASSOCIATION_DATATABLE_SYNC = "ASSOCIATION_DATATABLE_SYNC";
 
@@ -62,6 +63,7 @@ NSMutableArray* deletedMaterials = nil;
 NSMutableArray* deletedIntroducers = nil;
 NSMutableArray* downloadPatients = nil;
 NSMutableArray* downloadMedicalCasesCT = nil;
+NSMutableArray* downloadMedicalCasesCTImage = nil;//需要下载的ct图片
 NSMutableArray* downloadMedicalCasesME = nil;
 NSMutableArray* downloadMedicalCasesMR = nil;
 NSMutableArray* downloadMedicalCasesRS = nil;
@@ -96,7 +98,7 @@ NSMutableArray* deletedRepairDoc = nil;
 
 //对于medical case的分批处理
 //每次下载病例最大患者数
-NSInteger const curPatientsNum = 30;
+NSInteger const curPatientsNum = 50;
 
 //临时的数组，用来保存当前需要梳理的patient
 NSMutableArray* curPatients = nil;
@@ -123,6 +125,9 @@ NSInteger curTimeMCNum_mr = 0;
 ////本次同步的病例数，用于校验是不是同步引进成功 medical_record
 //NSInteger curTimeMCNum_rs = 0;
 
+
+//临时的数组，用来保存当前需要梳理的CT图片 CTLib
+NSMutableArray* curMC_CT_Image = nil;
 
 #pragma mark - 自动同步时用到的变量
 NSMutableArray *autoSync_Update_Patients = nil;
@@ -3403,7 +3408,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
 - (void)getDoctorTable{
     [SyncManager shareInstance].syncGetCount++;
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
     NSString *docServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", DoctorTableName, [AccountManager currentUserid]];
@@ -3419,8 +3424,9 @@ NSMutableArray *autoSync_Update_Patients = nil;
     NSString *latest_userid = [CRMUserDefalut latestUserId];
     NSLog(@"last user id %@", latest_userid);
     
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"uid"];
-    [paramDic setObject:docServLastSyncDate forKey:@"sync_time"];
+    [paramDic setObject:[@"getdoctor" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"uid"];
+    [paramDic setObject:[docServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
      NSLog(@"sync time %@", docServLastSyncDate);
     
     TimRequestParam *param = [TimRequestParam paramWithURLSting:DOC_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
@@ -3433,7 +3439,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
     
     [SyncManager shareInstance].syncGetCount++;
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
     NSString *matServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", MaterialTableName, [AccountManager currentUserid]];
@@ -3445,11 +3451,11 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         matServLastSyncDate = [dateFormatter stringFromDate:def];
     }
-
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
-    [paramDic setObject:matServLastSyncDate forKey:@"sync_time"];
+    [paramDic setObject:[@"material" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    [paramDic setObject:[matServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:MATERIAL_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3457,7 +3463,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
 - (void)getIntroducerTable{
     [SyncManager shareInstance].syncGetCount++;
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
     NSString *intServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", IntroducerTableName, [AccountManager currentUserid]];
@@ -3469,18 +3475,18 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         intServLastSyncDate = [dateFormatter stringFromDate:def];
     }
+    [paramDic setObject:[@"introducer" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    [paramDic setObject:[intServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
-    [paramDic setObject:intServLastSyncDate forKey:@"sync_time"];
-    
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:INTRODUCE_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
 - (void)getPatIntrMapTable{
     [SyncManager shareInstance].syncGetCount++;
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
     NSString *patInServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatIntrMapTableName, [AccountManager currentUserid]];
@@ -3492,9 +3498,10 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         patInServLastSyncDate = [dateFormatter stringFromDate:def];
     }
-    
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"uid"];
-    [paramDic setObject:patInServLastSyncDate forKey:@"sync_time"];
+
+    [paramDic setObject:[@"getdoctor" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"uid"];
+    [paramDic setObject:[patInServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     TimRequestParam *param = [TimRequestParam paramWithURLSting:PATIENT_INTRODUCER_MAP_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
@@ -3505,7 +3512,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
     
     [SyncManager shareInstance].syncGetCount++;
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
     NSString *reDocServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", RepairDocTableName, [AccountManager currentUserid]];
@@ -3518,10 +3525,11 @@ NSMutableArray *autoSync_Update_Patients = nil;
         reDocInServLastSyncDate = [dateFormatter stringFromDate:def];
     }
     
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
-    [paramDic setObject:reDocInServLastSyncDate forKey:@"sync_time"];
+    [paramDic setObject:[@"repairdoctor" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    [paramDic setObject:[reDocInServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:REPAIRDOCTOR_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3540,11 +3548,11 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         rcServLastSyncDate = [dateFormatter stringFromDate:def];
     }
+    [paramDic setObject:[@"reserverecord" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    [paramDic setObject:[rcServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
-    [paramDic setObject:rcServLastSyncDate forKey:@"sync_time"];
-    
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:RESERVERECORD_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3563,12 +3571,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         patServLastSyncDate = [dateFormatter stringFromDate:def];
     }
+
+    [paramDic setObject:[@"patient" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    [paramDic setObject:[patServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    
-    [paramDic setObject:[CRMUserDefalut latestUserId] forKey:@"doctor_id"];
-    [paramDic setObject:patServLastSyncDate forKey:@"sync_time"];
-    
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:PATIENT_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3607,10 +3615,11 @@ NSMutableArray *autoSync_Update_Patients = nil;
         }
     }
     strCaseId = strCaseId == nil ? @"" : strCaseId;
-    [paramDic setObject:strCaseId forKey:@"case_id"];
-    [paramDic setObject:libServLastSyncDate forKey:@"sync_time"];
+    [paramDic setObject:[@"ctlib" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[strCaseId TripleDESIsEncrypt:YES] forKey:@"case_id"];
+    [paramDic setObject:[libServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:CTLIB_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3649,10 +3658,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
         }
     }
     strPatientId = strPatientId == nil ? @"" : strPatientId;
-    [paramDic setObject:strPatientId forKey:@"patient_id"];
-    [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
+
+    [paramDic setObject:[@"medicalcase" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[strPatientId TripleDESIsEncrypt:YES] forKey:@"patient_id"];
+    [paramDic setObject:[caseServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:MEDICAL_CASE_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    NSLog(@"病历信息URL:%@&patient_id=%@&sync_time=%@",SYNC_COMMON_GET_URL,strPatientId,@"1970-01-01 08:00:00");
+    
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3690,10 +3703,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
     }
 
     strCaseId = strCaseId == nil ? @"" : strCaseId;
-    [paramDic setObject:strCaseId forKey:@"case_id"];
-    [paramDic setObject:expServLastSyncDate forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:MEDICAL_EXPENSE_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    [paramDic setObject:[@"medicalexpense" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[strCaseId TripleDESIsEncrypt:YES] forKey:@"case_id"];
+    [paramDic setObject:[expServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
+    
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3729,10 +3744,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
         }
     }
     strCaseId = strCaseId == nil ? @"" : strCaseId;
-    [paramDic setObject:strCaseId forKey:@"case_id"];
-    [paramDic setObject:recServLastSyncDate forKey:@"sync_time"];
+
+    [paramDic setObject:[@"medicalrecord" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[strCaseId TripleDESIsEncrypt:YES] forKey:@"case_id"];
+    [paramDic setObject:[recServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:MEDICAL_RECORD_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3769,10 +3786,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
         }
     }
     strPatientId = strPatientId == nil ? @"" : strPatientId;
-    [paramDic setObject:strPatientId forKey:@"patient_id"];
-    [paramDic setObject:caseServLastSyncDate forKey:@"sync_time"];
+
+    [paramDic setObject:[@"patientconsultation" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[strPatientId TripleDESIsEncrypt:YES] forKey:@"patient_id"];
+    [paramDic setObject:[caseServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:PATIENTCONSULTATION_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    NSLog(@"会诊信息URL:%@&patient_id=%@&sync_time=%@",SYNC_COMMON_GET_URL,strPatientId,@"1970-01-01 08:00:00");
+    
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3805,10 +3826,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
         }
     }
     strCaseId = strCaseId == nil ? @"" : strCaseId;
-    [paramDic setObject:strCaseId forKey:@"case_id"];
-    [paramDic setObject:resvServLastSyncDate forKey:@"sync_time"];
+
+    [paramDic setObject:[@"medicalreserve" TripleDESIsEncrypt:YES] forKey:@"table"];
+    [paramDic setObject:[strCaseId TripleDESIsEncrypt:YES] forKey:@"case_id"];
+    [paramDic setObject:[resvServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:MEDICAL_RESEV_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:SYNC_COMMON_GET_URL andParams:paramDic withPrefix:DataSyncGet_Prefix];
     [self requestWithParams:param];
 }
 
@@ -3871,30 +3894,32 @@ NSMutableArray *autoSync_Update_Patients = nil;
     NSLog(@"sucess request URL %@", param.requestUrl);
     if ([param.requestUrl isEqualToString:DOC_GET_URL]) {
         [self requestGetDoctorSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:MATERIAL_GET_URL]) {
-        [self requestGetMaterialSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:INTRODUCE_GET_URL]) {
-        [self requestGetIntroducerSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:PATIENT_GET_URL]) {
-        [self requestGetPatientSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:CTLIB_GET_URL]) {
-        [self requestGetCTLibSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_CASE_GET_URL]) {
-        [self requestGetMedicalCaseSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_EXPENSE_GET_URL]) {
-        [self requestGetMedicalExpenseSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_RECORD_GET_URL]) {
-        [self requestGetMedicalRecordSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_RESEV_GET_URL]) {
-        [self requestGetMedicalResevSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:RESERVERECORD_GET_URL]) {
-        [self requestGetReserveRecordSuccess:result andParam:param];
     } else if ([param.requestUrl isEqualToString:PATIENT_INTRODUCER_MAP_GET_URL]) {
         [self requestGetPatientIntroducerSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:REPAIRDOCTOR_GET_URL]) {
-        [self requestGetRepairDoctorSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:PATIENTCONSULTATION_GET_URL]){
-        [self requestGetPatientConsultationSuccess:result andParam:param];
+    } else if ([param.requestUrl isEqualToString:SYNC_COMMON_GET_URL]) {
+        if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"material"]) {
+            [self requestGetMaterialSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"introducer"]){
+            [self requestGetIntroducerSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"patient"]) {
+            [self requestGetPatientSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"ctlib"]) {
+            [self requestGetCTLibSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"medicalcase"]) {
+            [self requestGetMedicalCaseSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO]isEqualToString:@"medicalexpense"]) {
+            [self requestGetMedicalExpenseSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"medicalrecord"]) {
+            [self requestGetMedicalRecordSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"medicalreserve"]) {
+            [self requestGetMedicalResevSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"reserverecord"]) {
+            [self requestGetReserveRecordSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"repairdoctor"]) {
+            [self requestGetRepairDoctorSuccess:result andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"patientconsultation"]){
+            [self requestGetPatientConsultationSuccess:result andParam:param];
+        }
     }
 }
 
@@ -4038,7 +4063,6 @@ NSMutableArray *autoSync_Update_Patients = nil;
         // do something like a log:
         NSLog(@"%@", aKey);
         NSLog(@"value %@", [result valueForKey:aKey]);
-        
     }
     
     if (nil == downloadPatients) {
@@ -4053,7 +4077,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
         
         for (int i=0; i<[patientArray count]; i++) {
             
-            NSDictionary *pat =patientArray[i];
+            NSDictionary *pat = patientArray[i];
             
             Patient *patient = nil;
             
@@ -4069,13 +4093,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             }
         }
         
-        if (0 == [patientArray count]){
-#pragma mark - ***********************同步结束
-            [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-            [NSThread sleepForTimeInterval:1.0];
-            [SVProgressHUD dismiss];
-            [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
-        }
+        NSLog(@"患者总数:%ld",patientArray.count);
         
         NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
         NSString *patServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]];
@@ -4100,10 +4118,17 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 }
             }
             
-            [weakSelf getPatientConsulationTable];
             [weakSelf getMedicalCaseTable];
+            [weakSelf getPatientConsulationTable];
+            
+        }else{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                [NSThread sleepForTimeInterval:1.0];
+                [SVProgressHUD dismiss];
+                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+            });
         }
-    
     });
     
 }
@@ -4118,6 +4143,46 @@ NSMutableArray *autoSync_Update_Patients = nil;
     
     return result;
 }
+//递归下载CT图片
+- (void)downLoadCTLibImage{
+    //下载CT图片
+    for (CTLib *ctlib in curMC_CT_Image) {
+        if (![PatientManager IsImageExisting:ctlib.ct_image]) {
+            NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+            @autoreleasepool {
+                UIImage *image = [self getImageFromURL:urlImage];
+                if (nil != image) {
+                    
+                    NSString *key = [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                    NSLog(@"图片下载完成:%@ --- %@----key:%@",urlImage,[NSThread currentThread],key);
+                }
+            }
+        }
+    }
+    
+    for (int i=0; i<[curMC_CT_Image count]; i++) {
+        [downloadMedicalCasesCTImage removeObject:[curMC_CT_Image objectAtIndex:i]];
+    }
+    [curMC_CT_Image removeAllObjects];
+    
+    if ([downloadMedicalCasesCTImage count] != 0) {
+        if ([downloadMedicalCasesCTImage count] <= curPatientsNum) {
+            for (int i=0; i < [downloadMedicalCasesCTImage count]; i++) {
+                [curMC_CT_Image addObject:[downloadMedicalCasesCTImage objectAtIndex:i]];
+            }
+        } else {
+            for (int i=0; i < curPatientsNum; i++) {
+                [curMC_CT_Image addObject:[downloadMedicalCasesCTImage objectAtIndex:i]];
+            }
+        }
+        [self downLoadCTLibImage];
+    } else {
+        NSLog(@"图片全部下载完成");
+        return;
+    }
+    
+}
+
 
 - (void)requestGetCTLibSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
     [SyncManager shareInstance].syncGetSuccessCount++;
@@ -4129,6 +4194,15 @@ NSMutableArray *autoSync_Update_Patients = nil;
         NSLog(@"value %@", [result valueForKey:aKey]);
         
     }
+    
+    if (downloadMedicalCasesCTImage == nil) {
+        downloadMedicalCasesCTImage = [NSMutableArray array];
+    }
+    
+    if (curMC_CT_Image == nil) {
+        curMC_CT_Image = [NSMutableArray array];
+    }
+    
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         
@@ -4142,10 +4216,8 @@ NSMutableArray *autoSync_Update_Patients = nil;
             
             if (0 != [medCT count] ) {
                 ctlib = [CTLib CTLibFromCTLibResult:medCT];
-                
                 [[DBManager shareInstance] insertCTLib:ctlib];
-                
-#if 1
+#if 0
                 if ([ctlib.ct_image isNotEmpty]) {
                     
                     if (![PatientManager IsImageExisting:ctlib.ct_image]) {
@@ -4159,16 +4231,12 @@ NSMutableArray *autoSync_Update_Patients = nil;
                         }
                      }
                     }
-
-                    //下载网络图片
-//                    [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageRetryFailed progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-//                    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-//                        if (nil != image) {
-//                            [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
-//                        }
-//                    }];
                 }
 #endif
+                //如果存在CT图片，将图片URL存放在数组中
+                if ([ctlib.ct_image isNotEmpty]) {
+                    [downloadMedicalCasesCTImage addObject:ctlib];
+                }
                 
                 //稍后条件判断是否成功的代码
                 if (nil != downloadMedicalCasesCT) {
@@ -4201,34 +4269,37 @@ NSMutableArray *autoSync_Update_Patients = nil;
             [weakSelf getCTLibTable];
             
         } else {
-            
             NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
             NSString *ctServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", CTLibTableName, [AccountManager currentUserid]];
-            
-            //[userDefalut setObject:[NSString currentDateString] forKey:ctServLastSynKey];
             [userDefalut setObject:[NSString currentDateTenMinuteString] forKey:ctServLastSynKey];
             
             [userDefalut synchronize];
-            
             [weakSelf.delegate dataSycnResultWithTable:CTLibTableName isSucesseful: YES];
             
-#pragma mark - ***************************第二次同步结束
             dispatch_async(dispatch_get_main_queue(), ^{
-                
                 [SVProgressHUD showSuccessWithStatus:@"同步完成"];
                 [NSThread sleepForTimeInterval:1.0];
                 [SVProgressHUD dismiss];
                 [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
             });
+            
+            //判断是否存在CTImage
+            if (downloadMedicalCasesCTImage.count > 0) {
+                if ([downloadMedicalCasesCTImage count] <= curPatientsNum) {
+                    for (int i=0; i < [downloadMedicalCasesCTImage count]; i++) {
+                        [curMC_CT_Image addObject:[downloadMedicalCasesCTImage objectAtIndex:i]];
+                    }
+                } else {
+                    for (int i=0; i < curPatientsNum; i++) {
+                        [curMC_CT_Image addObject:[downloadMedicalCasesCTImage objectAtIndex:i]];
+                    }
+                }
+                [weakSelf downLoadCTLibImage];
+            }
+            
             return;
         }
     });
-    
-#pragma mark - ***********************同步结束
-//    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-//    [NSThread sleepForTimeInterval:1.0];
-//    [SVProgressHUD dismiss];
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"tongbu" object:nil];
 }
 
 - (void)requestGetMedicalCaseSuccess:(NSDictionary *)result andParam:(TimRequestParam *)param {
@@ -4259,6 +4330,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
         downloadMedicalCasesRS = [[NSMutableArray alloc] init];
     }
     
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
     
         NSArray *medicalCaseArray = [result objectForKey:@"Result"];
@@ -4291,17 +4363,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
                     [downloadMedicalCasesRS addObject:medicalCase.ckeyid];
                 }
                 
-                if (nil != downloadPatients) {
-                    NSInteger index = [downloadMedicalCasesCT indexOfObject:medicalCase.patient_id];
-                    if (NSNotFound != index) {
-                        [downloadPatients removeObjectAtIndex:index];
-                    }
-                    
-                }
-                
+//                if (nil != downloadPatients) {
+//                    NSInteger index = [downloadMedicalCasesCT indexOfObject:medicalCase.patient_id];
+//                    if (NSNotFound != index) {
+//                        [downloadPatients removeObjectAtIndex:index];
+//                    }
+//                }
             }
         }
-        
         
         for (int i=0; i<[curPatients count]; i++) {
             [downloadPatients removeObject:[curPatients objectAtIndex:i]];
@@ -4320,10 +4389,25 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 }
             }
             
-            [self getMedicalCaseTable];
+            [weakSelf getMedicalCaseTable];
+            [weakSelf getPatientConsulationTable];
             
         } else {
+            //设置PatientConsulationTable数据的同步时间
+            NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
+            NSString *docLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientConsultationTableName, [AccountManager currentUserid]];
+            NSString *curDate = [NSString currentDateTenMinuteString];
+            [userDefalut setObject:curDate forKey:docLastSynKey];
+            [userDefalut synchronize];
             
+            //设置MedicalCaseTable的数据同步时间
+            NSString *patServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", MedicalCaseTableName, [AccountManager currentUserid]];
+            [userDefalut setObject:curDate forKey:patServLastSynKey];
+            [userDefalut synchronize];
+            
+            [weakSelf.delegate dataSycnResultWithTable:MedicalCaseTableName isSucesseful: YES];
+            
+            //判断是否有耗材信息
             if (0 != [downloadMedicalCasesME count]) {
                 
                 if (nil == curMC_me) {
@@ -4339,27 +4423,56 @@ NSMutableArray *autoSync_Update_Patients = nil;
                         [curMC_me addObject:[downloadMedicalCasesME objectAtIndex:i]];
                     }
                 }
-                
-                [self getMedicalExpenseTable];
+                [weakSelf getMedicalExpenseTable];
+              
+            }else if (0 != [downloadMedicalCasesMR count]){
+                //如果没有耗材信息，判断是否有病历记录信息
+                if (0 != [downloadMedicalCasesMR count]) {
+                    
+                    if (nil == curMC_mr) {
+                        curMC_mr = [[NSMutableArray alloc] init];
+                    }
+                    
+                    if ([downloadMedicalCasesMR count] <= curPatientsNum) {
+                        for (int i=0; i < [downloadMedicalCasesMR count]; i++) {
+                            [curMC_mr addObject:[downloadMedicalCasesMR objectAtIndex:i]];
+                        }
+                    } else {
+                        for (int i=0; i < curPatientsNum; i++) {
+                            [curMC_mr addObject:[downloadMedicalCasesMR objectAtIndex:i]];
+                        }
+                    }
+                    
+                    [weakSelf getMedicalRecordTable];
+                }
+            }else if (0 != [downloadMedicalCasesCT count]){
+                //如果没有病历记录信息，判断是否有CT信息
+                if (0 != [downloadMedicalCasesCT count]) {
+                    
+                    if (nil == curMC_ct) {
+                        curMC_ct = [[NSMutableArray alloc] init];
+                    }
+                    
+                    if ([downloadMedicalCasesCT count] <= curPatientsNum) {
+                        for (int i=0; i < [downloadMedicalCasesCT count]; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    } else {
+                        for (int i=0; i < curPatientsNum; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    }
+                    [weakSelf getCTLibTable];
+                }
+            }else{
+                //如果信息都没有，则提示同步完成
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                });
             }
-            
-            NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
-            NSString *patServLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", MedicalCaseTableName, [AccountManager currentUserid]];
-            NSString *curDate = [NSString currentDateTenMinuteString];
-            
-            [userDefalut setObject:curDate forKey:patServLastSynKey];
-            [userDefalut synchronize];
-            
-            [self.delegate dataSycnResultWithTable:MedicalCaseTableName isSucesseful: YES];
-#pragma mark - ***************************************** 第一次同步结束
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [SVProgressHUD showSuccessWithStatus:@"同步完成"];
-                [NSThread sleepForTimeInterval:1.0];
-                [SVProgressHUD dismiss];
-                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
-            });
-            
         }
     });
     
@@ -4406,9 +4519,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
                     if (NSNotFound != index) {
                         [downloadMedicalCasesME removeObjectAtIndex:index];
                     }
-                    
                 }
-                
             }
         }
         
@@ -4439,10 +4550,9 @@ NSMutableArray *autoSync_Update_Patients = nil;
             
             [userDefalut setObject:curDate forKey:meServLastSynKey];
             [userDefalut synchronize];
-            
             [self.delegate dataSycnResultWithTable:MedicalExpenseTableName isSucesseful: YES];
             
-            
+            //判断是否有病历记录信息
             if (0 != [downloadMedicalCasesMR count]) {
                 
                 if (nil == curMC_mr) {
@@ -4458,8 +4568,35 @@ NSMutableArray *autoSync_Update_Patients = nil;
                         [curMC_mr addObject:[downloadMedicalCasesMR objectAtIndex:i]];
                     }
                 }
-                
+                //循环下载病历记录信息
                 [weakSelf getMedicalRecordTable];
+            }else if (0 != [downloadMedicalCasesCT count]){
+                //如果没有病历记录信息，判断是否有ct信息
+                if (0 != [downloadMedicalCasesCT count]) {
+                    
+                    if (nil == curMC_ct) {
+                        curMC_ct = [[NSMutableArray alloc] init];
+                    }
+                    
+                    if ([downloadMedicalCasesCT count] <= curPatientsNum) {
+                        for (int i=0; i < [downloadMedicalCasesCT count]; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    } else {
+                        for (int i=0; i < curPatientsNum; i++) {
+                            [curMC_ct addObject:[downloadMedicalCasesCT objectAtIndex:i]];
+                        }
+                    }
+                    [weakSelf getCTLibTable];
+                }
+            }else{
+                //如果信息都没有，则提示同步完成
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                });
             }
         }
     });
@@ -4484,9 +4621,9 @@ NSMutableArray *autoSync_Update_Patients = nil;
         NSLog(@"value %@", [result valueForKey:aKey]);
     }
     
+    NSArray *patientConsultationArray = [result objectForKey:@"Result"];
+    NSLog(@"会诊信息数量:%ld",(unsigned long)patientConsultationArray.count);
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        
-        NSArray *patientConsultationArray = [result objectForKey:@"Result"];
         
         for (int i=0; i<[patientConsultationArray count]; i++) {
             
@@ -4497,16 +4634,17 @@ NSMutableArray *autoSync_Update_Patients = nil;
             if (0 != [dic count] ) {
                 patientC = [PatientConsultation PCFromPCResult:dic];
                 
-                [[DBManager shareInstance]insertPatientConsultation:patientC];
+                [[DBManager shareInstance] insertPatientConsultation:patientC];
             }
         }
         
-        NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
-        NSString *docLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientConsultationTableName, [AccountManager currentUserid]];
-        NSString *curDate = [NSString currentDateTenMinuteString];
         
-        [userDefalut setObject:curDate forKey:docLastSynKey];
-        [userDefalut synchronize];
+//        NSUserDefaults *userDefalut = [NSUserDefaults standardUserDefaults];
+//        NSString *docLastSynKey = [NSString stringWithFormat:@"syncDataGet%@%@", PatientConsultationTableName, [AccountManager currentUserid]];
+//        NSString *curDate = [NSString currentDateTenMinuteString];
+//        
+//        [userDefalut setObject:curDate forKey:docLastSynKey];
+//        [userDefalut synchronize];
     });
     
     
@@ -4577,6 +4715,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             [userDefalut setObject:curDate forKey:mrServLastSynKey];
             [userDefalut synchronize];
             
+            //判断是否有CT数据
             if (0 != [downloadMedicalCasesCT count]) {
                 
                 if (nil == curMC_ct) {
@@ -4594,7 +4733,14 @@ NSMutableArray *autoSync_Update_Patients = nil;
                 }
                 
                 [weakSelf getCTLibTable];
-                
+            }else{
+                //如果没有CT数据，则提示同步成功
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD showSuccessWithStatus:@"同步完成"];
+                    [NSThread sleepForTimeInterval:1.0];
+                    [SVProgressHUD dismiss];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                });
             }
         }
     });
@@ -4721,7 +4867,7 @@ NSMutableArray *autoSync_Update_Patients = nil;
             PatientIntroducerMap *pI = nil;
             if (0 != [resPI count] ) {
                 pI = [PatientIntroducerMap PIFromMIResult:resPI];
-                [[DBManager shareInstance] insertPatientIntroducerMap:pI];
+                [[DBManager shareInstance] insertPatientIntroducerMap_Sync:pI];
                 //稍后条件判断是否成功的代码
             }
         }
@@ -4785,30 +4931,32 @@ NSMutableArray *autoSync_Update_Patients = nil;
 - (void)onDataSyncGetRequestFailureCallBackWith:(NSError *)error andParam:(TimRequestParam *)param {
     if ([param.requestUrl isEqualToString:DOC_GET_URL]) {
         [self requestGetDoctorFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:MATERIAL_GET_URL]) {
-        [self requestGetMaterialFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:INTRODUCE_GET_URL]) {
-        [self requestGetIntroducerFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:PATIENT_GET_URL]) {
-        [self requestGetPatientFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:CTLIB_GET_URL]) {
-        [self requestGetCTLibFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_CASE_GET_URL]) {
-        [self requestGetMedicalCaseFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_EXPENSE_GET_URL]) {
-        [self requestGetMedicalExpenseFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_RECORD_GET_URL]) {
-        [self requestGetMedicalRecordFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:MEDICAL_RESEV_GET_URL]) {
-        [self requestGetMedicalResevFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:RESERVERECORD_GET_URL]) {
-        [self requestGetReserveRecordFailure:error andParam:param];
     } else if ([param.requestUrl isEqualToString:PATIENT_INTRODUCER_MAP_GET_URL]) {
         [self requestGetPatientIndroducerFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:REPAIRDOCTOR_GET_URL]) {
-        [self requestGetRepairDoctorFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:PATIENTCONSULTATION_GET_URL]){
-        [self requestGetPatientConsultationFailure:error andParam:param];
+    }else if ([param.requestUrl isEqualToString:SYNC_COMMON_GET_URL]) {
+        if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"material"]) {
+            [self requestGetMaterialFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"introducer"]) {
+            [self requestGetIntroducerFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"patient"]) {
+            [self requestGetPatientFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"ctlib"]) {
+            [self requestGetCTLibFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"medicalcase"]) {
+            [self requestGetMedicalCaseFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"medicalexpense"]) {
+            [self requestGetMedicalExpenseFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"medicalrecord"]) {
+            [self requestGetMedicalRecordFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO]isEqualToString:@"medicalreserve"]) {
+            [self requestGetMedicalResevFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"reserverecord"]) {
+            [self requestGetReserveRecordFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO] isEqualToString:@"repairdoctor"]) {
+            [self requestGetRepairDoctorFailure:error andParam:param];
+        } else if ([[param.params[@"table"] TripleDESIsEncrypt:NO]isEqualToString:@"patientconsultation"]){
+            [self requestGetPatientConsultationFailure:error andParam:param];
+        }
     }
 }
 

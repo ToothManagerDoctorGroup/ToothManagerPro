@@ -50,6 +50,22 @@
     }];
 }
 
+- (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss{
+    self.userInteractionEnabled = NO;
+    [view addSubview:self];
+    [view bringSubviewToFront:self];
+    self.frame = view.bounds;
+    [UIView animateWithDuration:.35 animations:^{
+        self.alpha = 1;
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:.35 delay:1.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.alpha = 0;
+        } completion:^(BOOL finished) {
+            [self removeFromSuperview];
+        }];
+    }];
+}
+
 
 
 @end

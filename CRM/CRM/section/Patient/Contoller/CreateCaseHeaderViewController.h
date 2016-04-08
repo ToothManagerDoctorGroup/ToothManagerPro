@@ -34,7 +34,7 @@
 @protocol CreateCaseHeaderViewControllerDeleate <NSObject>
 
 - (void)createCTAction:(id)sender;
-- (void)didTouchImageView:(id)sender;
+- (void)didTouchImageView:(id)sender index:(NSInteger)index;
 - (void)didChooseTime:(NSString *)time withType:(NSString *)type;
 
 @end

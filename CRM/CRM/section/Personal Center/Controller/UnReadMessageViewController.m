@@ -73,7 +73,7 @@
         //刷新表格
         [self.tableView reloadData];
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -117,7 +117,6 @@
     
     //点击消息
     [self clickMessageActionWithModel:model];
-    
 }
 
 - (void)clickMessageActionWithModel:(SysMessageModel *)msgModel{
@@ -145,7 +144,7 @@
                 }
                 
             } failure:^(NSError *error) {
-                [SVProgressHUD showErrorWithStatus:@"患者信息获取失败"];
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
                 if (error) {
                     NSLog(@"error:%@",error);
                 }
@@ -158,19 +157,25 @@
         
     }else if([msgModel.message_type isEqualToString:AttainNewFriend]){
         
-        [SysMessageTool setMessageReadedWithMessageId:msgModel.keyId success:^(CRMHttpRespondModel *respond) {
-            //重新请求数据
-            [self requestData];
-            //新增好友
-            XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
-            [self.navigationController pushViewController:newFriendVc animated:YES];
-        } failure:^(NSError *error) {
-            [SVProgressHUD dismiss];
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];
-        
+        //判断本地是否有此好友
+        Doctor *doc = [[DBManager shareInstance] getDoctorWithCkeyId:msgModel.message_id];
+        if (doc == nil) {
+            //下载医生信息，同时添加到数据库
+            [SVProgressHUD showWithStatus:@"正在加载"];
+            [DoctorTool requestDoctorInfoWithDoctorId:msgModel.message_id success:^(DoctorInfoModel *doctorInfo) {
+                Doctor *doctor = [Doctor DoctorFromDoctorResult:doctorInfo.keyValues];
+                if ([[DBManager shareInstance] insertDoctorWithDoctor:doctor]) {
+                    [self setMessageReadWithModel:msgModel];
+                }
+            } failure:^(NSError *error) {
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }else{
+            [self setMessageReadWithModel:msgModel];
+        }
     }
     else if ([msgModel.message_type isEqualToString:InsertReserveRecord]){
         //新增预约提醒
@@ -204,6 +209,25 @@
         
     }
 }
+
+#pragma mark - 新增好友设置已读并且跳转
+- (void)setMessageReadWithModel:(SysMessageModel *)model{
+    __weak typeof(self) weakSelf = self;
+    [SysMessageTool setMessageReadedWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
+        [SVProgressHUD dismiss];
+        //重新请求数据
+        [weakSelf requestData];
+        //新增好友
+        XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
+        [weakSelf.navigationController pushViewController:newFriendVc animated:YES];
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
 #pragma mark - 设置消息已读
 - (void)setMessageReadWithModel:(SysMessageModel *)model noOperate:(BOOL)noOperate{
     //将消息设置为已读
@@ -242,7 +266,7 @@
         //发送通知
         [[NSNotificationCenter defaultCenter] postNotificationName:ReadUnReadMessageSuccessNotification object:nil];
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -274,6 +298,7 @@
                         [SVProgressHUD showErrorWithStatus:respond.result];
                     }
                 } failure:^(NSError *error) {
+                    [SVProgressHUD showImage:nil status:error.localizedDescription];
                     if (error) {
                         NSLog(@"error:%@",error);
                     }
@@ -288,7 +313,7 @@
         }
         
     } failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:@"预约信息获取失败"];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -384,37 +409,9 @@
         }
     }
     if (total == current) {
-        //判断当前介绍人是否存在
-        if (model.introducerMap.count > 0) {
-            for (NSDictionary *dic in model.introducerMap) {
-                PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
-                if ([map.intr_id isNotEmpty]) {
-                    __block Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:map.intr_id];
-                    if (doctor == nil) {
-                        //获取医生信息
-                        [DoctorTool requestDoctorInfoWithDoctorId:map.intr_id success:^(DoctorInfoModel *dcotorInfo) {
-                            doctor = [Doctor DoctorFromDoctorResult:dcotorInfo.keyValues];
-                            if([[DBManager shareInstance] insertDoctorWithDoctor:doctor]){
-                                //设置已读
-                                [self setMessageReadWithModel:msgModel noOperate:NO];
-                            }
-                        } failure:^(NSError *error) {
-                            [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
-                            if (error) {
-                                NSLog(@"error:%@",error);
-                            }
-                        }];
-                    }else{
-                        //设置已读
-                        [self setMessageReadWithModel:msgModel noOperate:NO];
-                    }
-                }
-            }
-        }else{
-            //设置已读
-            [self setMessageReadWithModel:msgModel noOperate:NO];
-        }
-        
+        //设置已读
+        [self setMessageReadWithModel:msgModel noOperate:NO];
+        [[NSNotificationCenter defaultCenter] postNotificationName:PatientCreatedNotification object:nil];
     }else{
         [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
     }

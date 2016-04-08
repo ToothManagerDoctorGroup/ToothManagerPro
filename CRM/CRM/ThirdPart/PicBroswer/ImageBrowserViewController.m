@@ -7,10 +7,14 @@
 //
 
 #import "ImageBrowserViewController.h"
+#import "DBManager+Patients.h"
+#import "DBManager+AutoSync.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
 
 @interface ImageBrowserViewController () <PicBrowserViewDelegate>
 @property (nonatomic,retain) PicBrowserView *browserView;
-@property (nonatomic) NSInteger currentIndex;
+@property (nonatomic,assign) NSInteger currentIndex;
 @end
 
 @implementation ImageBrowserViewController
@@ -49,15 +53,30 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [_browserView setupImageViews:self.imageArray.count];
-    [_browserView setLeftImage:[self.imageArray lastObject]];
-    [_browserView setCenterImage:[self.imageArray firstObject]];
-    if (self.imageArray.count > 1)  {
-        [_browserView setRightImage:[self.imageArray objectAtIndex:1]];
-    } else {
+    
+    self.currentIndex = self.currentPage;
+    //获取当前需要显示的图片的位置
+    [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentPage]];
+    if (self.imageArray.count > 1) {
+        //判断当前图片数组的个数
+        if (self.currentPage == self.imageArray.count - 1) {
+            [_browserView setLeftImage:[self.imageArray objectAtIndex:self.currentPage - 1]];
+            [_browserView setRightImage:[self.imageArray firstObject]];
+        }else if (self.currentPage == 0){
+            [_browserView setLeftImage:[self.imageArray lastObject]];
+            [_browserView setRightImage:[self.imageArray objectAtIndex:self.currentPage + 1]];
+        }else{
+            [_browserView setLeftImage:[self.imageArray objectAtIndex:self.currentPage - 1]];
+            [_browserView setRightImage:[self.imageArray objectAtIndex:self.currentPage + 1]];
+        }
+    }else{
         _browserView.scrollView.scrollEnabled = NO;
         _browserView.pagedownButton.enabled   = NO;
         _browserView.pageupButton.enabled     = NO;
     }
+    
+    //设置当前的索引位置
+    _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.currentIndex  + 1,(unsigned long)self.imageArray.count];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -95,6 +114,8 @@
         right = self.imageArray.count+right;
     }
     [_browserView setRightImage:[self.imageArray objectAtIndex:right]];
+    
+    _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.currentIndex + 1,(unsigned long)self.imageArray.count];
 }
 
 - (void)pagedownAction:(id)sender {
@@ -108,13 +129,15 @@
     }
     [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
     if (left >= self.imageArray.count) {
-        left = left-self.imageArray.count;
+        left = left - self.imageArray.count;
     }
     [_browserView setLeftImage:[self.imageArray objectAtIndex:left]];
     if (right >= self.imageArray.count) {
         right = right-self.imageArray.count;
     }
     [_browserView setRightImage:[self.imageArray objectAtIndex:right]];
+    
+    _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.currentIndex + 1,(unsigned long)self.imageArray.count];
 }
 
 - (void)deleteAction:(id)sender {
@@ -131,6 +154,34 @@
             [weakSelf refreshView];
         } else {
             [_browserView pagedownAction:nil];
+        }
+        _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.currentIndex  + 1,(unsigned long)self.imageArray.count];
+    }];
+    [alertView show];
+}
+
+- (void)mainImgAction:(id)sender{
+    __weak typeof(self) weakSelf = self;
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"是否将此CT片设置为来电提醒图片?" message:nil cancelHandler:^{
+    } comfirmButtonHandlder:^{
+        //获取当前显示的CTLib
+        BrowserPicture *currentPic = [weakSelf.imageArray objectAtIndex:weakSelf.currentIndex];
+        CTLib *ct = [currentPic ctLib];
+        //将当前照片设置为主照片
+        ct.is_main = @"1";
+        if([[DBManager shareInstance] setUpMainCT:ct]){
+            //将数组中的照片都设置为0
+            for (BrowserPicture *bPic in weakSelf.imageArray) {
+                if (![bPic.keyidStr isEqualToString:currentPic.keyidStr]) {
+                    bPic.ctLib.is_main = @"0";
+                }
+            }
+        }
+        //更新当前的视图
+        [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
+        
+        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(picBrowserViewController:didSetMainImage:)]) {
+            [weakSelf.delegate picBrowserViewController:weakSelf didSetMainImage:currentPic];
         }
     }];
     [alertView show];

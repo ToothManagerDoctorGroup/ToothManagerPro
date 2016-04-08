@@ -45,6 +45,7 @@
 #import "XLPatientSelectViewController.h"
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
+#import "DBManager+Doctor.h"
 
 #define TableHeaderViewHeight 350
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
@@ -157,7 +158,19 @@
         _recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getMedicalRecordWithCaseId:self.medicalCaseId]];
         if (_recordArray.count == 0) {
             _recordArray = [NSMutableArray arrayWithCapacity:0];
+        }else{
+            for (MedicalRecord *record in _recordArray) {
+                if ([record.doctor_id isEqualToString:[AccountManager currentUserid]]) {
+                    record.doctor_name = [AccountManager shareInstance].currentUser.name;
+                }else{
+                    Doctor *doc = [[DBManager shareInstance] getDoctorWithCkeyId:record.doctor_id];
+                    if (doc != nil) {
+                        record.doctor_name = doc.doctor_name;
+                    }
+                }
+            }
         }
+        
         _expenseArray = [NSMutableArray arrayWithArray:[[DBManager shareInstance] getMedicalExpenseArrayWithMedicalCaseId:self.medicalCaseId]];
         if (_expenseArray.count == 0) {
             _expenseArray = [NSMutableArray arrayWithCapacity:0];
@@ -460,22 +473,25 @@
             InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         }
-        //判断是否开启了通讯录权限
-        if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
-            if (self.ctblibArray.count > 0) {
-                //保存患者的头像
-                BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
-                if (!isExist) {
-                    [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+        //判断是否存在主照片
+        NSArray *mainArr = [[DBManager shareInstance] getMainCT:self.medicalCaseId];
+        if (mainArr.count == 0) {
+            //判断是否开启了通讯录权限
+            if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
+                if (self.ctblibArray.count > 0) {
+                    //保存患者的头像
+                    BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+                    if (!isExist) {
+                        [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+                    }
+                    
+                    CTLib *ctLib = [self.ctblibArray lastObject];
+                    UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
+                    UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
+                    [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
                 }
-                
-                CTLib *ctLib = [self.ctblibArray lastObject];
-                UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
-                UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
-                [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
             }
         }
-        
         
         //发送通知
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
@@ -623,22 +639,46 @@
         }
     }
 }
+- (void)picBrowserViewController:(ImageBrowserViewController *)controller didSetMainImage:(BrowserPicture *)pic{
+    //判断是否开启了通讯录权限
+    if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
+            //保存患者的头像
+            Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
+            BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+            if (!isExist) {
+                [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+            }
+        
+        @autoreleasepool {
+            CTLib *ctLib = pic.ctLib;
+            UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
+            UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
+            [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
+        }
+    }
+}
+
 
 #pragma mark - UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    
+    __weak typeof(self) weakSelf = self;
     [picker dismissViewControllerAnimated:YES completion:^() {
-        UIImage *resultImage = nil;
-        resultImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-        [SVProgressHUD showImage:nil status:@"正在添加..."];
-        CTLib *lib = [[CTLib alloc]init];
-        lib.patient_id = self.medicalCase.patient_id;
-        lib.case_id = self.medicalCase.ckeyid;
-        lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
-        lib.ct_desc = [[NSDate date] dateToNSString];
-        [self.ctblibArray addObject:lib];
-        [self.addCTLibs addObject:lib];
-        [self.tableHeaderView setImages:self.ctblibArray];
-        [SVProgressHUD dismiss];
+        @autoreleasepool {
+            UIImage *resultImage = nil;
+            resultImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+            [SVProgressHUD showImage:nil status:@"正在添加..."];
+            CTLib *lib = [[CTLib alloc]init];
+            lib.patient_id = weakSelf.medicalCase.patient_id;
+            lib.case_id = weakSelf.medicalCase.ckeyid;
+            lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
+            lib.ct_desc = [[NSDate date] dateToNSString];
+            lib.is_main = @"0";
+            [weakSelf.ctblibArray addObject:lib];
+            [weakSelf.addCTLibs addObject:lib];
+            [weakSelf.tableHeaderView setImages:weakSelf.ctblibArray];
+            [SVProgressHUD dismiss];
+        }
     }];
 }
 
@@ -646,21 +686,26 @@
     [picker dismissViewControllerAnimated:YES completion:^{}];
 }
 
-- (void)didTouchImageView:(id)sender {
+- (void)didTouchImageView:(id)sender index:(NSInteger)index{
     NSMutableArray *picArray = [NSMutableArray arrayWithCapacity:0];
-    for (CTLib *lib in self.ctblibArray) {
-        BrowserPicture *pic = [[BrowserPicture alloc]init];
+    for (NSInteger i = self.ctblibArray.count - 1; i >= 0; i--) {
+        CTLib *lib = self.ctblibArray[i];
+        BrowserPicture *pic = [[BrowserPicture alloc] init];
         pic.keyidStr = lib.ckeyid;
         pic.url = lib.ct_image;
         pic.title = lib.ct_desc;
+        pic.ctLib = lib;
         [picArray addObject:pic];
     }
-    ImageBrowserViewController *picbrowserVC = [[ImageBrowserViewController alloc]init];
+    
+    ImageBrowserViewController *picbrowserVC = [[ImageBrowserViewController alloc] init];
     picbrowserVC.delegate = self;
     [picbrowserVC.imageArray addObjectsFromArray:picArray];
-        [self presentViewController:picbrowserVC animated:YES completion:^{
+    picbrowserVC.currentPage = index;
+    [self presentViewController:picbrowserVC animated:YES completion:^{
     }];
 }
+
 
 - (void)keyboardWillShow:(CGFloat)keyboardHeight {
     static BOOL flag = NO;
@@ -686,11 +731,6 @@
         }];
     } else if ([self.tableHeaderView.repairDoctorTextField isFirstResponder]) {
         [self.tableHeaderView.repairDoctorTextField resignFirstResponder];
-        //跳转界面
-//        RepairDoctorViewController *repairdoctorVC = [[RepairDoctorViewController alloc]initWithStyle:UITableViewStylePlain];
-//        TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:repairdoctorVC];
-//        repairdoctorVC.delegate = self;
-//        [self presentViewController:nav animated:YES completion:^{}];
         //选择治疗医生
         XLDoctorLibraryViewController *docLibrary = [[XLDoctorLibraryViewController alloc] init];
         docLibrary.isTherapyDoctor = YES;
@@ -823,7 +863,7 @@
                         [SVProgressHUD showImage:nil status:@"消息发送失败"];
                     }
                 } failure:^(NSError *error) {
-                    [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                    [SVProgressHUD showImage:nil status:error.localizedDescription];
                     if (error) {
                         NSLog(@"error:%@",error);
                     }
@@ -832,6 +872,7 @@
             [alertView show];
         }
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -841,7 +882,6 @@
 - (IBAction)addRecordAction:(id)sender {
     
     if ([NSString isNotEmptyString:self.recordTextField.text]) {
-        
         if ([self.recordTextField.text isValidLength:600]) {
             [SVProgressHUD showErrorWithStatus:@"内容过长"];
             return;
@@ -852,6 +892,7 @@
         record.case_id = self.medicalCase.ckeyid;
         record.record_content = self.recordTextField.text;
         record.creation_date = [MyDateTool stringWithDateWithSec:[NSDate date]];
+        record.doctor_name = [AccountManager shareInstance].currentUser.name;
         [self.recordArray addObject:record];
         [self.newRecords addObject:record];
         self.recordTextField.text = @"";

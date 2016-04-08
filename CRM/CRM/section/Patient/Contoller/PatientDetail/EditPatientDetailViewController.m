@@ -19,31 +19,38 @@
 #import "CRMMacro.h"
 #import "XLCommonEditViewController.h"
 #import "UIColor+Extension.h"
-#import "XLEditGroupViewController.h"
+
 
 #define CommenBgColor MyColor(245, 246, 247)
 
 @interface EditPatientDetailViewController ()<UITextFieldDelegate,EditAllergyViewControllerDelegate,XLDataSelectViewControllerDelegate,XLCommonEditViewControllerDelegate>
 
-@property (nonatomic, strong)NSArray *dataList;
-@property (nonatomic, strong)NSArray *contentList;
+@property (nonatomic, strong)NSArray *contentList;//内容数组
+
+@property (nonatomic, strong)NSMutableArray *orginExistGroups;//初始存在的分组
+@property (nonatomic, strong)NSArray *curExistGroups;//编辑过后，选中的分组
+@property (nonatomic, strong)NSArray *curDeleteGroups;//编辑过后，删除的分组
 
 @end
 
 @implementation EditPatientDetailViewController
 
+- (NSMutableArray *)orginExistGroups{
+    if (!_orginExistGroups) {
+        _orginExistGroups = [NSMutableArray array];
+    }
+    return _orginExistGroups;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.dataList = @[@[@"姓名",@"电话"],@[@"备注名"],@[@"性别",@"年龄",@"家庭住址",@"身份证号"],@[@"过敏史",@"既往病史"]];
     
     //设置导航栏
     [self initNavBar];
     
     //添加键盘监听事件
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardShow:) name:UIKeyboardWillShowNotification object:nil];
-    
+
 }
 
 - (void)keyBoardShow:(NSNotification *)noti{
@@ -54,6 +61,14 @@
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.contentList = nil;
+    [self.orginExistGroups removeAllObjects];
+    self.orginExistGroups = nil;
+    self.curExistGroups = nil;
+}
+
+- (void)initData{
+    [super initData];
 }
 
 - (void)initView{
@@ -74,9 +89,7 @@
     self.patientAddressLabel.text = patient.patient_address;
     self.patientIdCardField.text = patient.idCardNum;
     self.patientPhoneField.text = patient.patient_phone;
-    
     self.remarkNameLabel.text = patient.nickName;
-    
     self.allergyLabel.text = patient.patient_allergy;
     self.anamnesisLabel.text = patient.anamnesis;
 }
@@ -126,12 +139,14 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
         [SVProgressHUD showSuccessWithStatus:@"更新成功"];
         
+        //上传更新的患者信息
         InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[currentPatient.keyValues JSONString] syncStatus:@"0"];
         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         
     }else{
         [SVProgressHUD showErrorWithStatus:@"更新失败"];
     }
+    
     [self popViewControllerAnimated:YES];
 }
 
@@ -163,9 +178,6 @@
     if (indexPath.section == 1) {
         if (indexPath.row == 0) {
             [self jumpToEditPageWithTitle:@"备注名" placeHolder:@"请填写备注名" content:self.remarkNameLabel.text showBtn:NO keyboardType:UIKeyboardTypeDefault];
-        }else if (indexPath.row == 1){
-            XLEditGroupViewController *editGroupVc = [[XLEditGroupViewController alloc] initWithStyle:UITableViewStyleGrouped];
-            [self pushViewController:editGroupVc animated:YES];
         }
     }
     if (indexPath.section == 2) {
@@ -296,7 +308,6 @@
         self.patientIdCardField.text = content;
     }
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

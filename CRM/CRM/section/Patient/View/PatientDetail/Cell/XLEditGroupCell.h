@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class XLEditGroupCell;
+@class XLEditGroupCell,DoctorGroupModel;
 @protocol XLEditGroupCellDelegate <NSObject>
 
 @optional
@@ -20,7 +20,7 @@
 
 @property (nonatomic, weak)id<XLEditGroupCellDelegate> delegate;
 
-@property (nonatomic, copy)NSString *content;
+@property (nonatomic, strong)DoctorGroupModel *model;
 
 + (NSInteger)fixHeight;
 

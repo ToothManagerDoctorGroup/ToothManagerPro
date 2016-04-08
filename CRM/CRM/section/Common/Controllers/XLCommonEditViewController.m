@@ -111,7 +111,12 @@
     
     NSString *title;
     if (self.showBtn) {
-        title = [NSString stringWithFormat:@"%@-%@",_addressField.text,_editField.text];
+        if ([_editField.text isNotEmpty]) {
+            title = [NSString stringWithFormat:@"%@-%@",_addressField.text,_editField.text];
+        }else{
+            title = [NSString stringWithFormat:@"%@",_addressField.text];
+        }
+        
     }else{
         title = _editField.text;
     }

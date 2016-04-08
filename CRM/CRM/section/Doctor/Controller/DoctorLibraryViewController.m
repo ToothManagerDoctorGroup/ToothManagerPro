@@ -127,6 +127,7 @@
             }
         });
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -360,6 +361,7 @@
                 }
                 
             } failure:^(NSError *error) {
+                [SVProgressHUD showImage:nil status:error.localizedDescription];
                 if (error) {
                     NSLog(@"error:%@",error);
                 }

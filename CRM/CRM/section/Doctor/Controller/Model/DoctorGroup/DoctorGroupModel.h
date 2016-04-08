@@ -12,6 +12,7 @@
 /**
  *  分组信息模型
  */
+@class GroupEntity;
 @interface DoctorGroupModel : NSObject<MJKeyValue>
 
 
@@ -49,6 +50,11 @@
  */
 @property (nonatomic, assign)int patient_count;
 
+/**
+ *  判断是否选中，临时字段
+ */
+@property (nonatomic, assign)BOOL isSelect;
 
+- (instancetype)initWithGroupEntity:(GroupEntity *)entity;
 
 @end

@@ -176,7 +176,6 @@
         image.url = lib.ct_image;
         image.title = lib.ct_desc;
         [muarray addObject:image];
-        
     }
     [self.imageScrollView setImageViewWidth:60];
     [self.imageScrollView setImageArray:muarray];
@@ -224,8 +223,8 @@
 }
 
 - (void)imagesScrollView:(TimImagesScrollView *)scrollView didTouchImage:(NSInteger)index {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didTouchImageView:)]) {
-        [self.delegate didTouchImageView:scrollView];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didTouchImageView:index:)]) {
+        [self.delegate didTouchImageView:scrollView index:index];
     }
 }
 

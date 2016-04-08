@@ -43,7 +43,7 @@
         self.backUpButton.backgroundColor = [UIColor colorWithHex:0xbbbbbb];
         self.backUpButton.enabled = NO;
     }else{
-        self.titleLabel.text = [NSString stringWithFormat:@"您有%lu数据需要同步到云端服务器",(unsigned long)self.dataList.count];
+        self.titleLabel.text = [NSString stringWithFormat:@"您有%lu条数据需要同步到云端服务器",(unsigned long)self.dataList.count];
     }
 }
 

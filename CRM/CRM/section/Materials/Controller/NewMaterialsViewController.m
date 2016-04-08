@@ -20,6 +20,7 @@
 #import "XLDataSelectViewController.h"
 #import "DBManager+Doctor.h"
 #import "NSString+Conversion.h"
+#import "NSString+TTMAddtion.h"
 
 //TIMUIKIT_EXTERN NSString * const ITI;
 //TIMUIKIT_EXTERN NSString * const DENTIS;
@@ -151,11 +152,12 @@
         PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
-        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-            cellMode.name = patientTmp.nickName;
-        }else{
-            cellMode.name = patientTmp.patient_name;
-        }
+        cellMode.name = patientTmp.patient_name;
+//        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+//            cellMode.name = patientTmp.nickName;
+//        }else{
+//            cellMode.name = patientTmp.patient_name;
+//        }
         cellMode.phone = patientTmp.patient_phone;
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
@@ -188,12 +190,16 @@
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    if ([self.nameTextField.text isEmpty]) {
+        [SVProgressHUD showImage:nil status:@"请输入种植体名称"];
+        return;
+    }
     //判断耗材名称长度
     if ([self.nameTextField.text isValidLength:32]) {
         [SVProgressHUD showImage:nil status:@"种植体名称过长"];
         return;
     }
-    if ([self.priceTextField.text floatValue] > 1000000) {
+    if ([self.priceTextField.text floatValue] > 1000000 || ![self.priceTextField.text isPureNumandCharacters] || [self.priceTextField.text isEmpty]) {
         [SVProgressHUD showImage:nil status:@"种植体价格无效"];
         return;
     }

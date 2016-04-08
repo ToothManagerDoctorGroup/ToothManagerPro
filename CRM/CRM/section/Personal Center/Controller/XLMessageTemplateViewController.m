@@ -91,7 +91,7 @@
         [self.tableView reloadData];
         
     } failure:^(NSError *error) {
-        if (!isRefresh) [SVProgressHUD dismiss];
+        if (!isRefresh) [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }

@@ -20,6 +20,7 @@
 
 @interface PatientDetailHeadInfoView : UIView
 
+@property (nonatomic, strong)NSArray *currentGroups;//当前所在分组
 
 @property (nonatomic,retain)Patient *detailPatient;
 @property (nonatomic, copy)NSString *introducerName;

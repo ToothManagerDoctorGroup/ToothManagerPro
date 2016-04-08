@@ -25,6 +25,7 @@
 #import "AFNetworking.h"
 #import "CRMHttpRespondModel.h"
 #import "XLLoginTool.h"
+#import "DoctorTool.h"
 
 @interface XLSignInViewController ()<CRMHttpRequestPersonalCenterDelegate>{
     BOOL check;
@@ -104,7 +105,7 @@
 //忘记密码
 - (IBAction)forgatePwdAction:(id)sender {
     UIStoryboard *storboard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
-    XLForgetPasswordViewController * forgetVC = [storboard instantiateViewControllerWithIdentifier:@"XLForgetPasswordViewController"];
+    XLForgetPasswordViewController *forgetVC = [storboard instantiateViewControllerWithIdentifier:@"XLForgetPasswordViewController"];
     [self pushViewController:forgetVC animated:YES];
 }
 //登录
@@ -117,36 +118,18 @@
             NSDictionary *resultDic = respond.result;
             [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
             UserObject *userobj = [[AccountManager shareInstance] currentUser];
-            [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-            } failedBlock:^(NSError *error) {
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
-
-            //环信账号登录
-            [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userobj.userid password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
-                
-                if (loginInfo && !error) {
-                    //设置是否自动登录
-                    [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
-                    
-                    //获取数据库中数据
-                    [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
-                    
-                    EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
-                    //设置离线推送的样式
-                    options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
-                    [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
-                    
-                    //发送自动登陆状态通知
-                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
-                    
-                    //保存最近一次登录用户名
-                    [self saveLastLoginUsername];
-                }
-            } onQueue:nil];
-            
+            //获取用户信息
+            [self requestUserInfoWithUserId:userobj.userid];
+            //环信登录
+            [self easeMobLoginWithUserName:userobj.userid password:resultDic[@"Password"]];
         }else{
-            [SVProgressHUD showErrorWithStatus:respond.result];
+            if ([respond.code integerValue] == 203) {
+                [SVProgressHUD dismiss];
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:respond.result delegate:nil cancelButtonTitle:@"知道了" otherButtonTitles:nil];
+                [alertView show];
+            }else{
+                [SVProgressHUD showImage:nil status:respond.result];
+            }
         }
 
     } failure:^(NSError *error) {
@@ -156,6 +139,73 @@
         [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
     }];
 }
+
+#pragma mark - 获取用户信息
+- (void)requestUserInfoWithUserId:(NSString *)userId{
+
+    [DoctorTool getDoctorListWithUserid:userId success:^(CRMHttpRespondModel *respond) {
+        if ([respond.code integerValue] == 200) {
+            [SVProgressHUD dismiss];
+            //登录成功
+            DoctorInfoModel *doctorInfo = [DoctorInfoModel objectWithKeyValues:respond.result[0]];
+            //设置当前的签约状态
+            NSString *signKey = [NSString stringWithFormat:@"%@isSign",doctorInfo.doctor_id];
+            [CRMUserDefalut setObject:doctorInfo.is_sign forKey:signKey];
+            
+            UserObject *obj = [UserObject userobjectFromDic:respond.result[0]];
+            [[DBManager shareInstance] updateUserWithUserObject:obj];
+            [[AccountManager shareInstance] refreshCurrentUserInfo];
+            
+            //判断当前用户是否填写了医院名称
+            if (![respond.result[0][@"doctor_hospital"] isNotEmpty]) {
+                //跳转到信息完善界面
+                UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
+                XLPersonalStepOneViewController *oneVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonalStepOneViewController"];
+                oneVc.hidesBottomBarWhenPushed = YES;
+                [self pushViewController:oneVc animated:YES];
+                
+            }else{
+                if(self.navigationController.topViewController == self){
+                    [self postNotificationName:SignInSuccessNotification object:nil];
+                }
+            }
+        }else{
+            [SVProgressHUD showImage:nil status:respond.result];
+        }
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+#pragma mark - 环信用户登录
+- (void)easeMobLoginWithUserName:(NSString *)userName password:(NSString *)password{
+    //环信账号登录
+    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userName password:password completion:^(NSDictionary *loginInfo, EMError *error) {
+        
+        if (loginInfo && !error) {
+            //设置是否自动登录
+            [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+            
+            //获取数据库中数据
+            [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+            
+            EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
+            //设置离线推送的样式
+            options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+            [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
+            
+            //发送自动登陆状态通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+            
+            //保存最近一次登录用户名
+            [self saveLastLoginUsername];
+        }
+    } onQueue:nil];
+}
+
 #pragma  mark - 保存密码到本地
 - (void)saveLastLoginUsername
 {

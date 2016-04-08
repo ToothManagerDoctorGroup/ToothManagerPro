@@ -14,11 +14,7 @@ extern NSString *const XLContactAccessFailedNotification;//访问失败
 
 @interface XLContactsManager : NSObject
 
-+ (instancetype) manager;
-@property (nonatomic, strong, readonly) NSArray *allPeople;
-
-@property (nonatomic,strong) NSMutableArray *sequencePeoples;//排序后的数组
-@property (nonatomic,strong) NSMutableArray *sequencePeopleTitles;//排序后分组的标题
+- (NSArray *)loadAllPeople;
 
 @end
 

@@ -15,33 +15,26 @@ NSString *const XLContactAccessDeniedNotification = @"XLContactAccessDeniedNotif
 NSString *const XLContactAccessFailedNotification = @"XLContactAccessFailedNotification";
 
 @interface XLContactsManager ()
-
 @property (nonatomic, strong) NSMutableArray *people;
-@property (nonatomic,strong) NSMutableArray *sequencePeoplesTmp;//排序后的数组
-@property (nonatomic, strong) NSMutableArray *sequencePeopleTitlesTmp;//排序后分组的标题
 @end
 
 @implementation XLContactsManager
 
-+ (instancetype)manager {
-    static XLContactsManager *manager;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        manager = [[self alloc] init];
-        [manager loadAllPeople];
-    });
-    return manager;
-}
-- (instancetype)init {
-    if (self = [super init]) {
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
         _people = [NSMutableArray array];
-        _sequencePeoplesTmp = [NSMutableArray array];
-        _sequencePeopleTitlesTmp = [NSMutableArray array];
     }
     return self;
 }
 
-- (void) loadAllPeople {
+- (void)dealloc{
+    [self.people removeAllObjects];
+    self.people = nil;
+}
+
+- (NSArray *) loadAllPeople {
     NSArray *statuses = @[@"kABAuthorizationStatusNotDetermined",@"kABAuthorizationStatusRestricted",@"kABAuthorizationStatusDenied",@"kABAuthorizationStatusAuthorized"];
     ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
     NSLog(@"ABAddressBookGetAuthorizationStatus = %@",statuses[status]);
@@ -70,6 +63,7 @@ NSString *const XLContactAccessFailedNotification = @"XLContactAccessFailedNotif
         //        Restricted OR Denied
         [XLContactsManager postMainThreadNotification:XLContactAccessFailedNotification];
     }
+    return self.people;
 }
 - (void)copyAddressBook:(ABAddressBookRef)addressBook
 {
@@ -237,70 +231,20 @@ NSString *const XLContactAccessFailedNotification = @"XLContactAccessFailedNotif
         //        NSData *imageData = (NSData*)CFBridgingRelease(ABPersonCopyImageData(person));
     }
     CFRelease(people);
-    //对数组进行排序
-    [self setUpTableSectionWithArray:self.people];
 #pragma clang diagnostic pop
 }
 
-#pragma mark - getter
-- (NSArray *)allPeople {
-    return self.people;
-}
 
-- (NSMutableArray *)sequencePeoples{
-    return self.sequencePeoplesTmp;
-}
-- (NSMutableArray *)sequencePeopleTitles{
-    return self.sequencePeopleTitlesTmp;
-}
 #pragma mark - helper
 + (void)postMainThreadNotification:(NSString *)notificationName {
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     if ([NSThread isMainThread]) {
-        [center postNotificationName:notificationName object:[self manager] userInfo:nil];
+        [center postNotificationName:notificationName object:nil userInfo:nil];
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [center postNotificationName:notificationName object:[self manager] userInfo:nil];
+            [center postNotificationName:notificationName object:nil userInfo:nil];
         });
     }
-}
-
-#pragma mark - 数组排序
-- (void) setUpTableSectionWithArray:(NSArray *)array{
-    UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
-    
-    //初始化一个数组newSectionsArray用来存放最终的数据，我们最终要得到的数据模型应该形如@[@[以A开头的数据数组], @[以B开头的数据数组], @[以C开头的数据数组], ... @[以#(其它)开头的数据数组]]
-    NSUInteger numberOfSections = [[collation sectionTitles] count];
-    NSMutableArray *newSectionArray =  [[NSMutableArray alloc] init];
-    for (NSUInteger index = 0; index<numberOfSections; index++) {
-        [newSectionArray addObject:[[NSMutableArray alloc]init]];
-    }
-    
-    //初始化27个空数组加入newSectionsArray
-    for (XLContact *model in array) {
-        NSUInteger sectionIndex = [collation sectionForObject:model collationStringSelector:@selector(fullName)];
-        [newSectionArray[sectionIndex] addObject:model];
-    }
-    
-    //对每个section中的数组按照name属性排序
-    for (NSUInteger index=0; index<numberOfSections; index++) {
-        NSMutableArray *personsForSection = newSectionArray[index];
-        NSArray *sortedPersonsForSection = [collation sortedArrayFromArray:personsForSection collationStringSelector:@selector(fullName)];
-        newSectionArray[index] = sortedPersonsForSection;
-    }
-    
-    NSMutableArray *temp = [NSMutableArray new];
-    
-    [newSectionArray enumerateObjectsUsingBlock:^(NSArray *arr, NSUInteger idx, BOOL *stop) {
-        if (arr.count == 0) {
-            [temp addObject:arr];
-        } else {
-            [self.sequencePeopleTitlesTmp addObject:[collation sectionTitles][idx]];
-        }
-    }];
-    [newSectionArray removeObjectsInArray:temp];
-    
-    self.sequencePeoplesTmp = newSectionArray;
 }
 
 #pragma mark - 修改电话号码格式

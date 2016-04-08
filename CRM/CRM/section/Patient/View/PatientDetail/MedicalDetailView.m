@@ -19,12 +19,14 @@
 #import "DBManager+Materials.h"
 #import "PatientDetailViewController.h"
 #import "UIView+WXViewController.h"
+#import "ImageBrowserViewController.h"
+#import "AddressBoolTool.h"
 
 #define Margin 5
 #define CommenTitleColor MyColor(69, 69, 70)
 #define CommenTitleFont [UIFont systemFontOfSize:14]
 
-@interface MedicalDetailView ()<UIAlertViewDelegate>
+@interface MedicalDetailView ()<UIAlertViewDelegate,ImageBrowserViewControllerDelegate>
 
 @property (nonatomic, weak)UIScrollView *imageScrollView;//图片视图
 @property (nonatomic, weak)UILabel *repairDoctorTitle; //修复医生标题
@@ -32,7 +34,7 @@
 @property (nonatomic, weak)UILabel *plantTimeTitle;  //种植时间标题
 @property (nonatomic, weak)UILabel *orderTimeTitle;  //预约时间标题
 
-@property (nonatomic, strong)NSArray *cTLibs;
+@property (nonatomic, strong)NSMutableArray *cTLibs;
 
 @end
 
@@ -100,9 +102,9 @@
     //修复医生
     NSString *doctorTitle;
     if (self.medicalCase.repair_doctor_name && [self.medicalCase.repair_doctor_name isNotEmpty]) {
-        doctorTitle = [NSString stringWithFormat:@"修复医生:%@",self.medicalCase.repair_doctor_name];
+        doctorTitle = [NSString stringWithFormat:@"修复医生：%@",self.medicalCase.repair_doctor_name];
     }else{
-        doctorTitle = @"修复医生:";
+        doctorTitle = @"修复医生：";
     }
     
     CGSize doctorTitleSize = [doctorTitle sizeWithFont:CommenTitleFont];
@@ -115,9 +117,9 @@
     //修复时间
     NSString *repairTime;
     if (self.medicalCase.repair_time && [self.medicalCase.repair_time isNotEmpty]) {
-        repairTime = [NSString stringWithFormat:@"修复时间:%@",[self dateStrFromatter:self.medicalCase.repair_time]];
+        repairTime = [NSString stringWithFormat:@"修复时间：%@",[self dateStrFromatter:self.medicalCase.repair_time]];
     }else{
-        repairTime = @"修复时间:";
+        repairTime = @"修复时间：";
     }
     
     CGSize repairTimeSize = [repairTime sizeWithFont:CommenTitleFont];
@@ -129,9 +131,9 @@
     //预约时间
     NSString *orderTime;
     if (self.medicalCase.next_reserve_time && [self.medicalCase.next_reserve_time isNotEmpty]) {
-        orderTime = [NSString stringWithFormat:@"预约时间:%@",[self dateStrFromatter:self.medicalCase.next_reserve_time]];
+        orderTime = [NSString stringWithFormat:@"预约时间：%@",[self dateStrFromatter:self.medicalCase.next_reserve_time]];
     }else{
-        orderTime = @"预约时间:";
+        orderTime = @"预约时间：";
     }
     CGSize orderTimeSize = [orderTime sizeWithFont:CommenTitleFont];
     CGFloat orderX = self.width - orderTimeSize.width - Margin;
@@ -142,9 +144,9 @@
     //种植时间
     NSString *plantTime;
     if (self.medicalCase.implant_time && [self.medicalCase.implant_time isNotEmpty]) {
-        plantTime = [NSString stringWithFormat:@"种植时间:%@",[self dateStrFromatter:self.medicalCase.implant_time]];
+        plantTime = [NSString stringWithFormat:@"种植时间：%@",[self dateStrFromatter:self.medicalCase.implant_time]];
     }else{
-        plantTime = @"种植时间:";
+        plantTime = @"种植时间：";
     }
     CGSize plantSize = [plantTime sizeWithFont:CommenTitleFont];
     CGFloat plantX = self.width - plantSize.width - Margin;
@@ -152,8 +154,13 @@
     self.plantTimeTitle.text = plantTime;
     self.plantTimeTitle.frame = CGRectMake(plantX, plantY, plantSize.width, plantSize.height);
     
+    //计算scrollView的frame
+    [self initScrollView];
+}
+
+- (void)initScrollView{
     //计算imageScrollView的frame
-    self.imageScrollView.frame = CGRectMake(Margin, Margin, self.width - Margin * 2, self.height - Margin * 4 - plantSize.height * 2);
+    self.imageScrollView.frame = CGRectMake(Margin, Margin, self.width - Margin * 2, self.height - Margin * 4 - self.plantTimeTitle.height * 2);
     
     //获取所有的ct图片信息
     NSMutableArray *cTLibs = [NSMutableArray array];
@@ -208,14 +215,33 @@
                 tap.numberOfTouchesRequired = 1;
                 [imageView addGestureRecognizer:tap];
                 
-                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:[UIImage imageNamed:ct.ct_image] options:SDWebImageRetryFailed|SDWebImageLowPriority completed:nil];
+                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:[UIImage imageNamed:@"ct_holderImage"] options:SDWebImageRetryFailed|SDWebImageLowPriority completed:nil];
             }
             [self.imageScrollView addSubview:imageView];
         }
     }
 }
+
 #pragma mark -单击事件
 - (void)tapAction:(UITapGestureRecognizer *)tap{
+    NSMutableArray *picArray = [NSMutableArray arrayWithCapacity:0];
+    for (CTLib *lib in self.cTLibs) {
+        BrowserPicture *pic = [[BrowserPicture alloc] init];
+        pic.keyidStr = lib.ckeyid;
+        pic.url = lib.ct_image;
+        pic.title = lib.ct_desc;
+        pic.ctLib = lib;
+        [picArray addObject:pic];
+    }
+    
+    ImageBrowserViewController *picbrowserVC = [[ImageBrowserViewController alloc] init];
+    picbrowserVC.delegate = self;
+    [picbrowserVC.imageArray addObjectsFromArray:picArray];
+    picbrowserVC.currentPage = tap.view.tag;
+    [self.viewController presentViewController:picbrowserVC animated:YES completion:^{
+    }];
+    
+    /*
     //获取当前点击的视图
     UIImageView *imageView = (UIImageView *)tap.view;
     //遍历当前图片数组，将LBPhoto模型转换成MJPhoto模型
@@ -239,7 +265,49 @@
     browser.photos = mJPhotos;
     browser.currentPhotoIndex = imageView.tag;
     //显示
-    [browser show];
+    [browser show];*/
+}
+#pragma mark - ImageBrowserViewControllerDelegate
+- (void)picBrowserViewController:(ImageBrowserViewController *)controller didDeleteBrowserPicture:(BrowserPicture *)pic{
+    //删除图片
+    for (CTLib *lib in self.cTLibs) {
+        if ([lib.ckeyid isEqualToString:pic.keyidStr]) {
+            [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
+            [self.cTLibs removeObject:lib];
+            
+            //删除数据库中的ct图片
+            if([[DBManager shareInstance] deleteCTlibWithLibId:lib.ckeyid]){
+                //添加一条删除ct片的自动同步数据
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Delete dataEntity:[lib.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            }
+            
+            break;
+        }
+    }
+}
+
+- (void)picBrowserViewController:(ImageBrowserViewController *)controller didFinishBrowseImages:(NSArray *)images{
+    [controller dismissViewControllerAnimated:YES completion:^{
+        [self initScrollView];
+    }];
+}
+
+- (void)picBrowserViewController:(ImageBrowserViewController *)controller didSetMainImage:(BrowserPicture *)pic{
+    //判断是否开启了通讯录权限
+    if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
+        //保存患者的头像
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.medicalCase.patient_id];
+        BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+        if (!isExist) {
+            [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+        }
+        
+        CTLib *ctLib = pic.ctLib;
+        UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
+        UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.medicalCase.implant_time];
+        [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
+    }
 }
 
 #pragma mark -长按事件

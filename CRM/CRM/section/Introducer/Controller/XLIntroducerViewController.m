@@ -28,6 +28,7 @@
 #import "MJRefresh.h"
 #import "MLKMenuPopover.h"
 #import "XLContactsViewController.h"
+#import "XLNoIntroducerTintView.h"
 
 @interface XLIntroducerViewController ()<UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,MLKMenuPopoverDelegate>{
     UITableView *_tableView;
@@ -50,9 +51,20 @@
  */
 @property (nonatomic, strong)MLKMenuPopover *menuPopover;
 
+@property (nonatomic, strong)XLNoIntroducerTintView *noIntroducerView;//提示视图
+
 @end
 
 @implementation XLIntroducerViewController;
+
+- (XLNoIntroducerTintView *)noIntroducerView{
+    if (!_noIntroducerView) {
+        _noIntroducerView = [[XLNoIntroducerTintView alloc] initWithFrame:_tableView.bounds];
+        _noIntroducerView.hidden = YES;
+        [_tableView addSubview:_noIntroducerView];
+    }
+    return _noIntroducerView;
+}
 
 - (MLKMenuPopover *)menuPopover{
     if (!_menuPopover) {
@@ -89,6 +101,7 @@
     self.searchBar = nil;
     self.searchController = nil;
     _tableView = nil;
+    self.noIntroducerView = nil;
 }
 
 
@@ -200,14 +213,15 @@
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
      [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
+    
     [self.view addSubview:_tableView];
     //添加头部刷新控件
     [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
     _tableView.header.updatedTimeHidden = YES;
-    [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
+    [self noIntroducerView];
 }
 
 #pragma mark - 下拉刷新
@@ -221,7 +235,8 @@
     if (self.introducerCellModeArray.count < self.allCount) {
         self.pageCount++;
         [self requestLocalDataWitPage:self.pageCount isHeader:NO];
-    }else{
+    }
+    else{
         [_tableView.footer noticeNoMoreData];
     }
 }
@@ -231,12 +246,18 @@
 {
     self.introducerInfoArray = [[DBManager shareInstance] getAllIntroducerWithPage:pageCount];
     
+    if (self.introducerInfoArray.count == 0) {
+        self.noIntroducerView.hidden = NO;
+    }else{
+        self.noIntroducerView.hidden = YES;
+    }
+    
     if (isHeader) {
         [self.introducerCellModeArray removeAllObjects];
         if (self.introducerInfoArray.count < CommonPageSize) {
-            [_tableView.footer noticeNoMoreData];
+            [_tableView removeFooter];
         }else{
-            [_tableView.footer resetNoMoreData];
+            [_tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
         }
     }
     
@@ -268,19 +289,19 @@
     bgView.frame = CGRectMake(0, 44, kScreenWidth, commonH);
     bgView.backgroundColor = MyColor(238, 238, 238);
     
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39.5, kScreenWidth, 0.5)];
-    label.backgroundColor = [UIColor colorWithHex:0xcccccc];
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, kScreenWidth, 1)];
+    label.backgroundColor = [UIColor colorWithHex:0xdddddd];
     [bgView addSubview:label];
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [nameButton setTitle:@"介绍人" forState:UIControlStateNormal];
+    [nameButton setTitle:@"姓名" forState:UIControlStateNormal];
     [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [bgView addSubview:nameButton];
     
     UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [statusButton setTitle:@"数量" forState:UIControlStateNormal];
+    [statusButton setTitle:@"介绍人数" forState:UIControlStateNormal];
     [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
     [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     statusButton.titleLabel.font = [UIFont systemFontOfSize:15];

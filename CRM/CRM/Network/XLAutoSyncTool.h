@@ -11,6 +11,9 @@
 #import "DBTableMode.h"
 #import "CRMHttpRespondModel.h"
 #import "LocalNotificationCenter.h"
+
+#define POST_COMMONURL ([NSString stringWithFormat:@"%@%@/%@/SyncPost.ashx",DomainName,Method_His_Crm,Method_Ashx])
+
 /**
  *  自动同步Edit数据
  */
