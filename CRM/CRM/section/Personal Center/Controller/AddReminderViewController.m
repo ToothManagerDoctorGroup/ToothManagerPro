@@ -285,11 +285,11 @@
     
     //微信消息推送打开
     if([weiXinSwitch isOn]){
-        [[DoctorManager shareInstance]weiXinMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
-            
-        } failedBlock:^(NSError *error){
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
+//        [[DoctorManager shareInstance]weiXinMessagePatient:patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:self.selectMatterTextField.text withSendType:@"0" withSendTime:self.timeTextField.text successBlock:^{
+//            
+//        } failedBlock:^(NSError *error){
+//            [SVProgressHUD showImage:nil status:error.localizedDescription];
+//        }];
     }
     //短信消息推送打开
 //    if([duanXinSwitch isOn]){

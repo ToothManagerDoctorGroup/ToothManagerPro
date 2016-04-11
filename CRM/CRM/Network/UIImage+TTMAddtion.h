@@ -98,4 +98,13 @@
  */
 + (UIImage *)imageWithFileName:(NSString *)fileName;
 
+/**
+ *  防止图片被自动旋转90度
+ *
+ *  @param aImage 原始图片
+ *
+ *  @return 正常图片
+ */
++ (UIImage *)fixOrientation:(UIImage *)aImage;
+
 @end

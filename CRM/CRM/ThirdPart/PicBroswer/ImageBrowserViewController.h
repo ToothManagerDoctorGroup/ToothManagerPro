@@ -14,6 +14,7 @@
 @property (nonatomic,retain) NSMutableArray *imageArray;
 @property (nonatomic, assign)NSInteger currentPage;
 @property (nonatomic,weak) id <ImageBrowserViewControllerDelegate> delegate;
+@property (nonatomic, assign)BOOL isEditMedicalCase;
 
 @end
 

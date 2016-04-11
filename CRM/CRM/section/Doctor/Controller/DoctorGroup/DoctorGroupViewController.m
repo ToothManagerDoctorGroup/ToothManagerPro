@@ -54,11 +54,7 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    //是否显示提示页
-    [CRMUserDefalut isShowedForKey:GroupNew_IsShowedKey showedBlock:^{
-        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_alert"]];
-        [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
-    }];
+    
 }
 
 - (void)viewDidLoad {
@@ -109,6 +105,11 @@
         
         if (self.dataList.count == 0) {
             self.alertLabel.hidden = NO;
+            //是否显示提示页
+            [CRMUserDefalut isShowedForKey:GroupNew_IsShowedKey showedBlock:^{
+                XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_alert"]];
+                [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
+            }];
         }else{
             self.alertLabel.hidden = YES;
         }

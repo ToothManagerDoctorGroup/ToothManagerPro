@@ -35,6 +35,13 @@
 - (void)initView {
     if (_browserView == nil) {
         _browserView = [[[NSBundle mainBundle] loadNibNamed:@"PicBrowserView" owner:nil options:nil] objectAtIndex:0];
+        if (self.isEditMedicalCase) {
+            NSMutableArray *mArray = [_browserView.bottomBar.items mutableCopy];
+            [mArray removeObject:_browserView.leftBar];
+            [mArray removeObject:_browserView.mainCTButton];
+            [_browserView.bottomBar setItems:mArray animated:NO];
+        }
+        
         _browserView.frame = self.view.bounds;
         _browserView.delegate = self;
         self.currentIndex = 0;
@@ -55,19 +62,25 @@
     [_browserView setupImageViews:self.imageArray.count];
     
     self.currentIndex = self.currentPage;
+    [self setUpDataWithCurrentIndex:self.currentIndex];
+    
+}
+
+#pragma mark - 加载数据
+- (void)setUpDataWithCurrentIndex:(NSInteger)index{
     //获取当前需要显示的图片的位置
-    [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentPage]];
+    [_browserView setCenterImage:[self.imageArray objectAtIndex:index]];
     if (self.imageArray.count > 1) {
         //判断当前图片数组的个数
-        if (self.currentPage == self.imageArray.count - 1) {
-            [_browserView setLeftImage:[self.imageArray objectAtIndex:self.currentPage - 1]];
+        if (index == self.imageArray.count - 1) {
+            [_browserView setLeftImage:[self.imageArray objectAtIndex:index - 1]];
             [_browserView setRightImage:[self.imageArray firstObject]];
-        }else if (self.currentPage == 0){
+        }else if (index == 0){
             [_browserView setLeftImage:[self.imageArray lastObject]];
-            [_browserView setRightImage:[self.imageArray objectAtIndex:self.currentPage + 1]];
+            [_browserView setRightImage:[self.imageArray objectAtIndex:index + 1]];
         }else{
-            [_browserView setLeftImage:[self.imageArray objectAtIndex:self.currentPage - 1]];
-            [_browserView setRightImage:[self.imageArray objectAtIndex:self.currentPage + 1]];
+            [_browserView setLeftImage:[self.imageArray objectAtIndex:index - 1]];
+            [_browserView setRightImage:[self.imageArray objectAtIndex:index + 1]];
         }
     }else{
         _browserView.scrollView.scrollEnabled = NO;
@@ -76,7 +89,7 @@
     }
     
     //设置当前的索引位置
-    _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.currentIndex  + 1,(unsigned long)self.imageArray.count];
+    _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)index  + 1,(unsigned long)self.imageArray.count];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -124,6 +137,7 @@
     NSInteger right = center+1;
     if (center >= self.imageArray.count) {
         self.currentIndex = 0;
+        
     } else {
         self.currentIndex = center;
     }
@@ -153,7 +167,12 @@
         } else if (weakSelf.imageArray.count == 1) {
             [weakSelf refreshView];
         } else {
-            [_browserView pagedownAction:nil];
+            if (self.currentIndex == self.imageArray.count) {
+                self.currentIndex = 0;
+                [self setUpDataWithCurrentIndex:self.currentIndex];
+            }else{
+                [self pagedownAction:nil];
+            }
         }
         _browserView.indexLabel.text = [NSString stringWithFormat:@"%ld/%lu",(long)self.currentIndex  + 1,(unsigned long)self.imageArray.count];
     }];
@@ -169,6 +188,7 @@
         CTLib *ct = [currentPic ctLib];
         //将当前照片设置为主照片
         ct.is_main = @"1";
+        
         if([[DBManager shareInstance] setUpMainCT:ct]){
             //将数组中的照片都设置为0
             for (BrowserPicture *bPic in weakSelf.imageArray) {
@@ -177,6 +197,7 @@
                 }
             }
         }
+        
         //更新当前的视图
         [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
         

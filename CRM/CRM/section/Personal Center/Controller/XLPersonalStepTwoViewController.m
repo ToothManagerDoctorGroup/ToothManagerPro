@@ -82,15 +82,17 @@
 }
 #pragma mark - 设置控件内容
 - (void)setUpData{
-    NSString *headImgPath = [CRMUserDefalut objectForKey:@"avatar"];
-    if (headImgPath != nil) {
-        NSError *error;
-        NSData *imgData = [NSData dataWithContentsOfFile:headImgPath options:NSDataReadingUncached error:&error];
-        if (imgData.length > 0) {
-            UIImage *image = [UIImage imageWithData:imgData scale:.5];
-            self.headImageView.image = image;
-        }
-    }
+//    NSString *headImgPath = [CRMUserDefalut objectForKey:@"avatar"];
+//    if (headImgPath != nil) {
+//        NSError *error;
+//        NSData *imgData = [NSData dataWithContentsOfFile:headImgPath options:NSDataReadingUncached error:&error];
+//        if (imgData.length > 0) {
+//            UIImage *image = [UIImage imageWithData:imgData scale:.5];
+//            self.headImageView.image = image;
+//        }
+//    }
+    
+    self.headImageView.image = [UIImage imageNamed:@"user_icon"];
     
     //设置修改内容
     self.ageField.text = self.age;

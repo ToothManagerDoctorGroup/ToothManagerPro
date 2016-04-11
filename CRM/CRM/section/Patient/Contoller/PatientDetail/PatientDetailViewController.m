@@ -618,15 +618,18 @@
             if([[DBManager shareInstance] insertCTLib:ctlib]){
                 current++;
             }
-            if ([ctlib.ct_image isNotEmpty]) {
-                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-                
-                UIImage *image = [self getImageFromURL:urlImage];
-                
-                if (nil != image) {
-                    [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+            UIImage *image = nil;
+            @autoreleasepool {
+                if ([ctlib.ct_image isNotEmpty]) {
+                    NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
+                    
+                    image = [self getImageFromURL:urlImage];
+                    if (nil != image) {
+                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                    }
                 }
             }
+            
         }
     }
     
@@ -654,7 +657,7 @@
     if (model.introducerMap.count > 0) {
         for (NSDictionary *dic in model.introducerMap) {
             PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
-            if ([[DBManager shareInstance] insertPatientIntroducerMap:map]) {
+            if ([[DBManager shareInstance] insertPatientIntroducerMap_Sync:map]) {
                 current++;
             }
         }
@@ -704,7 +707,7 @@
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showImage:nil status:@"升级成功"];
         //发送微信消息
-        [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+        [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid toDoctor:@"" withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
         } failedBlock:^(NSError *error){
             [SVProgressHUD showImage:nil status:error.localizedDescription];
         }];
@@ -877,8 +880,8 @@
 }
 
 
-
 - (void)dealloc{
+    NSLog(@"患者详情列表被销毁");
     _tableView = nil;
     _headerView = nil;
     _headerInfoView = nil;

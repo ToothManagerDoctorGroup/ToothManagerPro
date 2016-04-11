@@ -88,6 +88,9 @@
                 <outlet property="bottomBar" destination="Cny-Ey-59h" id="9uI-cG-4V2"/>
                 <outlet property="deleteButton" destination="e7P-Y2-fPk" id="xUV-ld-wmd"/>
                 <outlet property="indexLabel" destination="kGY-4o-H65" id="ZCG-ll-5V5"/>
+                <outlet property="leftBar" destination="rUH-ft-oBT" id="m6M-l8-MsX"/>
+                <outlet property="mainCTButton" destination="ena-li-QmG" id="1hQ-iK-RgV"/>
+                <outlet property="midBar" destination="qa4-XZ-wPG" id="ZO0-m2-LKc"/>
                 <outlet property="scrollView" destination="14d-Rp-CDe" id="XdJ-kr-e6J"/>
                 <outlet property="titleBarItem" destination="uXp-mS-3as" id="Azc-2U-Q0Q"/>
                 <outlet property="topBar" destination="4BQ-MD-bnS" id="AcF-9g-jQ3"/>

@@ -85,5 +85,9 @@
     }
 }
 
+- (void)selectOption{
+    [self selectAction];
+}
+
 
 @end

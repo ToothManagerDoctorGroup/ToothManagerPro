@@ -103,11 +103,13 @@
         return;
     }
     
-    //判断当前介绍人是否存在
-    BOOL exit = [[DBManager shareInstance] isInIntroducerTable:self.phoneTextField.text];
-    if (exit) {
-        [SVProgressHUD showImage:nil status:@"该电话号码已存在，请重新输入"];
-        return;
+    if (!self.edit) {
+        //判断当前介绍人是否存在
+        BOOL exit = [[DBManager shareInstance] isInIntroducerTable:self.phoneTextField.text];
+        if (exit) {
+            [SVProgressHUD showImage:nil status:@"该电话号码已存在，请重新输入"];
+            return;
+        }
     }
     
     self.introducer.intr_name = self.nameTextField.text;

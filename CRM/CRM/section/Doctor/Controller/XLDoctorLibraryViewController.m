@@ -473,8 +473,8 @@
             }
             
             //发送微信消息
-            [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
-            } failedBlock:^(NSError *error){
+            [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager currentUserid] toDoctor:self.selectDoctor.ckeyid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+            } failedBlock:^(NSError *error) {
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         });

@@ -191,7 +191,7 @@
     UserObject *user = [AccountManager shareInstance].currentUser;
     _detailLabel.text = user.hospitalName;
     _nameLabel.text = [NSString stringWithFormat:@"%@   %@",user.name,user.title];
-    [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+    [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
     
     //查询数据库，是否有未同步的数据
     NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"4"];

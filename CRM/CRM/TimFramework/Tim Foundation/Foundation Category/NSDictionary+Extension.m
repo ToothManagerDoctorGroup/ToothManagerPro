@@ -8,6 +8,7 @@
 
 #import "NSDictionary+Extension.h"
 
+
 @implementation NSDictionary (Extension)
 
 - (NSString *)stringForKey:(NSString *)aKey {
@@ -34,9 +35,12 @@
     
     NSString *value = [self objectForKey:aKey];
     if ([value isKindOfClass:[NSString class]]) {
-        if ([value isEqualToString:@"1900/1/1 0:00:00"]) {
+        
+        if ([value isEqualToString:@"1900/1/1 00:00:00"]) {
             return @"";
         }
+        
+        
         return value;
     }
     

@@ -8,17 +8,14 @@
 
 #import "PatientManager.h"
 #import "SDImageCache.h"
+#import "UIImage+Resize.h"
 
 @implementation PatientManager
 
 + (NSString *)pathImageSaveToDisk:(UIImage *)image withKey:(NSString *)key {
-   
-    @autoreleasepool {
-        
-        NSData *imageData = UIImageJPEGRepresentation(image, 0);
-        UIImage *storeImage = [UIImage imageWithData:imageData];
-        [[SDImageCache sharedImageCache] storeImage:storeImage forKey:key toDisk:YES];
-        
+    NSData *imageData = UIImageJPEGRepresentation(image, 0);
+    UIImage *storeImage = [UIImage imageWithData:imageData];
+    [[SDImageCache sharedImageCache] storeImage:storeImage forKey:key toDisk:YES];
 
 //    NSString *filepath = [NSString stringWithFormat:@"%@%@%@.jpg",NSHomeDirectory(),@"/Library/Caches/",key];
 //    NSData *imageData = UIImageJPEGRepresentation(image, 0);
@@ -27,7 +24,6 @@
 //        return filepath;
 //    }
 //    return nil;
-    }
     return key;
 }
 

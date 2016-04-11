@@ -23,6 +23,7 @@
 @property (nonatomic, strong)DoctorGroupModel *model;
 
 + (NSInteger)fixHeight;
+- (void)selectOption;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 @end

@@ -91,7 +91,7 @@ DEF_STATIC_CONST_STRING(Doctor_Prefix,Doctor);
  *
  *  @param patientIds:病人id  doctorId:医生id  message_type:类型   send_type  send_time
  **/
-- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time;
+- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toDoctor:(NSString *)toDoctor withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time;
 
 /**
  *  预约短信消息推送

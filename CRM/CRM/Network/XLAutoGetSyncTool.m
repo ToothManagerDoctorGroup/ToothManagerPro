@@ -22,6 +22,7 @@
 #import "DBManager+LocalNotification.h"
 #import "DBManager+RepairDoctor.h"
 #import "PatientManager.h"
+#import "UIImage+TTMAddtion.h"
 
 //好友信息Url
 #define SYNC_GET_DOCTOR_URL [NSString stringWithFormat:@"%@%@/%@/DoctorIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]

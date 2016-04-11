@@ -46,6 +46,7 @@
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
 #import "DBManager+Doctor.h"
+#import "UIImage+TTMAddtion.h"
 
 #define TableHeaderViewHeight 350
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
@@ -633,24 +634,28 @@
     for (CTLib *lib in self.ctblibArray) {
         if ([lib.ckeyid isEqualToString:pic.keyidStr]) {
             [self.deleteCtLibs addObject:lib];
-            [[SDImageCache sharedImageCache] removeImageForKey:lib.ckeyid fromDisk:YES];
+            [[SDImageCache sharedImageCache] removeImageForKey:lib.ct_image fromDisk:YES];
             [self.ctblibArray removeObject:lib];
             break;
         }
     }
 }
 - (void)picBrowserViewController:(ImageBrowserViewController *)controller didSetMainImage:(BrowserPicture *)pic{
+    [self setMianCtWithCTLib:pic.ctLib];
+}
+
+#pragma mark - 设置主照片
+- (void)setMianCtWithCTLib:(CTLib *)ctLib{
     //判断是否开启了通讯录权限
     if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
-            //保存患者的头像
-            Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
-            BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
-            if (!isExist) {
-                [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
-            }
+        //保存患者的头像
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
+        BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+        if (!isExist) {
+            [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+        }
         
         @autoreleasepool {
-            CTLib *ctLib = pic.ctLib;
             UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
             UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
             [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
@@ -664,14 +669,14 @@
     
     __weak typeof(self) weakSelf = self;
     [picker dismissViewControllerAnimated:YES completion:^() {
+        UIImage *resultImage = nil;
         @autoreleasepool {
-            UIImage *resultImage = nil;
-            resultImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+            resultImage = [UIImage fixOrientation:[info objectForKey:UIImagePickerControllerOriginalImage]];
             [SVProgressHUD showImage:nil status:@"正在添加..."];
             CTLib *lib = [[CTLib alloc]init];
             lib.patient_id = weakSelf.medicalCase.patient_id;
             lib.case_id = weakSelf.medicalCase.ckeyid;
-            lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
+            lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage  withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
             lib.ct_desc = [[NSDate date] dateToNSString];
             lib.is_main = @"0";
             [weakSelf.ctblibArray addObject:lib];
@@ -702,6 +707,7 @@
     picbrowserVC.delegate = self;
     [picbrowserVC.imageArray addObjectsFromArray:picArray];
     picbrowserVC.currentPage = index;
+    picbrowserVC.isEditMedicalCase = YES;
     [self presentViewController:picbrowserVC animated:YES completion:^{
     }];
 }

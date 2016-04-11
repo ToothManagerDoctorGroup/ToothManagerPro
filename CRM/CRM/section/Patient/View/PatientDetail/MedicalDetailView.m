@@ -215,7 +215,7 @@
                 tap.numberOfTouchesRequired = 1;
                 [imageView addGestureRecognizer:tap];
                 
-                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:[UIImage imageNamed:@"ct_holderImage"] options:SDWebImageRetryFailed|SDWebImageLowPriority completed:nil];
+                [imageView sd_setImageWithURL:[NSURL URLWithString:ct.ct_image] placeholderImage:[UIImage imageNamed:@"ct_holderImage"]];
             }
             [self.imageScrollView addSubview:imageView];
         }

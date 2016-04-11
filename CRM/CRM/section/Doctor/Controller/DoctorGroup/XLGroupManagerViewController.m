@@ -176,11 +176,6 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    
-    [CRMUserDefalut isShowedForKey:GroupMemberNew_IsShowedKey showedBlock:^{
-        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_new_tint"]];
-        [guidImageView showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES];
-    }];
 }
 
 - (void)viewDidLoad {
@@ -244,6 +239,13 @@
             [_patientCellModeArray addObjectsFromArray:result];
             
             [_tableView reloadData];
+            
+            if (result.count == 0) {
+                [CRMUserDefalut isShowedForKey:GroupMemberNew_IsShowedKey showedBlock:^{
+                    XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_new_tint"]];
+                    [guidImageView showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES];
+                }];
+            }
             
         } failure:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];

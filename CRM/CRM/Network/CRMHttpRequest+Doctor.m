@@ -133,7 +133,7 @@
  *
  *  @param patientIds:病人id  doctorId:医生id  message_type:类型   send_type  send_time
  **/
-- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time{
+- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toDoctor:(NSString *)toDoctor withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:5];
     [dataEntity setObject:patientIds forKey:@"patient_id"];
@@ -141,6 +141,7 @@
     [dataEntity setObject:message_type forKey:@"message_type"];
     [dataEntity setObject:send_type forKey:@"send_type"];
     [dataEntity setObject:send_time forKey:@"send_time"];
+    [dataEntity setObject:toDoctor forKey:@"therapy_doctor_id"];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
     
     [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];

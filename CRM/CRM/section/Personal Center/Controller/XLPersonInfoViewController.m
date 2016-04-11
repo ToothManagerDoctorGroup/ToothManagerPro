@@ -78,7 +78,7 @@
 - (void)initData{
     //加载本地数据
     UserObject *user = [AccountManager shareInstance].currentUser;
-    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
     
     self.userName.text = user.name;
     self.userSex.text = [user.doctor_gender isEqualToString:@"0"] ? @"女" : @"男";
@@ -286,6 +286,7 @@
         
         weakSelf.iconImageView.image = tempImage;
         [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
+        [[DBManager shareInstance] upDateUserHeaderImageUrlWithUserId:[AccountManager currentUserid]];
         
     } failure:^(NSError *error) {
         NSLog(@"error:%@",error);
@@ -364,7 +365,6 @@
         self.currentDoctor.doctor_skill = content;
     }
     
-    [self uploadDoctorInfo];
 }
 
 #pragma mark - 上传个人信息

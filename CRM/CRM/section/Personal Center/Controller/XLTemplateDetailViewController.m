@@ -160,7 +160,7 @@
         _limitLabel.text = [NSString stringWithFormat:@"还可输入%d个字",500 - (int)self.model.message_content.length];
     }else{
         self.title = @"新增预约事项";
-        NSString *content = [NSString stringWithFormat:@"您好,我是{5}医生。您已成功预约{6}{7},请按时就诊,如有疑问或时间变动,请提前联系"];
+        NSString *content = [NSString stringWithFormat:@"您好，我是{5}医生。您已成功预约{6}{7}，请按时就诊，如有疑问或时间变动，请提前联系。"];
         self.messageContentView.attributedText = [self changeStrColorWithSourceStr:content];
         //计算文字的个数
         _limitLabel.text = [NSString stringWithFormat:@"还可输入%d个字",500 - (int)content.length];

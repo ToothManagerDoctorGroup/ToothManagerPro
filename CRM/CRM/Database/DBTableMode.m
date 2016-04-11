@@ -592,6 +592,12 @@ NSString * const Repaired = @"已修复";
     return self;
 }
 
+- (NSString *)ct_image_detailUrl{
+    NSString *uploadUrl = [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm];
+    NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", uploadUrl, self.ckeyid, self.ct_image];
+    return urlImage;
+}
+
 +(CTLib *)libWithResult:(FMResultSet *)result {
     // \"patient_id\" integer,\n\t \"case_id\" integer ,\n\t \"ct_image\" text,\n\t \"ct_desc\" text,\n\t \"creation_date\" text"];
     CTLib *lib = [[CTLib alloc]init];

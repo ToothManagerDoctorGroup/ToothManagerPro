@@ -29,6 +29,9 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *pageupButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *pagedownButton;
 @property (weak, nonatomic) IBOutlet UILabel *indexLabel;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *leftBar;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *mainCTButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *midBar;
 
 //初始化
 - (void)setupImageViews:(NSInteger)imageNum;

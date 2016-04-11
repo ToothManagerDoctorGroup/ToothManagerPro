@@ -176,6 +176,10 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *creation_date_sync;      //创建日期,用于同步
 @property (nonatomic, copy)NSString *is_main;//1:主照片  0:不是主照片
 
+
+//具体的CT图片下载地址
+@property (nonatomic, copy)NSString *ct_image_detailUrl;//下载图片的具体地址
+
 +(CTLib *)libWithResult:(FMResultSet *)result;
 +(CTLib *)CTLibFromCTLibResult:(NSDictionary *)medCT;
 

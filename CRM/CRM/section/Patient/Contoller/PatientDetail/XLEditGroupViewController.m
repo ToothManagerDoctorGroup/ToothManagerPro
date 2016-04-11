@@ -212,6 +212,9 @@
         alertView.type = CustomAlertViewTextField;
         alertView.delegate = self;
         [alertView show];
+    }else{
+        XLEditGroupCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        [cell selectOption];
     }
 }
 

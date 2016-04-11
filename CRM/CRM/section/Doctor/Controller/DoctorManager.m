@@ -70,14 +70,14 @@ Realize_ShareInstance(DoctorManager);
  *
  *  @param patientIds:病人id  doctorId:医生id  message_type:类型   send_type  send_time
  **/
-- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
+- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toDoctor:(NSString *)toDoctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     if(patientIds == nil){
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请先选择患者" errorCode:400]);
     }
     if(doctorId == nil){
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请登录" errorCode:400]);
     }
-    [[CRMHttpRequest shareInstance]weiXinMessagePatient:patientIds fromDoctor:doctorId withMessageType:message_type withSendType:send_type withSendTime:send_time];
+    [[CRMHttpRequest shareInstance] weiXinMessagePatient:patientIds fromDoctor:doctorId toDoctor:toDoctorId withMessageType:message_type withSendType:send_type withSendTime:send_time];
     
     successBlock();
 }
