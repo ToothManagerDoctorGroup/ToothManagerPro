@@ -99,7 +99,7 @@
                 //短信发送
                 if( [MFMessageComposeViewController canSendText] )
                 {
-                     NSString *urlStr = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+                     NSString *urlStr = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainRealName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
                     
                     MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc] init];
                     controller.recipients = @[self.phoneTextField.text];
@@ -159,7 +159,7 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 - (IBAction)message:(id)sender {
-    NSString *urlStr = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+    NSString *urlStr = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainRealName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"介绍朋友" message:urlStr delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"微信发送",@"短信发送", nil];
     alertView.tag = 102;
