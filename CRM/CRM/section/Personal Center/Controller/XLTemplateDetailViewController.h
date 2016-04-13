@@ -29,6 +29,8 @@ typedef NS_ENUM(NSInteger, TemplateType) {
 
 @property (nonatomic, strong)XLMessageTemplateModel *model;
 
+@property (nonatomic, assign)BOOL hindTintView;//隐藏提示文本
+
 @property (nonatomic, assign)BOOL isEdit;//是编辑模式
 
 @property (nonatomic, assign)BOOL isSystem;//表明是系统模板，不可删除

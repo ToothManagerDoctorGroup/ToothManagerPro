@@ -265,6 +265,7 @@
 		3D18CE381C15B3E600EF83DE /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D18CE371C15B3E600EF83DE /* libresolv.tbd */; };
 		3D1907A31CA3D36F0040982C /* NVMContactManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1907A21CA3D36F0040982C /* NVMContactManager.m */; };
 		3D1907A61CA3F11F0040982C /* XLContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1907A51CA3F11F0040982C /* XLContactsManager.m */; };
+		3D1A004D1CBD150B008701AE /* DBManager+Transaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A004C1CBD150B008701AE /* DBManager+Transaction.m */; };
 		3D1AB06D1C0006E400547809 /* medical_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1AB06A1C0006E400547809 /* medical_bg.png */; };
 		3D1AB06E1C0006E400547809 /* medical_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1AB06B1C0006E400547809 /* medical_bg@2x.png */; };
 		3D1AB06F1C0006E400547809 /* medical_bg@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1AB06C1C0006E400547809 /* medical_bg@3x.png */; };
@@ -2134,6 +2135,8 @@
 		3D1907A21CA3D36F0040982C /* NVMContactManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMContactManager.m; sourceTree = "<group>"; };
 		3D1907A41CA3F11F0040982C /* XLContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLContactsManager.h; sourceTree = "<group>"; };
 		3D1907A51CA3F11F0040982C /* XLContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLContactsManager.m; sourceTree = "<group>"; };
+		3D1A004B1CBD150B008701AE /* DBManager+Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DBManager+Transaction.h"; sourceTree = "<group>"; };
+		3D1A004C1CBD150B008701AE /* DBManager+Transaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DBManager+Transaction.m"; sourceTree = "<group>"; };
 		3D1AB06A1C0006E400547809 /* medical_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = medical_bg.png; sourceTree = "<group>"; };
 		3D1AB06B1C0006E400547809 /* medical_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "medical_bg@2x.png"; sourceTree = "<group>"; };
 		3D1AB06C1C0006E400547809 /* medical_bg@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "medical_bg@3x.png"; sourceTree = "<group>"; };
@@ -8550,6 +8553,8 @@
 				64BD7C7819BAFCE90015D47F /* CRMUserDefalut.m */,
 				5BE368A61A082D8200A79473 /* DBManager+sync.h */,
 				5BE368A71A082D8200A79473 /* DBManager+sync.m */,
+				3D1A004B1CBD150B008701AE /* DBManager+Transaction.h */,
+				3D1A004C1CBD150B008701AE /* DBManager+Transaction.m */,
 			);
 			name = Database;
 			path = ../Database;
@@ -11186,6 +11191,7 @@
 				3D0BE5E11BF99F680023D3FA /* UIView+WXViewController.m in Sources */,
 				AE545A7E1AFF122D009D904A /* DoctorInfoViewController.m in Sources */,
 				3DEA3F751C87F28D00678E3D /* XLTreatPlanDetailViewController.m in Sources */,
+				3D1A004D1CBD150B008701AE /* DBManager+Transaction.m in Sources */,
 				3D5B4F921C2D3FEC00E37140 /* XLRecordCell.m in Sources */,
 				3DAA118C1BF5C1B900FD8149 /* WMMenuView.m in Sources */,
 				3D279BCF1CB51EFF00F144EE /* XLFilterDoctorListView.m in Sources */,

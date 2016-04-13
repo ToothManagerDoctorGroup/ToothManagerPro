@@ -207,7 +207,11 @@
     [self.view addSubview:[self setUpGroupViewAndButtons]];
     
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 44 - 40) style:UITableViewStylePlain];
+    if (self.isHome) {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 44 - 40) style:UITableViewStylePlain];
+    }else{
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
+    }
     _tableView.contentInset = UIEdgeInsetsMake(0, 0, 10, 0);
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -544,9 +548,8 @@
     [searchBar resignFirstResponder];
     [searchBar setShowsCancelButton:NO animated:YES];
 }
+
 #pragma mark - UISearchDisplayDelegate
-
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

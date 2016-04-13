@@ -65,6 +65,8 @@
 @property (nonatomic, strong)NSMutableArray *deleteCtLibs;//删除的ct数据
 @property (nonatomic, strong)NSMutableArray *addCTLibs;//新增的ct数据
 
+@property (nonatomic, assign)BOOL isCamera;//是否拍照
+
 @end
 
 @implementation CreateCaseViewController{
@@ -613,8 +615,10 @@
     UIImagePickerController *picker = [[UIImagePickerController alloc]init];
     picker.delegate = self;
     if (buttonIndex == 0) {
+        self.isCamera = YES;
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
     } else if (buttonIndex == 1) {
+        self.isCamera = NO;
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     }
     [self presentViewController:picker animated:YES completion:^{
@@ -672,8 +676,11 @@
         UIImage *resultImage = nil;
         @autoreleasepool {
             resultImage = [UIImage fixOrientation:[info objectForKey:UIImagePickerControllerOriginalImage]];
+            
+            UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+            
             [SVProgressHUD showImage:nil status:@"正在添加..."];
-            CTLib *lib = [[CTLib alloc]init];
+            CTLib *lib = [[CTLib alloc] init];
             lib.patient_id = weakSelf.medicalCase.patient_id;
             lib.case_id = weakSelf.medicalCase.ckeyid;
             lib.ct_image = [PatientManager pathImageSaveToDisk:resultImage  withKey:[NSString stringWithFormat:@"%@.jpg",lib.ckeyid]];
@@ -685,6 +692,10 @@
             [SVProgressHUD dismiss];
         }
     }];
+}
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
+    NSLog(@"保存到相册成功");
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

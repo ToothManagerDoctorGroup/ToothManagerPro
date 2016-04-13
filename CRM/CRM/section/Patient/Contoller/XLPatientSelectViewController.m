@@ -25,11 +25,10 @@
 #import "CreatePatientViewController.h"
 #import "MJRefresh.h"
 #import "DBManager+Doctor.h"
-#import "MLKMenuPopover.h"
 #import "XLContactsViewController.h"
 #import "XLCreatePatientViewController.h"
 
-@interface XLPatientSelectViewController () <UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,MLKMenuPopoverDelegate>{
+@interface XLPatientSelectViewController () <UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -48,23 +47,10 @@
  *  菜单选项
  */
 @property (nonatomic, strong)NSArray *menuList;
-/**
- *  菜单弹出视图
- */
-@property (nonatomic, strong)MLKMenuPopover *menuPopover;
 
 @end
 
 @implementation XLPatientSelectViewController
-
-- (MLKMenuPopover *)menuPopover{
-    if (!_menuPopover) {
-        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 120 - 8, 64, 120, self.menuList.count * 44) menuItems:self.menuList];
-        menuPopover.menuPopoverDelegate = self;
-        _menuPopover = menuPopover;
-    }
-    return _menuPopover;
-}
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
@@ -146,7 +132,6 @@
 - (void)setupView {
     self.title = @"患者";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
 
     //初始化表示图
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
@@ -234,32 +219,6 @@
 }
 - (void)removeFooter{
     [_tableView removeFooter];
-}
-
-#pragma mark - Right View
-- (void)onRightButtonAction:(id)sender {
-    
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-    [self.menuPopover showInView:keyWindow];
-}
-
-#pragma mark MLKMenuPopoverDelegate
-
-- (void)menuPopover:(MLKMenuPopover *)menuPopover didSelectMenuItemAtIndex:(NSInteger)selectedIndex
-{
-    
-    [self.menuPopover dismissMenuPopover];
-    if (selectedIndex == 0) {
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"PatientStoryboard" bundle:nil];
-        XLCreatePatientViewController *newPatientVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLCreatePatientViewController"];
-        newPatientVC.hidesBottomBarWhenPushed = YES;
-        [self pushViewController:newPatientVC animated:YES];
-    }else if (selectedIndex == 1){
-        XLContactsViewController *contactVc = [[XLContactsViewController alloc] initWithStyle:UITableViewStylePlain];
-        contactVc.type = ContactsImportTypePatients;
-        contactVc.hidesBottomBarWhenPushed = YES;
-        [self pushViewController:contactVc animated:YES];
-    }
 }
 
 #pragma mark - Notification
@@ -566,11 +525,7 @@
             PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
             cellMode.patientId = patientTmp.ckeyid;
             cellMode.introducerId = patientTmp.introducer_id;
-            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-                cellMode.name = patientTmp.nickName;
-            }else{
-                cellMode.name = patientTmp.patient_name;
-            }
+            cellMode.name = patientTmp.patient_name;
             cellMode.phone = patientTmp.patient_phone;
             cellMode.introducerName = patientTmp.intr_name;
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];

@@ -466,17 +466,18 @@
                 //插入患者介绍人
                 [weakSelf insertDoctorWithDoctorId:self.selectDoctor.ckeyid];
                 [weakSelf insertPatientIntroducerMap];
-                weakSelf.selectDoctor = nil;
-                //发送通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
-                [weakSelf popViewControllerAnimated:YES];
             }
             
             //发送微信消息
-            [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager currentUserid] toDoctor:self.selectDoctor.ckeyid withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+            [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager currentUserid] toDoctor:weakSelf.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
             } failedBlock:^(NSError *error) {
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
+            
+            weakSelf.selectDoctor = nil;
+            //发送通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
+            [weakSelf popViewControllerAnimated:YES];
         });
         
     } else {

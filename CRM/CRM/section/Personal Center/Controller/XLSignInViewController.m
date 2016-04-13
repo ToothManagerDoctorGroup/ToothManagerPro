@@ -194,7 +194,7 @@
             
             EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
             //设置离线推送的样式
-            options.displayStyle = ePushNotificationDisplayStyle_messageSummary;
+            options.displayStyle = ePushNotificationDisplayStyle_simpleBanner;
             [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
             
             //发送自动登陆状态通知
@@ -310,9 +310,6 @@
             [self postNotificationName:SignInSuccessNotification object:nil];
         }
     }
-    
-    
-    
 }
 - (void)getDoctorListFailedWithError:(NSError *)error {
     [SVProgressHUD showImage:nil status:error.localizedDescription];

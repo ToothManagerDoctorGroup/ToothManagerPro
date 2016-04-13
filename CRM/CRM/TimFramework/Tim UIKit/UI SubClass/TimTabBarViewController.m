@@ -197,11 +197,11 @@ static NSString *kConversationChatter = @"ConversationChatter";
     }
     if (_patientVc) {
         if (unreadCount > 0) {
-//            _patientVc.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
             [self.tabBar showBadgeOnItemIndex:1];
+            _patientVc.showTipView = YES;
         }else{
-//            _patientVc.tabBarItem.badgeValue = nil;
             [self.tabBar hideBadgeOnItemIndex:1];
+            _patientVc.showTipView = NO;
         }
     }
     

@@ -248,10 +248,13 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     if (info != nil) {
-        UIImage* image = info[UIImagePickerControllerEditedImage];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self saveImage:image WithName:@"userAvatar"];
-        });
+        @autoreleasepool {
+            UIImage* image = info[UIImagePickerControllerEditedImage];
+            __weak typeof(self) weakSelf = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf saveImage:image WithName:@"userAvatar"];
+            });
+        }
         [picker dismissViewControllerAnimated:YES completion:nil];
     }
 }

@@ -138,7 +138,7 @@
     
     UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, commonH)];
     bgView.backgroundColor = MyColor(238, 238, 238);
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39, kScreenWidth, 1)];
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 39.5, kScreenWidth, .5)];
     label.backgroundColor = [UIColor colorWithHex:0xCCCCCC];
     [bgView addSubview:label];
     

@@ -100,13 +100,19 @@
     //self.departmentLable.text = doctor.doctor_hospital;
     self.addButton.enabled = doctor.isopen;
     
-    NSArray *array = [[DBManager shareInstance] getAllDoctor];
-    for(Doctor *doc in array){
-        if([doc.doctor_name isEqualToString:doctor.doctor_name]){
-            [self.addButton setBackgroundColor:[UIColor lightGrayColor]];
-            [self.addButton setTitle:@"已是好友" forState:UIControlStateNormal];
-            self.addButton.enabled = NO;
-        }
+//    NSArray *array = [[DBManager shareInstance] getAllDoctor];
+//    for(Doctor *doc in array){
+//        if([doc.doctor_name isEqualToString:doctor.doctor_name]){
+//            [self.addButton setBackgroundColor:[UIColor lightGrayColor]];
+//            [self.addButton setTitle:@"已是好友" forState:UIControlStateNormal];
+//            self.addButton.enabled = NO;
+//        }
+//    }
+    
+    if (doctor.isExist) {
+        [self.addButton setBackgroundColor:[UIColor lightGrayColor]];
+        [self.addButton setTitle:@"已是好友" forState:UIControlStateNormal];
+        self.addButton.enabled = NO;
     }
     
     

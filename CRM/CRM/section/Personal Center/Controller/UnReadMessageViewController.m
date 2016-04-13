@@ -322,98 +322,13 @@
 
 #pragma mark - 缓存患者信息
 - (void)savePatientDataWithModel:(XLPatientTotalInfoModel *)model messageModel:(SysMessageModel *)msgModel{
-    [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:model];
-    //"ckeyid": "1009_1451464419254",
-    if (model.baseInfo[@"ckeyid"] == nil) {
-        //如果患者为空
-        [SVProgressHUD showErrorWithStatus:@"患者信息获取失败!"];
-        return;
-    }
-    
-    NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count + model.introducerMap.count;
-    NSInteger current = 0;
-    //保存患者消息
-    Patient *patient = [Patient PatientFromPatientResult:model.baseInfo];
-   [[DBManager shareInstance] insertPatient:patient];
-    //稍后条件判断是否成功的代码
-    if([[DBManager shareInstance] insertPatientBySync:patient]){
-        current++;
-    };
-    
-    //判断medicalCase数据是否存在
-    if (model.medicalCase.count > 0) {
-        //保存病历数据
-        for (NSDictionary *dic in model.medicalCase) {
-            MedicalCase *medicalCase = [MedicalCase MedicalCaseFromPatientMedicalCase:dic];
-            if([[DBManager shareInstance] insertMedicalCase:medicalCase]){
-                current++;
-            };
-        }
-        
-    }
-    //判断medicalCourse数据是否存在
-    if (model.medicalCourse.count > 0) {
-        for (NSDictionary *dic in model.medicalCourse) {
-            MedicalRecord *medicalrecord = [MedicalRecord MRFromMRResult:dic];
-            if([[DBManager shareInstance] insertMedicalRecord:medicalrecord]){
-                current++;
-            }
-        }
-    }
-    
-    //判断CT数据是否存在
-    if (model.cT.count > 0) {
-        for (NSDictionary *dic in model.cT) {
-            CTLib *ctlib = [CTLib CTLibFromCTLibResult:dic];
-            if([[DBManager shareInstance] insertCTLib:ctlib]){
-                current++;
-            }
-            if ([ctlib.ct_image isNotEmpty]) {
-                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-                
-                UIImage *image = [self getImageFromURL:urlImage];
-                    if (nil != image) {
-                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
-                    }
-            }
-        }
-    }
-    
-    //判断consultation数据是否存在
-    if (model.consultation.count > 0) {
-        for (NSDictionary *dic in model.consultation) {
-            PatientConsultation *patientC = [PatientConsultation PCFromPCResult:dic];
-            if([[DBManager shareInstance] insertPatientConsultation:patientC]){
-                current++;
-            }
-        }
-    }
-    
-    //判断expense数据是否存在
-    if (model.expense.count > 0) {
-        for (NSDictionary *dic in model.expense) {
-            MedicalExpense *medicalexpense = [MedicalExpense MEFromMEResult:dic];
-            if([[DBManager shareInstance] insertMedicalExpenseWith:medicalexpense]){
-                current++;
-            }
-        }
-    }
-    
-    //判断introducerMap数据是否存在
-    if (model.introducerMap.count > 0) {
-        for (NSDictionary *dic in model.introducerMap) {
-            PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
-            if ([[DBManager shareInstance] insertPatientIntroducerMap:map]) {
-                current++;
-            }
-        }
-    }
-    if (total == current) {
+    BOOL ret = [[DBManager shareInstance] saveAllDownloadPatientInfoWithPatientModel:model];
+    if (ret) {
         //设置已读
         [self setMessageReadWithModel:msgModel noOperate:NO];
         [[NSNotificationCenter defaultCenter] postNotificationName:PatientCreatedNotification object:nil];
     }else{
-        [SVProgressHUD showErrorWithStatus:@"获取数据失败"];
+        [SVProgressHUD showErrorWithStatus:@"患者信息获取失败!"];
     }
 }
 

@@ -505,6 +505,8 @@ NSString * const Repaired = @"已修复";
     tmpDoctor.doctor_id = [dic stringForKey:@"doctor_id"];
     tmpDoctor.user_id = [AccountManager currentUserid];
     
+    tmpDoctor.isExist = [dic integerForKey:@"is_exists"];
+    
     tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
     tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
     tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];

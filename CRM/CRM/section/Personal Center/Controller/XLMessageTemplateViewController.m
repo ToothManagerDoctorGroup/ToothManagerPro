@@ -170,6 +170,9 @@
     XLTemplateDetailViewController *detailVc = [[XLTemplateDetailViewController alloc] initWithStyle:UITableViewStylePlain];
     detailVc.model = model;
     detailVc.isEdit = YES;
+    if (indexPath.section == 0) {
+        detailVc.hindTintView = YES;
+    }
     if (indexPath.section != 3) {
         detailVc.isSystem = YES;
     }

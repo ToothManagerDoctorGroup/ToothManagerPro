@@ -108,8 +108,12 @@
     tipView.backgroundColor = [UIColor redColor];
     tipView.layer.cornerRadius = 4;
     tipView.layer.masksToBounds = YES;
-    tipView.hidden = YES;
     [self.segmentedControl addSubview:tipView];
+    if (self.showTipView) {
+        tipView.hidden = NO;
+    }else{
+        tipView.hidden = YES;
+    }
     self.tipView = tipView;
     
     self.navigationItem.titleView = self.segmentedControl;
@@ -175,18 +179,6 @@
     [SVProgressHUD dismiss];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    //判断当前是否有显示
-    NSInteger bageNum = [self.tabBarItem.badgeValue integerValue];
-    if (bageNum > 0) {
-        self.tipView.hidden = NO;
-    }else{
-        self.tipView.hidden = YES;
-    }
-}
-
 -(void)refreshDataSource
 {
     if ([self.currentViewController isKindOfClass:[SuccessViewController class]]) {
@@ -213,6 +205,12 @@
     }
 }
 
+
+- (void)setShowTipView:(BOOL)showTipView{
+    _showTipView = showTipView;
+    
+    self.tipView.hidden = !showTipView;
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -181,12 +181,6 @@
     [super viewWillAppear:animated];
     _tableView.delegate = self;
     _tableView.dataSource = self;
-//    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-//    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-//        
-//    } failedBlock:^(NSError *error) {
-//        [SVProgressHUD showImage:nil status:error.localizedDescription];
-//    }];
     
     UserObject *user = [AccountManager shareInstance].currentUser;
     _detailLabel.text = user.hospitalName;

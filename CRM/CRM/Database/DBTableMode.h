@@ -83,6 +83,7 @@ typedef CGFloat Money;
 /**
  *  临时字段，不做数据库的存储操作
  */
+@property (nonatomic, assign)BOOL is_exists;
 @property (nonatomic, copy)NSString *patient_count;
 @property (nonatomic, assign)BOOL isSelect;//是否选中
 @property (nonatomic, assign)BOOL isExist;//是否存在

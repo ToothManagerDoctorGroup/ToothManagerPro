@@ -3057,92 +3057,141 @@
 }
 
 - (BOOL)saveAllDownloadPatientInfoWithPatientModel:(XLPatientTotalInfoModel *)model{
-    NSInteger total = 1 + model.medicalCase.count + model.medicalCourse.count + model.cT.count + model.consultation.count + model.expense.count + model.introducerMap.count;
-    NSInteger current = 0;
+    
+    BOOL ret = NO;
     //保存患者消息
     Patient *patient = [Patient PatientFromPatientResult:model.baseInfo];
-    [self insertPatient:patient];
     //稍后条件判断是否成功的代码
     if([self insertPatientBySync:patient]){
-        current++;
+        ret = YES;
     };
     
     //判断medicalCase数据是否存在
-    if (model.medicalCase.count > 0) {
-        //保存病历数据
-        for (NSDictionary *dic in model.medicalCase) {
-            MedicalCase *medicalCase = [MedicalCase MedicalCaseFromPatientMedicalCase:dic];
-            if([self insertMedicalCase:medicalCase]){
-                current++;
-            };
+    if (ret) {
+        if (model.medicalCase.count > 0) {
+            //保存病历数据
+            for (int i = 0; i < model.medicalCase.count; i++) {
+                MedicalCase *medicalCase = [MedicalCase MedicalCaseFromPatientMedicalCase:model.medicalCase[i]];
+                if([self insertMedicalCase:medicalCase]){
+                    ret = YES;
+                }else{
+                    ret = NO;
+                    break;
+                }
+            }
         }
-        
     }
-    //判断medicalCourse数据是否存在
-    if (model.medicalCourse.count > 0) {
-        for (NSDictionary *dic in model.medicalCourse) {
-            MedicalRecord *medicalrecord = [MedicalRecord MRFromMRResult:dic];
-            if([self insertMedicalRecord:medicalrecord]){
-                current++;
+    if (ret) {
+        //判断medicalCourse数据是否存在
+        if (model.medicalCourse.count > 0) {
+            for (int i = 0; i < model.medicalCourse.count; i++) {
+                MedicalRecord *medicalrecord = [MedicalRecord MRFromMRResult:model.medicalCourse[i]];
+                if([self insertMedicalRecord:medicalrecord]){
+                    ret = YES;
+                }else{
+                    ret = NO;
+                    break;
+                }
             }
         }
     }
     
-    //判断CT数据是否存在
-    if (model.cT.count > 0) {
-        for (NSDictionary *dic in model.cT) {
-            CTLib *ctlib = [CTLib CTLibFromCTLibResult:dic];
-            if([self insertCTLib:ctlib]){
-                current++;
+    if (ret) {
+        //判断consultation数据是否存在
+        if (model.consultation.count > 0) {
+            for (int i = 0; i < model.consultation.count; i++) {
+                PatientConsultation *patientC = [PatientConsultation PCFromPCResult:model.consultation[i]];
+                if([self insertPatientConsultation:patientC]){
+                    ret = YES;
+                }else{
+                    ret = NO;
+                    break;
+                }
             }
-            if ([ctlib.ct_image isNotEmpty]) {
-                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ctlib.ckeyid, ctlib.ct_image];
-                NSURL *imageUrl = [NSURL URLWithString:urlImage];
+        }
+    }
+    
+    if (ret) {
+        //判断expense数据是否存在
+        if (model.expense.count > 0) {
+            for (int i = 0; i < model.expense.count; i++) {
+                MedicalExpense *medicalexpense = [MedicalExpense MEFromMEResult:model.expense[i]];
+                if([self insertMedicalExpenseWith:medicalexpense]){
+                    ret = YES;
+                }else{
+                    ret = NO;
+                    break;
+                }
+            }
+        }
+    }
+    
+    if (ret) {
+        //判断introducerMap数据是否存在
+        if (model.introducerMap.count > 0) {
+            for (int i = 0; i < model.introducerMap.count; i++) {
+                PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:model.introducerMap[i]];
+                if ([self insertPatientIntroducerMap:map]) {
+                    ret = YES;
+                }else{
+                    ret = NO;
+                    break;
+                }
+            }
+        }
+    }
+    
+    NSMutableArray *ctImages = [NSMutableArray array];
+    if (ret) {
+        //判断CT数据是否存在
+        if (model.cT.count > 0) {
+            for (int i = 0; i < model.cT.count; i++) {
+                CTLib *ctlib = [CTLib CTLibFromCTLibResult:model.cT[i]];
+                if ([ctlib.ct_image isNotEmpty]) {
+                    [ctImages addObject:ctlib];
+                }
                 
-                [[SDWebImageManager sharedManager] downloadImageWithURL:imageUrl options:SDWebImageLowPriority|SDWebImageRetryFailed progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                if([self insertCTLib:ctlib]){
+                    ret = YES;
+                }else{
+                    ret = NO;
+                    break;
+                }
+            }
+        }
+    }
+    
+    if (ret) {
+        if (ctImages.count > 0) {
+            @autoreleasepool {
+                for (int i = 0; i < ctImages.count; i++) {
+                    CTLib *ct = ctImages[i];
+                    NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", ImageDown, ct.ckeyid, ct.ct_image];
+                    
+                    UIImage *image = [self getImageFromURL:urlImage];
                     if (nil != image) {
-                        [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];
+                        //删除本地的缓存图片
+                        if([PatientManager IsImageExisting:ct.ct_image]){
+                            [[SDImageCache sharedImageCache] removeImageForKey:ct.ct_image];
+                        }
+                        //将图片保存到本地
+                        [PatientManager pathImageSaveToDisk:[image fixOrientation] withKey:ct.ct_image];
                     }
-                }];
+                }
             }
         }
     }
+    return ret;
+}
+
+//获取图片
+-(UIImage *) getImageFromURL:(NSString *)fileURL {
+    UIImage * result;
     
-    //判断consultation数据是否存在
-    if (model.consultation.count > 0) {
-        for (NSDictionary *dic in model.consultation) {
-            PatientConsultation *patientC = [PatientConsultation PCFromPCResult:dic];
-            if([self insertPatientConsultation:patientC]){
-                current++;
-            }
-        }
-    }
+    NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileURL]];
+    result = [UIImage imageWithData:data];
     
-    //判断expense数据是否存在
-    if (model.expense.count > 0) {
-        for (NSDictionary *dic in model.expense) {
-            MedicalExpense *medicalexpense = [MedicalExpense MEFromMEResult:dic];
-            if([self insertMedicalExpenseWith:medicalexpense]){
-                current++;
-            }
-        }
-    }
-    
-    //判断introducerMap数据是否存在
-    if (model.introducerMap.count > 0) {
-        for (NSDictionary *dic in model.introducerMap) {
-            PatientIntroducerMap *map = [PatientIntroducerMap PIFromMIResult:dic];
-            if ([self insertPatientIntroducerMap:map]) {
-                current++;
-            }
-        }
-    }
-    if (total == current) {
-        //都保存成功
-        return YES;
-    }else{
-        return NO;
-    }
+    return result;
 }
 
 

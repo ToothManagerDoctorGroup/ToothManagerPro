@@ -11,6 +11,7 @@
 #import "NSJSONSerialization+jsonString.h"
 #import "NSString+TTMAddtion.h"
 #import "JSONKit.h"
+#import "AccountManager.h"
 
 @implementation CRMHttpRequest (Doctor)
 
@@ -46,6 +47,7 @@
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
     [paramDic setObject:[@"getdata" TripleDESIsEncrypt:YES] forKey:@"action"];
     [paramDic setObject:[doctorname TripleDESIsEncrypt:YES] forKey:@"username"];
+    [paramDic setObject:[[AccountManager currentUserid] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:GetOrSearchDoctorList_AndIcon_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
@@ -134,8 +136,8 @@
  *  @param patientIds:病人id  doctorId:医生id  message_type:类型   send_type  send_time
  **/
 - (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toDoctor:(NSString *)toDoctor withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time{
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:5];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionary];
     [dataEntity setObject:patientIds forKey:@"patient_id"];
     [dataEntity setObject:doctorId forKey:@"doctor_id"];
     [dataEntity setObject:message_type forKey:@"message_type"];
