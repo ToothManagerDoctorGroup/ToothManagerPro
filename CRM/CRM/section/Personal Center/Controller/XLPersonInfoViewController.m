@@ -248,13 +248,10 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     if (info != nil) {
-        @autoreleasepool {
-            UIImage* image = info[UIImagePickerControllerEditedImage];
-            __weak typeof(self) weakSelf = self;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf saveImage:image WithName:@"userAvatar"];
-            });
-        }
+        UIImage* image = info[UIImagePickerControllerEditedImage];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self saveImage:image WithName:@"userAvatar"];
+        });
         [picker dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -285,11 +282,13 @@
         NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
         if (qrcodeUrl) {
             [[SDImageCache sharedImageCache] removeImageForKey:qrcodeUrl];
+            [userDefaults removeObjectForKey:QRCODE_URL_KEY];
+            [userDefaults synchronize];
         }
         
-        weakSelf.iconImageView.image = tempImage;
         [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
         [[DBManager shareInstance] upDateUserHeaderImageUrlWithUserId:[AccountManager currentUserid]];
+        [weakSelf.iconImageView sd_setImageWithURL:[NSURL URLWithString:[AccountManager shareInstance].currentUser.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
         
     } failure:^(NSError *error) {
         NSLog(@"error:%@",error);
