@@ -119,7 +119,11 @@
 - (void)initView
 {
     [super initView];
-    self.title = @"种植体";
+    if (self.mode == XLMaterialViewModeSelect) {
+        self.title = @"选择种植体";
+    }else{
+        self.title = @"种植体";
+    }
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_new"]];
     //初始化表示图

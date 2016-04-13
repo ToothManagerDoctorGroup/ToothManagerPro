@@ -28,7 +28,9 @@
         if ([NSString isNotEmptyString:image.url]) {
             UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(i*(self.imageViewWidth + 5), 0, self.imageViewWidth, self.bounds.size.height)];
             imageView.contentMode = UIViewContentModeScaleAspectFill;
-            [imageView sd_setImageLoadingWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url]];
+//            [imageView sd_setImageLoadingWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url]];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url] options:SDWebImageRetryFailed | SDWebImageRefreshCached];
+            
             imageView.userInteractionEnabled = YES;
             imageView.clipsToBounds = YES;
             UITapGestureRecognizer *tapgesture = [[UITapGestureRecognizer alloc]init];

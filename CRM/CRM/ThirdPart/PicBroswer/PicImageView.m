@@ -71,7 +71,8 @@
 - (void)setUrlStr:(NSString *)urlStr{
     _urlStr = urlStr;
     
-    [_imageView sd_setImageLoadingWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:urlStr]];
+//    [_imageView sd_setImageLoadingWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:urlStr]];
+    [_imageView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:urlStr] options:SDWebImageRetryFailed | SDWebImageRefreshCached];
 }
 
 @end

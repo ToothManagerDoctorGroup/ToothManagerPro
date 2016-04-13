@@ -30,7 +30,7 @@
 
 - (void)initView {
     [super initView];
-    self.title = @"种植体编辑";
+    self.title = @"添加耗材";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
     

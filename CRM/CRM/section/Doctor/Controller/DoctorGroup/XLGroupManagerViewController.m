@@ -675,6 +675,8 @@
             self.group.group_name = content;
             //发送通知
             [[NSNotificationCenter defaultCenter] postNotificationName:DoctorUpdateGroupNameSuccessNotification object:nil];
+        }else{
+            [SVProgressHUD showImage:nil status:respondModel.result];
         }
         
     } failure:^(NSError *error) {

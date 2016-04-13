@@ -318,10 +318,13 @@
 
 - (void)refreshData {
     [super refreshData];
+    
+    NSLog(@"刷新数据");
     NSArray *array = [[DBManager shareInstance] getMedicalCaseArrayWithPatientId:_detailPatient.ckeyid];
     _headerMedicalView.medicalCases = array;
     
-    [_tableView reloadData];
+    //重新加载数据
+    [self comments];
 }
 #pragma mark - 获取患者分组信息
 - (void)requestGroupData{

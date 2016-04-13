@@ -2151,7 +2151,7 @@
         [valueArray addObject:[NSString stringWithFormat:@"%ld",patientConsultation.data_flag]];
         
         
-        [valueArray addObject:[NSString currentDateString]];
+        [valueArray addObject:patientConsultation.creation_date];
         [valueArray addObject:[NSString defaultDateString]];
         if (nil == patientConsultation.sync_time) {
             [valueArray addObject:[NSString defaultDateString]];
@@ -2207,6 +2207,7 @@
         [columeArray addObject:@"cons_type"];
         [columeArray addObject:@"cons_content"];
         [columeArray addObject:@"data_flag"];
+        [columeArray addObject:@"creation_date"];
         
         [columeArray addObject:@"update_date"];
         [columeArray addObject:@"sync_time"];
@@ -2221,12 +2222,12 @@
         [valueArray addObject:patientConsultation.cons_type];
         [valueArray addObject:patientConsultation.cons_content];
         [valueArray addObject:[NSString stringWithFormat:@"%ld",patientConsultation.data_flag]];
+        [valueArray addObject:patientConsultation.creation_date];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
         if (nil == patientConsultation.update_date) {
             [valueArray addObject:[NSString currentDateString]];
-        }
-        else {
+        }else {
             [valueArray addObject:patientConsultation.update_date];
         }
         if (nil == patientConsultation.sync_time) {
@@ -2239,7 +2240,7 @@
         
         
         // 3. 写入数据库
-        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", PatientConsultationTableName, [columeArray componentsJoinedByString:@"=?,"],patientConsultation.patient_id];
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", PatientConsultationTableName, [columeArray componentsJoinedByString:@"=?,"],patientConsultation.ckeyid];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
         
         if (ret == NO) {
@@ -3172,15 +3173,18 @@
                     if (nil != image) {
                         //删除本地的缓存图片
                         if([PatientManager IsImageExisting:ct.ct_image]){
+                            NSLog(@"本地图片被删除");
                             [[SDImageCache sharedImageCache] removeImageForKey:ct.ct_image];
                         }
                         //将图片保存到本地
-                        [PatientManager pathImageSaveToDisk:[image fixOrientation] withKey:ct.ct_image];
+                        NSString *key = [PatientManager pathImageSaveToDisk:[image fixOrientation] withKey:ct.ct_image];
+                        NSLog(@"图片下载成功:%@",key);
                     }
                 }
             }
         }
     }
+    
     return ret;
 }
 
