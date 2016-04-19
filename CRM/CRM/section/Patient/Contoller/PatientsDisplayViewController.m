@@ -62,30 +62,6 @@
     [self refreshView];
 }
 
--(void)onLeftButtonAction:(id)sender{
-    if(self.isTabbarVc == NO){
-        [self popViewControllerAnimated:YES];
-    }else{
-        [SVProgressHUD showWithStatus:@"同步中..."];
-        if ([[AccountManager shareInstance] isLogin]) {
-            [NSTimer scheduledTimerWithTimeInterval:0.2
-                                             target:self
-                                           selector:@selector(callSync)
-                                           userInfo:nil
-                                            repeats:NO];
-            
-        } else {
-            NSLog(@"User did not login");
-            [SVProgressHUD showWithStatus:@"同步失败，请先登录..."];
-            [SVProgressHUD dismiss];
-            [NSThread sleepForTimeInterval: 1];
-        }
-    }
-}
-- (void)callSync {
-//    [[SyncManager shareInstance] startSync];
-    [[AutoSyncGetManager shareInstance] startSyncGet];
-}
 - (void)setupView {
     self.title = @"患者";
     [self.searchDisplayController.searchBar setPlaceholder:@"搜索患者"];

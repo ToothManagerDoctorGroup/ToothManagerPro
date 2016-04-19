@@ -917,17 +917,12 @@
  */
 - (NSArray *)getPatientsWithStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors page:(int)page{
     __block FMResultSet* result = nil;
-    
-    //判断是否有修复医生
     NSString *sqlExtension;
-    if (cureDoctors.count == 0 || cureDoctors == nil) {
-        //无修复医生
-        
-    }else{
-        
-        NSString *keyParam;
-        //有修复医生
-        NSString *repairDoctorId;
+    NSString *keyExtension;
+    NSString *keyParam;
+    //有修复医生
+    NSString *repairDoctorId = nil;
+    if (cureDoctors) {
         if (cureDoctors.count == 1) {
             Doctor *doc = cureDoctors[0];
             repairDoctorId = doc.ckeyid;
@@ -938,17 +933,61 @@
             }
             repairDoctorId = [mString substringToIndex:mString.length - 1];
         }
-        sqlExtension = [NSString stringWithFormat:@"(select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and implant_time >= datetime('%@')  and implant_time<=datetime('%@') and repair_doctor in (%@) and patient_status = %ld and p.doctor_id='%@' union select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and implant_time > datetime('%@')  and implant_time<=datetime('%@') and repair_doctor in (%@) and patient_status = %ld and p.ckeyid in (select patient_id from %@ where doctor_id='%@' or intr_id='%@'))",PatientTableName,MedicalCaseTableName,startTime,endTime,repairDoctorId,(long)status,[AccountManager currentUserid],PatientTableName,MedicalCaseTableName,startTime,endTime,repairDoctorId,(long)status,PatIntrMapTableName,[AccountManager currentUserid],[AccountManager currentUserid]];
     }
-    
-    
+    switch (status) {
+        case PatientStatuspeAll:
+            //所有患者
+            keyParam = @"creation_date";
+            if (repairDoctorId == nil) {
+                //判断是否选择了时间
+                if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
+                    //选择了时间
+                    keyExtension = [NSString stringWithFormat:@"select p.* from %@ p where p.creation_date >= datetime('%@') and p.creation_date <= datetime('%@') and p.patient_status >= %ld",PatientTableName,startTime,endTime,(long)PatientStatusUntreatment];
+                }else{
+                    //未选择时间
+                    keyExtension = [NSString stringWithFormat:@"select p.* from %@ p where p.creation_date > datetime('%@') and p.patient_status >= %ld",PatientTableName,[NSString defaultDateString],(long)PatientStatusUntreatment];
+                }
+            }else{
+                //判断是否选择了时间
+                if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
+                    keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and p.creation_date >= datetime('%@') and p.creation_date <= datetime('%@') and mc.repair_doctor in (%@) and p.patient_status >= %ld",PatientTableName,MedicalCaseTableName,startTime,endTime,repairDoctorId,(long)PatientStatusUntreatment];
+                }else{
+                    keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and p.creation_date > datetime('%@') and mc.repair_doctor in (%@) and p.patient_status >= %ld",PatientTableName,MedicalCaseTableName,[NSString defaultDateString],repairDoctorId,(long)PatientStatusUntreatment];
+                }
+            }
+            sqlExtension = [NSString stringWithFormat:@"(%@ and p.doctor_id='%@' union %@ and p.ckeyid in (select patient_id from %@ where doctor_id='%@' or intr_id='%@'))",keyExtension,[AccountManager currentUserid],keyExtension,PatIntrMapTableName,[AccountManager currentUserid],[AccountManager currentUserid]];
+            
+            break;
+        case PatientStatusUntreatment:
+            //未就诊
+            keyParam = @"creation_date";
+            sqlExtension = [self getKeySqlExtensionWithStatus:status keyParam:keyParam startTime:startTime endTime:endTime repairDoctorId:repairDoctorId];
+            break;
+        case PatientStatusUnplanted:
+            //未种植
+            keyParam = @"creation_date";
+            sqlExtension = [self getKeySqlExtensionWithStatus:status keyParam:keyParam startTime:startTime endTime:endTime repairDoctorId:repairDoctorId];
+            break;
+        case PatientStatusUnrepaired:
+            //已种未修
+            keyParam = @"implant_time";
+            sqlExtension = [self getKeySqlExtensionWithStatus:status keyParam:keyParam startTime:startTime endTime:endTime repairDoctorId:repairDoctorId];
+            break;
+        case PatientStatusRepaired:
+            //已修复
+            keyParam = @"repair_time";
+            sqlExtension = [self getKeySqlExtensionWithStatus:status keyParam:keyParam startTime:startTime endTime:endTime repairDoctorId:repairDoctorId];
+            break;
+        case PatientStatusUntreatUnPlanted:
+            //未就诊和未种植的
+            break;
+    }
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
-    
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-//         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and implant_time >= datetime('%@')  and implant_time<=datetime('%@') and repair_doctor=159 and patient_status = 2 and p.doctor_id="156" union select p.* from patient_version2 p,medical_case_version2 mc where p.ckeyid=mc.patient_id and implant_time > datetime('2006-01-01 08:00:00') and implant_time<=datetime('2016-04-01') and repair_doctor=159 and patient_status = 2 and p.ckeyid in (select patient_id from patient_introducer_map_version2 where doctor_id="156" or intr_id="156")) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%B' and m.doctor_id="156" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%I' and m.doctor_id="156") b on a.ckeyid=b.patient_id left join (select * from medical_expense_version2 ee join material_version2 m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_nameorder by a.update_date desc limit 0,200",PatientTableName,MedicalCaseTableName,startTime,endTime];
+         NSString *sqlString = [NSString stringWithFormat:@"select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from %@ a left join (select m.*,i.intr_name as intr_name from %@ i,%@ m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id='%@' union select m.*,i.doctor_name as intr_name from %@ i,%@ m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id='%@') b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc limit %i,%i",sqlExtension,IntroducerTableName,PatIntrMapTableName,[AccountManager currentUserid],DoctorTableName,PatIntrMapTableName,[AccountManager currentUserid],MedicalExpenseTableName,MaterialTableName,page * CommonPageSize,CommonPageSize];
          
-//         result = [db executeQuery:sqlString];
+         result = [db executeQuery:sqlString];
          while ([result next])
          {
              Patient * patient = [Patient patientWithMixResult:result];
@@ -959,6 +998,51 @@
      }];
     
     return resultArray;
+}
+
+#pragma mark - 获取拼接的sql语句
+- (NSString *)getKeySqlExtensionWithStatus:(PatientStatus)status keyParam:(NSString *)keyParam startTime:(NSString *)startTime endTime:(NSString *)endTime repairDoctorId:(NSString *)repairDoctorId{
+    NSString *keyExtension = nil;
+    NSString *sqlExtension = nil;
+    //判断选择的状态
+    if (status == PatientStatusUntreatment || status == PatientStatusUnplanted) {
+        if (repairDoctorId == nil) {
+            //判断是否选择了时间
+            if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
+                //选择了时间
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p where p.%@ >= datetime('%@') and p.%@ <= datetime('%@') and p.patient_status = %ld",PatientTableName,keyParam,startTime,keyParam,endTime,(long)status];
+            }else{
+                //未选择时间
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p where p.%@ > datetime('%@') and p.patient_status = %ld",PatientTableName,keyParam,[NSString defaultDateString],(long)status];
+            }
+        }else{
+            //判断是否选择了时间
+            if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and mc.repair_doctor in (%@) and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,repairDoctorId,(long)status];
+            }else{
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and mc.repair_doctor in (%@) and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],repairDoctorId,(long)status];
+            }
+        }
+    }else{
+        if (repairDoctorId == nil) {
+            //判断是否选择了时间
+            if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,(long)status];
+            }else{
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],(long)status];
+            }
+        }else{
+            //判断是否选择了时间
+            if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and mc.repair_doctor in (%@) and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,repairDoctorId,(long)status];
+            }else{
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and mc.repair_doctor in (%@) and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],repairDoctorId,(long)status];
+            }
+        }
+    }
+    sqlExtension = [NSString stringWithFormat:@"(%@ and p.doctor_id='%@' union %@ and p.ckeyid in (select patient_id from %@ where doctor_id='%@' or intr_id='%@'))",keyExtension,[AccountManager currentUserid],keyExtension,PatIntrMapTableName,[AccountManager currentUserid],[AccountManager currentUserid]];
+    
+    return sqlExtension;
 }
 
 
@@ -2674,7 +2758,7 @@
             [valueArray addObject:ctlib.sync_time];
         }
         [valueArray addObject:ctlib.doctor_id];
-        [valueArray addObject:ctlib.creationdate];
+        [valueArray addObject:ctlib.creation_date];
         if (ctlib.is_main == nil) {
             [valueArray addObject:@"0"];
         }else{
@@ -2746,7 +2830,7 @@
             [valueArray addObject:ctlib.sync_time];
         }
         [valueArray addObject:ctlib.doctor_id];
-        [valueArray addObject:ctlib.creationdate];
+        [valueArray addObject:ctlib.creation_date];
         if (ctlib.is_main == nil) {
             [valueArray addObject:@"0"];
         }else{
@@ -3178,7 +3262,7 @@
                         }
                         //将图片保存到本地
                         NSString *key = [PatientManager pathImageSaveToDisk:[image fixOrientation] withKey:ct.ct_image];
-                        NSLog(@"图片下载成功:%@",key);
+                        NSLog(@"图片下载成功:%@",urlImage);
                     }
                 }
             }
@@ -3189,7 +3273,7 @@
 }
 
 //获取图片
--(UIImage *) getImageFromURL:(NSString *)fileURL {
+- (UIImage *) getImageFromURL:(NSString *)fileURL {
     UIImage * result;
     
     NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileURL]];

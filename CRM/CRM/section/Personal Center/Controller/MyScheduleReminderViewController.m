@@ -229,9 +229,8 @@
     }
 }
 - (void)callSync {
-//    [CRMHttpRequest shareInstance].isAutoSync = YES;
-    [[SyncManager shareInstance] startSync];
-//    [[AutoSyncGetManager shareInstance] startSyncGet];
+//    [[SyncManager shareInstance] startSync];
+    [[AutoSyncGetManager shareInstance] startSyncGetShowSuccess:YES];
     
 }
 

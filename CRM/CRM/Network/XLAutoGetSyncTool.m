@@ -36,6 +36,7 @@
 
 @property (nonatomic, strong)NSMutableArray *downloadMedicalCasesCTImages;//当前所有需要下载的图片
 @property (nonatomic, strong)NSMutableArray *curDownLoadMc;//当前正在下载的图片
+@property (nonatomic, assign)BOOL showSuccess;//是否发送同步完成通知
 @end
 
 @implementation XLAutoGetSyncTool
@@ -92,7 +93,8 @@ Realize_ShareInstance(XLAutoGetSyncTool)
 
 #pragma mark - SyncGet
 
-- (void)getAllData{
+- (void)getAllDataShowSuccess:(BOOL)showSuccess{
+    self.showSuccess = showSuccess;
     [self getDoctorTable];
 }
 
@@ -111,10 +113,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     NSLog(@"sync time %@", docServLastSyncDate);
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_DOCTOR_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 for (NSDictionary *dic in respond.result) {
                     Doctor *doctor = nil;
                     if (0 != [dic count] ) {
@@ -126,10 +128,11 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:DoctorTableName];
                 //获取介绍人信息
                 [weakSelf getIntroducerTable];
-            });
-        }else{
-            NSLog(@"获取医生好友数据异常code:%ld",[respond.code integerValue]);
-        }
+                
+            }else{
+                NSLog(@"获取医生好友数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"DoctorTable_Error:%@",error);
     }];
@@ -148,26 +151,27 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[intServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                NSArray *datas = respond.result;
-                for (NSDictionary *dic in datas) {
-                    Introducer *introducer = nil;
-                    if (0 != [dic count] ) {
-                        introducer = [Introducer IntroducerFromIntroducerResult:dic];
-                        [[DBManager shareInstance] insertIntroducer:introducer];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
+                    NSArray *datas = respond.result;
+                    for (NSDictionary *dic in datas) {
+                        Introducer *introducer = nil;
+                        if (0 != [dic count] ) {
+                            introducer = [Introducer IntroducerFromIntroducerResult:dic];
+                            [[DBManager shareInstance] insertIntroducer:introducer];
+                        }
                     }
-                }
-                [weakSelf setLastSyncTimeWithTableName:IntroducerTableName];
-                //获取患者信息
-                [weakSelf getPatientTable];
-             });
-        }else{
-            NSLog(@"获取介绍人数据异常code:%ld",[respond.code integerValue]);
-        }
-       
+                    [weakSelf setLastSyncTimeWithTableName:IntroducerTableName];
+                    //获取患者信息
+                    [weakSelf getPatientTable];
+                
+            }else{
+                NSLog(@"获取介绍人数据异常code:%ld",[respond.code integerValue]);
+            }
+       });
     } failure:^(NSError *error) {
         NSLog(@"IntroducerTable_Error:%@",error);
     }];
@@ -189,10 +193,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[patServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     Patient *patient = nil;
@@ -205,10 +209,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:PatientTableName];
                 //获取材料信息
                 [weakSelf getMaterialTable];
-            });
-        }else{
-            NSLog(@"获取患者数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取患者数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"PatientTable_Error:%@",error);
     }];
@@ -227,10 +231,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[matServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     Material *material = nil;
@@ -243,10 +247,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:MaterialTableName];
                 //获取预约数据
                 [weakSelf getReserverecordTable];
-            });
-        }else{
-            NSLog(@"获取材料数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取材料数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"MaterialTable_Error:%@",error);
     }];
@@ -264,10 +268,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[rcServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     LocalNotification *local = nil;
@@ -280,10 +284,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:LocalNotificationTableName];
                 //获取PatientIntrMap数据
                 [weakSelf getPatIntrMapTable];
-            });
-        }else{
-            NSLog(@"获取预约数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取预约数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"LocalNotificationTable_Error:%@",error);
     }];
@@ -305,10 +309,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_PATIENT_INTRODUCER_MAP_URL parameters:params success:^(id responseObject) {
         
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     PatientIntroducerMap *pI = nil;
@@ -321,10 +325,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:PatIntrMapTableName];
                 //获取修复医生信息
                 [weakSelf getRepairDoctorTable];
-            });
-        }else{
-            NSLog(@"获取PatIntrMap数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取PatIntrMap数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"PatientIntrMapTable_Error:%@",error);
     }];
@@ -344,26 +348,26 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[reDocInServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                NSArray *datas = respond.result;
-                for (NSDictionary *dic in datas) {
-                    RepairDoctor *rD = nil;
-                    if (0 != [dic count] ) {
-                        rD = [RepairDoctor repairDoctorFromDoctorResult:dic];
-                        [[DBManager shareInstance] insertRepairDoctor:rD];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
+                    NSArray *datas = respond.result;
+                    for (NSDictionary *dic in datas) {
+                        RepairDoctor *rD = nil;
+                        if (0 != [dic count] ) {
+                            rD = [RepairDoctor repairDoctorFromDoctorResult:dic];
+                            [[DBManager shareInstance] insertRepairDoctor:rD];
+                        }
                     }
-                }
-                //设置最后同步时间
-                [weakSelf setLastSyncTimeWithTableName:RepairDocTableName];
-                //获取病历信息
-                [weakSelf getMedicalCaseTable];
-            });
-        }else{
-            NSLog(@"获取修复医生数据异常code:%ld",[respond.code integerValue]);
-        }
+                    //设置最后同步时间
+                    [weakSelf setLastSyncTimeWithTableName:RepairDocTableName];
+                    //获取病历信息
+                    [weakSelf getMedicalCaseTable];
+            }else{
+                NSLog(@"获取修复医生数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
         
     } failure:^(NSError *error) {
         NSLog(@"RepairDoctorTable_Error:%@",error);
@@ -384,10 +388,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
         
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     MedicalCase *medicalCase = nil;
@@ -400,10 +404,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:MedicalCaseTableName];
                 //获取耗材信息
                 [weakSelf getMedicalExpenseTable];
-            });
-        }else{
-            NSLog(@"获取病历数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取病历数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"MedicalCaseTable_Error:%@",error);
     }];
@@ -423,10 +427,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
         
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     MedicalExpense *medicalexpense = nil;
@@ -439,10 +443,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:MedicalExpenseTableName];
                 //获取病历记录信息
                 [weakSelf getMedicalRecordTable];
-            });
-        }else{
-            NSLog(@"获取耗材数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取耗材数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"MedicalExpense_Error:%@",error);
     }];
@@ -463,10 +467,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[recServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     MedicalRecord *medicalrecord = nil;
@@ -479,10 +483,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 [weakSelf setLastSyncTimeWithTableName:MedicalRecordableName];
                 //获取会诊信息
                 [weakSelf getPatientConsulationTable];
-            });
-        }else{
-            NSLog(@"获取病历记录数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取病历记录数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
          NSLog(@"MedicalRecord_Error:%@",error);
     }];
@@ -503,26 +507,26 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[caseServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                NSArray *datas = respond.result;
-                for (NSDictionary *dic in datas) {
-                    PatientConsultation *patientC = nil;
-                    if (0 != [dic count] ) {
-                        patientC = [PatientConsultation PCFromPCResult:dic];
-                        [[DBManager shareInstance] insertPatientConsultation:patientC];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
+                    NSArray *datas = respond.result;
+                    for (NSDictionary *dic in datas) {
+                        PatientConsultation *patientC = nil;
+                        if (0 != [dic count] ) {
+                            patientC = [PatientConsultation PCFromPCResult:dic];
+                            [[DBManager shareInstance] insertPatientConsultation:patientC];
+                        }
                     }
-                }
-                //设置最后同步时间
-                [weakSelf setLastSyncTimeWithTableName:PatientConsultationTableName];
-                //获取CT信息
-                [weakSelf getCTLibTable];
-            });
-        }else{
-            NSLog(@"获取会诊信息数据异常code:%ld",[respond.code integerValue]);
-        }
+                    //设置最后同步时间
+                    [weakSelf setLastSyncTimeWithTableName:PatientConsultationTableName];
+                    //获取CT信息
+                    [weakSelf getCTLibTable];
+            }else{
+                NSLog(@"获取会诊信息数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"PatientConsultation_Error:%@",error);
     }];
@@ -543,10 +547,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     
     [[CRMHttpTool shareInstance] POST:SYNC_GET_COMMON_URL parameters:params success:^(id responseObject) {
         
-        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         __weak typeof(self) weakSelf = self;
-        if ([respond.code integerValue] == 200) {
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            if ([respond.code integerValue] == 200) {
                 NSArray *datas = respond.result;
                 for (NSDictionary *dic in datas) {
                     CTLib *ctlib = nil;
@@ -562,11 +566,14 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 }
                 //设置最后同步时间
                 [weakSelf setLastSyncTimeWithTableName:CTLibTableName];
-                //同步结束
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [SVProgressHUD showSuccessWithStatus:@"同步成功"];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
-                });
+                //判断是否发送同步成功通知
+                if (self.showSuccess) {
+                    //同步结束
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [SVProgressHUD showSuccessWithStatus:@"同步成功"];
+                        [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                    });
+                }
                 
                 //判断是否有CT图片
                 if (self.downloadMedicalCasesCTImages.count > 0) {
@@ -581,10 +588,10 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                     }
                     [weakSelf downLoadCTLibImage];
                 }
-            });
-        }else{
-            NSLog(@"获取会诊信息数据异常code:%ld",[respond.code integerValue]);
-        }
+            }else{
+                NSLog(@"获取会诊信息数据异常code:%ld",[respond.code integerValue]);
+            }
+        });
     } failure:^(NSError *error) {
         NSLog(@"CTLib_Error:%@",error);
     }];

@@ -74,6 +74,7 @@
 @property (nonatomic, strong)LocalNotification *currentNoti;//当前需要添加的预约信息
 @property (nonatomic, strong)Doctor *currentSelectDoctor;//当前选择的治疗医生
 @property (nonatomic, strong)NSDictionary *currentSelectDic;//当前选中的时间字典
+
 @property (weak, nonatomic) IBOutlet UIImageView *patientArrow;
 @property (weak, nonatomic) IBOutlet UIImageView *yaweiArrow;
 @property (weak, nonatomic) IBOutlet UIImageView *reserveTypeArrow;
@@ -100,9 +101,16 @@
 - (void)dealloc{
     [LocalNotificationCenter shareInstance].selectPatient = nil;
 }
+#pragma mark - 设置按钮是否可点
+- (void)setButtonEnable:(BOOL)enable{
+    self.navigationItem.rightBarButtonItem.enabled = enable;
+}
+
 #pragma mark - 保存按钮点击
 - (void)onRightButtonAction:(id)sender{
+    
     if (self.isEditAppointment) {
+        [self setButtonEnable:NO];
         //判断当前的预约时间和原来的预约时间是否相同,当前的治疗医生和之前的治疗医生是否相同
         if ([self.localNoti.reserve_time isEqualToString:self.visitTimeLabel.text] && self.currentSelectDoctor == nil) {
             //没有修改时间，只是修改备注
@@ -120,9 +128,11 @@
                         });
                     }
                 }else{
+                    [self setButtonEnable:YES];
                     [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                 }
             } failure:^(NSError *error) {
+                [self setButtonEnable:YES];
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
                 if (error) {
                     NSLog(@"error:%@",error);
@@ -163,6 +173,7 @@
                                     //转诊成功
                                     [self transferPatientSuccessWithResult:result send:NO];
                                 } failure:^(NSError *error) {
+                                    [self setButtonEnable:YES];
                                     if (self.isEditAppointment) {
                                         [SVProgressHUD showErrorWithStatus:@"修改预约失败,转诊失败"];
                                     }else {
@@ -178,9 +189,11 @@
                                 [self updateReserveRecordSuccess];
                             }
                         }else{
+                            [self setButtonEnable:YES];
                             [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                         }
                     } failure:^(NSError *error) {
+                        [self setButtonEnable:YES];
                         [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                         if (error) {
                             NSLog(@"error:%@",error);
@@ -188,9 +201,11 @@
                     }];
                     
                 }else{
+                    [self setButtonEnable:YES];
                     [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                 }
             } failure:^(NSError *error) {
+                [self setButtonEnable:YES];
                 [SVProgressHUD showErrorWithStatus:@"预约修改失败"];
                 if (error) {
                     NSLog(@"error:%@",error);
@@ -207,6 +222,8 @@
             [SVProgressHUD showImage:nil status:@"请选择预约事项"];
             return;
         }
+        
+        [self setButtonEnable:NO];
         
         LocalNotification *notification = [[LocalNotification alloc] init];
         notification.reserve_time = [NSString stringWithFormat:@"%@:00",self.visitTimeLabel.text];
@@ -317,6 +334,7 @@
                     //转诊成功回调
                     [self transferPatientSuccessWithResult:result send:YES];
                 } failure:^(NSError *error) {
+                    [self setButtonEnable:YES];
                     if (self.isEditAppointment) {
                         [SVProgressHUD showErrorWithStatus:@"修改预约失败,转诊失败"];
                     }else {
@@ -369,9 +387,11 @@
                 }
             }
         }else{
+            [self setButtonEnable:YES];
             [SVProgressHUD showErrorWithStatus:@"预约添加失败"];
         }
     } failure:^(NSError *error) {
+        [self setButtonEnable:YES];
         [SVProgressHUD showErrorWithStatus:@"预约添加失败"];
         if (error) {
             NSLog(@"error:%@",error);

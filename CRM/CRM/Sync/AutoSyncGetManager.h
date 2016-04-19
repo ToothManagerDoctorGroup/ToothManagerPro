@@ -12,6 +12,6 @@
 @interface AutoSyncGetManager : NSObject
 Declare_ShareInstance(AutoSyncGetManager);
 
-- (void)startSyncGet;
+- (void)startSyncGetShowSuccess:(BOOL)showSuccess;
 
 @end

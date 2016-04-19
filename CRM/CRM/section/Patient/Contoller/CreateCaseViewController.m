@@ -288,9 +288,9 @@
     for (CTLib *lib in _addCTLibs) {
         lib.patient_id = _medicalCase.patient_id;
         lib.case_id = _medicalCase.ckeyid;
-        if (nil == lib.creationdate)
+        if (nil == lib.creation_date)
         {
-            lib.creationdate = [NSString currentDateString];
+            lib.creation_date = [NSString currentDateString];
         }
         libRet = [[DBManager shareInstance] insertCTLib:lib];
         if (libRet == NO) {
@@ -446,29 +446,6 @@
     
     BOOL ret =  [self saveData];
     if (ret) {
-//        if(![NSString isEmptyString:_medicalCase.implant_time] && ![_medicalCase.implant_time isEqualToString:implant_time] ){
-//            [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"种植" withSendType:@"1" withSendTime:_medicalCase.implant_time successBlock:^{
-//            } failedBlock:^(NSError *error){
-//                [SVProgressHUD showImage:nil status:error.localizedDescription];
-//            }];
-//        }
-//        if(![NSString isEmptyString:_medicalCase.repair_doctor] && ![_medicalCase.repair_doctor isEqualToString:repair_doctor] ){
-//         NSString* date;
-//         NSDateFormatter* formatter = [[NSDateFormatter alloc]init];
-//         [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss"];
-//         date = [formatter stringFromDate:[NSDate date]];
-//         [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"转诊" withSendType:@"1" withSendTime:date successBlock:^{
-//         } failedBlock:^(NSError *error){
-//         [SVProgressHUD showImage:nil status:error.localizedDescription];
-//         }];
-//        }
-//        if(![NSString isEmptyString:_medicalCase.repair_time] && ![_medicalCase.repair_time isEqualToString:repair_time]){
-//            [[DoctorManager shareInstance]weiXinMessagePatient:_medicalCase.patient_id fromDoctor:[AccountManager shareInstance].currentUser.userid withMessageType:@"修复" withSendType:@"1" withSendTime:_medicalCase.repair_time successBlock:^{
-//            } failedBlock:^(NSError *error){
-//                [SVProgressHUD showImage:nil status:error.localizedDescription];
-//            }];
-//        }
-        
         [SVProgressHUD showImage:nil status:@"保存成功"];
         //获取患者数据
         Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
@@ -489,6 +466,22 @@
                     }
                     
                     CTLib *ctLib = [self.ctblibArray lastObject];
+                    //设置主照片
+                    ctLib.is_main = @"1";
+                    if (!ctLib.creation_date_sync) {
+                        ctLib.creation_date_sync = [NSString currentDateString];
+                    }
+                    if (!ctLib.update_date) {
+                        ctLib.update_date = [NSString defaultDateString];
+                    }
+                    if (!ctLib.sync_time) {
+                        ctLib.sync_time = [NSString defaultDateString];
+                    }
+                    if([[DBManager shareInstance] updateMainCTLib:ctLib]){
+                        //添加一条更新ct片的自动同步数据
+                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Update dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
+                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                    }
                     UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
                     UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
                     [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];

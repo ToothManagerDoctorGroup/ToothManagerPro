@@ -54,6 +54,9 @@
 #import "MyDateTool.h"
 #import "NSString+TTMAddtion.h"
 #import "DoctorGroupTool.h"
+#import "DoctorTool.h"
+#import "XLCustomAlertView.h"
+#import "SysMessageTool.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -601,6 +604,7 @@
     XLDoctorLibraryViewController *doctorVC = [[XLDoctorLibraryViewController alloc] init];
     if (self.detailPatient != nil) {
         doctorVC.isTransfer = YES;
+        doctorVC.isBind = self.isBind;
         doctorVC.userId = self.detailPatient.doctor_id;
         doctorVC.patientId = self.detailPatient.ckeyid;
         [self pushViewController:doctorVC animated:YES];
@@ -621,23 +625,58 @@
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showImage:nil status:@"升级成功"];
         //发送微信消息
-        [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid toDoctor:@"" withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
-        } failedBlock:^(NSError *error){
+//        [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid toDoctor:@"" withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+//        } failedBlock:^(NSError *error){
+//            [SVProgressHUD showImage:nil status:error.localizedDescription];
+//        }];
+        //获取提醒数据
+        __weak typeof(self) weakSelf = self;
+        [DoctorTool newYuYueMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager currentUserid] therapyDoctorId:@"" withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:respond.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:weakSelf.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+                    [weakSelf jumpToIntroducerListViewWithDic:result];
+                } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                    [SVProgressHUD showWithStatus:@"正在发送"];
+                    [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:_detailPatient.ckeyid isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                        if ([respond.code integerValue] == 200) {
+                            [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                        }else{
+                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                        }
+                        [weakSelf jumpToIntroducerListViewWithDic:result];
+                    } failure:^(NSError *error) {
+                        [SVProgressHUD showImage:nil status:error.localizedDescription];
+                        if (error) {
+                            NSLog(@"error:%@",error);
+                        }
+                    }];
+                }];
+                [alertView show];
+            }
+        } failure:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
+            [weakSelf jumpToIntroducerListViewWithDic:result];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
         }];
-        //存入介绍人库
-        Introducer *introducer = [Introducer IntroducerFromIntroducerResult:[self dicFromJsonStr:result[@"Result"]]];
-        [[DBManager shareInstance] insertIntroducer:introducer];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerCreatedNotification object:nil];
-        
-        XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
-        introducerVC.hidesBottomBarWhenPushed = YES;
-        [self pushViewController:introducerVC animated:YES];
     } else {
-        [SVProgressHUD showImage:nil status:@"转换失败"];
+        [SVProgressHUD showImage:nil status:@"升级失败"];
     }
 }
+#pragma mark - 跳转到介绍人详情页面
+- (void)jumpToIntroducerListViewWithDic:(NSDictionary *)dic{
+    //存入介绍人库
+    Introducer *introducer = [Introducer IntroducerFromIntroducerResult:[self dicFromJsonStr:dic[@"Result"]]];
+    [[DBManager shareInstance] insertIntroducer:introducer];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerCreatedNotification object:nil];
+    
+    XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
+    introducerVC.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:introducerVC animated:YES];
+}
+
 - (void)patientToIntroducerFailed:(NSError *)error{
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }

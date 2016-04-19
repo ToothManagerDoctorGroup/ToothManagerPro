@@ -169,9 +169,7 @@
 + (void)yuYueMessagePatient:(NSString *)patientId fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorPatientMapHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
-    
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:5];
     [dataEntity setObject:patientId forKey:@"patient_id"];
     [dataEntity setObject:doctorId forKey:@"doctor_id"];
@@ -180,6 +178,34 @@
     [dataEntity setObject:send_time forKey:@"send_time"];
     
     params[requestActionParam] = [@"getMessageItem" TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[dataEntity JSONString] TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
++ (void)newYuYueMessagePatient:(NSString *)patientId fromDoctor:(NSString *)doctorId therapyDoctorId:(NSString *)therapyDoctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure{
+    //    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorPatientMapHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:5];
+    [dataEntity setObject:patientId forKey:@"patient_id"];
+    [dataEntity setObject:doctorId forKey:@"doctor_id"];
+    [dataEntity setObject:message_type forKey:@"message_type"];
+    [dataEntity setObject:send_type forKey:@"send_type"];
+    [dataEntity setObject:send_time forKey:@"send_time"];
+    [dataEntity setObject:therapyDoctorId forKey:@"therapy_doctor_id"];
+    
+    params[requestActionParam] = [@"newgetMessageItem" TripleDESIsEncrypt:YES];
     params[@"DataEntity"] = [[dataEntity JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {

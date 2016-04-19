@@ -12,7 +12,7 @@
 @interface XLAutoGetSyncTool : NSObject
 Declare_ShareInstance(XLAutoGetSyncTool);
 
-- (void)getAllData;
+- (void)getAllDataShowSuccess:(BOOL)showSuccess;
 
 - (void)getDoctorTable;//同步医生信息
 - (void)getMaterialTable;//同步材料信息

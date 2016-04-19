@@ -29,6 +29,8 @@
 #import "XLCustomAlertView.h"
 #import "MyPatientTool.h"
 #import "SysMessageTool.h"
+#import "PatientDetailViewController.h"
+#import "PatientsCellMode.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -99,7 +101,6 @@
     
     self.titles = @[@"时间",@"患者",@"牙位",@"事项",@"预约时长",@"治疗医生",@"预约人",@"医院",@"备注"];
 }
-
 
 - (void)requestLocalDataWithNoti:(LocalNotification *)noti{
     [self.dataList removeAllObjects];
@@ -203,22 +204,39 @@
     CGFloat commomW = [commonTitle sizeWithFont:[UIFont systemFontOfSize:15]].width;
     CGFloat contentW = kScreenWidth - commomW - 10 * 3;
     CGSize contentSize = [model.content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(contentW, MAXFLOAT)];
-    if (contentSize.height > 40) {
+    if (contentSize.height > 44) {
         return contentSize.height;
     }else{
-        return 40;
+        return 44;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     XLAppointDetailCell *cell = [XLAppointDetailCell cellWithTableView:tableView];
+    if (indexPath.row == 1) {
+        cell.ShowAccessoryView = YES;
+    }else{
+        cell.ShowAccessoryView = NO;
+    }
     XLAppointDetailModel *model = self.dataList[indexPath.row];
 
     cell.model = model;
     
     return cell;
     
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == 1) {
+        //跳转到患者详情页面
+        PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+        cellModel.patientId = self.localNoti.patient_id;
+        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+        detailVc.patientsCellMode = cellModel;
+        detailVc.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:detailVc animated:YES];
+    }
 }
 
 #pragma mark - UIAlertViewDelegate

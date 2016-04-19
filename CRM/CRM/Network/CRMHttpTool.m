@@ -42,7 +42,7 @@ Realize_ShareInstance(CRMHttpTool);
         if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
             NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
             //解密数据
-            NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+            NSString *sourceStr = [[dataStr TripleDESIsEncrypt:NO] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             if (success) {
                 success([sourceStr objectFromJSONString]);
             }
@@ -68,7 +68,7 @@ Realize_ShareInstance(CRMHttpTool);
         if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
             NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
             //解密数据
-            NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+            NSString *sourceStr = [[dataStr TripleDESIsEncrypt:NO] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             if (success) {
                 success([sourceStr objectFromJSONString]);
             }
@@ -98,7 +98,7 @@ Realize_ShareInstance(CRMHttpTool);
         if ([EncryptionOpen isEqualToString:Auto_Action_Open]) {
             NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
             //解密数据
-            NSString *sourceStr = [NSString TripleDES:dataStr encryptOrDecrypt:kCCDecrypt encryptOrDecryptKey:NULL];
+            NSString *sourceStr = [[dataStr TripleDESIsEncrypt:NO] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             if (success) {
                 success([sourceStr objectFromJSONString]);
             }

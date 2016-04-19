@@ -143,6 +143,7 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self setRightBarButtonWithTitle:@"保存"];
     
+    
 }
 #pragma mark - 初始化子视图
 - (void)setUpSubViews{
@@ -181,6 +182,11 @@
     }
 }
 
+#pragma mark - 设置按钮是否可点
+- (void)setButtonEnable:(BOOL)enable{
+    self.navigationItem.rightBarButtonItem.enabled = enable;
+}
+
 #pragma mark - 保存按钮点击
 - (void)onRightButtonAction:(id)sender{
     if (self.messageTypeField.text.length == 0) {
@@ -203,6 +209,8 @@
         return;
     }
     
+    //设置按钮不可点
+    [self setButtonEnable:NO];
     if (self.isEdit == YES) {
         //表明是编辑
         [SVProgressHUD showWithStatus:@"正在修改"];
@@ -215,6 +223,7 @@
             [weakSelf popViewControllerAnimated:YES];
             
         } failure:^(NSError *error) {
+            [self setButtonEnable:YES];
             [SVProgressHUD dismiss];
             if (error) {
                 NSLog(@"error:%@",error);
@@ -229,6 +238,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:MessageTemplateAddNotification object:nil];
                 [self popViewControllerAnimated:YES];
         } failure:^(NSError *error) {
+            [self setButtonEnable:YES];
             [SVProgressHUD dismiss];
             if (error) {
                 NSLog(@"error:%@",error);

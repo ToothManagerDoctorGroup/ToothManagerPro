@@ -7,7 +7,7 @@
 //
 
 #import "CustomAlertView.h"
-
+#import "UIColor+Extension.h"
 #import "YYKeyboardManager.h"
 
 #define CommenFont [UIFont systemFontOfSize:16]
@@ -21,9 +21,10 @@
     UIView *_topView; //标题栏视图
     UIView *_bottomView; //内容栏视图
     
-    
     UILabel *_alertLabel;//提醒标题
     UITextField *_contentField;//内容为输入框模式
+    UIView *_lineView;//输入框下的分割线
+    
     UILabel *_contentLabel;//内容为Label模式
     
     UIButton *_cancleButton;//取消按钮
@@ -93,6 +94,10 @@
     _contentField.returnKeyType = UIReturnKeyDone;
     [_bottomView addSubview:_contentField];
     
+    _lineView = [[UIView alloc] init];
+    _lineView.backgroundColor = [UIColor colorWithHex:0xcccccc];
+    [_bottomView addSubview:_lineView];
+    
     //内容为Label模式
     _contentLabel = [[UILabel alloc] init];
     _contentLabel.textColor = ContentColor;
@@ -154,6 +159,7 @@
         _certainButton.frame = CGRectMake(self.width - Margin * 2 - buttonW, _cancleButton.top, buttonW, buttonH);
     }else{
         _contentField.frame = CGRectMake(Margin * 2, Margin * 2, self.width - Margin * 4, 30);
+        _lineView.frame = CGRectMake(Margin * 2, _contentField.bottom - 1, _contentField.width, 1);
         
         _cancleButton.frame = CGRectMake(Margin * 2, _contentField.bottom + Margin * 2, buttonW, buttonH);
         

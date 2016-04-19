@@ -171,7 +171,7 @@
         CTLib *libtmp = [[CTLib alloc]init];
         libtmp.ckeyid = @"-100";
         libtmp.ct_image = @"ctlib_placeholder.png";
-        libtmp.creationdate = self.medicalCase.creation_date;
+        libtmp.creation_date = self.medicalCase.creation_date;
         libtmp.ct_desc = self.medicalCase.creation_date;
         [cTLibs addObject:libtmp];
     }

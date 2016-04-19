@@ -408,7 +408,6 @@
 		3D1B60031C18082B0032D949 /* NSDate+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E461C18082B0032D949 /* NSDate+Category.m */; };
 		3D1B60041C18082B0032D949 /* NSDateFormatter+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E481C18082B0032D949 /* NSDateFormatter+Category.m */; };
 		3D1B60051C18082B0032D949 /* NSObject+EaseMob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E4A1C18082B0032D949 /* NSObject+EaseMob.m */; };
-		3D1B60061C18082B0032D949 /* NSString+Valid.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E4C1C18082B0032D949 /* NSString+Valid.m */; };
 		3D1B60071C18082B0032D949 /* UIViewController+DismissKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E4E1C18082B0032D949 /* UIViewController+DismissKeyboard.m */; };
 		3D1B60081C18082B0032D949 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E501C18082B0032D949 /* UIViewController+HUD.m */; };
 		3D1B60091C18082B0032D949 /* EaseChineseToPinyin.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1B5E521C18082B0032D949 /* EaseChineseToPinyin.m */; };
@@ -983,6 +982,7 @@
 		3D3C04271C7C7EEF006A5410 /* icon152.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04241C7C7EEF006A5410 /* icon152.png */; };
 		3D3E9E211C806A22008FC970 /* AddressBoolTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3E9E201C806A22008FC970 /* AddressBoolTool.m */; };
 		3D3E9E231C8073E7008FC970 /* draw_bg_black.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3E9E221C8073E7008FC970 /* draw_bg_black.png */; };
+		3D41FBB31CBE4DA7000576EC /* ContactDataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D41FBB21CBE4DA7000576EC /* ContactDataHelper.m */; };
 		3D5B4F8B1C2CE1C100E37140 /* patient_bianji.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D5B4F881C2CE1C100E37140 /* patient_bianji.png */; };
 		3D5B4F8C1C2CE1C100E37140 /* patient_bianji@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D5B4F891C2CE1C100E37140 /* patient_bianji@2x.png */; };
 		3D5B4F8D1C2CE1C100E37140 /* patient_bianji@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D5B4F8A1C2CE1C100E37140 /* patient_bianji@3x.png */; };
@@ -1223,6 +1223,9 @@
 		3DE27FDE1C97DA540066A1F2 /* XLContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE27FDD1C97DA540066A1F2 /* XLContactCell.m */; };
 		3DE2DD621C06C980005F7832 /* MyYuyueTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */; };
 		3DE2DD651C06D157005F7832 /* MenuTitleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */; };
+		3DE30FCE1CC48F4B00AF192F /* jpush-ios-2.1.6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DE30FCC1CC48F4B00AF192F /* jpush-ios-2.1.6.a */; };
+		3DE30FD01CC48F9000AF192F /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DE30FCF1CC48F8F00AF192F /* CoreFoundation.framework */; };
+		3DE30FD31CC4918C00AF192F /* CRMAppDelegate+JPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE30FD21CC4918C00AF192F /* CRMAppDelegate+JPush.m */; };
 		3DE3C4B21C8434B900D3EEB9 /* XLBaseSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B11C8434B900D3EEB9 /* XLBaseSettingViewController.m */; };
 		3DE3C4B61C845A0D00D3EEB9 /* intr_weixin_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B31C845A0D00D3EEB9 /* intr_weixin_green.png */; };
 		3DE3C4B71C845A0D00D3EEB9 /* intr_weixin_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE3C4B41C845A0D00D3EEB9 /* intr_weixin_green@2x.png */; };
@@ -2403,8 +2406,6 @@
 		3D1B5E481C18082B0032D949 /* NSDateFormatter+Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+Category.m"; sourceTree = "<group>"; };
 		3D1B5E491C18082B0032D949 /* NSObject+EaseMob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+EaseMob.h"; sourceTree = "<group>"; };
 		3D1B5E4A1C18082B0032D949 /* NSObject+EaseMob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+EaseMob.m"; sourceTree = "<group>"; };
-		3D1B5E4B1C18082B0032D949 /* NSString+Valid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Valid.h"; sourceTree = "<group>"; };
-		3D1B5E4C1C18082B0032D949 /* NSString+Valid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Valid.m"; sourceTree = "<group>"; };
 		3D1B5E4D1C18082B0032D949 /* UIViewController+DismissKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+DismissKeyboard.h"; sourceTree = "<group>"; };
 		3D1B5E4E1C18082B0032D949 /* UIViewController+DismissKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+DismissKeyboard.m"; sourceTree = "<group>"; };
 		3D1B5E4F1C18082B0032D949 /* UIViewController+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+HUD.h"; sourceTree = "<group>"; };
@@ -3172,6 +3173,8 @@
 		3D3E9E1F1C806A22008FC970 /* AddressBoolTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBoolTool.h; sourceTree = "<group>"; };
 		3D3E9E201C806A22008FC970 /* AddressBoolTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBoolTool.m; sourceTree = "<group>"; };
 		3D3E9E221C8073E7008FC970 /* draw_bg_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = draw_bg_black.png; sourceTree = "<group>"; };
+		3D41FBB11CBE4DA7000576EC /* ContactDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDataHelper.h; sourceTree = "<group>"; };
+		3D41FBB21CBE4DA7000576EC /* ContactDataHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDataHelper.m; sourceTree = "<group>"; };
 		3D5B4F881C2CE1C100E37140 /* patient_bianji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = patient_bianji.png; sourceTree = "<group>"; };
 		3D5B4F891C2CE1C100E37140 /* patient_bianji@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "patient_bianji@2x.png"; sourceTree = "<group>"; };
 		3D5B4F8A1C2CE1C100E37140 /* patient_bianji@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "patient_bianji@3x.png"; sourceTree = "<group>"; };
@@ -3514,6 +3517,11 @@
 		3DE2DD611C06C980005F7832 /* MyYuyueTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyYuyueTitleView.m; sourceTree = "<group>"; };
 		3DE2DD631C06D157005F7832 /* MenuTitleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTitleViewController.h; sourceTree = "<group>"; };
 		3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTitleViewController.m; sourceTree = "<group>"; };
+		3DE30FCC1CC48F4B00AF192F /* jpush-ios-2.1.6.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "jpush-ios-2.1.6.a"; sourceTree = "<group>"; };
+		3DE30FCD1CC48F4B00AF192F /* JPUSHService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPUSHService.h; sourceTree = "<group>"; };
+		3DE30FCF1CC48F8F00AF192F /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		3DE30FD11CC4918C00AF192F /* CRMAppDelegate+JPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CRMAppDelegate+JPush.h"; sourceTree = "<group>"; };
+		3DE30FD21CC4918C00AF192F /* CRMAppDelegate+JPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CRMAppDelegate+JPush.m"; sourceTree = "<group>"; };
 		3DE3C4B01C8434B900D3EEB9 /* XLBaseSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLBaseSettingViewController.h; sourceTree = "<group>"; };
 		3DE3C4B11C8434B900D3EEB9 /* XLBaseSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLBaseSettingViewController.m; sourceTree = "<group>"; };
 		3DE3C4B31C845A0D00D3EEB9 /* intr_weixin_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = intr_weixin_green.png; sourceTree = "<group>"; };
@@ -4226,6 +4234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DE30FD01CC48F9000AF192F /* CoreFoundation.framework in Frameworks */,
 				3D1B61151C1808FB0032D949 /* Social.framework in Frameworks */,
 				3D1B61131C1808F50032D949 /* Accounts.framework in Frameworks */,
 				3D1B5FA11C18082B0032D949 /* Bolts.framework in Frameworks */,
@@ -4262,6 +4271,7 @@
 				3D1B5FAE1C18082B0032D949 /* libopencore-amrwb.a in Frameworks */,
 				64E76EEA1A6F6E7900811B80 /* StoreKit.framework in Frameworks */,
 				64E76EE81A6F6E6F00811B80 /* Security.framework in Frameworks */,
+				3DE30FCE1CC48F4B00AF192F /* jpush-ios-2.1.6.a in Frameworks */,
 				3D1B5FAD1C18082B0032D949 /* libopencore-amrnb.a in Frameworks */,
 				64E76EE61A6F6E5E00811B80 /* CoreTelephony.framework in Frameworks */,
 				64E76EE41A6F6E4A00811B80 /* SystemConfiguration.framework in Frameworks */,
@@ -5621,8 +5631,6 @@
 				3D1B5E481C18082B0032D949 /* NSDateFormatter+Category.m */,
 				3D1B5E491C18082B0032D949 /* NSObject+EaseMob.h */,
 				3D1B5E4A1C18082B0032D949 /* NSObject+EaseMob.m */,
-				3D1B5E4B1C18082B0032D949 /* NSString+Valid.h */,
-				3D1B5E4C1C18082B0032D949 /* NSString+Valid.m */,
 				3D1B5E4D1C18082B0032D949 /* UIViewController+DismissKeyboard.h */,
 				3D1B5E4E1C18082B0032D949 /* UIViewController+DismissKeyboard.m */,
 				3D1B5E4F1C18082B0032D949 /* UIViewController+HUD.h */,
@@ -6399,6 +6407,8 @@
 				3D2C9B151C897CAD0016025D /* CRMAppDelegate+EaseMob.m */,
 				3DFBCA231C9D3C5300B27177 /* CRMAppDelegate+UMessage.h */,
 				3DFBCA241C9D3C5300B27177 /* CRMAppDelegate+UMessage.m */,
+				3DE30FD11CC4918C00AF192F /* CRMAppDelegate+JPush.h */,
+				3DE30FD21CC4918C00AF192F /* CRMAppDelegate+JPush.m */,
 			);
 			name = AppDelegate;
 			sourceTree = "<group>";
@@ -7026,6 +7036,8 @@
 		3D3E9E1B1C80698C008FC970 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				3D41FBB11CBE4DA7000576EC /* ContactDataHelper.h */,
+				3D41FBB21CBE4DA7000576EC /* ContactDataHelper.m */,
 				3DF671571BF70B2000527B49 /* Catory */,
 				3D7F19F51C07280000BE79ED /* MyDateTool.h */,
 				3D7F19F61C07280000BE79ED /* MyDateTool.m */,
@@ -7917,6 +7929,15 @@
 				3DE2DD641C06D157005F7832 /* MenuTitleViewController.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		3DE30FCB1CC48F3A00AF192F /* JPush */ = {
+			isa = PBXGroup;
+			children = (
+				3DE30FCC1CC48F4B00AF192F /* jpush-ios-2.1.6.a */,
+				3DE30FCD1CC48F4B00AF192F /* JPUSHService.h */,
+			);
+			path = JPush;
 			sourceTree = "<group>";
 		};
 		3DE3C4AE1C84346D00D3EEB9 /* Setting（设置） */ = {
@@ -8818,6 +8839,7 @@
 		6436DD2219B8C48100DC667E /* ThirdPart */ = {
 			isa = PBXGroup;
 			children = (
+				3DE30FCB1CC48F3A00AF192F /* JPush */,
 				3D2A004D1C05E53B00B1EF65 /* XLCommonTools */,
 				3DE1E2891C99102600DA48EE /* MMDrawerController */,
 				3D2C9B101C8978B90016025D /* Reachability */,
@@ -9067,6 +9089,7 @@
 		646A722C18EFE1DF00031C34 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3DE30FCF1CC48F8F00AF192F /* CoreFoundation.framework */,
 				3D1B61141C1808FB0032D949 /* Social.framework */,
 				3D1B61121C1808F50032D949 /* Accounts.framework */,
 				3D18CE371C15B3E600EF83DE /* libresolv.tbd */,
@@ -10981,6 +11004,7 @@
 				3D1907A31CA3D36F0040982C /* NVMContactManager.m in Sources */,
 				6436DF0A19B8C48100DC667E /* PinYinForObjc.m in Sources */,
 				3D23A63E1BF2EF780029943D /* MyClinicTool.m in Sources */,
+				3D41FBB31CBE4DA7000576EC /* ContactDataHelper.m in Sources */,
 				3D1CF6301C9BB0ED0084AB5C /* XLCommonDoctorCell.m in Sources */,
 				3DF671961BF734BE00527B49 /* ClinicAnnotationView.m in Sources */,
 				3D2906241C8EB1E90090AC6C /* XLJoinTeamSegumentController.m in Sources */,
@@ -11322,6 +11346,7 @@
 				3D23A6581BF300CC0029943D /* NSObject+MJKeyValue.m in Sources */,
 				64CFD92119F7F6A6001EB0DA /* PatientsDisplayViewController.m in Sources */,
 				3D23A6531BF300CC0029943D /* MJFoundation.m in Sources */,
+				3DE30FD31CC4918C00AF192F /* CRMAppDelegate+JPush.m in Sources */,
 				6436DE3C19B8C48100DC667E /* CRMHttpRequest+Patients.m in Sources */,
 				2D4F38461BA6D3BF00D603AE /* ShuJuFenXiViewController.m in Sources */,
 				3D18C8531C15833C00EF83DE /* TimTabBarViewController.m in Sources */,
@@ -11413,7 +11438,6 @@
 				3D15402D1C4C8AF2002B12C9 /* GTMBase64.m in Sources */,
 				3DDE33E31C2A414E00458FC8 /* FSCalendarAppearance.m in Sources */,
 				3D1B60041C18082B0032D949 /* NSDateFormatter+Category.m in Sources */,
-				3D1B60061C18082B0032D949 /* NSString+Valid.m in Sources */,
 				3D1B5FB51C18082B0032D949 /* UIViewController+HUD.m in Sources */,
 				3DE4574B1C50CAC400C94177 /* XLAnalyseHeaderView.m in Sources */,
 				2DFE7ED11B4A71980088B119 /* AFURLConnectionOperation.m in Sources */,
@@ -11662,8 +11686,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)\"/**",
-					"$(PROJECT_DIR)/CRM/ThirdPart/UMessage_Sdk_1.2.1",
-					"$(PROJECT_DIR)/CRM/ThirdPart/UMessage_Sdk_1.1.0",
 					"$(PROJECT_DIR)/CRM/ThirdPart/EaseMobSDK/lib",
 					"$(PROJECT_DIR)/CRM/ThirdPart/UMFeedBack",
 					"$(PROJECT_DIR)/CRM/ThirdPart/UMFeedBack/UMOpus",
@@ -11674,6 +11696,7 @@
 					"$(PROJECT_DIR)/CRM/ThirdPart/Huanxin/3rdparty/VoiceConvert/opencore-amrnb",
 					"$(PROJECT_DIR)/CRM/ThirdPart/Huanxin/3rdparty/VoiceConvert/opencore-amrwb",
 					"$(PROJECT_DIR)/CRM/ThirdPart/UMessage_Sdk_1.2.6",
+					"$(PROJECT_DIR)/CRM/ThirdPart/JPush",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
@@ -11722,8 +11745,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)\"/**",
-					"$(PROJECT_DIR)/CRM/ThirdPart/UMessage_Sdk_1.2.1",
-					"$(PROJECT_DIR)/CRM/ThirdPart/UMessage_Sdk_1.1.0",
 					"$(PROJECT_DIR)/CRM/ThirdPart/EaseMobSDK/lib",
 					"$(PROJECT_DIR)/CRM/ThirdPart/UMFeedBack",
 					"$(PROJECT_DIR)/CRM/ThirdPart/UMFeedBack/UMOpus",
@@ -11734,6 +11755,7 @@
 					"$(PROJECT_DIR)/CRM/ThirdPart/Huanxin/3rdparty/VoiceConvert/opencore-amrnb",
 					"$(PROJECT_DIR)/CRM/ThirdPart/Huanxin/3rdparty/VoiceConvert/opencore-amrwb",
 					"$(PROJECT_DIR)/CRM/ThirdPart/UMessage_Sdk_1.2.6",
+					"$(PROJECT_DIR)/CRM/ThirdPart/JPush",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (

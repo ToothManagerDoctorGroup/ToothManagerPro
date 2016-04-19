@@ -12,6 +12,7 @@
 @interface XLAppointDetailCell : UITableViewCell
 
 @property (nonatomic, strong)XLAppointDetailModel *model;
+@property (nonatomic, assign)BOOL ShowAccessoryView;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

@@ -589,7 +589,7 @@ NSString * const Repaired = @"已修复";
     if (self) {
         self.ct_image = @"";
         self.ct_desc = @"";
-        self.creationdate = @"";
+        self.creation_date = @"";
     }
     return self;
 }
@@ -610,7 +610,7 @@ NSString * const Repaired = @"已修复";
     lib.ct_image = [result stringForColumn:@"ct_image"];
     lib.ct_desc = [result stringForColumn:@"ct_desc"];
     lib.update_date = [result stringForColumn:@"update_date"];
-    lib.creationdate = [result stringForColumn:@"creation_date"];
+    lib.creation_date = [result stringForColumn:@"creation_date"];
     lib.user_id = [result stringForColumn:@"user_id"];
     lib.doctor_id = [result stringForColumn:@"doctor_id"];
     lib.creation_date_sync = [result stringForColumn:@"creation_date_sync"];
@@ -631,7 +631,7 @@ NSString * const Repaired = @"已修复";
     templib.update_date = [NSString defaultDateString];
     templib.sync_time = [medCT stringForKey:@"sync_time"];
     templib.doctor_id = [medCT stringForKey:@"doctor_id"];
-    templib.creationdate = [medCT stringForKey:@"creation_time"];
+    templib.creation_date = [medCT stringForKey:@"creation_time"];
     templib.is_main = [medCT stringForKey:@"is_main"];
     
     return templib;

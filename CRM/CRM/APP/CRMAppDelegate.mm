@@ -11,17 +11,14 @@
 #import "DBManager.h"
 #import "CRMViewAppearance.h"
 #import "MMDrawerVisualState.h"
-#import "UMFeedback.h"
 #import "CRMMacro.h"
 #import "UIApplication+Version.h"
 #import "TimAlertView.h"
-#import "UMessage.h"
 #import "CRMUserDefalut.h"
 #import "RemoteNotificationCenter.h"
 #import "AccountManager.h"
 #import "SyncManager.h"
 #import "CRMMacro.h"
-#import "UMOpus.h"
 #import "SysMsgViewController.h"
 #import "AccountViewController.h"
 #import "DBManager+User.h"
@@ -36,11 +33,12 @@
 #import "UIImageView+WebCache.h"
 #import "CRMAppDelegate+Reachability.h"
 #import "CRMAppDelegate+EaseMob.h"
-#import "CRMAppDelegate+UMessage.h"
+#import "CRMAppDelegate+JPush.h"
+#import "JPUSHService.h"
 
 @interface CRMAppDelegate ()
 
-@property (nonatomic, strong)XLAdvertisementView *adImageView;//启动广告页
+//@property (nonatomic, strong)XLAdvertisementView *adImageView;//启动广告页
 
 @end
 
@@ -68,7 +66,7 @@
     [self.window makeKeyAndVisible];
     
     //页面跳转
-    [self turnToMainVc];
+    [self turnToMainVcWithOptions:launchOptions];
 
     return YES;
 }
@@ -79,7 +77,9 @@
     //注册环信
     [self registerEaseMobConfigWithapplication:application options:launchOptions];
     //注册友盟
-    [self registerUMessageConfigWithOptions:launchOptions];
+//    [self registerUMessageConfigWithOptions:launchOptions];
+    //注册极光推送
+    [self registerJPushConfigWithOptions:launchOptions];
     
     //百度地图
     _mapManager = [[BMKMapManager alloc]init];
@@ -103,10 +103,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignInSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignUpSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handNotification:) name:SignOutSuccessNotification object:nil];
+    
 }
 
 #pragma mark - 跳转到主页面
-- (void)turnToMainVc{
+- (void)turnToMainVcWithOptions:(NSDictionary *)options{
     //判断用户是否登录
     if ([[AccountManager shareInstance] isLogin]) {
         if (self.tabBarController == nil) {
@@ -130,22 +131,16 @@
                 //取消所有的下载操作
                 [[CRMHttpRequest shareInstance] cancelAllOperations];
                 [self makeLogin];
-                
-                //                [[AccountManager shareInstance] logout];
-                //                self.window.rootViewController = nav;
-                
             }
         }else{
             //更新数据库表结构
 //            [[DBManager shareInstance] updateDB];
-            
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
             guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
             guideController.showIndicator = NO;
             if ([[[AccountManager shareInstance] currentUser].hospitalName isNotEmpty]) {
                 guideController.forwardController = self.tabBarController;
             }else{
-                //                [[AccountManager shareInstance] logout];
                 guideController.forwardController = nav;
             }
             self.window.rootViewController = guideController;
@@ -169,12 +164,10 @@
     TimNavigationViewController *nav = [[TimNavigationViewController alloc]initWithRootViewController:signinVC];
     //比较版本号
     if ([newVersion isEqualToString:oldVersion]) {
-        
         self.window.rootViewController = nav;
     }else{
         //更新数据库表结构
 //        [[DBManager shareInstance] updateDB];
-        
         TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
         guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
         guideController.showIndicator = NO;
@@ -190,6 +183,7 @@
     if ([notification.name isEqualToString:SignInSuccessNotification]
         || [notification.name isEqualToString:SignUpSuccessNotification]) {
         if (self.tabBarController == nil) {
+            NSLog(@"重新创建主视图");
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
         self.window.rootViewController = self.tabBarController;
@@ -206,19 +200,15 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-//    if (self.tabBarController) {
-//        [self.tabBarController didReceiveLocalNotification:notification];
-//    }
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    [application registerForRemoteNotifications];
+    NSLog(@"收到本地通知:%@",notification);
+    [JPUSHService showLocalNotificationAtFront:notification identifierKey:nil];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     
     NSLog(@"deviceToken:%@",deviceToken);
-    [UMessage registerDeviceToken:deviceToken];
+//    [UMessage registerDeviceToken:deviceToken];
+    [JPUSHService registerDeviceToken:deviceToken];
     NSString *pushToken = [[[[deviceToken description]
                              stringByReplacingOccurrencesOfString:@"<" withString:@""]
                             stringByReplacingOccurrencesOfString:@">" withString:@""]
@@ -235,15 +225,59 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    
+    [JPUSHService handleRemoteNotification:userInfo];
     //关闭友盟对话框
-    [UMessage setAutoAlert:NO];
-    [UMessage didReceiveRemoteNotification:userInfo];
+//    [UMessage setAutoAlert:NO];
+//    [UMessage didReceiveRemoteNotification:userInfo];
     //定制自定义的弹出框
     if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
     {
         [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
     }
 }
+
+- (void)application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:
+(void (^)(UIBackgroundFetchResult))completionHandler {
+    
+    [JPUSHService handleRemoteNotification:userInfo];
+    //自定义弹出样式
+    NSLog(@"收到通知:%@", [self logDic:userInfo]);
+    if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+    {
+        [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
+    }else{
+        [[RemoteNotificationCenter shareInstance] pushToMessageVc];
+    }
+    //这里设置app的图片的角标为0，红色但角标就会消失
+    [UIApplication sharedApplication].applicationIconBadgeNumber  =  0;
+    completionHandler(UIBackgroundFetchResultNewData);
+}
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+- (void)application:(UIApplication *)application
+didRegisterUserNotificationSettings:
+(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application
+handleActionWithIdentifier:(NSString *)identifier
+forLocalNotification:(UILocalNotification *)notification
+  completionHandler:(void (^)())completionHandler {
+    
+}
+
+- (void)application:(UIApplication *)application
+handleActionWithIdentifier:(NSString *)identifier
+forRemoteNotification:(NSDictionary *)userInfo
+  completionHandler:(void (^)())completionHandler {
+    
+}
+#endif
+
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
@@ -335,5 +369,6 @@
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
+
 
 @end

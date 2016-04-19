@@ -147,6 +147,14 @@
         [self.delegate deleteAction:sender];
     }
 }
+
+- (IBAction)saveImageAction:(id)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(saveImageAction:)]) {
+        [self.delegate saveImageAction:sender];
+    }
+}
+
+
 - (IBAction)mainPicAction:(id)sender {
     //设置主要照片
     if (self.delegate && [self.delegate respondsToSelector:@selector(mainImgAction:)]) {

@@ -19,6 +19,7 @@
 @interface XLDoctorLibraryViewController : TimViewController
 
 @property (nonatomic,readwrite)BOOL isTransfer;  //是否转诊【只有转诊功能才为YES】
+@property (nonatomic, assign)BOOL isBind;//是否绑定微信
 @property (nonatomic,copy) NSString *userId;     //转诊医生id
 @property (nonatomic,copy) NSString *patientId; //转诊病人id【只有转诊功能用得到】
 

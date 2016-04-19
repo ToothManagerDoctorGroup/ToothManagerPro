@@ -143,6 +143,9 @@
     [UIApplication sharedApplication].statusBarHidden = NO;
     if (self.forwardController) {
         self.view.window.rootViewController = self.forwardController;
+        if (self.pushButtonBlock) {
+            self.pushButtonBlock();
+        }
     }
 }
 /**

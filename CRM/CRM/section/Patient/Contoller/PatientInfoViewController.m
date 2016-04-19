@@ -188,7 +188,7 @@
             CTLib *libtmp = [[CTLib alloc]init];
             libtmp.ckeyid = @"-100";
             libtmp.ct_image = @"ctlib_placeholder.png";
-            libtmp.creationdate = mCase.creation_date;
+            libtmp.creation_date = mCase.creation_date;
             libtmp.ct_desc = mCase.creation_date;
             [_dataSouceArray addObject:@[libtmp]];
         }
@@ -272,7 +272,7 @@
             CTLib *libtmp = [[CTLib alloc]init];
             libtmp.ckeyid = @"-100";
             libtmp.ct_image = @"ctlib_placeholder.png";
-            libtmp.creationdate = mCase.creation_date;
+            libtmp.creation_date = mCase.creation_date;
             libtmp.ct_desc = mCase.creation_date;
             [_dataSouceArray addObject:@[libtmp]];
         }

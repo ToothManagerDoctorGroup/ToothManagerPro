@@ -47,6 +47,10 @@
     
 }
 
+- (void)dealloc{
+    NSLog(@"登录界面被销毁");
+}
+
 - (void)awakeFromNib{
     self.tableView.backgroundView = nil;
     self.tableView.backgroundColor = [UIColor colorWithHex:0x00a0ea];

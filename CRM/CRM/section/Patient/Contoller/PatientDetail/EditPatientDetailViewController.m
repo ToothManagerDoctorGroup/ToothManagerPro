@@ -181,7 +181,6 @@
         }
     }
     if (indexPath.section == 2) {
-        
         if (indexPath.row == 0) {
             XLDataSelectViewController *selectVc = [[XLDataSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
             selectVc.type = XLDataSelectViewControllerSex;
@@ -288,9 +287,12 @@
         }
         self.remarkNameLabel.text = content;
     }else if ([title isEqualToString:@"年龄"]){
-        if ([content intValue] > 150) {
-            [SVProgressHUD showImage:nil status:@"年龄无效，请重新输入"];
-            return;
+        if (content.length > 0) {
+            NSString *initial = [content substringToIndex:1];
+            if ([content intValue] > 150 || [initial integerValue] == 0) {
+                [SVProgressHUD showImage:nil status:@"年龄无效，请重新输入"];
+                return;
+            }
         }
         self.patientAgeField.text = content;
     }else if ([title isEqualToString:@"家庭住址"]){

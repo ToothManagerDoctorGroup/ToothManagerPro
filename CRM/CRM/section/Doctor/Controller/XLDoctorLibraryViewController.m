@@ -34,6 +34,9 @@
 #import "XLNewFriendNotiViewController.h"
 #import "XLCommonDoctorCell.h"
 #import "DoctorInfoModel.h"
+#import "CRMHttpRespondModel.h"
+#import "XLCustomAlertView.h"
+#import "SysMessageTool.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate,XLCommonDoctorCellDelegte>{
     UITableView *_tableView;
@@ -345,23 +348,10 @@
 }
 #pragma mark -设置单元格
 - (UITableViewCell *)setUpTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
-//    DoctorTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DoctorTableViewCell"];
-//    if (cell == nil) {
-//        cell = [[[NSBundle mainBundle] loadNibNamed:@"DoctorTableViewCell" owner:nil options:nil] objectAtIndex:0];
-//        [tableView registerNib:[UINib nibWithNibName:@"DoctorTableViewCell" bundle:nil] forCellReuseIdentifier:@"DoctorTableViewCell"];
-//    }
     XLCommonDoctorCell *cell = [XLCommonDoctorCell cellWithTableView:tableView];
-//    cell.delegate = self;
-//    cell.addButton.backgroundColor = [UIColor clearColor];
-//    [cell.addButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     cell.tag = indexPath.row+100;
-    
     Doctor *doctor = [sourceArray objectAtIndex:indexPath.row];
     [cell setFriendListCellWithModel:doctor];
-    
-//    [cell.addButton setTitle:doctor.patient_count forState:UIControlStateNormal];
-//    cell.addButton.hidden = YES;
-//    cell.addButton.enabled = NO;
     
     return cell;
 }
@@ -455,34 +445,76 @@
 - (void)transferPatientSuccessWithResult:(NSDictionary *)result
 {
     if ([result integerForKey:@"Code"] == 200) {
+        NSLog(@"转诊成功");
         [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
+        Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
+        if (tmppatient != nil) {
+            //添加患者自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[tmppatient.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            //插入患者介绍人
+            [self insertDoctorWithDoctorId:self.selectDoctor.ckeyid];
+            [self insertPatientIntroducerMap];
+        }
+        
         __weak typeof(self) weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
-            if (tmppatient != nil) {
-                //添加患者自动同步信息
-                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[tmppatient.keyValues JSONString] syncStatus:@"0"];
-                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                //插入患者介绍人
-                [weakSelf insertDoctorWithDoctorId:self.selectDoctor.ckeyid];
-                [weakSelf insertPatientIntroducerMap];
+        [DoctorTool newYuYueMessagePatient:patientId fromDoctor:[AccountManager currentUserid] therapyDoctorId:self.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *respond) {
+            NSLog(@"获取通知");
+            if ([respond.code integerValue] == 200) {
+                XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:respond.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:weakSelf.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+                    [weakSelf transferBackAction];
+                } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                    [SVProgressHUD showWithStatus:@"正在发送"];
+                    [SysMessageTool sendMessageWithDoctorId:weakSelf.selectDoctor.doctor_id patientId:patientId isWeixin:weakSelf.isBind isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                        if ([respond.code integerValue] == 200) {
+                            [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                        }else{
+                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                        }
+                        
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            [weakSelf transferBackAction];
+                        });
+                        
+                    } failure:^(NSError *error) {
+                        [SVProgressHUD showImage:nil status:error.localizedDescription];
+                        [weakSelf transferBackAction];
+                        if (error) {
+                            NSLog(@"error:%@",error);
+                        }
+                    }];
+                }];
+                [alertView show];
+            }else{
+                [SVProgressHUD showImage:nil status:respond.result];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [weakSelf transferBackAction];
+                });
             }
-            
-            //发送微信消息
-            [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager currentUserid] toDoctor:weakSelf.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
-            } failedBlock:^(NSError *error) {
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
-            
-            weakSelf.selectDoctor = nil;
-            //发送通知
-            [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
-            [weakSelf popViewControllerAnimated:YES];
-        });
+        } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+            [weakSelf transferBackAction];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+        
+        //发送微信消息
+//        [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager currentUserid] toDoctor:weakSelf.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
+//        } failedBlock:^(NSError *error) {
+//            [SVProgressHUD showImage:nil status:error.localizedDescription];
+//        }];
         
     } else {
         [SVProgressHUD showErrorWithStatus:@"转诊患者失败"];
     }
+}
+#pragma mark - 转诊后回调
+- (void)transferBackAction{
+    self.selectDoctor = nil;
+    //发送通知
+    [[NSNotificationCenter defaultCenter] postNotificationName:PatientTransferNotification object:nil];
+    [self popViewControllerAnimated:YES];
 }
 
 - (void)insertPatientIntroducerMap{

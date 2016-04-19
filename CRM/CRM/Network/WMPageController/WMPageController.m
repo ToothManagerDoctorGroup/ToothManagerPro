@@ -466,7 +466,6 @@
         // 由于不触发 -scrollViewDidScroll: 手动处理控制器
         [self layoutChildViewControllers];
         self.currentViewController = self.displayVC[@(self.selectIndex)];
-        
         [self postFullyDisplayedNotificationWithCurrentIndex:(int)index];
     }
 }

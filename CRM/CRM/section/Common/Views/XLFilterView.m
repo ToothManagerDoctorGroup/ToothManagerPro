@@ -40,6 +40,7 @@
 @implementation XLFilterView
 
 - (void)dealloc{
+    NSLog(@"数据筛选视图被销毁");
     [_timeView removeObserver:self forKeyPath:@"isCustomTime"];
 }
 
@@ -126,7 +127,12 @@
     CGFloat searchW = (kScreenWidth - margin * 3) / 5 * 3;
     CGFloat searchH = resetH;
     
-    _scrollView.frame = CGRectMake(0, 0, kScreenWidth, self.bottom - 160);
+    CGFloat stateH = [_stateView fixHeight];
+    CGFloat timeH = [_timeView fixHeight];
+    CGFloat doctorH = [_doctorView fixHeight];
+    CGFloat scrollH = stateH + timeH + doctorH;
+    
+    _scrollView.frame = CGRectMake(0, 0, kScreenWidth, scrollH);
     _stateView.frame = CGRectMake(0, 0, kScreenWidth, [_stateView fixHeight]);
     _timeView.frame = CGRectMake(0, _stateView.bottom, kScreenWidth, [_timeView fixHeight]);
     
@@ -139,7 +145,8 @@
     _dismissBtn.frame = CGRectMake(0, _btnSuperView.bottom, kScreenWidth, [_dismissBtn fixHeight]);
     
     //设置scrollView的偏移量
-    CGFloat contentH = _doctorView.bottom > _scrollView.height ? _doctorView.bottom : _scrollView.height;
+    CGFloat scrollMaxH = self.bottom - 160;
+    CGFloat contentH = _doctorView.bottom > scrollMaxH ? _doctorView.bottom : scrollMaxH;
     _scrollView.contentSize = CGSizeMake(kScreenWidth, contentH);
 }
 
@@ -200,8 +207,9 @@
         //判断是否选择自定义时间
         if (self.timeState == FilterTimeStateDay) {
             //今日
-            startTime = [MyDateTool stringWithDateWithSec:[NSDate date]];
-            endTime = startTime;
+            NSString *common = [[MyDateTool stringWithDateWithSec:[NSDate date]] componentsSeparatedByString:@" "][0];
+            startTime = [NSString stringWithFormat:@"%@ 00:00:00",common];
+            endTime = [NSString stringWithFormat:@"%@ 23:59:59",common];
         }else if (self.timeState == FilterTimeStateWeek){
             //本周
             startTime = [MyDateTool stringWithDateWithSec:[MyDateTool getMondayDateWithCurrentDate:[NSDate date]]];

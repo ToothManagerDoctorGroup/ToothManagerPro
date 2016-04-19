@@ -27,8 +27,8 @@
 
 Realize_ShareInstance(AutoSyncGetManager);
 
-- (void)startSyncGet{
-    [[XLAutoGetSyncTool shareInstance] getAllData];
+- (void)startSyncGetShowSuccess:(BOOL)showSuccess{
+    [[XLAutoGetSyncTool shareInstance] getAllDataShowSuccess:showSuccess];
 }
 
 @end

@@ -50,6 +50,10 @@
     return _filterView;
 }
 
+- (void)dealloc{
+    NSLog(@"患者列表被销毁");
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -72,7 +76,7 @@
     patientVc.patientStatus = PatientStatuspeAll;
     [self addChildViewController:patientVc];
     self.currentViewController = patientVc;
-//    [self setRightBarButtonWithTitle:@"筛选"];
+    [self setRightBarButtonWithTitle:@"筛选"];
     
     //消息视图
     SuccessViewController *successVc = [[SuccessViewController alloc] init];
@@ -125,7 +129,7 @@
 //    TwoViewController *twoVc = self.childViewControllers[1];
     
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-//        [self setRightBarButtonWithTitle:@"筛选"];
+        [self setRightBarButtonWithTitle:@"筛选"];
           [self transitionFromViewController:self.currentViewController toViewController:patientVC duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
               
           } completion:^(BOOL finished) {
@@ -136,7 +140,7 @@
               }
           }];
     }else{
-//        [self setRightBarButtonWithTitle:nil];
+        [self setRightBarButtonWithTitle:nil];
         [self transitionFromViewController:self.currentViewController toViewController:successVc duration:.35 options:UIViewAnimationOptionTransitionNone animations:^{
         } completion:^(BOOL finished) {
             if (finished) {
@@ -150,6 +154,7 @@
 
 #pragma mark - Right View
 - (void)onRightButtonAction:(id)sender {
+    [self.view endEditing:YES];
     if (self.segmentedControl.selectedSegmentIndex == 0) {
         if (self.filterShow) {
             self.filterView.hidden = YES;
@@ -168,9 +173,9 @@
 }
 
 - (void)filterView:(XLFilterView *)filterView patientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
-//    XLPatientDisplayViewController *patientVC = self.childViewControllers[0];
+    XLPatientDisplayViewController *patientVC = self.childViewControllers[0];
     //判断当前选择的查询条件
-    
+    [patientVC requestPatientsWithPatientStatus:status startTime:startTime endTime:endTime cureDoctors:cureDoctors];
 }
 
 

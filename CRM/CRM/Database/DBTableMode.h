@@ -171,7 +171,7 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *case_id;      //病例id
 @property (nonatomic,copy) NSString *ct_image;             //CT图片地址
 @property (nonatomic,copy) NSString *ct_desc;              //CT描述
-@property (nonatomic,copy) NSString *creationdate;   //创建时间
+@property (nonatomic,copy) NSString *creation_date;   //创建时间
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
 @property (nonatomic,copy) NSString *creation_date_sync;      //创建日期,用于同步

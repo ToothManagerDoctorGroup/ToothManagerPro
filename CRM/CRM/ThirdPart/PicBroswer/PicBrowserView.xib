@@ -52,7 +52,11 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="KsN-zc-Ld4"/>
                         <barButtonItem title="CT片" id="uXp-mS-3as"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="Y6s-4J-wIy"/>
-                        <barButtonItem id="QYr-FG-cBi"/>
+                        <barButtonItem title="保存" id="QYr-FG-cBi">
+                            <connections>
+                                <action selector="saveImageAction:" destination="iN0-l3-epB" id="ftd-dt-JrK"/>
+                            </connections>
+                        </barButtonItem>
                     </items>
                 </toolbar>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kGY-4o-H65">
@@ -91,6 +95,7 @@
                 <outlet property="leftBar" destination="rUH-ft-oBT" id="m6M-l8-MsX"/>
                 <outlet property="mainCTButton" destination="ena-li-QmG" id="1hQ-iK-RgV"/>
                 <outlet property="midBar" destination="qa4-XZ-wPG" id="ZO0-m2-LKc"/>
+                <outlet property="saveImageButton" destination="QYr-FG-cBi" id="woj-Ov-iUN"/>
                 <outlet property="scrollView" destination="14d-Rp-CDe" id="XdJ-kr-e6J"/>
                 <outlet property="titleBarItem" destination="uXp-mS-3as" id="Azc-2U-Q0Q"/>
                 <outlet property="topBar" destination="4BQ-MD-bnS" id="AcF-9g-jQ3"/>

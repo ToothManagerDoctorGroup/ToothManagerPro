@@ -109,6 +109,30 @@
     }
 }
 
+- (void)saveImageAction:(id)sender{
+    __weak typeof(self) weakSelf = self;
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"保存图片" message:@"是否将此图片保存到相册?" cancel:@"取消" certain:@"保存" cancelHandler:^{
+    } comfirmButtonHandlder:^{
+        //保存到相册
+        BrowserPicture *pic = [weakSelf.imageArray objectAtIndex:weakSelf.currentIndex];
+        UIImage *resultImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:pic.url];
+        if (resultImage != nil) {
+            UIImageWriteToSavedPhotosAlbum(resultImage, weakSelf, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+        }else{
+            [SVProgressHUD showImage:nil status:@"当前图片不存在"];
+        }
+    }];
+    [alertView show];
+}
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
+    if (error != NULL) {
+        [SVProgressHUD showImage:nil status:@"保存失败"];
+    }else{
+        [SVProgressHUD showImage:nil status:@"已保存到手机相册"];
+    }
+}
+
 - (void)pageupAction:(id)sender {
     NSInteger center = self.currentIndex-1;
     NSInteger left = center-1;
@@ -197,7 +221,6 @@
                 }
             }
         }
-        
         //更新当前的视图
         [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
         

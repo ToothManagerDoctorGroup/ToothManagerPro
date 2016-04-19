@@ -9,6 +9,9 @@
  @class
  @abstract 用户使用指南Controller，第一次启动程序或者是有更新时需要显示该界面时，就显示该Controller
  */
+
+typedef void (^UserGuideControllerPushButtonBlock)();
+
 @interface TTMUserGuideController : UIViewController
 
 /*!
@@ -28,5 +31,7 @@
  @abstract 需要跳转的Controller
  */
 @property (nonatomic, strong) UIViewController *forwardController;
+
+@property (nonatomic, copy)UserGuideControllerPushButtonBlock pushButtonBlock;
 
 @end

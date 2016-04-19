@@ -246,6 +246,14 @@
  *  @return 是否为数字
  */
 - (BOOL)isPureNumandCharacters;
+/**
+ *  汉字转拼音
+ *
+ *  @return 转换后的拼音
+ */
+- (NSString *)chineseToPinyin;
+
+- (NSString *)transformToPinyin;
 
 
 @end

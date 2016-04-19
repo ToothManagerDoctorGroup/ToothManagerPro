@@ -37,6 +37,7 @@
 #import "DBManager+Doctor.h"
 #import "XLPatientDetailViewController.h"
 #import "DBManager+LocalNotification.h"
+#import "NSString+TTMAddtion.h"
 
 @interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>{
     BOOL ifNameBtnSelected;
@@ -54,6 +55,12 @@
 
 @property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
 @property (nonatomic, assign)NSInteger allCount;//所有数据
+
+//高级检索用到的参数
+@property (nonatomic, assign)PatientStatus status;
+@property (nonatomic, copy)NSString *startTime;
+@property (nonatomic, copy)NSString *endTime;
+@property (nonatomic, strong)NSArray *cureDoctors;
 @end
 
 @implementation XLPatientDisplayViewController
@@ -68,12 +75,13 @@
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
+#pragma mark - 拦截父类的方法
 - (void)viewWillAppear:(BOOL)animated{}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.pageNum = 0;
+    self.status = self.patientStatus;
     self.tableView.frame = CGRectMake(0, 44 + 80, kScreenWidth, kScreenHeight - 64 - 80 - 44);
     //初始化搜索框
     [self.view addSubview:self.searchBar];
@@ -103,22 +111,22 @@
 - (void)tableViewDidTriggerHeaderRefresh{
     //重新请求数据
     self.pageNum = 0;
-    [self requestLocalDataWithPage:self.pageNum isHeader:YES isFooter:NO];
+    [self requestLocalDataWithPage:self.pageNum isHeader:YES isFooter:NO status:self.status startTime:self.startTime endTime:self.endTime doctors:self.cureDoctors];
 }
 #pragma mark - 上拉加载事件
 - (void)tableViewDidTriggerFooterRefresh{
     //首先将页码加1
     if (self.patientCellModeArray.count < self.allCount) {
         self.pageNum++;
-        [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES];
+        [self requestLocalDataWithPage:self.pageNum isHeader:NO isFooter:YES status:self.status startTime:self.startTime endTime:self.endTime doctors:self.cureDoctors];
     }else{
         self.showRefreshFooter = NO;
     }
 }
-
 //加载本地数据
-- (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter{
-    self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:self.patientStatus page:pageNum];
+- (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter status:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime doctors:(NSArray *)doctors{
+    
+    self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:status startTime:startTime endTime:endTime cureDoctors:doctors page:pageNum];
     if (isHeader) {
         self.allCount = [[DBManager shareInstance] getAllPatientCount];
         [self.patientCellModeArray removeAllObjects];
@@ -134,11 +142,11 @@
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
         cellMode.name = patientTmp.patient_name;
-//        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-//            cellMode.name = patientTmp.nickName;
-//        }else{
-//            cellMode.name = patientTmp.patient_name;
-//        }
+        //        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
+        //            cellMode.name = patientTmp.nickName;
+        //        }else{
+        //            cellMode.name = patientTmp.patient_name;
+        //        }
         cellMode.phone = patientTmp.patient_phone;
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
@@ -552,7 +560,7 @@
             NSComparisonResult result;
             PatientsCellMode *object1 = (PatientsCellMode *)obj1;
             PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.name localizedCompare:object2.name];
+            result = [object1.name.transformToPinyin localizedCompare:object2.name.transformToPinyin];
             return result == NSOrderedDescending;
         }];
         self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
@@ -563,7 +571,7 @@
             NSComparisonResult result;
             PatientsCellMode *object1 = (PatientsCellMode *)obj1;
             PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.name localizedCompare:object2.name];
+            result = [object1.name.transformToPinyin localizedCompare:object2.name.transformToPinyin];
             return result == NSOrderedAscending;
         }];
         self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
@@ -578,7 +586,7 @@
             NSComparisonResult result;
             PatientsCellMode *object1 = (PatientsCellMode *)obj1;
             PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.introducerName localizedCompare:object2.introducerName];
+            result = [object1.introducerName.transformToPinyin localizedCompare:object2.introducerName.transformToPinyin];
             return result == NSOrderedDescending;
         }];
         self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
@@ -589,7 +597,7 @@
             NSComparisonResult result;
             PatientsCellMode *object1 = (PatientsCellMode *)obj1;
             PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.introducerName localizedCompare:object2.introducerName];
+            result = [object1.introducerName.transformToPinyin localizedCompare:object2.introducerName.transformToPinyin];
             return result == NSOrderedDescending;
         }];
         NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
@@ -673,7 +681,11 @@
 
 #pragma mark - 高级检索功能
 - (void)requestPatientsWithPatientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
-    //判断当前患者的状态
+    self.status = status;
+    self.startTime = startTime;
+    self.endTime = endTime;
+    self.cureDoctors = cureDoctors;
+    [self.tableView.header beginRefreshing];
     
 }
 

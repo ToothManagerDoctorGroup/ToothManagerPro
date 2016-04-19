@@ -16,4 +16,6 @@ Declare_ShareInstance(RemoteNotificationCenter);
 
 - (void)didReceiveRemoteNotification:(NSDictionary *)userinfo;
 
+- (void)pushToMessageVc;
+
 @end

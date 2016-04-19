@@ -80,6 +80,11 @@
     return _patientCellModeArray;
 }
 
+#pragma mark - 设置按钮是否可点
+- (void)setButtonEnable:(BOOL)enable{
+    self.navigationItem.rightBarButtonItem.enabled = enable;
+}
+
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
@@ -235,6 +240,7 @@
 
 #pragma mark - 添加患者
 - (void)addPatientToGroupWithArray:(NSArray *)result{
+    [self setButtonEnable:NO];
     int index = 0;
     NSMutableArray *selectMemberArr = [NSMutableArray array];
     for (GroupMemberModel *model in result) {
@@ -255,8 +261,12 @@
                 //发送一个通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:DoctorAddGroupMemberSuccessNotification object:nil];
                 [self popViewControllerAnimated:YES];
+            }else{
+                [self setButtonEnable:YES];
+                [SVProgressHUD showErrorWithStatus:respondModel.result];
             }
         } failure:^(NSError *error) {
+            [self setButtonEnable:YES];
             [SVProgressHUD showErrorWithStatus:@"添加失败"];
             if (error) {
                 NSLog(@"error:%@",error);
@@ -265,6 +275,7 @@
     }
     
     if (index == 0) {
+        [self setButtonEnable:YES];
         [SVProgressHUD showErrorWithStatus:@"请选择患者"];
         return;
     }

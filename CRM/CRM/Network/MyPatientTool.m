@@ -45,7 +45,7 @@
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[ActionParam] = [@"GetPatientAllInfo" TripleDESIsEncrypt:YES];
+    params[ActionParam] = [@"newgetpatientallinfo" TripleDESIsEncrypt:YES];
     params[@"patient_id"] = [patientId TripleDESIsEncrypt:YES];
     params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
     

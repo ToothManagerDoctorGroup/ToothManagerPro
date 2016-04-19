@@ -28,9 +28,11 @@
 #import "Reachability.h"
 #import "UITabBar+BadgeView.h"
 #import "XLMenuButtonView.h"
+#import "XLAutoGetSyncTool.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
+static const NSInteger kDefaultSyncGetTimeInterval = 60 * 5;
 static NSString *kMessageType = @"MessageType";
 static NSString *kConversationChatter = @"ConversationChatter";
 
@@ -48,7 +50,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 @property (strong, nonatomic) NSDate *lastPlaySoundDate;//最后一次响铃的时间
 
 @property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
-//@property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
+@property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
 
 @end
 
@@ -57,6 +59,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 - (void)dealloc
 {
+    NSLog(@"主页面被释放");
     [self unregisterNotifications];
     //移除kvo
     CRMAppDelegate *delegateTmp = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
@@ -74,6 +77,10 @@ static NSString *kConversationChatter = @"ConversationChatter";
         self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
         //将定时器添加到主队列中
         [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+        
+        self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncGetTimeInterval target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
+        //将定时器添加到主队列中
+        [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
     }
     
     
@@ -98,12 +105,20 @@ static NSString *kConversationChatter = @"ConversationChatter";
         if (status == NotReachable) {
             [self.timer invalidate];
             self.timer = nil;
+            [self.syncGetTimer invalidate];
+            self.timer = nil;
         }else{
             if (self.timer == nil) {
                 //创建一个定时器(NSTimer)
                 self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
                 //将定时器添加到主队列中
                 [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+            }
+            
+            if (self.syncGetTimer == nil) {
+                self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncGetTimeInterval target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
+                //将定时器添加到主队列中
+                [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
             }
         }
         
@@ -123,6 +138,12 @@ static NSString *kConversationChatter = @"ConversationChatter";
     }else{
         [self.tabBar hideBadgeOnItemIndex:4];
     }
+}
+
+#pragma mark - 定时器，自动下载
+- (void)autoSyncGetAction:(NSTimer *)timer{
+    //定时下载
+    [[XLAutoGetSyncTool shareInstance] getAllDataShowSuccess:NO];
 }
 
 - (void)makeMainView

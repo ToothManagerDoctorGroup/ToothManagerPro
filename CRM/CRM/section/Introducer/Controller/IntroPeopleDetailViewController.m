@@ -176,34 +176,6 @@
     newIntoducerVC.introducerId = introducer.ckeyid;
     [self pushViewController:newIntoducerVC animated:YES];
     
-//    
-//    if (!self.isEdit) {
-//        //编辑状态
-//        IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc]init];
-//        [detailCtl setIntroducer:introducer];
-//        detailCtl.hidesBottomBarWhenPushed = YES;
-//        detailCtl.isEdit = YES;
-//        [self pushViewController:detailCtl animated:YES];
-//        return;
-//    }
-//    [self.tbheaderView.nameTextField resignFirstResponder];
-//    [self.tbheaderView.phoneTextField resignFirstResponder];
-//    self.introducer.intr_name = self.tbheaderView.nameTextField.text;
-//    self.introducer.intr_level = self.tbheaderView.levelView.level;
-//    self.introducer.intr_phone = self.tbheaderView.phoneTextField.text;
-//    BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
-//    if (ret) {
-//        [SVProgressHUD showImage:nil status:@"修改成功"];
-//        //自动同步信息
-//        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Update dataEntity:[self.introducer.keyValues JSONString] syncStatus:@"0"];
-//        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-//        
-//        [self postNotificationName:IntroducerEditedNotification object:nil];
-//        
-//        [self popViewControllerAnimated:YES];
-//    } else {
-//        [SVProgressHUD showImage:nil status:@"修改失败"];
-//    }
 }
 
 - (void)callIntroducer:(UIButton *)sender

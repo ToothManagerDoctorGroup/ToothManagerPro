@@ -243,7 +243,7 @@
         CTLib *newCTLib = [[CTLib alloc]init];
         newCTLib.case_id = medicalcase.ckeyid;
         newCTLib.patient_id = medicalcase.patient_id;
-        newCTLib.creationdate = medicalcase.creation_date;
+        newCTLib.creation_date = medicalcase.creation_date;
         newCTLib.ct_desc = @"暂无描述";
         [ctlibArray addObject:newCTLib];
         

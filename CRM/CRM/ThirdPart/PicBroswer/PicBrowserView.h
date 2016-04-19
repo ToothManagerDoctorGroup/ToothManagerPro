@@ -32,6 +32,7 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *leftBar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *mainCTButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *midBar;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *saveImageButton;
 
 //初始化
 - (void)setupImageViews:(NSInteger)imageNum;
@@ -43,6 +44,7 @@
 - (IBAction)pageupAction:(id)sender;
 - (IBAction)pagedownAction:(id)sender;
 - (IBAction)deleteAction:(id)sender;
+- (IBAction)saveImageAction:(id)sender;
 - (void)setBarTintColor:(UIColor *)tintColor;
 
 @end
@@ -54,5 +56,6 @@
 - (void)pagedownAction:(id)sender;
 - (void)deleteAction:(id)sender;
 - (void)mainImgAction:(id)sender;
+- (void)saveImageAction:(id)sender;
 
 @end

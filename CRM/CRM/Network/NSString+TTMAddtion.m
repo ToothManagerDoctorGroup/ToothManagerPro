@@ -7,6 +7,7 @@
 #import "CommonCrypto/CommonDigest.h"
 #import "sys/utsname.h"
 #import "GTMBase64.h"
+#import "PinYinForObjc.h"
 
 // 前端与后台商量KEY
 #define gkey @"ihaveadream&!haveadream@"
@@ -594,5 +595,20 @@
         return NO;
     }
     return YES;
+}
+
+/** 汉字转拼音 */
+- (NSString *)chineseToPinyin
+{
+    NSMutableString *str = [self mutableCopy];
+    CFStringTransform((CFMutableStringRef)str, NULL, kCFStringTransformMandarinLatin, NO);
+    CFStringTransform((CFMutableStringRef)str, NULL, kCFStringTransformStripDiacritics, NO);
+    
+    return [str stringByReplacingOccurrencesOfString:@" " withString:@""];
+}
+
+- (NSString *)transformToPinyin{
+    
+    return [PinYinForObjc chineseConvertToPinYin:self];
 }
 @end

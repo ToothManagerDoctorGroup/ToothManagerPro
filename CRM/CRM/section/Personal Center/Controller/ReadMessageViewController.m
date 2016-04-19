@@ -19,6 +19,7 @@
 #import "DBManager+LocalNotification.h"
 #import "XLPatientAppointViewController.h"
 #import "DBManager+Patients.h"
+#import "MJRefresh.h"
 
 @interface ReadMessageViewController ()
 @property (nonatomic, strong)NSMutableArray *dataList;
@@ -28,6 +29,13 @@
 @end
 
 @implementation ReadMessageViewController
+
+- (NSMutableArray *)dataList{
+    if (!_dataList) {
+        _dataList = [NSMutableArray array];
+    }
+    return _dataList;
+}
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -43,26 +51,28 @@
     
     self.pageIndex = 1;
     
-    [self requstData];
-//    //添加头部刷新控件
-//    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefresh)];
-//    
-//    [self.tableView.legendHeader beginRefreshing];
-    
-    //添加上拉加载的控件
-    [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefresh)];
+    //添加头部刷新控件
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefresh)];
+    [self.tableView.legendHeader beginRefreshing];
 }
 
 - (void)requstData{
-    [SVProgressHUD showWithStatus:@"正在加载"];
     [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:30 success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
-        self.dataList = [NSMutableArray arrayWithArray:result];
-        
+        if (result.count > 0) {
+            [self.dataList addObjectsFromArray:result];
+        }
+        if ([self.tableView.header isRefreshing]) {
+            [self.tableView.header endRefreshing];
+        }else if ([self.tableView.footer isRefreshing]){
+            [self.tableView.footer endRefreshing];
+        }
         [self.tableView reloadData];
         
         if (result.count < 30) {
             [self.tableView removeFooter];
+        }else{
+            //添加上拉加载的控件
+            [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefresh)];
         }
         self.pageIndex++;
         
@@ -72,6 +82,12 @@
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+- (void)headerRefresh{
+    self.pageIndex = 1;
+    [self.dataList removeAllObjects];
+    [self requstData];
 }
 
 - (void)footerRefresh{

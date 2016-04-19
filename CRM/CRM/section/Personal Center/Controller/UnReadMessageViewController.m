@@ -36,6 +36,7 @@
 #import "DoctorTool.h"
 #import "DoctorInfoModel.h"
 #import "XLNewFriendNotiViewController.h"
+#import "MJRefresh.h"
 
 @interface UnReadMessageViewController ()
 
@@ -47,7 +48,6 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    [SVProgressHUD dismiss];
 }
 
 - (void)viewDidLoad {
@@ -56,23 +56,42 @@
     //添加通知
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
+    //加载子控件
+    [self initSubViews];
     
-    [self requestData];
+    //第一次加载
+    [self.tableView.header beginRefreshing];
 }
 
 - (void)dealloc{
-    [SVProgressHUD dismiss];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - 加载子控件
+- (void)initSubViews{
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerAction)];
+    self.tableView.header.updatedTimeHidden = YES;
+}
+
+#pragma mark - 下拉刷新
+- (void)headerAction{
+    [self requestData];
+}
+
 - (void)requestData{
-    [SVProgressHUD showWithStatus:@"正在加载"];
     [SysMessageTool getUnReadMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
+        
+        if ([self.tableView.header isRefreshing]) {
+            [self.tableView.header endRefreshing];
+        }
         
         self.dataList = result;
         //刷新表格
         [self.tableView reloadData];
     } failure:^(NSError *error) {
+        if ([self.tableView.header isRefreshing]) {
+            [self.tableView.header endRefreshing];
+        }
         [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
