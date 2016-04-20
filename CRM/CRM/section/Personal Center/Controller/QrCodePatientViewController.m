@@ -15,7 +15,6 @@
 #import "Share.h"
 #import "DBManager+Doctor.h"
 #import "DBManager+User.h"
-#import "AddressBookViewController.h"
 #import "XLGuideView.h"
 #import "CRMUserDefalut.h"
 #import "XLContactsViewController.h"

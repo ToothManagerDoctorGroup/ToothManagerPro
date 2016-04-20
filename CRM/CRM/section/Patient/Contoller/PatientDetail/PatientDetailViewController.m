@@ -16,7 +16,6 @@
 #import "CommentTextField.h"
 #import "MLKMenuPopover.h"
 
-#import "PatientEditViewController.h"
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
 #import "DBManager+Introducer.h"
@@ -32,7 +31,6 @@
 #import "DBTableMode.h"
 #import "CRMHttpRequest+Doctor.h"
 #import "MyPatientTool.h"
-#import "AddReminderViewController.h"
 #import "CRMHttpRespondModel.h"
 
 #import "DBManager+AutoSync.h"
@@ -610,16 +608,6 @@
         [self pushViewController:doctorVC animated:YES];
     }
 }
-//新建提醒
-- (void)createNotificationAction:(id)sender {
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
-    addReminderVC.isAddLocationToPatient = YES;
-    addReminderVC.patient = self.detailPatient;
-    [self.navigationController pushViewController:addReminderVC animated:YES];
-}
-
 //患者转介绍人
 - (void)patientToIntroducerSuccess:(NSDictionary *)result{
     if ([result integerForKey:@"Code"] == 200) {

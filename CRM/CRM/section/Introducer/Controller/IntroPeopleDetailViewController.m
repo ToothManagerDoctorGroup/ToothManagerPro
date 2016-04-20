@@ -18,7 +18,6 @@
 #import "IntroDetailHeaderTableViewController.h"
 #import "TimStarTextField.h"
 #import "SVProgressHUD.h"
-#import "PatientInfoViewController.h"
 #import "DBManager+Doctor.h"
 #import "PatientDetailViewController.h"
 #import "XLStarView.h"

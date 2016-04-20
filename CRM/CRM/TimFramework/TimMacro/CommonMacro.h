@@ -61,7 +61,7 @@ static NSString * const name = @""#string;
 
 #pragma mark ---------------------- frame ,bounds ---------------------------------------------
 #define SELF_VIEW_BOUNDS_WIDTH   self.view.bounds.size.width
-#define SELF__VIEW_BOUNDS_HEIGHT self.view.bounds.size.height
+#define SELF_VIEW_BOUNDS_HEIGHT self.view.bounds.size.height
 
 #pragma mark -----------------------  EXTERN --------------------------------------------------
 #ifdef __cplusplus

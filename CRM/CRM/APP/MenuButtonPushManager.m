@@ -7,7 +7,6 @@
 //
 
 #import "MenuButtonPushManager.h"
-#import "AddReminderViewController.h"
 #import "AccountManager.h"
 #import "AppoinmentMenuViewController.h"
 #import "XLSelectYuyueViewController.h"

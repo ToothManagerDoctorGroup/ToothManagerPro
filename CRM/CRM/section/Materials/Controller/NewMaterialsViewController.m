@@ -12,7 +12,6 @@
 #import "CRMMacro.h"
 #import "DBManager+Introducer.h"
 #import "DBManager+Patients.h"
-#import "PatientInfoViewController.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
 #import "DBManager+AutoSync.h"

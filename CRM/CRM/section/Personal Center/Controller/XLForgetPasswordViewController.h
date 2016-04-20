@@ -7,16 +7,15 @@
 //
 
 #import "TimTableViewController.h"
-
-@interface XLForgetPasswordViewController : TimTableViewController{
-    NSTimer *myTimer;
-    int timeCount;
-}
+/**
+ *  忘记密码
+ */
+@class JKCountDownButton;
+@interface XLForgetPasswordViewController : TimTableViewController
 
 @property (weak, nonatomic) IBOutlet UITextField *phoneTextField;
 @property (weak, nonatomic) IBOutlet UITextField *passwdTextField;
 @property (weak, nonatomic) IBOutlet UITextField *validateTextField;
-@property (weak, nonatomic) IBOutlet UIButton *validateButton;
-@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic) IBOutlet JKCountDownButton *validateButton;
 
 @end

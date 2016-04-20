@@ -20,6 +20,7 @@
 #import "XLLoginTool.h"
 #import "CRMHttpRespondModel.h"
 #import "DBManager.h"
+#import "JKCountDownButton.h"
 
 @interface XLSignUpViewController ()<CRMHttpRequestPersonalCenterDelegate>
 
@@ -32,7 +33,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
     }
     return self;
 }
@@ -40,15 +40,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.title = @"注册";
-    self.lisensebutton.selected = YES;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    
-    CALayer *layer = self.validateButton.layer;
-    [layer setMasksToBounds:YES];
-    [layer setCornerRadius:5.0];
-    [self.validateButton addTarget:self action:@selector(getValidateCode:) forControlEvents:UIControlEventTouchUpInside];
     
     self.passwdTextField.secureTextEntry = YES;
     self.passwdTextField.keyboardType = UIKeyboardTypeEmailAddress;
@@ -66,10 +59,6 @@
     [self.validateTextField resignFirstResponder];
     [self.recommenderTextField resignFirstResponder];
 }
-- (void)initData
-{
-    timeCount = 0;
-}
 
 - (void)didReceiveMemoryWarning
 {
@@ -85,43 +74,11 @@
     }];
 }
 
-- (IBAction)lisenseAction:(id)sender {
-    self.lisensebutton.selected = !self.lisensebutton.selected;
-}
-
 - (IBAction)readlisenseAction:(id)sender {
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     ServerPrivacyViewController *serverVC = [storyBoard instantiateViewControllerWithIdentifier:@"ServerPrivacyViewController"];
     serverVC.isPush = YES;
     [self pushViewController:serverVC animated:YES];
-}
-
-- (void)getValidateCode:(UIButton *)sender {
-    [self startTimer];
-}
-
-#pragma mark - getValidate
-- (void)startTimer
-{
-    if (self.phoneTextField.text.length <= 0) {
-        [SVProgressHUD showErrorWithStatus:@"您未填写手机号码"];
-    }else if (self.phoneTextField.text.length > 0 && self.phoneTextField.text.length != 11) {
-        [SVProgressHUD showErrorWithStatus:@"请输入正确的手机号码"];
-    }else {
-        if (![self isAllNum:self.phoneTextField.text]) {
-            [SVProgressHUD showErrorWithStatus:@"手机号码含有异常字符"];
-        }else {
-            myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refreshTime:) userInfo:nil repeats:YES];
-            [[NSRunLoop currentRunLoop]addTimer:myTimer forMode:NSDefaultRunLoopMode];
-            
-            [self.validateButton setUserInteractionEnabled:NO];
-            [self.validateButton.titleLabel setTextAlignment:NSTextAlignmentRight];
-            [self.validateButton setTitle:@"秒后重发" forState:UIControlStateNormal];
-            
-            //获取验证码
-            [self sendSMSTextToPhone:self.phoneTextField.text];
-        }
-    }
 }
 
 - (void)sendSMSTextToPhone:(NSString *)phone
@@ -143,29 +100,38 @@
     }
     return YES;
 }
-
-#pragma mark -
-#pragma mark NSTimer
-- (void)refreshTime:(NSTimer *)timer
-{
-    timeCount ++;
-    [_timeLabel setText:[NSString stringWithFormat:@"%d",60 - timeCount]];
-    if (timeCount >= 60) {
-        [timer invalidate];
-        timer = nil;
-        [self.validateButton setUserInteractionEnabled:YES];
-        [self.validateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [self.validateButton setTitle:@"重  发" forState:UIControlStateNormal];
-        [_timeLabel setText:@""];
-        timeCount = 0;
+- (IBAction)countButtonAction:(JKCountDownButton *)sender {
+    
+    if (self.phoneTextField.text.length <= 0) {
+        [SVProgressHUD showErrorWithStatus:@"您未填写手机号码"];
+    }else if (self.phoneTextField.text.length > 0 && self.phoneTextField.text.length != 11) {
+        [SVProgressHUD showErrorWithStatus:@"请输入正确的手机号码"];
+    }else {
+        if (![self isAllNum:self.phoneTextField.text]) {
+            [SVProgressHUD showErrorWithStatus:@"手机号码含有异常字符"];
+        }else {
+            //获取验证码
+            [self sendSMSTextToPhone:self.phoneTextField.text];
+            
+            //设置按钮不可点击
+            sender.enabled = NO;
+            //button type要 设置成custom 否则会闪动
+            [sender startWithSecond:60];
+            [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
+                NSString *title = [NSString stringWithFormat:@"剩余%d秒",second];
+                return title;
+            }];
+            [sender didFinished:^NSString *(JKCountDownButton *countDownButton, int second) {
+                countDownButton.enabled = YES;
+                return @"重新获取";
+            }];
+            
+        }
     }
 }
 
 #pragma mark - Delegate
 - (void)registerSucessWithResult:(NSDictionary *)result {
-//    NSDictionary *resultDic = [result objectForKey:@"Result"];
-//    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
-    
     [SVProgressHUD showWithStatus:@"注册成功，正在登陆"];
     [XLLoginTool loginWithNickName:self.phoneTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
@@ -254,15 +220,8 @@
 
 - (void)sendValidateFailedWithError:(NSError *)error
 {
-
-    [myTimer invalidate];
-    myTimer = nil;
-    [self.validateButton setUserInteractionEnabled:YES];
-    [self.validateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    [self.validateButton setTitle:@"重  发" forState:UIControlStateNormal];
-    [_timeLabel setText:@""];
-    timeCount = 0;
-    
+    //停止计时
+    [self.validateButton stop];
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 

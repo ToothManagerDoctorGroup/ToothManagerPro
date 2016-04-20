@@ -13,7 +13,6 @@
 #import "MaterialTableViewCell.h"
 #import "ChineseSearchEngine.h"
 #import "DBManager+Materials.h"
-#import "MaterialDetailViewController.h"
 #import "UISearchBar+XLMoveBgView.h"
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"

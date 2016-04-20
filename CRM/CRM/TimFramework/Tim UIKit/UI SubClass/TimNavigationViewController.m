@@ -8,7 +8,6 @@
 
 #import "TimNavigationViewController.h"
 #import "TimFramework.h"
-#import "IntroducerViewController.h"
 #import "AccountViewController.h"
 #import "PatientSegumentController.h"
 #import "MenuView.h"

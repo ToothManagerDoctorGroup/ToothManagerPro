@@ -16,7 +16,6 @@
 #import "CRMMacro.h"
 #import "CRMUserDefalut.h"
 #import "DBManager+User.h"
-#import "ForgetPasswordViewController.h"
 #import "DoctorInfoModel.h"
 #import "XLSignUpViewController.h"
 #import "XLPersonalStepOneViewController.h"

@@ -9,16 +9,16 @@
 #import "DoctorGroupViewController.h"
 #import "DoctorGroupTableCell.h"
 #import "CustomAlertView.h"
-#import "GroupPatientDisplayController.h"
 #import "DoctorGroupTool.h"
 #import "GroupPatientModel.h"
-#import "GroupManageViewController.h"
 #import "GroupEntity.h"
 #import "DoctorGroupModel.h"
 #import "XLGroupManagerViewController.h"
 #import "NSString+Conversion.h"
 #import "CRMUserDefalut.h"
 #import "XLGuideImageView.h"
+#import "DoctorGroupTool.h"
+#import "AccountManager.h"
 
 @interface DoctorGroupViewController ()<CustomAlertViewDelegate,UIAlertViewDelegate>
 

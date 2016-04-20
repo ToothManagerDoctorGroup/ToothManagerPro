@@ -8,7 +8,6 @@
 
 #import "XLAddReminderViewController.h"
 #import "AccountManager.h"
-#import "PatientsDisplayViewController.h"
 #import "LocalNotificationCenter.h"
 #import "XLHengYaViewController.h"
 #import "XLRuYaViewController.h"

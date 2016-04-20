@@ -9,6 +9,7 @@
 #import "XLForgetPasswordViewController.h"
 #import "AccountManager.h"
 #import "CRMHttpRequest+PersonalCenter.h"
+#import "JKCountDownButton.h"
 
 @interface XLForgetPasswordViewController ()
 @property (weak, nonatomic) IBOutlet UIButton *submitButton;
@@ -21,11 +22,6 @@
     [super viewDidLoad];
     self.title = @"忘记密码";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    CALayer *layer = self.validateButton.layer;
-    [layer setMasksToBounds:YES];
-    [layer setCornerRadius:5.0];
-    [self.validateButton addTarget:self action:@selector(getValidateCode:) forControlEvents:UIControlEventTouchUpInside];
-    
     self.passwdTextField.secureTextEntry = YES;
     self.passwdTextField.keyboardType = UIKeyboardTypeEmailAddress;
 
@@ -45,16 +41,8 @@
     [self.validateTextField resignFirstResponder];
     [self.passwdTextField resignFirstResponder];
 }
-- (void)initData
-{
-    timeCount = 0;
-}
-- (void)getValidateCode:(UIButton *)sender {
-    [self startTimer];
-}
-#pragma mark - getValidate
-- (void)startTimer
-{
+
+- (IBAction)countButtonAction:(JKCountDownButton *)sender {
     if (self.phoneTextField.text.length <= 0) {
         [SVProgressHUD showErrorWithStatus:@"您未填写手机号码"];
     }else if (self.phoneTextField.text.length > 0 && self.phoneTextField.text.length != 11) {
@@ -63,15 +51,21 @@
         if (![self isAllNum:self.phoneTextField.text]) {
             [SVProgressHUD showErrorWithStatus:@"手机号码含有异常字符"];
         }else {
-            myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refreshTime:) userInfo:nil repeats:YES];
-            [[NSRunLoop currentRunLoop]addTimer:myTimer forMode:NSDefaultRunLoopMode];
-            
-            [self.validateButton setUserInteractionEnabled:NO];
-            [self.validateButton.titleLabel setTextAlignment:NSTextAlignmentLeft];
-            [self.validateButton setTitle:@"秒后重发" forState:UIControlStateNormal];
-            
             //获取验证码
             [self sendSMSTextToPhone:self.phoneTextField.text];
+            
+            //设置按钮不可点击
+            sender.enabled = NO;
+            //button type要 设置成custom 否则会闪动
+            [sender startWithSecond:60];
+            [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
+                NSString *title = [NSString stringWithFormat:@"剩余%d秒",second];
+                return title;
+            }];
+            [sender didFinished:^NSString *(JKCountDownButton *countDownButton, int second) {
+                countDownButton.enabled = YES;
+                return @"重新获取";
+            }];
         }
     }
 }
@@ -95,21 +89,7 @@
     }
     return YES;
 }
-#pragma mark NSTimer
-- (void)refreshTime:(NSTimer *)timer
-{
-    timeCount ++;
-    [_timeLabel setText:[NSString stringWithFormat:@"%d",60 - timeCount]];
-    if (timeCount >= 60) {
-        [timer invalidate];
-        timer = nil;
-        [self.validateButton setUserInteractionEnabled:YES];
-        [self.validateButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [self.validateButton setTitle:@"重  发" forState:UIControlStateNormal];
-        [_timeLabel setText:@""];
-        timeCount = 0;
-    }
-}
+
 - (void)sendValidateSuccessWithResult:(NSDictionary *)result
 {
     [SVProgressHUD showImage:nil status:@"短信已经发送"];
@@ -117,12 +97,14 @@
 
 - (void)sendValidateFailedWithError:(NSError *)error
 {
+    [self.validateButton stop];
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 - (void)sendForgetValidateSuccessWithResult:(NSDictionary *)result{
     [SVProgressHUD showImage:nil status:@"短信已经发送"];
 }
 - (void)sendForgetValidateFailedWithError:(NSError *)error{
+    [self.validateButton stop];
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 
@@ -173,6 +155,5 @@
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 @end

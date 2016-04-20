@@ -7,8 +7,6 @@
 //
 
 #import "XLSelectYuyueViewController.h"
-#import "SelectDateCell.h"
-#import "AddReminderViewController.h"
 #import "LocalNotificationCenter.h"
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"

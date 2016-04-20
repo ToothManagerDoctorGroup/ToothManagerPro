@@ -17,7 +17,6 @@
 #import "GroupPatientCell.h"
 #import "DBManager+Patients.h"
 #import "PatientDetailViewController.h"
-#import "GroupPatientDisplayController.h"
 #import "XLGroupPatientDisplayViewController.h"
 #import "MyPatientTool.h"
 #import "AccountManager.h"

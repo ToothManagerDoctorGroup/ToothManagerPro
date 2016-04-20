@@ -21,8 +21,6 @@
 #import "DBManager+AutoSync.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
-#import "AddressBookViewController.h"
-#import "CreatePatientViewController.h"
 #import "MJRefresh.h"
 #import "DBManager+Doctor.h"
 #import "XLContactsViewController.h"

@@ -9,17 +9,15 @@
 #import "XLPatientDetailHeaderView.h"
 #import "QrCodeViewController.h"
 #import "UIView+WXViewController.h"
-#import "AddReminderViewController.h"
 #import "EditPatientDetailViewController.h"
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"
 #import "EditAllergyViewController.h"
-#import "IntroducerViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"
 #import "ChatViewController.h"
-
+#import <MessageUI/MessageUI.h>
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]

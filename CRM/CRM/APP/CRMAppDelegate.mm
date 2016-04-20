@@ -19,7 +19,6 @@
 #import "AccountManager.h"
 #import "SyncManager.h"
 #import "CRMMacro.h"
-#import "SysMsgViewController.h"
 #import "AccountViewController.h"
 #import "DBManager+User.h"
 #import "MenuButtonPushManager.h"

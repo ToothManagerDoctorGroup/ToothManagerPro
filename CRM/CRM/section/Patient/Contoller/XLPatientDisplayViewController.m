@@ -15,9 +15,6 @@
 #import "PatientsCellMode.h"
 #import "DBManager+Materials.h"
 #import "PatientsTableViewCell.h"
-#import "PatientInfoViewController.h"
-#import "CreatePatientViewController.h"
-#import "AddressBookViewController.h"
 #import "DBManager+Patients.h"
 #import "MudItemBarItem.h"
 #import "MudItemsBar.h"
@@ -26,7 +23,6 @@
 #import "SVProgressHUD.h"
 #import "SyncManager.h"
 #import "PatientDetailViewController.h"
-#import "GroupManageViewController.h"
 #import "DoctorGroupViewController.h"
 #import "UISearchBar+XLMoveBgView.h"
 #import "MJExtension.h"
@@ -38,8 +34,9 @@
 #import "XLPatientDetailViewController.h"
 #import "DBManager+LocalNotification.h"
 #import "NSString+TTMAddtion.h"
+#import "XLFilterView.h"
 
-@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>{
+@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,XLFilterViewDelegate>{
     BOOL ifNameBtnSelected;
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
@@ -56,6 +53,11 @@
 @property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
 @property (nonatomic, assign)NSInteger allCount;//所有数据
 
+
+//数据筛选
+@property (nonatomic, assign)BOOL filterShow;
+@property (nonatomic, strong)XLFilterView *filterView;
+
 //高级检索用到的参数
 @property (nonatomic, assign)PatientStatus status;
 @property (nonatomic, copy)NSString *startTime;
@@ -64,6 +66,15 @@
 @end
 
 @implementation XLPatientDisplayViewController
+
+- (XLFilterView *)filterView{
+    if (!_filterView) {
+        _filterView = [[XLFilterView alloc] initWithFrame:self.view.bounds];
+        _filterView.delegate = self;
+        [self.view addSubview:_filterView];
+    }
+    return _filterView;
+}
 
 - (NSMutableArray *)patientCellModeArray{
     if (!_patientCellModeArray) {
@@ -97,7 +108,6 @@
     //重新请求数据
     [self.tableView.header beginRefreshing];
 }
-
 //添加通知
 - (void)addNotification{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientCreatedNotification object:nil];
@@ -679,14 +689,29 @@
     }
 }
 
-#pragma mark - 高级检索功能
-- (void)requestPatientsWithPatientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
+#pragma mark - 显示和隐藏筛选视图
+- (void)showFilterView{
+    if (self.filterShow) {
+        self.filterView.hidden = YES;
+        self.filterShow = NO;
+    }else{
+        self.filterView.hidden = NO;
+        self.filterShow = YES;
+    }
+}
+
+#pragma mark - XLFilterViewDelegate
+- (void)dismiss{
+    self.filterView.hidden = YES;
+    self.filterShow = NO;
+}
+
+- (void)filterView:(XLFilterView *)filterView patientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
     self.status = status;
     self.startTime = startTime;
     self.endTime = endTime;
     self.cureDoctors = cureDoctors;
     [self.tableView.header beginRefreshing];
-    
 }
 
 @end

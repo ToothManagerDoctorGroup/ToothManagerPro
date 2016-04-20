@@ -10,18 +10,15 @@
 /**
  *  注册页面
  */
-@interface XLSignUpViewController : TimTableViewController{
-    NSTimer *myTimer;
-    int timeCount;
-}
+@class JKCountDownButton;
+@interface XLSignUpViewController : TimTableViewController
+
 @property (weak, nonatomic) IBOutlet UITextField *phoneTextField;
 @property (weak, nonatomic) IBOutlet UITextField *passwdTextField;
-@property (weak, nonatomic) IBOutlet UIButton *lisensebutton;
 @property (weak, nonatomic) IBOutlet UITextField *validateTextField;
 @property (strong, nonatomic) IBOutlet UITextField *recommenderTextField;
-@property (weak, nonatomic) IBOutlet UIButton *validateButton;
-@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic) IBOutlet JKCountDownButton *validateButton;
+
 - (IBAction)signupAction:(id)sender;
-- (IBAction)lisenseAction:(id)sender;
 - (IBAction)readlisenseAction:(id)sender;
 @end

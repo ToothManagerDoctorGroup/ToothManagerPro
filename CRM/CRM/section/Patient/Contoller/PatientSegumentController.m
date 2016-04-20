@@ -8,15 +8,12 @@
 
 #import "PatientSegumentController.h"
 #import "NYSegmentedControl.h"
-#import "PatientsDisplayViewController.h"
 #import "TwoViewController.h"
 
 #import "CRMMacro.h"
 #import "PatientsCellMode.h"
 #import "DBManager+Materials.h"
 #import "PatientsTableViewCell.h"
-#import "PatientInfoViewController.h"
-#import "AddressBookViewController.h"
 #import "DBManager+Patients.h"
 #import "SDImageCache.h"
 #import "LocalNotificationCenter.h"
@@ -41,14 +38,14 @@
 
 @implementation PatientSegumentController
 
-- (XLFilterView *)filterView{
-    if (!_filterView) {
-        _filterView = [[XLFilterView alloc] initWithFrame:self.view.bounds];
-        _filterView.delegate = self;
-        [self.view addSubview:_filterView];
-    }
-    return _filterView;
-}
+//- (XLFilterView *)filterView{
+//    if (!_filterView) {
+//        _filterView = [[XLFilterView alloc] initWithFrame:self.view.bounds];
+//        _filterView.delegate = self;
+//        [self.view addSubview:_filterView];
+//    }
+//    return _filterView;
+//}
 
 - (void)dealloc{
     NSLog(@"患者列表被销毁");
@@ -156,27 +153,18 @@
 - (void)onRightButtonAction:(id)sender {
     [self.view endEditing:YES];
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        if (self.filterShow) {
-            self.filterView.hidden = YES;
-            self.filterShow = NO;
-        }else{
-            self.filterView.hidden = NO;
-            self.filterShow = YES;
-        }
+        XLPatientDisplayViewController *patientVC = self.childViewControllers[0];
+        //判断当前选择的查询条件
+        [patientVC showFilterView];
     }
 }
 
-#pragma mark - XLFilterViewDelegate
-- (void)dismiss{
-    self.filterView.hidden = YES;
-    self.filterShow = NO;
-}
 
-- (void)filterView:(XLFilterView *)filterView patientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
-    XLPatientDisplayViewController *patientVC = self.childViewControllers[0];
-    //判断当前选择的查询条件
-    [patientVC requestPatientsWithPatientStatus:status startTime:startTime endTime:endTime cureDoctors:cureDoctors];
-}
+//- (void)filterView:(XLFilterView *)filterView patientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
+//    XLPatientDisplayViewController *patientVC = self.childViewControllers[0];
+//    //判断当前选择的查询条件
+//    [patientVC requestPatientsWithPatientStatus:status startTime:startTime endTime:endTime cureDoctors:cureDoctors];
+//}
 
 
 - (void)viewWillDisappear:(BOOL)animated {

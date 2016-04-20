@@ -11,13 +11,11 @@
 #import "LocalNotificationCenter.h"
 #import "DBManager+Patients.h"
 #import "CRMMacro.h"
-#import "PatientInfoViewController.h"
 #import "PatientsCellMode.h"
 #import "TimAlertView.h"
 #import "MudDatePickerView.h"
 #import "SyncManager.h"
 #import "PatientDetailViewController.h"
-#import "SysMsgViewController.h"
 #import "LewPopupViewController.h"
 #import "SchedulePopMenu.h"
 #import <MessageUI/MFMessageComposeViewController.h>

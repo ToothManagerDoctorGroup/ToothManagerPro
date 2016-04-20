@@ -7,20 +7,18 @@
 //
 
 #import "DoctorInfoViewController.h"
-#import "RepairDocHeaderTableViewController.h"
-#import "RepairDocDetailTableViewCell.h"
 #import "DBTableMode.h"
 #import "DBManager+RepairDoctor.h"
 #import "DBManager+Patients.h"
 #import "DBManager+Materials.h"
 #import "CRMMacro.h"
-#import "PatientInfoViewController.h"
 #import "DBManager+Doctor.h"
 #import "DBManager+Patients.h"
 #import "UIImageView+WebCache.h"
 #import "PatientDetailViewController.h"
 #import "XLSliderView.h"
 #import "XLUserInfoViewController.h"
+#import "RepairDocHeaderTableViewController.h"
 
 #define TYPE_FROM @"from"
 #define TYPE_TO @"to"

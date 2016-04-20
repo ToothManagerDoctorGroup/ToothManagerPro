@@ -16,7 +16,6 @@
 #import "AccountManager.h"
 #import "MJRefresh.h"
 #import "DBManager+Patients.h"
-#import "DoctorInfoViewController.h"
 #import "DBManager+Doctor.h"
 #import "XLDoctorSelectCell.h"
 #import "XLTeamMemberParam.h"
@@ -170,6 +169,16 @@
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         if (isHeader) {
             [self.searchHistoryArray removeAllObjects];
+            
+            UserObject *user = [AccountManager shareInstance].currentUser;
+            Doctor *owner = [[Doctor alloc] init];
+            owner.doctor_name = user.name;
+            owner.doctor_degree = user.degree;
+            owner.doctor_hospital = user.hospitalName;
+            owner.doctor_position = user.title;
+            owner.doctor_image = user.img;
+            
+            [self.searchHistoryArray addObject:owner];
         }
         //将数据添加到数组中
         [self.searchHistoryArray addObjectsFromArray:array];

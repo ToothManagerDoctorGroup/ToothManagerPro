@@ -23,7 +23,6 @@
 #import "DBManager+AutoSync.h"
 #import "MJExtension.h"
 #import "JSONKit.h"
-#import "AddressBookViewController.h"
 #import "CreateIntroducerViewController.h"
 #import "MJRefresh.h"
 #import "MLKMenuPopover.h"

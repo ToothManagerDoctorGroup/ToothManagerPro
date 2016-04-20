@@ -8,14 +8,11 @@
 
 #import "AccountViewController.h"
 #import "SettingViewController.h"
-#import "RepairDoctorViewController.h"
-#import "MaterialsViewController.h"
 #import "DBTableMode.h"
 #import "AccountManager.h"
 #import "DBManager+User.h"
 #import "QrCodeViewController.h"
 #import "DBManager+Doctor.h"
-#import "ShuJuFenXiViewController.h"
 #import "CommonMacro.h"
 #import "UIImageView+WebCache.h"
 
@@ -35,7 +32,6 @@
 
 #import "XLAvatarBrowser.h"
 #import "XLMaterialsViewController.h"
-#import "XLRepairDoctorViewController.h"
 #import "XLDoctorLibraryViewController.h"
 #import "UserProfileManager.h"
 #import "XLDataAnalyseViewController.h"

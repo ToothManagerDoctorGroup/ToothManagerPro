@@ -26,7 +26,7 @@
 
 @property (nonatomic,strong) NSMutableArray *sectionArray;//有多少组
 @property (nonatomic, strong) NSMutableArray *sectionTitlesArray;//每组多少个联系人
-@property (nonatomic, strong)NSMutableArray *contacts;//原数组
+@property (nonatomic, strong) NSMutableArray *contacts;//原数组
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
@@ -44,33 +44,19 @@
 
 @implementation XLContactsViewController
 
-- (void)dealloc{
-    [self.sectionArray removeAllObjects];
-    [self.sectionTitlesArray removeAllObjects];
-    [self.contacts removeAllObjects];
-    self.searchBar.delegate = nil;
-    self.searchController.delegate = nil;
-    
-    self.sectionArray = nil;
-    self.sectionTitlesArray = nil;
-    self.contacts = nil;
-    self.searchBar = nil;
-    self.searchController = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    NSLog(@"我被销毁了");
-}
-
-- (NSMutableArray *)contacts{
-    if (!_contacts) {
-        _contacts = [NSMutableArray array];
-    }
-    return _contacts;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //子控件初始化
+    [self setUpViews];
+    //添加通知
+    [self addNotificationObserver];
+    //获取所有联系人
+    [self getAllContacts];
+}
+
+#pragma mark - 子控件初始化
+- (void)setUpViews{
     //判断类型
     if (self.type == ContactsImportTypePatients) {
         self.title = @"通讯录导入患者";
@@ -89,7 +75,10 @@
     //设置搜索框
     self.tableView.tableHeaderView = [self searchBar];
     [self searchController];
-    
+}
+
+#pragma mark - 添加通知
+- (void)addNotificationObserver{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(allowAccessContacts)
                                                  name:XLContactAccessAllowedNotification
@@ -102,11 +91,9 @@
                                              selector:@selector(accessFailed)
                                                  name:XLContactAccessFailedNotification
                                                object:nil];
-    
-    //获取所有联系人
-    [self getAllContacts];
 }
 
+#pragma mark - 获取联系人数据
 - (void)getAllContacts{
     //获取联系人
     __weak typeof(self) weakSelf = self;
@@ -138,7 +125,6 @@
 
 - (void)onBackButtonAction:(id)sender{
     if (self.type == ContactsImportTypePatients) {
-        
         UITabBarController *rootVC = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
         [rootVC setSelectedViewController:[rootVC.viewControllers objectAtIndex:1]];
         [self.navigationController popToRootViewControllerAnimated:YES];
@@ -147,96 +133,49 @@
     }
 }
 
-#pragma mark - 控件初始化
-- (UISearchBar *)searchBar
-{
-    if (!_searchBar) {
-        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = @"搜索";
-    }
-    return _searchBar;
-}
-
-- (EMSearchDisplayController *)searchController
-{
-    if (_searchController == nil) {
-        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
-        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
-        __weak XLContactsViewController *weakSelf = self;
-        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
-            
-            XLContactCell *cell = [XLContactCell cellWithTableView:tableView];
-            cell.delegate = weakSelf;
-            XLContact *model = weakSelf.searchController.resultsSource[indexPath.row];
-            cell.contact = model;
-            
-            return cell;
-        }];
-        
-        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return [XLContactCell fixedHeight];
-        }];
-        
-        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            [weakSelf.searchController.searchBar endEditing:YES];
-        }];
-    }
-    
-    return _searchController;
-}
 #pragma mark - 数组排序
 - (void) setUpTableSection {
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
     
     //初始化一个数组newSectionsArray用来存放最终的数据，我们最终要得到的数据模型应该形如@[@[以A开头的数据数组], @[以B开头的数据数组], @[以C开头的数据数组], ... @[以#(其它)开头的数据数组]]
     NSUInteger numberOfSections = [[collation sectionTitles] count];
-    NSMutableArray *newSectionArray =  [[NSMutableArray alloc]init];
     for (NSUInteger index = 0; index<numberOfSections; index++) {
-        [newSectionArray addObject:[[NSMutableArray alloc]init]];
+        [self.sectionArray addObject:[[NSMutableArray alloc]init]];
     }
     
     //初始化27个空数组加入newSectionsArray
     for (XLContact *model in self.contacts) {
         NSUInteger sectionIndex = [collation sectionForObject:model collationStringSelector:@selector(fullName)];
-        [newSectionArray[sectionIndex] addObject:model];
+        [self.sectionArray[sectionIndex] addObject:model];
     }
     
     //对每个section中的数组按照name属性排序
     for (NSUInteger index=0; index<numberOfSections; index++) {
-        NSMutableArray *personsForSection = newSectionArray[index];
+        NSMutableArray *personsForSection = self.sectionArray[index];
         NSArray *sortedPersonsForSection = [collation sortedArrayFromArray:personsForSection collationStringSelector:@selector(fullName)];
-        newSectionArray[index] = sortedPersonsForSection;
+        self.sectionArray[index] = sortedPersonsForSection;
     }
     
     NSMutableArray *temp = [NSMutableArray new];
     self.sectionTitlesArray = [NSMutableArray new];
     
-    [newSectionArray enumerateObjectsUsingBlock:^(NSArray *arr, NSUInteger idx, BOOL *stop) {
+    [self.sectionArray enumerateObjectsUsingBlock:^(NSArray *arr, NSUInteger idx, BOOL *stop) {
         if (arr.count == 0) {
             [temp addObject:arr];
         } else {
             [self.sectionTitlesArray addObject:[collation sectionTitles][idx]];
         }
     }];
-    [newSectionArray removeObjectsInArray:temp];
-    
-    self.sectionArray = newSectionArray;
-    
+    [self.sectionArray removeObjectsInArray:temp];
 }
+
 #pragma mark - tableview delegate and datasource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return self.sectionTitlesArray.count;
-    //    return [NVMContactManager manager].sequencePeopleTitles.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.sectionArray[section] count];
-    //    return [[NVMContactManager manager].sequencePeoples[section] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -247,7 +186,6 @@
     NSUInteger section = indexPath.section;
     NSUInteger row = indexPath.row;
     
-    //    NVMContact *contact = (NVMContact *)([NVMContactManager manager].sequencePeoples[section][row]);
     XLContact *model = self.sectionArray[section][row];
     cell.contact = model;
     
@@ -259,7 +197,6 @@
     if (self.isSearchDisplayController) {
         return nil;
     }
-    //    return [NVMContactManager manager].sequencePeopleTitles[section];
     return self.sectionTitlesArray[section];
 }
 
@@ -268,7 +205,6 @@
     if (self.isSearchDisplayController) {
         return nil;
     }
-    //    return [NVMContactManager manager].sequencePeopleTitles;
     return self.sectionTitlesArray;
 }
 
@@ -297,6 +233,7 @@
     }
 }
 
+#pragma mark - 插入患者信息
 - (BOOL)insertPatientInfoWithModel:(XLContact *)model{
     BOOL ret = NO;
     if (model.phoneNumbers.count > 0 && [model.fullName isNotEmpty]) {
@@ -318,6 +255,7 @@
     }
     return ret;
 }
+#pragma mark - 插入介绍人信息
 - (BOOL)insertIntrInfoWithModel:(XLContact *)model{
     BOOL ret = NO;
     if (model.phoneNumbers.count > 0 && [model.fullName isNotEmpty]) {
@@ -445,6 +383,88 @@
     [self.tableView reloadData];
 }
 
+#pragma mark -
+#pragma mark 控件初始化
+- (NSMutableArray *)sectionArray{
+    if (!_sectionArray) {
+        _sectionArray = [NSMutableArray array];
+    }
+    return _sectionArray;
+}
+
+- (NSMutableArray *)sectionTitlesArray{
+    if (!_sectionTitlesArray) {
+        _sectionTitlesArray = [NSMutableArray array];
+    }
+    return _sectionTitlesArray;
+}
+
+- (NSMutableArray *)contacts{
+    if (!_contacts) {
+        _contacts = [NSMutableArray array];
+    }
+    return _contacts;
+}
+
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
+        _searchBar.delegate = self;
+        _searchBar.placeholder = @"搜索";
+    }
+    return _searchBar;
+}
+
+- (EMSearchDisplayController *)searchController
+{
+    if (_searchController == nil) {
+        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+        _searchController.delegate = self;
+        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
+        
+        __weak XLContactsViewController *weakSelf = self;
+        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
+            
+            XLContactCell *cell = [XLContactCell cellWithTableView:tableView];
+            cell.delegate = weakSelf;
+            XLContact *model = weakSelf.searchController.resultsSource[indexPath.row];
+            cell.contact = model;
+            
+            return cell;
+        }];
+        
+        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+            return [XLContactCell fixedHeight];
+        }];
+        
+        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [weakSelf.searchController.searchBar endEditing:YES];
+        }];
+    }
+    
+    return _searchController;
+}
+
+#pragma mark - dealloc
+- (void)dealloc{
+    [self.sectionArray removeAllObjects];
+    [self.sectionTitlesArray removeAllObjects];
+    [self.contacts removeAllObjects];
+    self.searchBar.delegate = nil;
+    self.searchController.delegate = nil;
+    
+    self.sectionArray = nil;
+    self.sectionTitlesArray = nil;
+    self.contacts = nil;
+    self.searchBar = nil;
+    self.searchController = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"我被销毁了");
+}
 
 @end
 

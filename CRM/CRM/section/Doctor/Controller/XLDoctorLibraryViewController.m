@@ -16,7 +16,6 @@
 #import "DBManager+Patients.h"
 #import "DoctorSquareViewController.h"
 #import "DoctorTableViewCell.h"
-#import "DoctorInfoViewController.h"
 #import "NewFriendsViewController.h"
 #import "NSDictionary+Extension.h"
 #import "DBManager+AutoSync.h"
@@ -37,6 +36,7 @@
 #import "CRMHttpRespondModel.h"
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
+#import "DoctorInfoViewController.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate,XLCommonDoctorCellDelegte>{
     UITableView *_tableView;
