@@ -8,7 +8,6 @@
 
 #import "SettingViewController.h"
 #import "AboutProductViewController.h"
-#import "UMFeedback.h"
 #import "ServerPrivacyViewController.h"
 #import "ChangePasswdViewController.h"
 #import "AccountManager.h"

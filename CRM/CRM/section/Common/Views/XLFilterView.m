@@ -63,7 +63,7 @@
     _scrollView.showsHorizontalScrollIndicator = NO;
     [self addSubview:_scrollView];
     
-    NSArray *states = @[@"未就诊",@"未种植",@"已种未修",@"已修复"];
+    NSArray *states = @[@"已种未修",@"已修复"];
     _stateView = [[XLFilterStateView alloc] initWithSourceArray:states];
     _stateView.delegate = self;
     [_scrollView addSubview:_stateView];
@@ -164,15 +164,9 @@
 - (void)filterStateView:(XLFilterStateView *)stateView didChooseState:(NSInteger)state{
     switch (state) {
         case 0:
-            self.patientStatus = PatientStatusUntreatment;
-            break;
-        case 1:
-            self.patientStatus = PatientStatusUnplanted;
-            break;
-        case 2:
             self.patientStatus = PatientStatusUnrepaired;
             break;
-        case 3:
+        case 1:
             self.patientStatus = PatientStatusRepaired;
             break;
     }

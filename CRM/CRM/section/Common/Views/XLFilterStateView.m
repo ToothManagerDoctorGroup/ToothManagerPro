@@ -92,7 +92,7 @@
         CGFloat marginX = 15;
         //计算总共显示几行
         if (self.sourceArray.count <= maxCols) {
-            btn.frame = CGRectMake(i * (BUTTON_WIDTH + marginX), margin, BUTTON_WIDTH, BUTTON_HEIGHT);
+            btn.frame = CGRectMake(i * (BUTTON_WIDTH + marginX) + self.titleLabel.right, margin, BUTTON_WIDTH, BUTTON_HEIGHT);
         }else{
             NSInteger row = i / maxCols;
             NSInteger col = i % maxCols;

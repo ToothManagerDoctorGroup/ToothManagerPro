@@ -601,11 +601,12 @@ Realize_ShareInstance(XLAutoGetSyncTool)
 - (void)downLoadCTLibImage{
     //下载CT图片
     __block UIImage *image = nil;
-    @autoreleasepool {
+    
     for (CTLib *ctlib in self.curDownLoadMc) {
-        if (![PatientManager IsImageExisting:ctlib.ct_image]) {
-            NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", SYNC_IMAGEDOWN, ctlib.ckeyid, ctlib.ct_image];
-            
+        @autoreleasepool {
+            if (![PatientManager IsImageExisting:ctlib.ct_image]) {
+                NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", SYNC_IMAGEDOWN, ctlib.ckeyid, ctlib.ct_image];
+                
                 image = [self getImageFromURL:urlImage];
                 if (nil != image) {
                     NSString *key = [PatientManager pathImageSaveToDisk:image withKey:ctlib.ct_image];

@@ -40,6 +40,7 @@
 #import "CRMUserDefalut.h"
 #import "MyDateTool.h"
 #import "CRMAppDelegate.h"
+#import "UIApplication+Version.h"
 
 @interface MyScheduleReminderViewController ()<MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -129,6 +130,7 @@
     }
 }
 
+
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     
@@ -201,6 +203,9 @@
         XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alert"]];
         [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
     }];
+    
+    //是否显示更新提示
+    [self showNewVersion];
 }
 
 -(void)onLeftButtonAction:(id)sender{
@@ -670,6 +675,36 @@
     NSDateFormatter *myFormatter = [[NSDateFormatter alloc] init];
     myFormatter.dateFormat = @"yyyy年M月";
     return [myFormatter stringFromDate:date];
+}
+
+
+#pragma mark - 显示新版本更新
+#pragma mark -showNewVersion
+- (void)showNewVersion{
+    NSString *updateTime = [CRMUserDefalut objectForKey:NewVersionUpdate_TimeKey];
+    if (updateTime == nil) {
+        [self showAlertViewWithTime:updateTime];
+    }else{
+        //判断目标时间和当前时间的时间差
+        NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:[MyDateTool dateWithStringWithSec:updateTime]];
+        if (timeInterval > NewVersionUpdateTimeInterval) {
+            [self showAlertViewWithTime:[MyDateTool stringWithDateWithSec:[NSDate date]]];
+        }
+    }
+}
+
+- (void)showAlertViewWithTime:(NSString *)time{
+    //判断是否有新版本
+    [UIApplication checkNewVersionWithAppleID:@"901754828" handler:^(BOOL newVersion, NSURL *updateURL) {
+        [CRMUserDefalut setObject:time forKey:NewVersionUpdate_TimeKey];
+        if (newVersion) {
+            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"更新提示" message:@"种牙管家又有新版本啦!" cancel:@"稍后更新" certain:@"立即前往" cancelHandler:^{
+            } comfirmButtonHandlder:^{
+                [UIApplication updateApplicationWithURL:updateURL];
+            }];
+            [alertView show];
+        }
+    }];
 }
 
 

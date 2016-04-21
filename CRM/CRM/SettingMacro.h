@@ -39,9 +39,12 @@
 #define GroupNew_IsShowedKey @"GroupNew_IsShowedKey"
 //分组下添加患者页面提示是否显示
 #define GroupMemberNew_IsShowedKey @"GroupMemberNew_IsShowedKey"
-
 //当用户关闭通讯录权限的时候，提醒用户打开权限
 #define AddressBook_IsShowKey @"AddressBook_IsShowKey"
+
+/*************************提示更新设置*********************/
+#define NewVersionUpdate_TimeKey @"NewVersionUpdate_TimeKey"
+static const NSTimeInterval NewVersionUpdateTimeInterval = 60 * 60 * 24 * 3;
 
 
 #endif /* SettingMacro_h */

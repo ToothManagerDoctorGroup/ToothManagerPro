@@ -17,10 +17,10 @@
 }
 
 + (void)checkNewVersionWithAppleID:(NSString *)appleid handler:(ApplicaionVersionHandler)handler {
-    
+    //https://itunes.apple.com/us/app/zhong-ya-guan-jia-kou-qiang/id901754828?mt=8&uo=4
     NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
     NSString *currentVersion = [infoDic objectForKey:@"CFBundleVersion"];
-        NSString *URL = [NSString stringWithFormat:@"http://itunes.apple.com/lookup?id=%@",appleid];//   661123089
+        NSString *URL = [NSString stringWithFormat:@"http://itunes.apple.com/lookup?id=%@",appleid];//   901754828
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         [request setURL:[NSURL URLWithString:URL]];
         [request setHTTPMethod:@"POST"];

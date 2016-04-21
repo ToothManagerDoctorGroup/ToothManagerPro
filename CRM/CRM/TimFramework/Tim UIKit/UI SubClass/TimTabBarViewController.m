@@ -29,6 +29,8 @@
 #import "UITabBar+BadgeView.h"
 #import "XLMenuButtonView.h"
 #import "XLAutoGetSyncTool.h"
+#import "MyDateTool.h"
+#import "UIApplication+Version.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -39,9 +41,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 @interface TimTabBarViewController ()<EMChatManagerDelegate,XLGuideViewDelegate>{
     UIButton *menuButton;
-//    MenuView *menuView;
-//    MenuButtonPushManager *manager;
-//    UIView *clearView;
     
     MyScheduleReminderViewController *_scheduleReminderVC;
     XLIntroducerViewController *_introducerVC;

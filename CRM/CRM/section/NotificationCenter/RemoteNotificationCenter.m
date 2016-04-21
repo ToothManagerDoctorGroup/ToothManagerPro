@@ -7,7 +7,6 @@
 //
 
 #import "RemoteNotificationCenter.h"
-#import "UMessage.h"
 #import "WMPageController.h"
 #import "UnReadMessageViewController.h"
 #import "ReadMessageViewController.h"
@@ -35,7 +34,7 @@ Realize_ShareInstance(RemoteNotificationCenter);
 
 #pragma mark - UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    [UMessage sendClickReportForRemoteNotification:self.userinfo];
+//    [UMessage sendClickReportForRemoteNotification:self.userinfo];
     switch (buttonIndex) {
         case 1:
         {

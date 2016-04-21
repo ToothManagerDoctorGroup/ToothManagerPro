@@ -48,6 +48,7 @@
 #import "XLBackUpViewController.h"
 #import "DBManager+AutoSync.h"
 #import "NSString+TTMAddtion.h"
+#import "UIApplication+Version.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -121,7 +122,13 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    
+    [UIApplication checkNewVersionWithAppleID:@"901754828" handler:^(BOOL newVersion, NSURL *updateURL) {
+        if (newVersion) {
+            NSLog(@"有新版本");
+        }else{
+            NSLog(@"没有新版本");
+        }
+    }];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
