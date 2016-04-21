@@ -22,5 +22,6 @@
 
 - (CGFloat)fixHeight;
 
+//重置
 - (void)reset;
 @end

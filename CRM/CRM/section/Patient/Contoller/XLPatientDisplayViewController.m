@@ -41,9 +41,7 @@
     BOOL ifStatusBtnSelected;
     BOOL ifNumberBtnSelected;
     BOOL ifIntroducerSelected;
-
 }
-
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
@@ -52,12 +50,9 @@
 
 @property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
 @property (nonatomic, assign)NSInteger allCount;//所有数据
-
-
 //数据筛选
 @property (nonatomic, assign)BOOL filterShow;
 @property (nonatomic, strong)XLFilterView *filterView;
-
 //高级检索用到的参数
 @property (nonatomic, assign)PatientStatus status;
 @property (nonatomic, copy)NSString *startTime;
@@ -66,22 +61,6 @@
 @end
 
 @implementation XLPatientDisplayViewController
-
-- (XLFilterView *)filterView{
-    if (!_filterView) {
-        _filterView = [[XLFilterView alloc] initWithFrame:self.view.bounds];
-        _filterView.delegate = self;
-        [self.view addSubview:_filterView];
-    }
-    return _filterView;
-}
-
-- (NSMutableArray *)patientCellModeArray{
-    if (!_patientCellModeArray) {
-        _patientCellModeArray = [NSMutableArray array];
-    }
-    return _patientCellModeArray;
-}
 
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -185,75 +164,6 @@
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - Table view data source
-- (UISearchBar *)searchBar
-{
-    if (!_searchBar) {
-        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = @"患者姓名、备注名、手机号";
-        [_searchBar moveBackgroundView];
-    }
-    
-    return _searchBar;
-}
-
-- (EMSearchDisplayController *)searchController
-{
-    if (_searchController == nil) {
-        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
-        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
-        __weak XLPatientDisplayViewController *weakSelf = self;
-        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
-            
-            static NSString *cellID = @"cellIdentifier";
-            PatientsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-            if (cell == nil) {
-                cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientsTableViewCell" owner:nil options:nil] objectAtIndex:0];
-                [tableView registerNib:[UINib nibWithNibName:@"PatientsTableViewCell" bundle:nil] forCellReuseIdentifier:cellID];
-            }
-            
-            //赋值,获取患者信息
-            NSInteger row = [indexPath row];
-            PatientsCellMode *cellMode = [weakSelf.searchController.resultsSource objectAtIndex:row];
-            [cell configCellWithCellMode:cellMode];
-            
-            return cell;
-        }];
-        
-        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return 40;
-        }];
-        
-        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            [weakSelf.searchController.searchBar endEditing:YES];
-            
-            PatientsCellMode *model = weakSelf.searchController.resultsSource[indexPath.row];
-            //跳转到新的患者详情页面
-            PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-            detailVc.patientsCellMode = model;
-            detailVc.hidesBottomBarWhenPushed = YES;
-            [weakSelf.navigationController pushViewController:detailVc animated:YES];
-            
-        }];
-        
-        [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
-            return YES;
-        }];
-        
-        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [weakSelf deletePatientWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource type:@"searchTableView"];
-        }];
-    }
-    
-    return _searchController;
-}
-
-
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -289,11 +199,6 @@
     detailVc.patientsCellMode = model;
     detailVc.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detailVc animated:YES];
-    
-//    XLPatientDetailViewController *detailVc = [[XLPatientDetailViewController alloc] initWithStyle:UITableViewStylePlain];
-//    detailVc.patientsCellMode = model;
-//    detailVc.hidesBottomBarWhenPushed = YES;
-//    [self.navigationController pushViewController:detailVc animated:YES];
 }
 
 -(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -713,5 +618,90 @@
     self.cureDoctors = cureDoctors;
     [self.tableView.header beginRefreshing];
 }
+
+#pragma mark - 初始化
+- (XLFilterView *)filterView{
+    if (!_filterView) {
+        _filterView = [[XLFilterView alloc] initWithFrame:self.view.bounds];
+        _filterView.delegate = self;
+        [self.view addSubview:_filterView];
+    }
+    return _filterView;
+}
+
+- (NSMutableArray *)patientCellModeArray{
+    if (!_patientCellModeArray) {
+        _patientCellModeArray = [NSMutableArray array];
+    }
+    return _patientCellModeArray;
+}
+
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
+        _searchBar.delegate = self;
+        _searchBar.placeholder = @"患者姓名、备注名、手机号";
+        [_searchBar moveBackgroundView];
+    }
+    
+    return _searchBar;
+}
+
+- (EMSearchDisplayController *)searchController
+{
+    if (_searchController == nil) {
+        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+        _searchController.delegate = self;
+        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
+        
+        __weak XLPatientDisplayViewController *weakSelf = self;
+        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
+            
+            static NSString *cellID = @"cellIdentifier";
+            PatientsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+            if (cell == nil) {
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientsTableViewCell" owner:nil options:nil] objectAtIndex:0];
+                [tableView registerNib:[UINib nibWithNibName:@"PatientsTableViewCell" bundle:nil] forCellReuseIdentifier:cellID];
+            }
+            
+            //赋值,获取患者信息
+            NSInteger row = [indexPath row];
+            PatientsCellMode *cellMode = [weakSelf.searchController.resultsSource objectAtIndex:row];
+            [cell configCellWithCellMode:cellMode];
+            
+            return cell;
+        }];
+        
+        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+            return 40;
+        }];
+        
+        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [weakSelf.searchController.searchBar endEditing:YES];
+            
+            PatientsCellMode *model = weakSelf.searchController.resultsSource[indexPath.row];
+            //跳转到新的患者详情页面
+            PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+            detailVc.patientsCellMode = model;
+            detailVc.hidesBottomBarWhenPushed = YES;
+            [weakSelf.navigationController pushViewController:detailVc animated:YES];
+            
+        }];
+        
+        [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
+            return YES;
+        }];
+        
+        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            [weakSelf deletePatientWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource type:@"searchTableView"];
+        }];
+    }
+    
+    return _searchController;
+}
+
 
 @end

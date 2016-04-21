@@ -21,44 +21,35 @@
 #import "XLAddReminderViewController.h"
 #import "DBManager+LocalNotification.h"
 
+static const NSInteger kSelectYuyueViewControllerCalendarHeight = 250;
+
 @interface XLSelectYuyueViewController ()<ClinicCoverDelegate,MenuTitleViewControllerDelegate,FSCalendarDelegate,FSCalendarDataSource,XLAddReminderViewControllerDelegate>
 @property (nonatomic,retain) NSArray *remindArray; //被预约的时间数组
-@property (nonatomic,retain) NSMutableArray *remindTwoArray; //被占用的时间数组
-
 @property (nonatomic, strong)NSMutableArray *dataSuperArray;//混合数组
-
-@property (nonatomic,assign) NSInteger actionSheetInt;
-@property (nonatomic,copy) NSString *actionSheetTime;
-
 @property (nonatomic, weak)FSCalendar *calendar;//日历
-
 @property (nonatomic, strong)NSDate *selectDate;//当前选中的日期
-
 @property (nonatomic, strong)NSMutableArray *currentMothArray;//当前月所有的数据
-
 @property (nonatomic, strong)NSMutableArray *currentDayArray;//当前天所有的数据
 
+@property (nonatomic,assign) NSInteger actionSheetInt;//当前选中的索引
+@property (nonatomic,copy) NSString *actionSheetTime;//选中的时间
 @end
 
 @implementation XLSelectYuyueViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    
+    //设置导航栏
+    [self setUpNav];
+    
+    //加载子视图
+    [self setUpSubViews];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    
-}
-
-- (NSMutableArray *)currentDayArray{
-    if (!_currentDayArray) {
-        _currentDayArray = [NSMutableArray array];
-    }
-    return _currentDayArray;
-}
-
-- (NSMutableArray *)currentMothArray{
-    if (!_currentMothArray) {
-        _currentMothArray = [NSMutableArray array];
-    }
-    return _currentMothArray;
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -80,7 +71,9 @@
     
     [self.calendar reloadData];
 }
-#pragma mark - 获取当月的所有数据
+
+#pragma mark - Private Method
+#pragma mark 获取当月的所有数据
 - (void)getAllDataWithDate:(NSDate *)date{
     [self.currentMothArray removeAllObjects];
     NSString *beginStr = [MyDateTool getMonthBeginWith:date];
@@ -88,17 +81,20 @@
     NSArray *array = [[DBManager shareInstance] localNotificationListWithStartDate:beginStr endDate:endStr];
     [self.currentMothArray addObjectsFromArray:array];
 }
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    self.dataSuperArray = [NSMutableArray array];
-    
+#pragma mark 今天按钮点击
+- (void)onRightButtonAction:(id)sender{
+    [self.calendar selectDate:[NSDate date]];
+    [self requestDataWithDate:[NSDate date]];
+}
+#pragma mark 设置导航栏
+- (void)setUpNav{
     self.title = @"选择时间";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back.png"]];
     [self setRightBarButtonWithTitle:@"今天"];
-    
-    timeArray = [[NSMutableArray alloc]initWithCapacity:0];
+}
+#pragma mark 设置子视图
+- (void)setUpSubViews{
+    timeArray = [[NSMutableArray alloc] initWithCapacity:0];
     for (int i = 0; i < 31; i++) {
         if (i%2 == 0) {
             if (8+i/2 < 10) {
@@ -115,15 +111,13 @@
             }
         }
     }
-    
     m_tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStylePlain];
     m_tableView.delegate = self;
     m_tableView.dataSource = self;
     m_tableView.backgroundColor = [UIColor clearColor];
     m_tableView.backgroundView = nil;
     
-    CGFloat height = 250;
-    FSCalendar *calendar = [[FSCalendar alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, height)];
+    FSCalendar *calendar = [[FSCalendar alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kSelectYuyueViewControllerCalendarHeight)];
     calendar.dataSource = self;
     calendar.delegate = self;
     [self.view addSubview:calendar];
@@ -131,15 +125,10 @@
     m_tableView.tableHeaderView = calendar;
     
     [self.view addSubview:m_tableView];
-    
-}
-//今天按钮点击
-- (void)onRightButtonAction:(id)sender{
-    [self.calendar selectDate:[NSDate date]];
-    [self requestDataWithDate:[NSDate date]];
 }
 
-#pragma mark - FSCalendar Delegate/DataSource
+#pragma mark - Delegate/DataSource
+#pragma mark -FSCalendar Delegate/DataSource
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date
 {
     self.selectDate = date;
@@ -149,7 +138,6 @@
 - (void)requestDataWithDate:(NSDate *)date{
     
     NSString *dateStr = [MyDateTool stringWithDateNoTime:date];
-//    self.remindArray = self.currentMothArray;
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:dateStr array:self.currentMothArray];
     dateString = dateStr;
     
@@ -207,7 +195,7 @@
     }
 }
 
-#pragma mark - tableView delegate&dataSource
+#pragma mark -tableView delegate&dataSource
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -243,7 +231,7 @@
     [actionSheet setActionSheetStyle:UIActionSheetStyleDefault];
     [actionSheet showInView:self.view];
 }
-#pragma mark - ActionSheet Delegate
+#pragma mark -ActionSheet Delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSMutableDictionary *dicM = [NSMutableDictionary dictionary];
@@ -317,26 +305,38 @@
             }
         }
     }
-    
-    if (self.remindTwoArray.count > 0) {
-        for (NSString *targetStr in self.remindTwoArray) {
-            NSString *changeStr = [MyDateTool stringWithDateNoSec:[MyDateTool dateWithStringWithSec:targetStr]];
-            BOOL result = [MyDateTool timeInStartTime:startStr endTime:endStr targetTime:changeStr];
-            if (result) {
-                compareResult = YES;
-            }
-        }
-    }
     return compareResult;
 }
 
-#pragma mark - XLAddReminderViewControllerDelegate
+#pragma mark -XLAddReminderViewControllerDelegate
 - (void)addReminderViewController:(XLAddReminderViewController *)vc didSelectDateTime:(NSString *)dateStr{
     if (self.delegate && [self.delegate respondsToSelector:@selector(selectYuyueViewController:didSelectDateTime:)]) {
         [self.delegate selectYuyueViewController:self didSelectDateTime:dateStr];
     }
     //关闭当前视图
     [self popViewControllerAnimated:YES];
+}
+
+#pragma mark - 初始化子控件（懒加载）
+- (NSMutableArray *)currentDayArray{
+    if (!_currentDayArray) {
+        _currentDayArray = [NSMutableArray array];
+    }
+    return _currentDayArray;
+}
+
+- (NSMutableArray *)currentMothArray{
+    if (!_currentMothArray) {
+        _currentMothArray = [NSMutableArray array];
+    }
+    return _currentMothArray;
+}
+
+- (NSMutableArray *)dataSuperArray{
+    if (!_dataSuperArray) {
+        _dataSuperArray = [NSMutableArray array];
+    }
+    return _dataSuperArray;
 }
 
 @end

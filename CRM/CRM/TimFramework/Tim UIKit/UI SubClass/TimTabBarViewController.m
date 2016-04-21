@@ -33,6 +33,7 @@
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static const NSInteger kDefaultSyncGetTimeInterval = 60 * 5;
+static const NSInteger kDefaultSyncPostTimeInterval = 2.0;
 static NSString *kMessageType = @"MessageType";
 static NSString *kConversationChatter = @"ConversationChatter";
 
@@ -74,7 +75,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     NetworkStatus status = [delegateTmp.conn currentReachabilityStatus];
     //创建一个定时器(NSTimer)
     if (status != NotReachable) {
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncPostTimeInterval target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
         //将定时器添加到主队列中
         [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
         
@@ -110,7 +111,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
         }else{
             if (self.timer == nil) {
                 //创建一个定时器(NSTimer)
-                self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+                self.timer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncPostTimeInterval target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
                 //将定时器添加到主队列中
                 [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
             }
@@ -555,29 +556,5 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [self setSelectedViewController:_patientVc];
     }
 }
-
-/*
-#pragma mark - XLGuideViewDelegate
-- (void)guideView:(XLGuideView *)guideView didClickView:(UIView *)view step:(XLGuideViewStep)step{
-    //第一步跳到第二步
-    if (step == XLGuideViewStepOne) {
-        [self click:nil];
-        XLGuideView *gView = [XLGuideView new];
-        gView.delegate = self;
-        gView.step = XLGuideViewStepTwo;
-        gView.type = XLGuideViewTypePatient;
-        [gView showInView:[UIApplication sharedApplication].keyWindow maskViewFrame:CGRectMake(SCREEN_WIDTH / 2 - 104 / 2, SCREEN_HEIGHT - self.tabBar.height - 44, 104, 40)];
-    }else{
-        [guideView dismiss];
-        [self disMissView];
-        
-        //跳转到患者页面
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        QrCodePatientViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodePatientViewController"];
-        qrVC.hidesBottomBarWhenPushed = YES;
-        [(UINavigationController *)self.selectedViewController pushViewController:qrVC animated:YES];
-    }
-    
-}*/
 
 @end

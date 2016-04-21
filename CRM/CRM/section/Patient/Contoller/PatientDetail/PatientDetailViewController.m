@@ -70,30 +70,20 @@
     UIView *_editView;
     UIImageView *_searchImage; //搜索图片
     CommentTextField *_commentTextField; //会诊信息输入框
-    
-    Introducer *selectIntroducer;
+    Introducer *selectIntroducer;//当前选中的介绍人
 }
-/**
- *  评论
- */
+//评论
 @property (nonatomic, strong)NSMutableArray *comments;
-
-/**
- *  菜单选项
- */
+//菜单选项
 @property (nonatomic, strong)NSArray *menuList;
-/**
- *  菜单弹出视图
- */
+//菜单弹出视图
 @property (nonatomic, strong)MLKMenuPopover *menuPopover;
-/**
- *  患者模型
- */
-@property (nonatomic,retain) Patient *detailPatient;
-@property (nonatomic,retain) Introducer *detailIntroducer;
-@property (nonatomic,retain) Introducer *changeIntroducer;
-@property (nonatomic, strong)NSMutableArray *medicalCases;
-@property (nonatomic, strong)NSMutableArray *cTLibs;
+//患者模型
+@property (nonatomic, strong) Patient *detailPatient;
+@property (nonatomic, strong) Introducer *detailIntroducer;
+@property (nonatomic, strong) Introducer *changeIntroducer;
+@property (nonatomic, strong) NSMutableArray *medicalCases;
+@property (nonatomic, strong) NSMutableArray *cTLibs;
 
 @property (nonatomic, strong)MedicalCase *selectCase;
 @property (nonatomic, strong)NSMutableArray *orginExistGroups;//用户所在分组信息
@@ -103,56 +93,21 @@
 
 @implementation PatientDetailViewController
 
-- (NSMutableArray *)orginExistGroups{
-    if (!_orginExistGroups) {
-        _orginExistGroups = [NSMutableArray array];
-    }
-    return _orginExistGroups;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //添加编辑状态监听
+    [self addNotificationObserver];
+    
+    //初始化导航栏
+    [self initView];
+    
+    //加载子视图
+    [self setUpSubView];
+    
+    //获取患者分组信息
+    [self requestGroupData];
 }
 
-- (MLKMenuPopover *)menuPopover{
-    if (!_menuPopover) {
-        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 120 - 8, 64, 120, self.menuList.count * 44) menuItems:self.menuList];
-        menuPopover.menuPopoverDelegate = self;
-        _menuPopover = menuPopover;
-    }
-    return _menuPopover;
-}
-
-- (NSArray *)menuList{
-    if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"查看预约",@"转诊患者",@"升为介绍人",@"下载CT片", nil];
-    }
-    return _menuList;
-}
-
-- (NSMutableArray *)comments{
-    if (!_comments) {
-        _comments = [NSMutableArray array];
-        
-        UserObject *currentUser = [[AccountManager shareInstance] currentUser];
-        NSArray *commentArr = [[DBManager shareInstance] getPatientConsultationWithPatientId:self.patientsCellMode.patientId];
-        if (commentArr.count > 0) {
-            for (int i = 0; i < commentArr.count; i++) {
-                PatientConsultation *model = commentArr[i];
-                CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
-                modelFrame.model = model;
-                Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:model.doctor_id];
-                if ([currentUser.userid isEqualToString:model.doctor_id]) {
-                    modelFrame.headImg_url = currentUser.img;
-                }else{
-                    modelFrame.headImg_url = doctor.doctor_image;
-                }
-                [_comments addObject:modelFrame];
-            }
-            //刷新单元格
-            [_tableView reloadData];
-        }
-    }
-    return _comments;
-}
-
-#pragma mark - 获取患者所有的
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
@@ -172,34 +127,13 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    //添加编辑状态监听
-    [self addNotificationObserver];
-    
-    //初始化导航栏
-    [self initView];
-    
-    //加载子视图
-    [self setUpSubView];
-    
-    //获取患者分组信息
-    [self requestGroupData];
-}
 
 #pragma mark -添加监听
 - (void)addNotification{
     //注册键盘出现的通知
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWasShown:)
-                                                 name:UIKeyboardWillShowNotification object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
     //注册键盘消失的通知
-    [[NSNotificationCenter defaultCenter] addObserver:self
-     
-                                             selector:@selector(keyboardWillBeHidden:)
-     
-                                                 name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 //键盘将要出现
 - (void)keyboardWasShown:(NSNotification *)note{
@@ -225,13 +159,12 @@
 }
 
 
-#pragma mark -初始化
+#pragma mark -设置导航栏
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"患者详情";
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"patient_detail_menu"]];
-    
 }
 
 #pragma mark -加载数据
@@ -823,6 +756,55 @@
     [self.view endEditing:YES];
 }
 
+#pragma mark - 初始化子控件
+- (NSMutableArray *)orginExistGroups{
+    if (!_orginExistGroups) {
+        _orginExistGroups = [NSMutableArray array];
+    }
+    return _orginExistGroups;
+}
+
+- (MLKMenuPopover *)menuPopover{
+    if (!_menuPopover) {
+        MLKMenuPopover *menuPopover = [[MLKMenuPopover alloc] initWithFrame:CGRectMake(kScreenWidth - 120 - 8, 64, 120, self.menuList.count * 44) menuItems:self.menuList];
+        menuPopover.menuPopoverDelegate = self;
+        _menuPopover = menuPopover;
+    }
+    return _menuPopover;
+}
+
+- (NSArray *)menuList{
+    if (_menuList == nil) {
+        _menuList = [NSArray arrayWithObjects:@"编辑患者",@"查看预约",@"转诊患者",@"升为介绍人",@"下载CT片", nil];
+    }
+    return _menuList;
+}
+
+- (NSMutableArray *)comments{
+    if (!_comments) {
+        _comments = [NSMutableArray array];
+        
+        UserObject *currentUser = [[AccountManager shareInstance] currentUser];
+        NSArray *commentArr = [[DBManager shareInstance] getPatientConsultationWithPatientId:self.patientsCellMode.patientId];
+        if (commentArr.count > 0) {
+            for (int i = 0; i < commentArr.count; i++) {
+                PatientConsultation *model = commentArr[i];
+                CommentModelFrame *modelFrame = [[CommentModelFrame alloc] init];
+                modelFrame.model = model;
+                Doctor *doctor = [[DBManager shareInstance] getDoctorWithCkeyId:model.doctor_id];
+                if ([currentUser.userid isEqualToString:model.doctor_id]) {
+                    modelFrame.headImg_url = currentUser.img;
+                }else{
+                    modelFrame.headImg_url = doctor.doctor_image;
+                }
+                [_comments addObject:modelFrame];
+            }
+            //刷新单元格
+            [_tableView reloadData];
+        }
+    }
+    return _comments;
+}
 
 - (void)dealloc{
     NSLog(@"患者详情列表被销毁");
@@ -835,19 +817,19 @@
     _commentTextField = nil;
     selectIntroducer = nil;
     
-    [self.comments removeAllObjects];
-    self.comments = nil;
-    self.menuList = nil;
-    self.menuPopover = nil;
+    [_comments removeAllObjects];
+    _comments = nil;
+    _menuList = nil;
+    _menuPopover = nil;
     
-    self.detailPatient = nil;
-    self.detailIntroducer = nil;
-    self.changeIntroducer = nil;
-    [self.medicalCases removeAllObjects];
-    self.medicalCases = nil;
-    [self.cTLibs removeAllObjects];
-    self.cTLibs = nil;
-    self.selectCase = nil;
+    _detailPatient = nil;
+    _detailIntroducer = nil;
+    _changeIntroducer = nil;
+    [_medicalCases removeAllObjects];
+    _medicalCases = nil;
+    [_cTLibs removeAllObjects];
+    _cTLibs = nil;
+    _selectCase = nil;
 }
 
 @end

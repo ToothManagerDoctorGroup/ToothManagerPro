@@ -146,7 +146,7 @@
     
     //设置scrollView的偏移量
     CGFloat scrollMaxH = self.bottom - 160;
-    CGFloat contentH = _doctorView.bottom > scrollMaxH ? _doctorView.bottom : scrollMaxH;
+    CGFloat contentH = _doctorView.bottom > scrollMaxH ? scrollMaxH : _doctorView.bottom;
     _scrollView.contentSize = CGSizeMake(kScreenWidth, contentH);
 }
 
