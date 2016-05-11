@@ -194,6 +194,7 @@
 		3D1725A61CD21BF500EBBE82 /* XLShareManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1725A51CD21BF500EBBE82 /* XLShareManager.m */; };
 		3D1725A91CD22E9700EBBE82 /* XLPatientEducationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1725A81CD22E9700EBBE82 /* XLPatientEducationModel.m */; };
 		3D1725AC1CD22F6B00EBBE82 /* XLPatientEducationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1725AB1CD22F6B00EBBE82 /* XLPatientEducationViewController.m */; };
+		3D181BB91CE2D0B000D11B66 /* XLMessageHandleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D181BB81CE2D0B000D11B66 /* XLMessageHandleManager.m */; };
 		3D18A4FE1C4DCC260016CABE /* guide_arrow2.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D18A4F81C4DCC260016CABE /* guide_arrow2.png */; };
 		3D18A4FF1C4DCC260016CABE /* guide_arrow2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D18A4F91C4DCC260016CABE /* guide_arrow2@2x.png */; };
 		3D18A5001C4DCC260016CABE /* guide_arrow2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D18A4FA1C4DCC260016CABE /* guide_arrow2@3x.png */; };
@@ -2001,6 +2002,8 @@
 		3D1725A81CD22E9700EBBE82 /* XLPatientEducationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLPatientEducationModel.m; sourceTree = "<group>"; };
 		3D1725AA1CD22F6B00EBBE82 /* XLPatientEducationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLPatientEducationViewController.h; sourceTree = "<group>"; };
 		3D1725AB1CD22F6B00EBBE82 /* XLPatientEducationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLPatientEducationViewController.m; sourceTree = "<group>"; };
+		3D181BB71CE2D0B000D11B66 /* XLMessageHandleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLMessageHandleManager.h; sourceTree = "<group>"; };
+		3D181BB81CE2D0B000D11B66 /* XLMessageHandleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLMessageHandleManager.m; sourceTree = "<group>"; };
 		3D18A4F81C4DCC260016CABE /* guide_arrow2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guide_arrow2.png; sourceTree = "<group>"; };
 		3D18A4F91C4DCC260016CABE /* guide_arrow2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guide_arrow2@2x.png"; sourceTree = "<group>"; };
 		3D18A4FA1C4DCC260016CABE /* guide_arrow2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guide_arrow2@3x.png"; sourceTree = "<group>"; };
@@ -4567,6 +4570,15 @@
 				3D1725A51CD21BF500EBBE82 /* XLShareManager.m */,
 			);
 			name = "Share（分享）";
+			sourceTree = "<group>";
+		};
+		3D181BB61CE2CF7800D11B66 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				3D181BB71CE2D0B000D11B66 /* XLMessageHandleManager.h */,
+				3D181BB81CE2D0B000D11B66 /* XLMessageHandleManager.m */,
+			);
+			name = Manager;
 			sourceTree = "<group>";
 		};
 		3D18C8401C1568B700EF83DE /* PatientSegumentController */ = {
@@ -8116,6 +8128,7 @@
 		3DE3DB521C20F6CF00424A67 /* SysMessage（消息） */ = {
 			isa = PBXGroup;
 			children = (
+				3D181BB61CE2CF7800D11B66 /* Manager */,
 				3DE3DB551C20F6F800424A67 /* Controllers */,
 				3DE3DB541C20F6F200424A67 /* Views */,
 				3DE3DB531C20F6EA00424A67 /* Models */,
@@ -11616,6 +11629,7 @@
 				3D27F7B31C08A6A800C50CBF /* LewPopupBackgroundView.m in Sources */,
 				6436DF3719B8C48100DC667E /* UITableViewHeaderFooterView+Extension.m in Sources */,
 				3D987F581C96EC100044183D /* XLCustomAlertView.m in Sources */,
+				3D181BB91CE2D0B000D11B66 /* XLMessageHandleManager.m in Sources */,
 				3D37CFF01C27ACE500C595F4 /* AppoinmentMenuViewController.m in Sources */,
 				3D1B5FDB1C18082B0032D949 /* MWPhoto.m in Sources */,
 				3DE7C26E1C228DAE001F24ED /* YYKeyboardManager.m in Sources */,

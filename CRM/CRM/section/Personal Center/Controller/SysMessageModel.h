@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+//新增患者
+extern NSString * const AttainNewPatient;
+extern NSString * const AttainNewFriend;
+extern NSString * const CancelReserveRecord;
+extern NSString * const UpdateReserveRecord;
+extern NSString * const InsertReserveRecord;
+
 @interface SysMessageModel : NSObject
 
 /**

@@ -200,8 +200,6 @@
     [valueArray addObject:introducer.intr_id];
     
     
-    
-    
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
     [titleArray addObject:@"?"];
@@ -345,7 +343,6 @@
      {
          NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(patient_id) from %@ pat where pat.[intr_id]=i.[ckeyid] and pat.intr_source like '%%B%%') as patientCount from %@ i where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatIntrMapTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * CommonPageSize,CommonPageSize];
          result = [db executeQuery:sqlStr];
-         //NSLog(@"sqlString:%@",[NSString stringWithFormat:@"select * from %@",IntroducerTableName]);
          while ([result next])
          {
              Introducer * introducer = [Introducer introducerlWithResult:result];

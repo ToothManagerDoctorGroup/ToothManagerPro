@@ -10,7 +10,33 @@
 #import "CRMHttpRespondModel.h"
 #import "LocalNotificationCenter.h"
 
+typedef NS_ENUM(NSInteger,SysMessageReadState){
+    SysMessageReadStateAll = -1,   //所有
+    SysMessageReadStateUnread = 0, //未读
+    SysMessageReadStateReaded = 1  //已读
+};
+
+@class XLMessageQueryModel;
 @interface SysMessageTool : NSObject
+
+/**
+ *  综合查询消息
+ *
+ *  @param queryModel 查询参数模型
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getMessageByQueryModel:(XLMessageQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
+ *  获取所有消息
+ *
+ *  @param doctorId 医生id
+ *  @param syncTime 同步时间
+ *  @param isRead   是否已读（0未读，1已读，非0和1为获取所有）
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)getMessagesWithDoctorId:(NSString *)doctorId syncTime:(NSString *)syncTime isRead:(SysMessageReadState)isRead success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
 /**
  *  获取所有的未读消息
  *
@@ -99,5 +125,27 @@
  *  @param failure    失败回调
  */
 + (void)sendMessageWithDoctorId:(NSString *)doctor_id patientId:(NSString *)patient_id isWeixin:(BOOL)isWeixin isSms:(BOOL)isSms txtContent:(NSString *)content success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
+
+@end
+
+@interface XLMessageQueryModel : NSObject
+//{"DoctorId":156,"IsRead":-1,"MsgId":"1063","MsgType":"AttainNewFriend","SyncTime":"2015-01-01 00:00:00","KeyWord":null,"SortField":"create_time","IsAsc":true,"PageIndex":0,"PageSize":10}
+@property (nonatomic, copy)NSString *DoctorId;
+@property (nonatomic, strong)NSNumber *IsRead;
+@property (nonatomic, copy)NSString *MsgId;
+@property (nonatomic, copy)NSString *MsgType;
+@property (nonatomic, copy)NSString *SyncTime;
+@property (nonatomic, copy)NSString *KeyWord;
+@property (nonatomic, copy)NSString *SortField;
+@property (nonatomic, assign)BOOL IsAsc;
+@property (nonatomic, assign)NSInteger PageIndex;
+@property (nonatomic, assign)NSInteger PageSize;
+
+- (instancetype)initWithIsRead:(NSNumber *)isRead
+                      syncTime:(NSString *)syncTime
+                     sortField:(NSString *)sortField
+                         isAsc:(BOOL)isAsc
+                     pageIndex:(NSInteger)pageIndex
+                      pageSize:(NSInteger)pageSize;
 
 @end

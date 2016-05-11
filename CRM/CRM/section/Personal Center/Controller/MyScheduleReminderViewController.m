@@ -44,6 +44,7 @@
 #import "XLAutoGetSyncTool.h"
 #import "MJRefresh.h"
 #import "XLSysMessageViewController.h"
+#import "XLMessageHandleManager.h"
 
 @interface MyScheduleReminderViewController ()<JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -201,9 +202,7 @@
     }
 }
 - (void)callSync {
-//    [[SyncManager shareInstance] startSync];
     [[AutoSyncGetManager shareInstance] startSyncGetShowSuccess:YES];
-    
 }
 
 #pragma mark 消息按钮点击事件
@@ -216,8 +215,13 @@
 #pragma mark 消息定时器处理
 - (void)createMessageTimer{
     if (!_messageTimer) {
-//        _messageTimer = [NSTimer timerWithTimeInterval:<#(NSTimeInterval)#> target:<#(nonnull id)#> selector:<#(nonnull SEL)#> userInfo:<#(nullable id)#> repeats:<#(BOOL)#>]
+        _messageTimer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:_messageTimer forMode:NSRunLoopCommonModes];
     }
+}
+#pragma mark 处理未读消息
+- (void)messageAutoHandle:(NSTimer *)timer{
+    [XLMessageHandleManager beginHandle];
 }
 
 - (void)initView
@@ -354,7 +358,6 @@
         if (self.remindArray.count == 0) {
             self.noResultView.hidden = NO;
         }else{
-            
             self.noResultView.hidden = YES;
         }
         

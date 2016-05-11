@@ -9,6 +9,17 @@
 #import "SysMessageModel.h"
 #import "MJExtension.h"
 
+//新增患者
+NSString *const AttainNewPatient = @"AttainNewPatient";
+//新的好友
+NSString *const AttainNewFriend = @"AttainNewFriend";
+//取消预约
+NSString *const CancelReserveRecord = @"CancelReserveRecord";
+//修改预约
+NSString *const UpdateReserveRecord = @"UpdateReserveRecord";
+//新增预约
+NSString *const InsertReserveRecord = @"InsertReserveRecord";
+
 @implementation SysMessageModel
 
 + (NSDictionary *)replacedKeyFromPropertyName{

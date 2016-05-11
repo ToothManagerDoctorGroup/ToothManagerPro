@@ -12,6 +12,6 @@
  */
 @interface DBManager (Transaction)
 
-
+- (void)insertObjects:(NSArray *)resources useTransaction:(BOOL)useTransaction;
 
 @end
