@@ -98,4 +98,6 @@ Declare_ShareInstance(CRMHttpTool);
  */
 - (void)cancelAllOperation;
 
+
+
 @end

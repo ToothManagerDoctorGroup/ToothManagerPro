@@ -10,7 +10,9 @@
 
 #define LatestUserID (@"LatestUserID")
 #define LatestUserName (@"LatestUserName")
+#define LatestUserPassword (@"LatestUserPassword")
 #define DeviceToken  (@"DeviceToken")
+#define RegisterId (@"RegisterId")
 
 #define KVersion (@"KVersion")
 

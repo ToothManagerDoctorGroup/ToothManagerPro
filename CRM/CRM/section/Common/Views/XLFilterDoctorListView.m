@@ -29,7 +29,7 @@
 }
 
 #pragma mark - 初始化
-- (void)setSourceArray:(NSArray *)sourceArray{
+- (void)setSourceArray:(NSMutableArray *)sourceArray{
     _sourceArray = sourceArray;
     
     //移除之前的所有视图
@@ -46,6 +46,7 @@
         btn.layer.cornerRadius = 5;
         btn.layer.masksToBounds = YES;
         btn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [btn addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:btn];
     }
 }
@@ -93,11 +94,26 @@
     }
 }
 
+#pragma mark - 计算控件的高度
 - (CGFloat)fixHeigthWithWidth:(CGFloat)width{
     if (self.sourceArray.count == 0) {
         return 0;
     }
     return [self mesureHeightWithSourceArray:self.sourceArray width:width] + 10;;
+}
+
+#pragma mark - 按钮点击事件
+- (void)buttonAction:(UIButton *)btn{
+    //移除数组中的元素
+    [self.sourceArray removeObjectAtIndex:btn.tag - 200];
+    //移除视图
+    [btn removeFromSuperview];
+    //重新设置frame
+    [self setSourceArray:_sourceArray];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(filterDoctorListView:didChooseDoctors:)]) {
+        [self.delegate filterDoctorListView:self didChooseDoctors:_sourceArray];
+    }
 }
 
 @end

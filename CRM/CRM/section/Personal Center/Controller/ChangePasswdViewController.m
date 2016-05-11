@@ -10,6 +10,9 @@
 #import "AccountManager.h"
 #import "CRMHttpRequest+PersonalCenter.h"
 #import "SVProgressHUD.h"
+#import "XLLoginTool.h"
+#import "CRMUserDefalut.h"
+#import "CRMHttpRespondModel.h"
 
 @interface ChangePasswdViewController () <CRMHttpRequestPersonalCenterDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *confirmBtn;
@@ -70,6 +73,16 @@
 #pragma mark - CRMHttpRequestPersonalCenterDelegate
 - (void)updatePasswdSucessWithResult:(NSDictionary *)result {
     [SVProgressHUD showSuccessWithStatus:@"修改成功"];
+    //重新调用登录方法
+    NSString *userName = [CRMUserDefalut objectForKey:LatestUserName];
+    [XLLoginTool loginWithNickName:userName password:self.newpasswdTextField.text success:^(CRMHttpRespondModel *respond) {
+        //更新本地保存的加密密码
+        if ([respond.code integerValue] == 200) {
+            [CRMUserDefalut setObject:respond.result[@"Password"] forKey:LatestUserPassword];
+        }
+    } failure:^(NSError *error) {
+    
+    }];
     [self popViewControllerAnimated:YES];
 }
 

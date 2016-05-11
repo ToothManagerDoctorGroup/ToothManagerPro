@@ -20,6 +20,11 @@
 #import "XLAssistenceModel.h"
 #import "NSString+TTMAddtion.h"
 #import "CRMUnEncryptedHttpTool.h"
+#import "XLAdviceTypeModel.h"
+#import "XLAdviceDetailModel.h"
+#import "XLPatientEducationModel.h"
+#import "XLChatRecordQueryModel.h"
+#import "XLChatModel.h"
 
 #define userIdParam @"userid"
 #define requestActionParam @"action"
@@ -409,6 +414,292 @@
         
         if (success) {
             success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+/**
+ *  查询所有的医嘱类型
+ *
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getMedicalAdviceTypeSuccess:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalAdviceTypeHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"listall" TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+    
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *mArray = [NSMutableArray array];
+        for (NSDictionary *dic in respond.result) {
+            XLAdviceTypeModel *model = [XLAdviceTypeModel objectWithKeyValues:dic];
+            [mArray addObject:model];
+        }
+        if (success) {
+            success(mArray);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  查询指定类型下的所有医嘱
+ *
+ *  @param doctorId   医生id（必填）
+ *  @param ckeyId     医嘱主键（选填）
+ *  @param keyWord    关键字（选填）
+ *  @param adviceId   医嘱的id（必填）
+ *  @param adviceName 医嘱的名称（必填）
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getMedicalAdviceOfTypeByDoctorId:(NSString *)doctorId ckeyid:(NSString *)ckeyId keyWord:(NSString *)keyWord adviceId:(NSString *)adviceId adviceName:(NSString *)adviceName success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalAdviceHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"listbydoctorid" TripleDESIsEncrypt:YES];
+    param[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
+    param[@"ckeyid"] = [ckeyId TripleDESIsEncrypt:YES];
+    param[@"key_word"] = [keyWord TripleDESIsEncrypt:YES];
+    param[@"advice_id"] = [adviceId TripleDESIsEncrypt:YES];
+    param[@"advice_name"] = [adviceName TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *mArray = [NSMutableArray array];
+        for (NSDictionary *dic in respond.result) {
+            XLAdviceDetailModel *model = [XLAdviceDetailModel objectWithKeyValues:dic];
+            [mArray addObject:model];
+        }
+        if (success) {
+            success(mArray);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  新增一条医嘱
+ *
+ *  @param model   医嘱模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)addNewMedicalAdviceOfTypeByAdviceDetailModel:(XLAdviceDetailModel *)model success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalAdviceHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"add" TripleDESIsEncrypt:YES];
+    param[@"DataEntity"] = [[model.keyValues JSONString] TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  删除一条医嘱
+ *
+ *  @param ckeyId  医嘱id
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)deleteMedicalAdviceOfTypeByCkeyId:(NSString *)ckeyId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalAdviceHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    param[@"ckeyid"] = [ckeyId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+/**
+ *  编辑一条医嘱
+ *
+ *  @param model   医嘱模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)editMedicalAdviceOfTypeByAdviceDetailModel:(XLAdviceDetailModel *)model success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/MedicalAdviceHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"update" TripleDESIsEncrypt:YES];
+    param[@"DataEntity"] = [[model.keyValues JSONString] TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  获取所有的患教信息
+ *
+ *  @param type    信息类型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getPatientEducationWithType:(NSString *)type success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/UrlMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"listbytype" TripleDESIsEncrypt:YES];
+    param[@"type"] = [@"patient_edu" TripleDESIsEncrypt:YES];
+    
+    
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *arrayM = [NSMutableArray array];
+        for (NSDictionary *dic in respond.result) {
+            XLPatientEducationModel *model = [XLPatientEducationModel objectWithKeyValues:dic];
+            [arrayM addObject:model];
+        }
+        
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  模糊查询所有聊天记录
+ *
+ *  @param queryModel 查询模型
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getAllChatRecordWithChatQueryModel:(XLChatRecordQueryModel *)queryModel success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorChatRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"listbypage" TripleDESIsEncrypt:YES];
+    param[@"QueryModel"] = [[queryModel.keyValues JSONString] TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *arrayM = [NSMutableArray array];
+        for (NSDictionary *dic in respond.result) {
+            XLChatModel *model = [XLChatModel objectWithKeyValues:dic];
+            [arrayM addObject:model];
+        }
+        
+        if (success) {
+            success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  新增聊天记录
+ *
+ *  @param chatModel 聊天记录模型
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)addNewChatRecordWithChatModel:(XLChatModel *)chatModel success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorChatRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"add" TripleDESIsEncrypt:YES];
+    param[@"DataEntity"] = [[chatModel.keyValues JSONString] TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  删除聊天记录
+ *
+ *  @param keyId      某个聊天记录主键（可不传）
+ *  @param receiverId 接收者id（多个接收者，中间用“，”隔开）
+ *  @param senderId   发送者id (多个发送者，中间用“，”隔开）
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)deleteChatRecordWithKeyId:(NSString *)keyId receiverId:(NSString *)receiverId senderId:(NSString *)senderId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorChatRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
+    param[@"keyid"] = [keyId TripleDESIsEncrypt:YES];
+    param[@"receiver_id"] = [receiverId TripleDESIsEncrypt:YES];
+    param[@"sender_id"] = [senderId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
         }
     } failure:^(NSError *error) {
         if (failure) {

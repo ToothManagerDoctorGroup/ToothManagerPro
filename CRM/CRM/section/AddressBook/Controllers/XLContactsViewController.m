@@ -294,6 +294,12 @@
     if ([searchText isNotEmpty]) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fullName CONTAINS %@", searchText]; //predicate只能是对象
         searchResults = [self.contacts filteredArrayUsingPredicate:predicate];
+        if (searchResults.count == 0) {
+            self.searchController.hideNoResult = NO;
+        }else{
+            self.searchController.hideNoResult = YES;
+        }
+        
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:searchResults];
         [self.searchController.searchResultsTableView reloadData];
@@ -420,7 +426,6 @@
 {
     if (_searchController == nil) {
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         

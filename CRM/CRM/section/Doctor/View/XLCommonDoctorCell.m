@@ -180,18 +180,16 @@
 - (void)setDoctorSquareCellWithModel:(Doctor *)doctor{
     _addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
     _addButton.layer.cornerRadius = 5.0f;
+    [_addButton setTitle:@"添加" forState:UIControlStateNormal];
     [_addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     
     _nameLabel.text = doctor.doctor_name;
     _addButton.enabled = doctor.isopen;
     
-    NSArray *array = [[DBManager shareInstance] getAllDoctor];
-    for(Doctor *doc in array){
-        if([doc.doctor_name isEqualToString:doctor.doctor_name]){
-            [_addButton setBackgroundColor:[UIColor lightGrayColor]];
-            [_addButton setTitle:@"已是好友" forState:UIControlStateNormal];
-            _addButton.enabled = NO;
-        }
+    if (doctor.isExist) {
+        [_addButton setBackgroundColor:[UIColor lightGrayColor]];
+        [_addButton setTitle:@"已是好友" forState:UIControlStateNormal];
+        _addButton.enabled = NO;
     }
     
     _descLabel.text = doctor.doctor_degree;
@@ -203,6 +201,16 @@
 - (void)addButtonAction:(UIButton *)button{
     if (self.delegate && [self.delegate respondsToSelector:@selector(commonDoctorCell:addButtonDidSelect:)]) {
         [self.delegate commonDoctorCell:self addButtonDidSelect:button];
+    }
+}
+
+- (void)setButtonEnable:(BOOL)buttonEnable{
+    _buttonEnable = buttonEnable;
+    
+    if (!buttonEnable) {
+        [_addButton setTitle:@"正在验证" forState:UIControlStateNormal];
+        [_addButton setBackgroundColor:[UIColor lightGrayColor]];
+        _addButton.enabled = NO;
     }
 }
 

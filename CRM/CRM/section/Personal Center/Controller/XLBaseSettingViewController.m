@@ -119,18 +119,8 @@
     }else if (indexPath.section == 3){
         TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"确认退出当前账号吗？" cancelHandler:^{
         } comfirmButtonHandlder:^{
-            [SVProgressHUD showWithStatus:@"正在退出"];
-            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
-                if (error && error.errorCode != EMErrorServerNotLogin) {
-                    if (error && error.errorCode != EMErrorServerNotLogin) {
-                        [SVProgressHUD showImage:nil status:@"网络连接失败"];
-                    }
-                }
-                else{
-                    [SVProgressHUD dismiss];
-                    [[AccountManager shareInstance] logout];
-                }
-            } onQueue:nil];
+            [[AccountManager shareInstance] logout];
+            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
         }];
         [alertView show];
     }

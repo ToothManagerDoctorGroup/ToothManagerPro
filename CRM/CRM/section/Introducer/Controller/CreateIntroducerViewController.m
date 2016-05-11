@@ -89,8 +89,8 @@
 
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
-    if (self.nameTextField.text == 0) {
-        [SVProgressHUD showImage:nil status:@"请输入介绍人姓名"];
+    if ([self.nameTextField.text isEmpty]) {
+        [SVProgressHUD showImage:nil status:@"姓名不能为空"];
         return;
     }
     if ([self.nameTextField.text charaterCount] > 32) {

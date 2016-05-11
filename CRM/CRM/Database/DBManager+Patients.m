@@ -922,7 +922,7 @@
     NSString *keyParam;
     //有修复医生
     NSString *repairDoctorId = nil;
-    if (cureDoctors) {
+    if (cureDoctors && cureDoctors.count > 0) {
         if (cureDoctors.count == 1) {
             Doctor *doc = cureDoctors[0];
             repairDoctorId = doc.ckeyid;
@@ -1657,6 +1657,25 @@
         if (ret == NO) {
             
         }
+    }];
+    return ret;
+}
+
+/**
+ *  删除患者的关系数据
+ *
+ *  @param patientId 患者id
+ *
+ *  @return 成功YES 失败NO
+ */
+- (BOOL)deletePatientIntroducerMap:(NSString *)patientId{
+    if ([NSString isEmptyString:patientId]) {
+        return NO;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = %@",PatIntrMapTableName,patientId];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
     }];
     return ret;
 }

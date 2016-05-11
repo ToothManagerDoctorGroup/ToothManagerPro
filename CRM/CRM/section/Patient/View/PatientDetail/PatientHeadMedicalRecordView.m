@@ -12,6 +12,8 @@
 #import "MedicalDetailView.h"
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
+#import "UIImage+TTMAddtion.h"
+#import <Masonry.h>
 
 #define Margin 10
 
@@ -26,6 +28,8 @@
 //当前选中的病历
 @property (nonatomic, assign)NSUInteger currentIndex;
 
+
+@property (nonatomic, strong)UIImageView *noResultView;
 @end
 
 @implementation PatientHeadMedicalRecordView
@@ -51,6 +55,7 @@
 
 #pragma mark -初始化
 - (void)setUp{
+    
     self.userInteractionEnabled = YES;
     //设置自身的图片
     UIImage *image = [UIImage imageNamed:@"medical_bg"];
@@ -106,10 +111,16 @@
     MedicalDetailView *medicalDetailView = [[MedicalDetailView alloc] init];
     self.medicalDetailView = medicalDetailView;
     [self addSubview:medicalDetailView];
+    
 }
 
 - (void)setMedicalCases:(NSArray *)medicalCases{
     _medicalCases = medicalCases;
+    if (medicalCases.count == 0) {
+        self.noResultView.hidden = NO;
+    }else{
+        self.noResultView.hidden = YES;
+    }
     //重新绘制
     [self setNeedsLayout];
 }
@@ -178,6 +189,21 @@
     if ([self.delegate respondsToSelector:@selector(didClickeditMedicalButtonWithMedicalCase:)]) {
         [self.delegate didClickeditMedicalButtonWithMedicalCase:self.medicalCases[self.currentIndex]];
     }
+}
+
+#pragma mark - 控件懒加载
+- (UIImageView *)noResultView{
+    if (!_noResultView) {
+        _noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:@"noMedicalcase_alert"]];
+        _noResultView.hidden = YES;
+        [self addSubview:_noResultView];
+        
+        WS(weakSelf);
+        [_noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(weakSelf);
+        }];
+    }
+    return _noResultView;
 }
 
 

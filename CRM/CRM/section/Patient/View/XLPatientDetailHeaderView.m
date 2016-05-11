@@ -12,7 +12,6 @@
 #import "EditPatientDetailViewController.h"
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"
-#import "EditAllergyViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"
@@ -210,7 +209,7 @@
     }else{
         UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
         QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
-        qrVC.patient = self.detailPatient;
+        qrVC.patientId = self.detailPatient.ckeyid;
         [self.viewController.navigationController pushViewController:qrVC animated:YES];
     }
 }

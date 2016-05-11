@@ -21,13 +21,6 @@
 #import "NSString+Conversion.h"
 #import "NSString+TTMAddtion.h"
 
-//TIMUIKIT_EXTERN NSString * const ITI;
-//TIMUIKIT_EXTERN NSString * const DENTIS;
-//TIMUIKIT_EXTERN NSString * const NuoBeiEr;
-//TIMUIKIT_EXTERN NSString * const AoChiTai;
-//TIMUIKIT_EXTERN NSString * const FeiYaDan;
-//TIMUIKIT_EXTERN NSString * const MaterialStr;
-//TIMUIKIT_EXTERN NSString * const OtherStr;
 
 @interface NewMaterialsViewController () <TimPickerTextFieldDataSource,UITableViewDelegate,UITableViewDataSource,XLDataSelectViewControllerDelegate>
 {
@@ -152,11 +145,6 @@
         cellMode.patientId = patientTmp.ckeyid;
         cellMode.introducerId = patientTmp.introducer_id;
         cellMode.name = patientTmp.patient_name;
-//        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-//            cellMode.name = patientTmp.nickName;
-//        }else{
-//            cellMode.name = patientTmp.patient_name;
-//        }
         cellMode.phone = patientTmp.patient_phone;
         cellMode.introducerName = patientTmp.intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
@@ -193,6 +181,16 @@
         [SVProgressHUD showImage:nil status:@"请输入种植体名称"];
         return;
     }
+    
+    //判断种植体名称是否存在
+    if (!self.edit) {
+        BOOL ret = [[DBManager shareInstance] materialIsExistWithMaterialName:self.nameTextField.text];
+        if (ret) {
+            [SVProgressHUD showImage:nil status:@"该种植体已存在"];
+            return;
+        }        
+    }
+    
     //判断耗材名称长度
     if ([self.nameTextField.text isValidLength:32]) {
         [SVProgressHUD showImage:nil status:@"种植体名称过长"];
@@ -202,6 +200,7 @@
         [SVProgressHUD showImage:nil status:@"种植体价格无效"];
         return;
     }
+    
     
     //判断是否是编辑状态
     if (self.showPatients) {

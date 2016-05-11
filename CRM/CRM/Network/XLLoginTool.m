@@ -14,6 +14,7 @@
 #import "CRMUserDefalut.h"
 #import "NSString+TTMAddtion.h"
 #import "JSONKit.h"
+#import "CRMHttpTool.h"
 
 @implementation XLLoginTool
 
@@ -33,13 +34,13 @@
         return;
     }
     
-    NSString *urlStr =  [NSString stringWithFormat:@"%@ashxzj/loginhandler.ashx",DomainName];
+    NSString *urlStr =  [NSString stringWithFormat:@"%@%@/loginhandler.ashx",DomainName,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"username"] = [NSString TripleDES:nickName encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
     params[@"password"] = [NSString TripleDES:password encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
     params[@"devicetype"] = [NSString TripleDES:@"ios" encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
-    if ([CRMUserDefalut objectForKey:DeviceToken]) {
-        params[@"devicetoken"] = [NSString TripleDES:[CRMUserDefalut objectForKey:DeviceToken] encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
+    if ([CRMUserDefalut objectForKey:RegisterId]) {
+        params[@"devicetoken"] = [NSString TripleDES:[CRMUserDefalut objectForKey:RegisterId] encryptOrDecrypt:kCCEncrypt encryptOrDecryptKey:NULL];
     }
 
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -69,4 +70,33 @@
     }];
 }
 
+
+/**
+ *  更新用户推送所需registerId
+ *
+ *  @param userId     用户id
+ *  @param registerId 注册id
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)updateUserRegisterIdWithUserId:(NSString *)userId registerId:(NSString *)registerId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/UpdateRegId.ashx",DomainName,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"userid"] = [userId TripleDESIsEncrypt:YES];
+    param[@"regid"] = [registerId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 @end

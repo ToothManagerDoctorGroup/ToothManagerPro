@@ -153,6 +153,11 @@ typedef NS_ENUM(NSUInteger, FSCalendarOrientation) {
     return self;
 }
 
+- (void)setMaximumDate:(NSDate *)maximumDate{
+    _maximumDate = maximumDate;
+    [self reloadData];
+}
+
 - (void)initialize
 {
     _appearance = [[FSCalendarAppearance alloc] init];

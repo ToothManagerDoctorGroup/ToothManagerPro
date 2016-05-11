@@ -21,6 +21,7 @@
 #import "DBManager+AutoSync.h"
 #import "XLMaterialsViewController.h"
 #import "XLMaterialDetailViewController.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLMaterialsViewController () <UISearchBarDelegate>
 {
@@ -29,6 +30,8 @@
 
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -113,6 +116,9 @@
     [super viewDidLoad];
     //添加通知
     [self addNotificationObserver];
+    
+    [self initView];
+    [self initData];
 }
 
 - (void)initView
@@ -133,6 +139,8 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
+    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"materialList_alert" top:104 showButton:NO buttonClickBlock:nil];
+    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
@@ -145,11 +153,21 @@
 - (void)initData
 {
     dataArray = [[DBManager shareInstance] getAllMaterials];
+    if (dataArray.count == 0) {
+        self.noResultAlertView.hidden = NO;
+    }else{
+        self.noResultAlertView.hidden = YES;
+    }
 }
 
 - (void)refreshData {
     dataArray = nil;
     dataArray = [[DBManager shareInstance] getAllMaterials];
+    if (dataArray.count == 0) {
+        self.noResultAlertView.hidden = NO;
+    }else{
+        self.noResultAlertView.hidden = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -375,6 +393,11 @@
         //查询本地数组
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"mat_name CONTAINS %@", searchText]; //predicate只能是对象
         NSArray *filteredArray = [dataArray filteredArrayUsingPredicate:predicate];
+        if (filteredArray.count == 0) {
+            self.searchController.hideNoResult = NO;
+        }else{
+            self.searchController.hideNoResult = YES;
+        }
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:filteredArray];
         [self.searchController.searchResultsTableView reloadData];

@@ -92,7 +92,7 @@ IB_DESIGNABLE
 
 @property (readonly, nonatomic) FSCalendarAppearance *appearance;
 @property (readonly, nonatomic) NSDate *minimumDate;
-@property (readonly, nonatomic) NSDate *maximumDate;
+@property (strong, nonatomic) NSDate *maximumDate;
 
 @property (readonly, nonatomic) NSDate *selectedDate;
 @property (readonly, nonatomic) NSArray *selectedDates;

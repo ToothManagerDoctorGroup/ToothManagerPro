@@ -13,7 +13,7 @@
 #import "LocalNotificationCenter.h"
 
 #define POST_COMMONURL ([NSString stringWithFormat:@"%@%@/%@/SyncPost.ashx",DomainName,Method_His_Crm,Method_Ashx])
-
+#define POST_PATIENT_INTRODUCERMAP_INSERT [NSString stringWithFormat:@"%@%@/%@/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 /**
  *  自动同步Edit数据
  */

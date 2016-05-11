@@ -12,6 +12,7 @@
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
 #import "DBManager+Materials.h"
+#import "DBManager+Introducer.h"
 #import "NSDate+Conversion.h"
 #import "PatientManager.h"
 #import "SVProgressHUD.h"
@@ -44,6 +45,8 @@
 #import "SysMessageTool.h"
 #import "DBManager+Doctor.h"
 #import "UIImage+TTMAddtion.h"
+#import "XLChatModel.h"
+#import "EaseSDKHelper.h"
 
 #define TableHeaderViewHeight 350
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
@@ -479,8 +482,9 @@
                         InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Update dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
                         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                     }
+                     NSString *intrName = [[DBManager shareInstance] getPatientIntrNameWithPatientId:self.patiendId];
                     UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
-                    UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
+                    UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text intrName:intrName];
                     [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
                 }
             }
@@ -649,9 +653,11 @@
             [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
         }
         
+        //获取介绍人姓名
+        NSString *intrName = [[DBManager shareInstance] getPatientIntrNameWithPatientId:self.patiendId];
         @autoreleasepool {
             UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
-            UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text];
+            UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text intrName:intrName];
             [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
         }
     }
@@ -668,7 +674,6 @@
             resultImage = [UIImage fixOrientation:[info objectForKey:UIImagePickerControllerOriginalImage]];
             
             UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
-            
             [SVProgressHUD showImage:nil status:@"正在添加..."];
             CTLib *lib = [[CTLib alloc] init];
             lib.patient_id = weakSelf.medicalCase.patient_id;
@@ -858,14 +863,26 @@
 
 #pragma mark - CreateCaseHeaderViewControllerDeleate
 - (void)didChooseTime:(NSString *)time withType:(NSString *)type{
+    WS(weakSelf);
     //获取提醒数据
+    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
     [DoctorTool yuYueMessagePatient:self.patiendId fromDoctor:[AccountManager currentUserid] withMessageType:type withSendType:@"1" withSendTime:time success:^(CRMHttpRespondModel *result) {
         if ([result.code integerValue] == 200) {
             XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
             } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
-                [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:self.patiendId isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.patiendId isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
                     if ([respond.code integerValue] == 200) {
                         [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                        //将消息保存在消息记录里
+                        XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:weakSelf.patiendId receiverName:patient.patient_name content:content];
+                        [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+                        //发送环信消息
+                        [EaseSDKHelper sendTextMessage:content
+                                                    to:patient.ckeyid
+                                           messageType:eMessageTypeChat
+                                     requireEncryption:NO
+                                            messageExt:nil];
+                        
                     }else{
                         [SVProgressHUD showImage:nil status:@"消息发送失败"];
                     }

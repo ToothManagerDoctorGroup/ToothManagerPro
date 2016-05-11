@@ -13,7 +13,7 @@
 @interface AddressBoolTool : NSObject
 Declare_ShareInstance(AddressBoolTool);
 
-- (UIImage *)drawImageWithSourceImage:(UIImage *)sourceImage plantTime:(NSString *)plantTime;
+- (UIImage *)drawImageWithSourceImage:(UIImage *)sourceImage plantTime:(NSString *)plantTime intrName:(NSString *)intrName;
 
 - (void)saveWithImage:(UIImage *)image person:(NSString *)personName phone:(NSString *)personPhone;
 /**

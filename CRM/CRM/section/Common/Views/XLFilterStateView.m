@@ -47,7 +47,7 @@
 #pragma mark - 初始化子视图
 - (void)setUp{
     _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, CommonWidth, Normal_Height)];
-    _titleLabel.text = @"状态：";
+    _titleLabel.text = @"治疗：";
     _titleLabel.font = [UIFont systemFontOfSize:15];
     _titleLabel.textColor = [UIColor colorWithHex:0x888888];
     [self addSubview:_titleLabel];
@@ -127,12 +127,22 @@
 }
 
 - (void)buttonAction:(UIButton *)button{
-    self.selectBtn.selected = NO;
-    button.selected = YES;
-    self.selectBtn = button;
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(filterStateView:didChooseState:)]) {
-        [self.delegate filterStateView:self didChooseState:button.tag - 100];
+    if (self.selectBtn == button) {
+        button.selected = NO;
+        self.selectBtn = nil;
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(filterStateView:didChooseState:)]) {
+            [self.delegate filterStateView:self didChooseState:-1];
+        }
+    }else{
+        self.selectBtn.selected = NO;
+        button.selected = YES;
+        self.selectBtn = button;
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(filterStateView:didChooseState:)]) {
+            [self.delegate filterStateView:self didChooseState:button.tag - 100];
+        }
     }
 }
 

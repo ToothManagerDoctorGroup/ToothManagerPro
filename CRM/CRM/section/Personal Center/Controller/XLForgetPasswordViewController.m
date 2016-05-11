@@ -10,6 +10,7 @@
 #import "AccountManager.h"
 #import "CRMHttpRequest+PersonalCenter.h"
 #import "JKCountDownButton.h"
+#import "UIColor+Extension.h"
 
 @interface XLForgetPasswordViewController ()
 @property (weak, nonatomic) IBOutlet UIButton *submitButton;
@@ -56,6 +57,8 @@
             
             //设置按钮不可点击
             sender.enabled = NO;
+            //背景置灰
+            sender.backgroundColor = [UIColor colorWithHex:0x888888];
             //button type要 设置成custom 否则会闪动
             [sender startWithSecond:60];
             [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
@@ -64,7 +67,8 @@
             }];
             [sender didFinished:^NSString *(JKCountDownButton *countDownButton, int second) {
                 countDownButton.enabled = YES;
-                return @"重新获取";
+                sender.backgroundColor = [UIColor colorWithHex:0x00a0ea];
+                return @"获取验证码";
             }];
         }
     }

@@ -15,7 +15,7 @@
 @implementation AddressBoolTool
 Realize_ShareInstance(AddressBoolTool);
 
-- (UIImage *)drawImageWithSourceImage:(UIImage *)sourceImage plantTime:(NSString *)plantTime{
+- (UIImage *)drawImageWithSourceImage:(UIImage *)sourceImage plantTime:(NSString *)plantTime intrName:(NSString *)intrName{
     //首先取到要作为背景的图片（原始图片）
     UIImage *black = [UIImage imageNamed:@"draw_bg_black"];
     
@@ -28,16 +28,26 @@ Realize_ShareInstance(AddressBoolTool);
     // 3.画种植时间
     CGFloat imageX = 0;
     CGFloat imageY = 0;
-    if ([plantTime isNotEmpty] && plantTime.length > 0) {
-        NSString *time1 = [NSString stringWithFormat:@"种植时间:%@",[plantTime componentsSeparatedByString:@" "][0]];
-        CGSize time1Size = [time1 sizeWithFont:[UIFont fontWithName:@"Arial-BoldMT" size:14]];
-        CGFloat time1Y = 140 + 20 + 20;
-        CGFloat time1X = (kScreenWidth - time1Size.width) / 2;
-        [time1 drawAtPoint:CGPointMake(time1X, time1Y) withAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Arial-BoldMT" size:16],NSForegroundColorAttributeName:[UIColor whiteColor]}];
+    if ([intrName isNotEmpty]) {
+        NSString *name = [NSString stringWithFormat:@"介绍人:%@",intrName];
+        CGSize nameSize = [name sizeWithFont:[UIFont fontWithName:@"Arial-BoldMT" size:15]];
+        CGFloat nameY = 140 + 20 + 20;
+        CGFloat nameX = (kScreenWidth - nameSize.width) / 2;
+        [name drawAtPoint:CGPointMake(nameX, nameY) withAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Arial-BoldMT" size:15],NSForegroundColorAttributeName:[UIColor whiteColor]}];
         
-        imageY = time1Y + time1Size.height + 20;
+        imageY += nameY + nameSize.height + 10;
     }else{
-        imageY = 140 + 20 + 20;
+        imageY += 140 + 20 + 20;
+    }
+    
+    if ([plantTime isNotEmpty]) {
+        NSString *time1 = [NSString stringWithFormat:@"种植时间:%@",[plantTime componentsSeparatedByString:@" "][0]];
+        CGSize time1Size = [time1 sizeWithFont:[UIFont fontWithName:@"Arial-BoldMT" size:15]];
+        CGFloat time1Y = imageY;
+        CGFloat time1X = (kScreenWidth - time1Size.width) / 2;
+        [time1 drawAtPoint:CGPointMake(time1X, time1Y) withAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Arial-BoldMT" size:15],NSForegroundColorAttributeName:[UIColor whiteColor]}];
+        
+        imageY = time1Y + time1Size.height + 10;
     }
     
     // 2.往BitMap中画背景图片
@@ -262,6 +272,9 @@ Realize_ShareInstance(AddressBoolTool);
     ABMultiValueAddValueAndLabel(multiPhone, phoneRef, kABPersonPhoneMainLabel, NULL);
     // 设置phone属性
     ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, NULL);
+    UIImage *image = [UIImage imageNamed:@"btn_add_doctor"];
+    NSData *dataRef = UIImagePNGRepresentation(image);
+    ABPersonSetImageData(person, (__bridge CFDataRef)dataRef, NULL);
     // 释放该数组
     CFRelease(multiPhone);
     // 将新建的联系人添加到通讯录中

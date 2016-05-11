@@ -17,6 +17,7 @@
     
     CGFloat xDistance; //触摸点和中心点x方向移动的距离
     CGFloat yDistance; //触摸点和中心点y方向移动的距离
+    CGPoint beginPoint;//第一次的点
 }
 
 @end
@@ -53,29 +54,4 @@
 - (CGFloat)fixHeight{
     return SuperHeight;
 }
-
-
-////手指按下开始触摸
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//    //获得触摸在按钮的父视图中的坐标
-//    UITouch *touch = [touches anyObject];       
-//    CGPoint currentPoint = [touch locationInView:self.superview];
-//        
-//    xDistance =  self.center.x - currentPoint.x;
-//    yDistance = self.center.y - currentPoint.y;
-//    
-//}
-////手指按住移动过程
-//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//       //获得触摸在按钮的父视图中的坐标
-//       UITouch *touch = [touches anyObject];       
-//       CGPoint currentPoint = [touch locationInView:self.superview]; 
-//    
-//       //移动按钮到当前触摸位置
-//       CGPoint newCenter = CGPointMake(currentPoint.x + xDistance, currentPoint.y + yDistance);
-//    NSLog(@"%@",NSStringFromCGPoint(newCenter));
-//}
-
 @end

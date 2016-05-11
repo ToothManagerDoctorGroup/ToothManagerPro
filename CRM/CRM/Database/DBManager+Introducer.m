@@ -343,7 +343,7 @@
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * CommonPageSize,CommonPageSize];
+         NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(patient_id) from %@ pat where pat.[intr_id]=i.[ckeyid] and pat.intr_source like '%%B%%') as patientCount from %@ i where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatIntrMapTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * CommonPageSize,CommonPageSize];
          result = [db executeQuery:sqlStr];
          //NSLog(@"sqlString:%@",[NSString stringWithFormat:@"select * from %@",IntroducerTableName]);
          while ([result next])
@@ -420,7 +420,7 @@
         return 0;
     }
     
-    NSString *sqlStr = [NSString stringWithFormat:@"select count(ckeyid) from %@ where introducer_id = '%@' and creation_date > datetime('%@')",PatientTableName,introducerId,[NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select count(patient_id) from %@ pat where pat.intr_id = '%@' and pat.intr_source like '%%B%%' and creation_date > datetime('%@')",PatIntrMapTableName,introducerId,[NSString defaultDateString]];
     __block FMResultSet *result = nil;
     __block NSInteger count = 0;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -446,7 +446,7 @@
     }
     
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where introducer_id = '%@' and creation_date > datetime('%@')",PatientTableName,introducerId, [NSString defaultDateString]];
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ p where p.ckeyid in (select patient_id from %@ pat where pat.intr_id = '%@' and pat.intr_source like '%%B%%' and pat.creation_date > datetime('%@'))",PatientTableName,PatIntrMapTableName,introducerId,[NSString defaultDateString]];
     
     __block Patient *patient = nil;
     __block FMResultSet *result = nil;
@@ -554,6 +554,21 @@
         [result close];
     }];
     return introducer;
+}
+
+- (NSString *)getPatientIntrNameWithPatientId:(NSString *)patientId{
+    
+    NSString * sqlString = [NSString stringWithFormat:@"select m.*,i.intr_name as intr_name from %@ i,%@ m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id='%@' and m.patient_id='%@' union select m.*,i.doctor_name as intr_name from %@ i,%@ m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id='%@' and m.patient_id='%@'",IntroducerTableName,PatIntrMapTableName,[AccountManager currentUserid],patientId,DoctorTableName,PatIntrMapTableName,[AccountManager currentUserid],patientId];
+    __block FMResultSet *result = nil;
+    __block NSString *intrName = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlString];
+        if (result && result.next) {
+            intrName = [result stringForColumn:@"intr_name"];
+        }
+        [result close];
+    }];
+    return intrName;
 }
 
 @end

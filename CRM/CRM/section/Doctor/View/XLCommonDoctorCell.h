@@ -25,6 +25,8 @@
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
+@property (nonatomic, assign)BOOL buttonEnable;
+
 //新的好友页面
 - (void)setNewFriendCellWithFrienNotifi:(FriendNotificationItem *)notifiItem;
 //好友列表页面

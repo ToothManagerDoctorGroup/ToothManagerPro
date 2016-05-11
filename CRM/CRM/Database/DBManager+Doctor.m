@@ -45,9 +45,6 @@
         NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *titleArray = [NSMutableArray arrayWithCapacity:0];
         
-        /*
-         doctor_id text, doctor_name text, doctor_dept text,doctor_phone text, user_id text, doctor_email text, doctor_hospital text, doctor_position text, doctor_degree text, auth_status integer, auth_text text, auth_pic text,creation_date text,
-         */
         [columeArray addObject:@"ckeyid"];
         [columeArray addObject:@"doctor_name"];
         [columeArray addObject:@"doctor_dept"];

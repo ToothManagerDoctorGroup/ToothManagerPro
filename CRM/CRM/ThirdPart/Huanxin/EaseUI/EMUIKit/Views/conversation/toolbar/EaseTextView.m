@@ -72,7 +72,6 @@
 }
 
 #pragma mark - Notifications
-
 - (void)didReceiveTextDidChangeNotification:(NSNotification *)notification {
     [self setNeedsDisplay];
 }

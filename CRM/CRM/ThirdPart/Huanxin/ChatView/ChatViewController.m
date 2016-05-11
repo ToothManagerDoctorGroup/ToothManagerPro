@@ -13,13 +13,26 @@
 #import "CustomMessageCell.h"
 #import "UserProfileViewController.h"
 #import "UserProfileManager.h"
-//#import "ContactListSelectViewController.h"
 #import "AccountManager.h"
 #import "DBManager+Patients.h"
 #import "DBManager+Doctor.h"
 #import "XLTreateGroupViewController.h"
+#import "UIColor+Extension.h"
+#import "MyPatientTool.h"
+#import "CRMHttpRespondModel.h"
+#import "QrCodeViewController.h"
+#import "XLAdviceSelectViewController.h"
+#import "DBTableMode.h"
+#import "XLPatientEducationViewController.h"
+#import "XLChatRecordViewController.h"
+#import "SysMessageTool.h"
+#import "JSONKit.h"
+#import "DoctorTool.h"
+#import "XLChatModel.h"
+#import "SysMessageTool.h"
+#import "CRMUserDefalut.h"
 
-@interface ChatViewController ()<UIAlertViewDelegate, EaseMessageViewControllerDelegate, EaseMessageViewControllerDataSource>
+@interface ChatViewController ()<UIAlertViewDelegate, EaseMessageViewControllerDelegate, EaseMessageViewControllerDataSource,XLAdviceSelectViewControllerDelegate>
 {
     UIMenuItem *_copyMenuItem;
     UIMenuItem *_deleteMenuItem;
@@ -27,6 +40,9 @@
 }
 
 @property (nonatomic) BOOL isPlayingAudio;
+@property (nonatomic, strong)UILabel *tintLabel;
+//是否绑定微信
+@property (nonatomic, assign)BOOL isBind;
 
 @end
 
@@ -62,11 +78,14 @@
     
     EaseEmotionManager *manager= [[EaseEmotionManager alloc] initWithType:EMEmotionDefault emotionRow:3 emotionCol:7 emotions:[EaseEmoji allEmoji]];
     [self.faceView setEmotionManagers:@[manager]];
+    
+    //当前设备被其他设备登录
+    [self easeMobIsLogin];
+    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -78,6 +97,8 @@
             self.title = [self.conversation.ext objectForKey:@"groupSubject"];
         }
     }
+    //获取患者微信绑定状态
+    [self getPaitientIsBind];
 }
 
 #pragma mark - setup subviews
@@ -92,8 +113,9 @@
     
     //单聊
     if (self.conversation.conversationType == eConversationTypeChat) {
-        UIButton *clearButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
-        [clearButton setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
+        UIButton *clearButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 80, 44)];
+        [clearButton setTitle:@"消息记录" forState:UIControlStateNormal];
+        clearButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [clearButton addTarget:self action:@selector(deleteAllMessages:) forControlEvents:UIControlEventTouchUpInside];
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:clearButton];
     }
@@ -107,6 +129,8 @@
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:detailButton];
     }
 }
+
+#pragma mark - 判断当前环信账号是否
 
 #pragma mark - UIAlertViewDelegate
 
@@ -161,6 +185,7 @@
     }
     return nil;
 }
+
 
 - (CGFloat)messageViewController:(EaseMessageViewController *)viewController
            heightForMessageModel:(id<IMessageModel>)messageModel
@@ -276,21 +301,53 @@
     return model;
 }
 
-#pragma mark - EaseMob
+#pragma mark - EaseMobSendAction
+- (void)sendImageMessage:(UIImage *)image{
+    [super sendImageMessage:image];
+}
+
+- (void)sendVoiceMessageWithLocalPath:(NSString *)localPath duration:(NSInteger)duration{
+    [super sendVoiceMessageWithLocalPath:localPath duration:duration];
+}
+
+- (void)sendTextMessage:(NSString *)text{
+    
+    //发送文字
+    if (!self.isBind) {
+        [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:self.conversation.chatter isWeixin:NO isSms:YES txtContent:text success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                [SVProgressHUD showImage:nil status:@"信息发送成功,患者将收到短信提醒"];   
+            }
+        } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
+    [super sendTextMessage:text];
+}
+
 
 #pragma mark - EMChatManagerLoginDelegate
-
 - (void)didLoginFromOtherDevice
 {
     if ([self.imagePicker.mediaTypes count] > 0 && [[self.imagePicker.mediaTypes objectAtIndex:0] isEqualToString:(NSString *)kUTTypeMovie]) {
         [self.imagePicker stopVideoCapture];
     }
+    [self easeMobIsLogin];
 }
 
 - (void)didRemovedFromServer
 {
     if ([self.imagePicker.mediaTypes count] > 0 && [[self.imagePicker.mediaTypes objectAtIndex:0] isEqualToString:(NSString *)kUTTypeMovie]) {
         [self.imagePicker stopVideoCapture];
+    }
+}
+
+- (void)didAutoReconnectFinishedWithError:(NSError *)error{
+    if (error == nil) {
+        [self hideTintLabel];
     }
 }
 
@@ -317,31 +374,16 @@
     [self.navigationController pushViewController:groupMemberVc animated:YES];
     
 }
-
+#pragma mark - 消息记录
 - (void)deleteAllMessages:(id)sender
 {
-    if (self.dataArray.count == 0) {
-        [self showHint:NSLocalizedString(@"message.noMessage", @"no messages")];
-        return;
-    }
-    
-    if ([sender isKindOfClass:[NSNotification class]]) {
-        NSString *groupId = (NSString *)[(NSNotification *)sender object];
-        BOOL isDelete = [groupId isEqualToString:self.conversation.chatter];
-        if (self.conversation.conversationType != eConversationTypeChat && isDelete) {
-            self.messageTimeIntervalTag = -1;
-            [self.conversation removeAllMessages];
-            [self.messsagesSource removeAllObjects];
-            [self.dataArray removeAllObjects];
-            
-            [self.tableView reloadData];
-            [self showHint:NSLocalizedString(@"message.noMessage", @"no messages")];
-        }
-    }
-    else if ([sender isKindOfClass:[UIButton class]]){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"sureToDelete", @"please make sure to delete") delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel") otherButtonTitles:NSLocalizedString(@"ok", @"OK"), nil];
-        [alertView show];
-    }
+    NSLog(@"消息记录");
+    Patient *patient = [[DBManager shareInstance] getPatientCkeyid:self.conversation.chatter];
+    XLChatRecordViewController *recordVc = [[XLChatRecordViewController alloc] init];
+    recordVc.title = [NSString stringWithFormat:@"%@的消息记录",patient.patient_name];
+    recordVc.patient = patient;
+    recordVc.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:recordVc animated:YES];
 }
 
 - (void)transpondMenuAction:(id)sender
@@ -444,11 +486,6 @@
     if (_copyMenuItem == nil) {
         _copyMenuItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"copy", @"Copy") action:@selector(copyMenuAction:)];
     }
-    
-//    if (_transpondMenuItem == nil) {
-//        _transpondMenuItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"transpond", @"Transpond") action:@selector(transpondMenuAction:)];
-//    }
-    
     if (messageType == eMessageBodyType_Text) {
         [self.menuController setMenuItems:@[_copyMenuItem, _deleteMenuItem]];
     } else if (messageType == eMessageBodyType_Image){
@@ -460,4 +497,282 @@
     [self.menuController setMenuVisible:YES animated:YES];
 }
 
+#pragma mark - 发送消息后的回调
+- (void)didSendMessage:(EMMessage *)message error:(EMError *)error{
+    if (![self.conversation.chatter isEqualToString:message.conversationChatter]){
+        return;
+    }
+    
+    __block id<IMessageModel> model = nil;
+    __block BOOL isHave = NO;
+    [self.dataArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+     {
+         if ([obj conformsToProtocol:@protocol(IMessageModel)])
+         {
+             model = (id<IMessageModel>)obj;
+             if ([model.messageId isEqualToString:message.messageId])
+             {
+                 model.message.deliveryState = message.deliveryState;
+                 isHave = YES;
+                 *stop = YES;
+             }
+         }
+     }];
+    
+    if(!isHave){
+        return;
+    }
+
+    if (error) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(messageViewController:didFailSendingMessageModel:error:)]) {
+            [self.delegate messageViewController:self didFailSendingMessageModel:model error:error];
+        }
+        else{
+            [self.tableView reloadData];
+        }
+    }
+    else{
+        Patient *patient = [[DBManager shareInstance] getPatientCkeyid:self.conversation.chatter];
+        NSString *patientName = patient == nil ? @"" : patient.patient_name;
+        //获取回调消息中的消息体
+        NSMutableDictionary *params = [NSMutableDictionary dictionary];
+        NSString *type;
+        id body = message.messageBodies[0];
+        if ([body isKindOfClass:[EMTextMessageBody class]]) {
+            EMTextMessageBody *textBody = (EMTextMessageBody *)body;
+            NSLog(@"EMTextMessageBody%@",textBody.text);
+            type = @"text";
+            //发送微信消息
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:textBody.text doctorId:[AccountManager currentUserid] success:nil failure:nil];
+            //保存聊天记录
+            XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:self.conversation.chatter receiverName:patientName content:textBody.text];
+            [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+            
+        }else if ([body isKindOfClass:[EMVoiceMessageBody class]]){
+            EMVoiceMessageBody *voiceBody = (EMVoiceMessageBody *)body;
+            NSLog(@"EMVoiceMessageBody%@",voiceBody.secretKey);
+            type = @"audio";
+            params[@"secret"] = voiceBody.secretKey;
+            params[@"url"] = voiceBody.remotePath;
+            params[@"suffix"] = [voiceBody.localPath componentsSeparatedByString:@"."][1];
+            
+            //发送微信消息
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] doctorId:[AccountManager currentUserid] success:nil failure:nil];
+            //保存聊天记录
+            XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:self.conversation.chatter receiverName:patientName content:voiceBody.remotePath duration:@(voiceBody.duration) secret:voiceBody.secretKey];
+            [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+            
+        }else if ([body isKindOfClass:[EMImageMessageBody class]]){
+            EMImageMessageBody *imageBody = (EMImageMessageBody *)body;
+            NSLog(@"EMImageMessageBody%@",imageBody.secretKey);
+            type = @"img";
+            params[@"secret"] = imageBody.secretKey;
+            params[@"url"] = imageBody.remotePath;
+            params[@"suffix"] = [imageBody.localPath componentsSeparatedByString:@"."][1];
+            
+            //调用接口把信息存到数据库
+            [SysMessageTool sendHuanXiMessageToPatientWithPatientId:self.conversation.chatter contentType:type sendContent:[params JSONString] doctorId:[AccountManager currentUserid] success:nil failure:nil];
+            //保存聊天记录
+            XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:self.conversation.chatter receiverName:patientName content:imageBody.remotePath secret:imageBody.secretKey thumb:imageBody.thumbnailRemotePath thumbSecret:imageBody.thumbnailSecretKey];
+            [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+        }
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(messageViewController:didSendMessageModel:)]) {
+            [self.delegate messageViewController:self didSendMessageModel:model];
+        }
+        else{
+            [self.tableView reloadData];
+        }
+    }
+}
+
+
+#pragma mark - EaseChatBarMoreViewDelegate
+- (void)moreViewPhotoAction:(EaseChatBarMoreView *)moreView
+{
+    //选择照片
+    // 隐藏键盘
+    [self.chatToolbar endEditing:YES];
+    
+    if (!self.isBind) {
+        [SVProgressHUD showImage:nil status:@"患者关联微信后才能发送"];
+        return;
+    }
+    // 弹出照片选择
+    self.imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
+    [self presentViewController:self.imagePicker animated:YES completion:NULL];
+    
+    self.isViewDidAppear = NO;
+    [[EaseSDKHelper shareHelper] setIsShowingimagePicker:YES];
+}
+
+- (void)moreViewTakePicAction:(EaseChatBarMoreView *)moreView
+{
+    //医嘱
+    NSLog(@"医嘱");
+    // 隐藏键盘
+    [self.chatToolbar endEditing:YES];
+    XLAdviceSelectViewController *selectVc = [[XLAdviceSelectViewController alloc] init];
+    selectVc.delegate = self;
+    selectVc.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:selectVc animated:YES];
+}
+
+
+- (void)moreViewLocationAction:(EaseChatBarMoreView *)moreView
+{
+    //拍照
+    // 隐藏键盘
+    [self.chatToolbar endEditing:YES];
+    
+    if (!self.isBind) {
+        [SVProgressHUD showImage:nil status:@"患者关联微信后才能发送"];
+        return;
+    }
+    
+#if TARGET_IPHONE_SIMULATOR
+    [self showHint:NSLocalizedString(@"message.simulatorNotSupportCamera", @"simulator does not support taking picture")];
+#elif TARGET_OS_IPHONE
+    self.imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage,(NSString *)kUTTypeMovie];
+    [self presentViewController:self.imagePicker animated:YES completion:NULL];
+    
+    self.isViewDidAppear = NO;
+    [[EaseSDKHelper shareHelper] setIsShowingimagePicker:YES];
+#endif
+}
+
+- (void)moreViewAudioCallAction:(EaseChatBarMoreView *)moreView
+{
+    //随访
+    NSLog(@"随访");
+    // 隐藏键盘
+    [self.chatToolbar endEditing:YES];
+    Patient *patient = [[DBManager shareInstance] getPatientCkeyid:self.conversation.chatter];
+    if(![NSString isEmptyString:patient.patient_phone]){
+        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:nil message:[NSString stringWithFormat:@"拨打电话:%@？",patient.patient_phone] cancelHandler:^{
+        } comfirmButtonHandlder:^{
+            NSString *number = patient.patient_phone;
+            NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+        }];
+        [alertView show];
+    }else{
+        [SVProgressHUD showImage:nil status:@"患者未留电话"];
+    }
+}
+
+- (void)moreViewVideoCallAction:(EaseChatBarMoreView *)moreView{
+    //患教
+    NSLog(@"患教");
+    
+    XLPatientEducationViewController *eduVc = [[XLPatientEducationViewController alloc] initWithStyle:UITableViewStylePlain];
+    [self.navigationController pushViewController:eduVc animated:YES];
+}
+
+#pragma mark - XLAdviceSelectViewControllerDelegate
+- (void)adviceSelectViewController:(XLAdviceSelectViewController *)adviceSelectVc didSelectAdviceContent:(NSString *)adviceContent{
+    EaseChatToolbar *toolBar = (EaseChatToolbar *)self.chatToolbar;
+    [toolBar.inputTextView becomeFirstResponder];
+    [toolBar.inputTextView setText:adviceContent];
+    [toolBar changeInputViewFrame];
+}
+
+#pragma mark - 判断当前环信是否正常登录
+- (void)easeMobIsLogin{
+    WS(weakSelf);
+    BOOL isConnect = [[EaseMob sharedInstance].chatManager isConnected];
+    if (isConnect) {
+    }else{
+        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"提示" message:@"当前账号已在其它设备登录，是否重新登录？" cancel:@"取消" certain:@"确定" cancelHandler:^{
+            [weakSelf.navigationController popViewControllerAnimated:YES];
+        } comfirmButtonHandlder:^{
+            //判断当前是否保存密码
+            NSString *userName = [CRMUserDefalut objectForKey:LatestUserID];
+            NSString *password = [CRMUserDefalut objectForKey:LatestUserPassword];
+            if (password == nil) {
+                //直接退出当前应用
+                [[AccountManager shareInstance] logout];
+            }else{
+                //重新登录环信
+                [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userName password:password completion:^(NSDictionary *loginInfo, EMError *error) {
+                    if (loginInfo && !error) {
+                        [SVProgressHUD showImage:nil status:@"登录成功"];
+                        //发送自动登陆状态通知
+                        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+                    }
+                } onQueue:nil];
+            }
+        }];
+        [alertView show];
+    }
+}
+
+#pragma mark - 获取患者是否绑定微信信息
+- (void)getPaitientIsBind{
+    //获取患者绑定微信的状态
+    WS(weakSelf);
+    [MyPatientTool getWeixinStatusWithPatientId:self.conversation.chatter success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //绑定
+            [weakSelf hideTintLabel];
+            self.isBind = YES;
+        }else{
+            [weakSelf showTintLabelWithText:@"患者尚未关联微信,关联后可收到患者回复 >>"];
+            self.isBind = NO;
+        }
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        //未绑定
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+#pragma mark - 未绑定微信
+- (UILabel *)tintLabel{
+    if (!_tintLabel) {
+        _tintLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, -30, kScreenWidth, 30)];
+        _tintLabel.font = [UIFont systemFontOfSize:13];
+        _tintLabel.textColor = [UIColor colorWithHex:0xf27e00];
+        _tintLabel.backgroundColor = [UIColor colorWithHex:0xfff2b7];
+        _tintLabel.textAlignment = NSTextAlignmentCenter;
+        _tintLabel.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+        [_tintLabel addGestureRecognizer:tap];
+        [self.view addSubview:_tintLabel];
+    }
+    return _tintLabel;
+}
+
+- (void)showTintLabelWithText:(NSString *)text{
+    if (_tintLabel == nil) {
+        [self tintLabel];
+        _tintLabel.text = text;
+        WS(weakSelf);
+        [UIView animateWithDuration:.35 animations:^{
+            weakSelf.tintLabel.transform = CGAffineTransformMakeTranslation(0, 30);
+        }];
+    }
+}
+
+- (void)hideTintLabel{
+    WS(weakSelf);
+    [UIView animateWithDuration:.35 animations:^{
+        weakSelf.tintLabel.transform = CGAffineTransformIdentity;
+    } completion:^(BOOL finished) {
+        [_tintLabel removeFromSuperview];
+        _tintLabel = nil;
+    }];
+}
+
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
+    qrVC.patientId = self.conversation.chatter;
+    [self.navigationController pushViewController:qrVC animated:YES];
+}
 @end

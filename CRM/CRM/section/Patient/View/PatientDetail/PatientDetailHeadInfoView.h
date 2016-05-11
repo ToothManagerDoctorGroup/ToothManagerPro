@@ -29,8 +29,6 @@
 
 @property (nonatomic, weak)id<PatientDetailHeadInfoViewDelegate> delegate;
 
-@property (nonatomic, assign)BOOL isWeixin;
-
 - (CGFloat)getTotalHeight;
 
 @end

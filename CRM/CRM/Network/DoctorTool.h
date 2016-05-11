@@ -8,9 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@class DoctorInfoModel,CRMHttpRespondModel,XLQueryModel;
+@class DoctorInfoModel,CRMHttpRespondModel,XLQueryModel,XLAdviceDetailModel,XLChatRecordQueryModel,XLChatModel;
 @interface DoctorTool : NSObject
-
 
 /**
  *  获取个人的医生列表
@@ -162,4 +161,89 @@
  *  @param failure      失败回调
  */
 + (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+
+
+#pragma mark - 医嘱相关
+/**
+ *  查询所有的医嘱类型
+ *
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getMedicalAdviceTypeSuccess:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+/**
+ *  查询指定类型下的所有医嘱
+ *
+ *  @param doctorId   医生id（必填）
+ *  @param ckeyId     医嘱主键（选填）
+ *  @param keyWord    关键字（选填）
+ *  @param adviceId   医嘱的id（必填）
+ *  @param adviceName 医嘱的名称（必填）
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getMedicalAdviceOfTypeByDoctorId:(NSString *)doctorId ckeyid:(NSString *)ckeyId keyWord:(NSString *)keyWord adviceId:(NSString *)adviceId adviceName:(NSString *)adviceName success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+/**
+ *  新增一条医嘱
+ *
+ *  @param model   医嘱模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)addNewMedicalAdviceOfTypeByAdviceDetailModel:(XLAdviceDetailModel *)model success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+/**
+ *  删除一条医嘱
+ *
+ *  @param ckeyId  医嘱id
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)deleteMedicalAdviceOfTypeByCkeyId:(NSString *)ckeyId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+/**
+ *  编辑一条医嘱
+ *
+ *  @param model   医嘱模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)editMedicalAdviceOfTypeByAdviceDetailModel:(XLAdviceDetailModel *)model success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+/**
+ *  获取所有的患教信息
+ *
+ *  @param type    信息类型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getPatientEducationWithType:(NSString *)type success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+
+#pragma mark ********************聊天记录相关*************************
+/**
+ *  模糊查询所有聊天记录
+ *
+ *  @param queryModel 查询模型
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getAllChatRecordWithChatQueryModel:(XLChatRecordQueryModel *)queryModel success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+/**
+ *  新增聊天记录
+ *
+ *  @param chatModel 聊天记录模型
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)addNewChatRecordWithChatModel:(XLChatModel *)chatModel success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+
+/**
+ *  删除聊天记录
+ *
+ *  @param keyId      某个聊天记录主键（可不传）
+ *  @param receiverId 接收者id（多个接收者，中间用“，”隔开）
+ *  @param senderId   发送者id (多个发送者，中间用“，”隔开）
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)deleteChatRecordWithKeyId:(NSString *)keyId receiverId:(NSString *)receiverId senderId:(NSString *)senderId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+
+
 @end

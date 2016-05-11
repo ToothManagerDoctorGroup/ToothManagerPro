@@ -21,6 +21,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    
+    //设置数据项
+    [self setUpData];
+}
+
+- (void)setUpData{
     //设置数据项
     if (self.type == XLDataSelectViewControllerSex) {
         //性别

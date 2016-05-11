@@ -71,7 +71,7 @@
         titleView.backgroundColor = MyColor(238, 238, 238);
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, kScreenWidth - 20, 50)];
         titleLabel.text = @"给患者的提醒";
-        titleLabel.textColor = [UIColor colorWithHex:0x333333];
+        titleLabel.textColor = [UIColor clearColor];
         titleLabel.font = [UIFont systemFontOfSize:15];
         titleLabel.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
         [titleView addSubview:titleLabel];
@@ -142,8 +142,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self setRightBarButtonWithTitle:@"保存"];
-    
-    
 }
 #pragma mark - 初始化子视图
 - (void)setUpSubViews{
@@ -156,7 +154,7 @@
 #pragma mark - 设置数据
 - (void)setUpData{
     if (self.isEdit) {
-        self.title = self.model.message_type;
+        self.title = self.model.message_name;
         self.messageTypeField.text = self.model.message_name;
         self.messageContentView.attributedText = [self changeStrColorWithSourceStr:self.model.message_content];
         //计算文字的个数

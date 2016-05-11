@@ -67,7 +67,7 @@
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-pQ-WY9">
                     <rect key="frame" x="0.0" y="135" width="140" height="44"/>
                     <animations/>
-                    <state key="normal" title="发短信">
+                    <state key="normal" title="发消息">
                         <color key="titleColor" red="0.0" green="0.62745098040000002" blue="0.91764705879999997" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="menu_button_highlighte.png">

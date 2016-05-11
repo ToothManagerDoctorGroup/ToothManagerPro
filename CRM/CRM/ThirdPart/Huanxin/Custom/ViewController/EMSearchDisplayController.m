@@ -11,6 +11,7 @@
   */
 
 #import "EMSearchDisplayController.h"
+#import "UITableView+NoResultAlert.h"
 
 @implementation EMSearchDisplayController
 
@@ -25,7 +26,7 @@
         self.searchResultsDataSource = self;
         self.searchResultsDelegate = self;
         self.delegate = self;
-        self.searchResultsTitle = NSLocalizedString(@"searchResults", @"The search results");
+        [self.searchResultsTableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" top:60 showButton:YES buttonClickBlock:nil];
     }
     return self;
 }
@@ -34,13 +35,11 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
     return [self.resultsSource count];
 }
 
@@ -110,6 +109,21 @@
 }
 
 #pragma mark - UISearchDisplayDelegate
+- (void)searchDisplayController:(UISearchDisplayController *)controller didHideSearchResultsTableView:(UITableView *)tableView {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
+}
+- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void) keyboardWillHide {
+    UITableView *tableView = self.searchResultsTableView;
+    [tableView setContentInset:UIEdgeInsetsZero];
+    [tableView setScrollIndicatorInsets:UIEdgeInsetsZero];
+    
+}
 - (void) searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller NS_DEPRECATED_IOS(3_0,8_0){
     //相对于上面的接口，这个接口可以动画的改变statusBar的前景色
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
@@ -119,5 +133,63 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(nullable NSString *)searchString{
+    __weak typeof(self) weakSelf = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.001);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        for (UIView *subview in weakSelf.searchResultsTableView.subviews) {
+            if ([subview isKindOfClass: [UILabel class]])
+            {
+                subview.hidden = YES;
+            }
+        }
+    });
+    return YES;
+}
+
+- (void)setHideNoResult:(BOOL)hideNoResult{
+    _hideNoResult = hideNoResult;
+    
+    for (UIView *subview in self.searchResultsTableView.subviews) {
+        if ([subview isKindOfClass: [UIImageView class]])
+        {
+            subview.hidden = hideNoResult;
+        }
+    }
+}
+
+- (void)setNoResultImage:(NSString *)noResultImage{
+    _noResultImage = noResultImage;
+    
+    for (UIView *subview in self.searchResultsTableView.subviews) {
+        if ([subview isKindOfClass: [UIImageView class]])
+        {
+            UIImageView *imageView = (UIImageView *)subview;
+            NSString *imagePath = [[NSBundle mainBundle] pathForResource:noResultImage ofType:@"png"];
+            imageView.image = [UIImage imageWithContentsOfFile:imagePath];
+        }
+    }
+}
+
+- (void)setShowButton:(BOOL)showButton{
+    _showButton = showButton;
+    
+    for (UIView *subview in self.searchResultsTableView.subviews) {
+        if ([subview isKindOfClass: [UIButton class]])
+        {
+            UIButton *button = (UIButton *)subview;
+            button.hidden = !showButton;
+            if (showButton) {
+                [button addTarget:self action:@selector(buttonAction) forControlEvents:UIControlEventTouchUpInside];
+            }
+        }
+    }
+}
+
+- (void)buttonAction{
+    if (self.searchButtonClickBlock) {
+        self.searchButtonClickBlock();
+    }
+}
 
 @end

@@ -15,7 +15,11 @@
 #import "MyDateTool.h"
 #import "TimPickerTextField.h"
 
+static const NSTimeInterval kXLFilterViewAnimatedDuration = .35;
+
 @interface XLFilterView ()<XLFilterDoctorViewDelegate,XLFilterStateViewDelegate,XLFilterTimeViewDelegate>{
+    
+    UIView *_cover;//遮罩
     
     UIScrollView *_scrollView;
     XLFilterStateView *_stateView;
@@ -40,7 +44,6 @@
 @implementation XLFilterView
 
 - (void)dealloc{
-    NSLog(@"数据筛选视图被销毁");
     [_timeView removeObserver:self forKeyPath:@"isCustomTime"];
 }
 
@@ -48,7 +51,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7];
+        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
         self.timeState = FilterTimeStateUnSelect;
         self.patientStatus = PatientStatuspeAll;
         [self setUp];
@@ -57,13 +60,20 @@
 }
 
 - (void)setUp{
+    
+    _cover = [[UIView alloc] init];
+    UISwipeGestureRecognizer *swip = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipAction:)];
+    swip.direction = UISwipeGestureRecognizerDirectionUp;
+    [_cover addGestureRecognizer:swip];
+    [self addSubview:_cover];
+    
     _scrollView = [[UIScrollView alloc] init];
     _scrollView.backgroundColor = [UIColor whiteColor];
     _scrollView.alwaysBounceVertical = YES;
     _scrollView.showsHorizontalScrollIndicator = NO;
-    [self addSubview:_scrollView];
+    [_cover addSubview:_scrollView];
     
-    NSArray *states = @[@"已种未修",@"已修复"];
+    NSArray *states = @[@"种植",@"修复"];
     _stateView = [[XLFilterStateView alloc] initWithSourceArray:states];
     _stateView.delegate = self;
     [_scrollView addSubview:_stateView];
@@ -81,7 +91,7 @@
     
     _btnSuperView = [[UIView alloc] init];
     _btnSuperView.backgroundColor = [UIColor whiteColor];
-    [self  addSubview:_btnSuperView];
+    [_cover  addSubview:_btnSuperView];
     
     _resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_resetButton setTitle:@"重置" forState:UIControlStateNormal];
@@ -105,8 +115,7 @@
     [_searchButton addTarget:self action:@selector(searchAction) forControlEvents:UIControlEventTouchUpInside];
     
     _dismissBtn = [[XLFilterDismissButton alloc] init];
-    [_dismissBtn addTarget:self action:@selector(dismissAction) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_dismissBtn];
+    [_cover addSubview:_dismissBtn];
     
     //设置子控件的frame
     [self setViewFrame];
@@ -169,6 +178,9 @@
         case 1:
             self.patientStatus = PatientStatusRepaired;
             break;
+        default:
+            self.patientStatus = PatientStatuspeAll;
+            break;
     }
 }
 
@@ -195,6 +207,8 @@
     
     //判断是否选择了时间
     if (self.timeState == FilterTimeStateUnSelect) {
+        self.startTime = nil;
+        self.endTime = nil;
     }else{
         NSString *startTime;
         NSString *endTime;
@@ -244,6 +258,49 @@
 
 #pragma mark - dismissAction
 - (void)dismissAction{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dismiss)]) {
+        [self.delegate dismiss];
+    }
+}
+
+#pragma mark - 显示
+- (void)showInView:(UIView *)view animated:(BOOL)animated{
+    WS(weakSelf);
+    if (animated) {
+        weakSelf.hidden = NO;
+        //带动画
+        _cover.frame = CGRectMake(0, -view.height, view.width, view.height);
+        
+        [UIView animateWithDuration:kXLFilterViewAnimatedDuration animations:^{
+            _cover.transform = CGAffineTransformMakeTranslation(0, view.height);
+            weakSelf.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7];
+        } completion:^(BOOL finished) {
+            
+        }];
+    }else{
+        //不带动画
+        _cover.frame = self.bounds;
+        self.hidden = NO;
+        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7];
+    }
+}
+
+- (void)dismissAnimated:(BOOL)animated{
+    WS(weakSelf);
+    if (animated) {
+        [UIView animateWithDuration:kXLFilterViewAnimatedDuration animations:^{
+            _cover.transform = CGAffineTransformIdentity;
+            weakSelf.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
+        } completion:^(BOOL finished) {
+            weakSelf.hidden = YES;
+        }];
+    }else{
+        self.hidden = YES;
+        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
+    }
+}
+#pragma mark - 轻扫手势
+- (void)swipAction:(UISwipeGestureRecognizer *)swip{
     if (self.delegate && [self.delegate respondsToSelector:@selector(dismiss)]) {
         [self.delegate dismiss];
     }

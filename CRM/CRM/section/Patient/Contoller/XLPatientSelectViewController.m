@@ -179,11 +179,6 @@
             cellMode.patientId = patientTmp.ckeyid;
             cellMode.introducerId = patientTmp.introducer_id;
             cellMode.name = patientTmp.patient_name;
-//            if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-//                cellMode.name = patientTmp.nickName;
-//            }else{
-//                cellMode.name = patientTmp.patient_name;
-//            }
             cellMode.phone = patientTmp.patient_phone;
             cellMode.introducerName = patientTmp.intr_name;
             cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
@@ -517,6 +512,12 @@
 {
     if ([searchText isNotEmpty]) {
         NSArray *results = [[DBManager shareInstance] getPatientWithKeyWords:searchText];
+        if (results.count == 0) {
+            self.searchController.hideNoResult = NO;
+        }else{
+            self.searchController.hideNoResult = YES;
+        }
+        
         [self.searchController.resultsSource removeAllObjects];
         for (Patient *patient in results) {
             Patient *patientTmp = patient;

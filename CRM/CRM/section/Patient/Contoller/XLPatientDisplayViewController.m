@@ -16,8 +16,6 @@
 #import "DBManager+Materials.h"
 #import "PatientsTableViewCell.h"
 #import "DBManager+Patients.h"
-#import "MudItemBarItem.h"
-#import "MudItemsBar.h"
 #import "SDImageCache.h"
 #import "LocalNotificationCenter.h"
 #import "SVProgressHUD.h"
@@ -35,74 +33,124 @@
 #import "DBManager+LocalNotification.h"
 #import "NSString+TTMAddtion.h"
 #import "XLFilterView.h"
+#import "XLTitleButton.h"
+#import "UIImage+TTMAddtion.h"
+#import "XLPatientSortManager.h"
+#import "UITableView+NoResultAlert.h"
+#import "AutoSyncGetManager.h"
 
-@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,XLFilterViewDelegate>{
-    BOOL ifNameBtnSelected;
-    BOOL ifStatusBtnSelected;
-    BOOL ifNumberBtnSelected;
-    BOOL ifIntroducerSelected;
-}
-@property (nonatomic, strong)EMSearchBar *searchBar;
-@property (nonatomic, strong)EMSearchDisplayController *searchController;
+@interface XLPatientDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate,XLFilterViewDelegate>
 
-@property (nonatomic, strong)NSMutableArray *patientCellModeArray;
-@property (nonatomic,retain) NSArray *patientInfoArray;
+@property (nonatomic, strong)EMSearchBar *searchBar;//搜索框
+@property (nonatomic, strong)EMSearchDisplayController *searchController;//搜索视图
+
+@property (nonatomic, strong)NSMutableArray *patientCellModeArray;//表示图显示所需数据源
+@property (nonatomic,retain) NSArray *patientInfoArray;//获取数据库中患者的信息
 
 @property (nonatomic, assign)int pageNum;//分页显示的页数，默认从0开始
 @property (nonatomic, assign)NSInteger allCount;//所有数据
 //数据筛选
-@property (nonatomic, assign)BOOL filterShow;
-@property (nonatomic, strong)XLFilterView *filterView;
+@property (nonatomic, assign)BOOL filterShow;//是否显示数据筛选视图
+@property (nonatomic, strong)XLFilterView *filterView;//数据筛选视图
 //高级检索用到的参数
-@property (nonatomic, assign)PatientStatus status;
-@property (nonatomic, copy)NSString *startTime;
-@property (nonatomic, copy)NSString *endTime;
-@property (nonatomic, strong)NSArray *cureDoctors;
+@property (nonatomic, assign)PatientStatus status;//患者状态
+@property (nonatomic, copy)NSString *startTime;//开始时间
+@property (nonatomic, copy)NSString *endTime;//结束时间
+@property (nonatomic, strong)NSArray *cureDoctors;//检索选中的治疗医生
+@property (nonatomic, assign)BOOL isSearch;//是否是高级检索模式
+
+//当前选中的排序按钮
+@property (nonatomic, weak)UIButton *selectButton;
+@property (nonatomic, assign)BOOL isAsc;//判断是升序还是降序
+
+//无数据提示视图
+@property (nonatomic, weak)UIView *noResultAlertView;
+@property (nonatomic, weak)UIView *noSearchResultAlertView;
 @end
 
 @implementation XLPatientDisplayViewController
 
+
+#pragma mark - ********************* Life Method ***********************
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-#pragma mark - 拦截父类的方法
+#pragma mark 拦截父类的方法
 - (void)viewWillAppear:(BOOL)animated{}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.pageNum = 0;
-    self.status = self.patientStatus;
-    self.tableView.frame = CGRectMake(0, 44 + 80, kScreenWidth, kScreenHeight - 64 - 80 - 44);
-    //初始化搜索框
-    [self.view addSubview:self.searchBar];
-    [self.view addSubview:[self setUpGroupViewAndButtons]];
     
-    [self searchController];
+    //设置子视图
+    [self setUpSubviews];
     //添加通知
     [self addNotification];
-    
     //设置上拉加载和下拉刷新
     self.showRefreshHeader = YES;
     
-    //重新请求数据
-    [self.tableView.header beginRefreshing];
+    //显示加载效果
+    [SVProgressHUD showWithStatus:@"正在加载数据"];
+    //每次view完全显示的时候请求本地数据
+    [self firstRequestLocalData];
 }
-//添加通知
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
+#pragma mark - ********************* Private Method ***********************
+#pragma mark 设置子视图
+- (void)setUpSubviews{
+    self.pageNum = 0;
+    self.status = self.patientStatus;
+    self.tableView.frame = CGRectMake(0, 44 + 80, kScreenWidth, kScreenHeight - 64 - 80 - 44);
+    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"patientList_alert" top:60 showButton:NO buttonClickBlock:nil];
+    self.noSearchResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" top:60 showButton:NO buttonClickBlock:nil];
+    //初始化搜索框
+    [self.view addSubview:self.searchBar];
+    [self.view addSubview:[self setUpGroupViewAndButtons]];
+    //设置搜索框
+    [self searchController];
+}
+#pragma mark 添加通知
 - (void)addNotification{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientCreatedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientEditedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:MedicalCaseCreatedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:MedicalCaseEditedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:PatientTransferNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableViewDidTriggerHeaderRefresh) name:SyncGetSuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:PatientCreatedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:PatientEditedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:MedicalCaseCreatedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:MedicalCaseEditedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:PatientTransferNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:SyncGetSuccessNotification object:nil];
 }
-#pragma mark - 下拉刷新事件
-- (void)tableViewDidTriggerHeaderRefresh{
+
+#pragma mark 同步成功后收到通知后调用的方法
+- (void)syncGetAction{
+    if ([self.tableView.header isRefreshing]) {
+        [self.tableView.header endRefreshing];
+    }
+    [self firstRequestLocalData];
+}
+
+#pragma mark 首次请求数据
+- (void)firstRequestLocalData{
+    //初始化排序
+    self.isAsc = NO;
+    if (self.selectButton) {
+        self.selectButton.selected = NO;
+        self.selectButton = nil;
+    }
     //重新请求数据
     self.pageNum = 0;
     [self requestLocalDataWithPage:self.pageNum isHeader:YES isFooter:NO status:self.status startTime:self.startTime endTime:self.endTime doctors:self.cureDoctors];
 }
-#pragma mark - 上拉加载事件
+
+#pragma mark 下拉刷新事件
+- (void)tableViewDidTriggerHeaderRefresh{
+    //请求网络数据
+    [SVProgressHUD showWithStatus:@"正在加载最新数据"];
+    [[AutoSyncGetManager shareInstance] startSyncGetShowSuccess:NO];
+}
+#pragma mark 上拉加载事件
 - (void)tableViewDidTriggerFooterRefresh{
     //首先将页码加1
     if (self.patientCellModeArray.count < self.allCount) {
@@ -112,108 +160,75 @@
         self.showRefreshFooter = NO;
     }
 }
-//加载本地数据
+#pragma mark  加载本地数据
 - (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter status:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime doctors:(NSArray *)doctors{
-    
-    self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:status startTime:startTime endTime:endTime cureDoctors:doctors page:pageNum];
-    if (isHeader) {
-        self.allCount = [[DBManager shareInstance] getAllPatientCount];
-        [self.patientCellModeArray removeAllObjects];
-        if (self.patientInfoArray.count < CommonPageSize) {
-            self.showRefreshFooter = NO;
-        }else{
-            self.showRefreshFooter = YES;
+    WS(weakSelf);
+     dispatch_queue_t patient_queue = dispatch_queue_create("patient_queue", NULL);
+    dispatch_async(patient_queue, ^{
+        weakSelf.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:status startTime:startTime endTime:endTime cureDoctors:doctors page:pageNum];
+        if (isHeader) {
+            weakSelf.allCount = [[DBManager shareInstance] getAllPatientCount];
+            [weakSelf.patientCellModeArray removeAllObjects];
         }
-    }
-    for (NSInteger i = 0; i < self.patientInfoArray.count; i++) {
-        Patient *patientTmp = [self.patientInfoArray objectAtIndex:i];
-        PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
-        cellMode.patientId = patientTmp.ckeyid;
-        cellMode.introducerId = patientTmp.introducer_id;
-        cellMode.name = patientTmp.patient_name;
-        //        if (patientTmp.nickName != nil && [patientTmp.nickName isNotEmpty]) {
-        //            cellMode.name = patientTmp.nickName;
-        //        }else{
-        //            cellMode.name = patientTmp.patient_name;
-        //        }
-        cellMode.phone = patientTmp.patient_phone;
-        cellMode.introducerName = patientTmp.intr_name;
-        cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
-        cellMode.status = patientTmp.patient_status;
-        //            cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
-        cellMode.countMaterial = patientTmp.expense_num;
-        Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
-        if ([doc.doctor_name isNotEmpty]) {
-            cellMode.isTransfer = YES;
-        }else{
-            cellMode.isTransfer = NO;
+        for (NSInteger i = 0; i < weakSelf.patientInfoArray.count; i++) {
+            Patient *patientTmp = [weakSelf.patientInfoArray objectAtIndex:i];
+            PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
+            cellMode.patientId = patientTmp.ckeyid;
+            cellMode.introducerId = patientTmp.introducer_id;
+            cellMode.name = patientTmp.patient_name;
+            cellMode.phone = patientTmp.patient_phone;
+            cellMode.introducerName = patientTmp.intr_name == nil ? @"" : patientTmp.intr_name;
+            cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
+            cellMode.status = patientTmp.patient_status;
+            cellMode.countMaterial = patientTmp.expense_num;
+            Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:patientTmp.ckeyid withIntrId:[AccountManager currentUserid]];
+            if ([doc.doctor_name isNotEmpty]) {
+                cellMode.isTransfer = YES;
+            }else{
+                cellMode.isTransfer = NO;
+            }
+            [self.patientCellModeArray addObject:cellMode];
         }
-        [self.patientCellModeArray addObject:cellMode];
-    }
-    
-    if (isHeader) {
-        [self tableViewDidFinishTriggerHeader:YES reload:NO];
-    }else if (isFooter){
-        [self tableViewDidFinishTriggerHeader:NO reload:NO];
-    }
-    //刷新表示图
-    [self.tableView reloadData];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD  dismiss];
+            //刷新表示图
+            [weakSelf.tableView reloadData];
+            if (isHeader) {
+                [weakSelf tableViewDidFinishTriggerHeader:YES reload:NO];
+                //数据判断
+                if (weakSelf.patientInfoArray.count < CommonPageSize) {
+                    weakSelf.showRefreshFooter = NO;
+                    if (weakSelf.isSearch) {
+                        weakSelf.noResultAlertView.hidden = YES;
+                        if (weakSelf.patientInfoArray.count == 0) {
+                            weakSelf.noSearchResultAlertView.hidden = NO;
+                        }else{
+                            weakSelf.noSearchResultAlertView.hidden = YES;
+                        }
+                    }else{
+                        self.noSearchResultAlertView.hidden = YES;
+                        if (weakSelf.patientInfoArray.count == 0) {
+                            weakSelf.noResultAlertView.hidden = NO;
+                        }else{
+                            weakSelf.noResultAlertView.hidden = YES;
+                        }
+                    }
+                    
+                }else{
+                    weakSelf.showRefreshFooter = YES;
+                }
+            }else if (isFooter){
+                [weakSelf tableViewDidFinishTriggerHeader:NO reload:NO];
+            }
+        });
+    });
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.patientCellModeArray.count;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 50;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-    static NSString *cellID = @"cellIdentifier";
-    PatientsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-    if (cell == nil) {
-        cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientsTableViewCell" owner:nil options:nil] objectAtIndex:0];
-        [tableView registerNib:[UINib nibWithNibName:@"PatientsTableViewCell" bundle:nil] forCellReuseIdentifier:cellID];
-    }
-    
-    //赋值,获取患者信息
-    NSInteger row = [indexPath row];
-    PatientsCellMode *cellMode = [self.patientCellModeArray objectAtIndex:row];
-    [cell configCellWithCellMode:cellMode];
-    
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-    PatientsCellMode *model = self.patientCellModeArray[indexPath.row];
-    //跳转到新的患者详情页面
-    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-    detailVc.patientsCellMode = model;
-    detailVc.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:detailVc animated:YES];
-}
-
--(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self deletePatientWithTableView:tableView indexPath:indexPath sourceArray:self.patientCellModeArray type:@"tableView"];
-    }
-}
-
-#pragma mark - 患者删除事件
+#pragma mark 患者删除事件
 - (void)deletePatientWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSMutableArray *)souryArray type:(NSString *)type{
-    TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
+    WS(weakSelf);
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
         [tableView reloadData];
     } comfirmButtonHandlder:^{
         PatientsCellMode *cellMode = [souryArray objectAtIndex:indexPath.row];
@@ -228,15 +243,15 @@
             if ([type isEqualToString:@"searchTableView"]) {
                 [souryArray removeObject:cellMode];
                 
-                if ([self.patientCellModeArray containsObject:cellMode]) {
-                    [self.patientCellModeArray removeObject:cellMode];
+                if ([weakSelf.patientCellModeArray containsObject:cellMode]) {
+                    [weakSelf.patientCellModeArray removeObject:cellMode];
                 }
                 //刷新表示图
                 [tableView reloadData];
-                [self.tableView reloadData];
+                [weakSelf.tableView reloadData];
             }else{
                 [souryArray removeObject:cellMode];
-                [self.tableView reloadData];
+                [weakSelf.tableView reloadData];
             }
             Patient *pateintTemp = [[DBManager shareInstance] getPatientCkeyid:cellMode.patientId];
             //自动同步信息
@@ -300,6 +315,8 @@
                         }
                     }
                 }
+                //删除本地的患者介绍人关系表的数据
+                [[DBManager shareInstance] deletePatientIntroducerMap:cellMode.patientId];
                 
                 //删除成功后发送通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:PatientDeleteNotification object:nil];
@@ -309,7 +326,115 @@
     [alertView show];
 }
 
+#pragma mark 标题按钮点击事件
+- (void)titleButtonAction:(UIButton *)button{
+    //判断点击的是否是已经选中的按钮
+    if (self.selectButton == button) {
+        if (!self.isAsc) {
+            [button setImage:[UIImage imageWithFileName:@"filter_asc.png"] forState:UIControlStateSelected];
+            self.isAsc = YES;
+        }else{
+            [button setImage:[UIImage imageWithFileName:@"filter_desc.png"] forState:UIControlStateSelected];
+            self.isAsc = NO;
+        }
+    }else{
+        self.isAsc = NO;
+        self.selectButton.selected = NO;
+        button.selected = YES;
+        self.selectButton = button;
+        
+        [button setImage:[UIImage imageWithFileName:@"filter_desc.png"] forState:UIControlStateSelected];
+    }
+    
+    if (button.tag == 300) {
+        //患者
+        self.patientCellModeArray = [NSMutableArray arrayWithArray:[XLPatientSortManager sortWithSourceArray:self.patientCellModeArray asc:self.isAsc sortStr:PatientSortTypeName]];
+    }else if (button.tag == 301){
+        //状态
+        self.patientCellModeArray = [NSMutableArray arrayWithArray:[XLPatientSortManager sortWithSourceArray:self.patientCellModeArray asc:self.isAsc sortStr:PatientSortTypeStatus]];
+    }else if (button.tag == 302){
+        //介绍人
+        self.patientCellModeArray = [NSMutableArray arrayWithArray:[XLPatientSortManager sortWithSourceArray:self.patientCellModeArray asc:self.isAsc sortStr:PatientSortTypeIntrName]];
+    }else{
+        //数量
+        self.patientCellModeArray = [NSMutableArray arrayWithArray:[XLPatientSortManager sortWithSourceArray:self.patientCellModeArray asc:self.isAsc sortStr:PatientSortTypeMaterialCount]];
+    }
+    
+    [self.tableView reloadData];
+}
 
+#pragma mark - ******************* Delegate / DataSource ********************
+#pragma mark UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.patientCellModeArray.count;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 50;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    static NSString *cellID = @"cellIdentifier";
+    PatientsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"PatientsTableViewCell" owner:nil options:nil] objectAtIndex:0];
+        [tableView registerNib:[UINib nibWithNibName:@"PatientsTableViewCell" bundle:nil] forCellReuseIdentifier:cellID];
+    }
+    
+    //赋值,获取患者信息
+    NSInteger row = [indexPath row];
+    PatientsCellMode *cellMode = [self.patientCellModeArray objectAtIndex:row];
+    [cell configCellWithCellMode:cellMode];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    PatientsCellMode *model = self.patientCellModeArray[indexPath.row];
+    //跳转到新的患者详情页面
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = model;
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:detailVc animated:YES];
+}
+
+-(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [self deletePatientWithTableView:tableView indexPath:indexPath sourceArray:self.patientCellModeArray type:@"tableView"];
+    }
+}
+
+#pragma mark XLFilterViewDelegate
+- (void)dismiss{
+    [self.filterView dismissAnimated:YES];
+    self.filterShow = NO;
+}
+
+- (void)filterView:(XLFilterView *)filterView patientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
+    self.status = status;
+    self.startTime = startTime;
+    self.endTime = endTime;
+    self.cureDoctors = cureDoctors;
+    
+    //判断当前是否是重置状态
+    if (self.status == PatientStatuspeAll && [self.startTime isEmpty] && [self.endTime isEmpty] && cureDoctors.count == 0) {
+        self.isSearch = NO;
+    }else{
+        self.isSearch = YES;
+    }
+    [SVProgressHUD showWithStatus:@"正在加载"];
+    [self firstRequestLocalData];
+}
+
+
+#pragma mark UISearchBarDelegate
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
     [searchBar setShowsCancelButton:YES animated:YES];
@@ -320,6 +445,12 @@
 {
     if ([searchText isNotEmpty]) {
         NSArray *results = [[DBManager shareInstance] getPatientWithKeyWords:searchText];
+        if (results.count == 0) {
+            self.searchController.hideNoResult = NO;
+        }else{
+            self.searchController.hideNoResult = YES;
+        }
+        
         [self.searchController.resultsSource removeAllObjects];
         for (Patient *patient in results) {
             Patient *patientTmp = patient;
@@ -356,7 +487,39 @@
     [searchBar setShowsCancelButton:NO animated:YES];
 }
 
-#pragma mark - 排序按钮点击
+#pragma mark - UISearchDisplayDelegate
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(nullable NSString *)searchString{
+    __weak typeof(self) weakSelf = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.001);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        for (UIView *subview in weakSelf.searchDisplayController.searchResultsTableView.subviews) {
+            if ([subview isKindOfClass: [UILabel class]])
+            {
+                subview.hidden = YES;
+            }
+        }
+    });
+    return YES;
+}
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller didHideSearchResultsTableView:(UITableView *)tableView {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
+}
+- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void) keyboardWillHide {
+    UITableView *tableView = self.searchController.searchResultsTableView;
+    [tableView setContentInset:UIEdgeInsetsZero];
+    [tableView setScrollIndicatorInsets:UIEdgeInsetsZero];
+    
+}
+
+#pragma mark - ********************* View Create ***********************
+#pragma mark 创建排序按钮
 - (UIView *)setUpGroupViewAndButtons{
     
     CGFloat commonW = kScreenWidth / 4;
@@ -382,7 +545,7 @@
     [groupView addSubview:groupNameLabel];
     
     UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
-    arrowView.frame = CGRectMake(kScreenWidth - 10 - 15, 12.5, 15, 15);
+    arrowView.frame = CGRectMake(kScreenWidth - 10 - 13, 11, 13, 18);
     [groupView addSubview:arrowView];
     
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 39, kScreenWidth, 10)];
@@ -399,38 +562,14 @@
     label.backgroundColor = [UIColor colorWithHex:0xdddddd];
     [bgView addSubview:label];
     
-    UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [nameButton setTitle:@"患者" forState:UIControlStateNormal];
-    [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
-    [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [nameButton addTarget:self action:@selector(nameButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    nameButton.titleLabel.font = [UIFont systemFontOfSize:15];
-    [bgView addSubview:nameButton];
     
-    UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [statusButton setTitle:@"状态" forState:UIControlStateNormal];
-    [statusButton setFrame:CGRectMake(nameButton.right, 0, commonW, commonH)];
-    [statusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    statusButton.titleLabel.font = [UIFont systemFontOfSize:15];
-    [statusButton addTarget:self action:@selector(statusButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [bgView addSubview:statusButton];
-    
-    UIButton *introducerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [introducerButton setTitle:@"介绍人" forState:UIControlStateNormal];
-    [introducerButton setFrame:CGRectMake(statusButton.right, 0, commonW, commonH)];
-    [introducerButton addTarget:self action:@selector(introducerButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    [introducerButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    introducerButton.titleLabel.font = [UIFont systemFontOfSize:15];
-    [bgView addSubview:introducerButton];
-    
-    UIButton *numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [numberButton setTitle:@"数量" forState:UIControlStateNormal];
-    [numberButton setFrame:CGRectMake(introducerButton.right, 0, commonW, commonH)];
-    [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [numberButton addTarget:self action:@selector(numberButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    numberButton.titleLabel.font = [UIFont systemFontOfSize:15];
-    [bgView addSubview:numberButton];
-    
+    NSArray *titles = @[@"患者",@"状态",@"介绍人",@"数量"];
+    for (int i = 0; i < titles.count; i++) {
+        UIButton *button = [self setUpTitleButtonWithFrame:CGRectMake(i * commonW, 0, commonW, commonH) title:titles[i]];
+        button.tag = 300 + i;
+        [button addTarget:self action:@selector(titleButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [bgView addSubview:button];
+    }
     return superView;
 }
 
@@ -441,185 +580,34 @@
     [self.navigationController pushViewController:manageVc animated:YES];
 }
 
--(void)numberButtonClick:(UIButton *)button{
-    ifNumberBtnSelected = !ifNumberBtnSelected;
-    if(ifNumberBtnSelected == YES){
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            PatientsCellMode *object1 = (PatientsCellMode *)obj1;
-            PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            if(object1.countMaterial < object2.countMaterial){
-                return  NSOrderedAscending;
-            }
-            if (object1.countMaterial > object2.countMaterial){
-                return NSOrderedDescending;
-            }
-            return NSOrderedSame;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-    }else{
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            return NSOrderedDescending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-    }
-}
--(void)nameButtonClick:(UIButton *)button{
-    ifNameBtnSelected = !ifNameBtnSelected;
-    if(ifNameBtnSelected == YES){
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            PatientsCellMode *object1 = (PatientsCellMode *)obj1;
-            PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.name.transformToPinyin localizedCompare:object2.name.transformToPinyin];
-            return result == NSOrderedDescending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-    }else{
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            PatientsCellMode *object1 = (PatientsCellMode *)obj1;
-            PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.name.transformToPinyin localizedCompare:object2.name.transformToPinyin];
-            return result == NSOrderedAscending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-    }
-}
--(void)introducerButtonClick:(UIButton*)button{
-    ifIntroducerSelected = !ifIntroducerSelected;
-    if(ifIntroducerSelected == YES){
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            PatientsCellMode *object1 = (PatientsCellMode *)obj1;
-            PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.introducerName.transformToPinyin localizedCompare:object2.introducerName.transformToPinyin];
-            return result == NSOrderedDescending;
-        }];
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-    }else{
-        NSArray *lastArray = [NSArray arrayWithArray:self.patientCellModeArray];
-        lastArray = [self.patientCellModeArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSComparisonResult result;
-            PatientsCellMode *object1 = (PatientsCellMode *)obj1;
-            PatientsCellMode *object2 = (PatientsCellMode *)obj2;
-            result = [object1.introducerName.transformToPinyin localizedCompare:object2.introducerName.transformToPinyin];
-            return result == NSOrderedDescending;
-        }];
-        NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
-        for(NSInteger i =lastArray.count;i>0;i--){
-            [resultArray addObject:lastArray[i-1]];
-        }
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:resultArray];
-        [self.tableView reloadData];
-        
-    }
-}
--(void)statusButtonClick:(UIButton *)button{
-    ifStatusBtnSelected = !ifStatusBtnSelected;
-    if(ifStatusBtnSelected == YES){
-        NSMutableArray *lastArray = [NSMutableArray arrayWithCapacity:0];
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未就诊"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未种植"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已种未修"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已修复"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-        
-    }else{
-        NSMutableArray *lastArray = [NSMutableArray arrayWithCapacity:0];
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已修复"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"已种未修"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未种植"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        for(NSInteger i = 0;i<self.patientCellModeArray.count;i++){
-            PatientsCellMode *cellMode;
-            cellMode = [self.patientCellModeArray objectAtIndex:i];
-            if([cellMode.statusStr isEqualToString:@"未就诊"]){
-                [lastArray addObject:cellMode];
-            }
-        }
-        self.patientCellModeArray = [NSMutableArray arrayWithArray:lastArray];
-        [self.tableView reloadData];
-    }
+#pragma mark 创建标题栏按钮
+- (UIButton *)setUpTitleButtonWithFrame:(CGRect)frame title:(NSString *)title{
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = frame;
+    [button setTitle:title forState:UIControlStateNormal];
+    [button layoutIfNeeded];
+    [button setTitleColor:[UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR] forState:UIControlStateSelected];
+    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
+    [button setImage:[UIImage imageWithFileName:@"filter_custom.png"] forState:UIControlStateNormal];
+    button.titleLabel.font = [UIFont systemFontOfSize:15];
+    [button setTitleEdgeInsets:UIEdgeInsetsMake(0, -20, 0, 20)];
+    [button setImageEdgeInsets:UIEdgeInsetsMake(0, button.titleLabel.bounds.size.width, 0, -button.titleLabel.bounds.size.width)];
+    return button;
 }
 
-#pragma mark - 显示和隐藏筛选视图
+#pragma mark 显示和隐藏筛选视图
 - (void)showFilterView{
     if (self.filterShow) {
-        self.filterView.hidden = YES;
+        [self.filterView dismissAnimated:YES];
         self.filterShow = NO;
     }else{
-        self.filterView.hidden = NO;
+        [self.filterView showInView:self.view animated:YES];
         self.filterShow = YES;
     }
 }
 
-#pragma mark - XLFilterViewDelegate
-- (void)dismiss{
-    self.filterView.hidden = YES;
-    self.filterShow = NO;
-}
-
-- (void)filterView:(XLFilterView *)filterView patientStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors{
-    self.status = status;
-    self.startTime = startTime;
-    self.endTime = endTime;
-    self.cureDoctors = cureDoctors;
-    [self.tableView.header beginRefreshing];
-}
-
-#pragma mark - 初始化
+#pragma mark 初始化
 - (XLFilterView *)filterView{
     if (!_filterView) {
         _filterView = [[XLFilterView alloc] initWithFrame:self.view.bounds];
@@ -655,7 +643,6 @@
         _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
         __weak XLPatientDisplayViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             
@@ -702,6 +689,5 @@
     
     return _searchController;
 }
-
 
 @end

@@ -7,12 +7,10 @@
 //
 
 #import "PatientDetailHeadInfoView.h"
-#import "QrCodeViewController.h"
 #import "UIView+WXViewController.h"
 #import "EditPatientDetailViewController.h"
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"
-#import "EditAllergyViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "NSString+MyString.h"
 #import "UIColor+Extension.h"
@@ -38,7 +36,7 @@
 #define arrowW 13
 #define arrowH 18
 
-@interface PatientDetailHeadInfoView ()<MFMessageComposeViewControllerDelegate,UITextFieldDelegate,UIAlertViewDelegate,XLEditGroupViewControllerDelegate>{
+@interface PatientDetailHeadInfoView ()<UITextFieldDelegate,UIAlertViewDelegate,XLEditGroupViewControllerDelegate>{
     Introducer *selectIntroducer;
 }
 
@@ -50,7 +48,8 @@
 
 @property (nonatomic, weak)UILabel *transferToLabel; //转诊到
 @property (nonatomic, weak)UIButton *phoneButton; //联系电话按钮
-@property (nonatomic, weak)UIButton *weixinButton; //微信的按钮
+//@property (nonatomic, weak)UIButton *weixinButton; //微信的按钮
+@property (nonatomic, weak)UIButton *messageButton;//消息
 @property (nonatomic, weak)UIButton *addReserveButton;//添加预约
 @property (nonatomic, weak)UIImageView *allergyView;//是否过敏
 
@@ -130,13 +129,6 @@
     [nameAndPhoneSuperView addSubview:patientNameLabel];
     self.patientNameLabel = patientNameLabel;
     
-    //联系电话内容视图
-//    UILabel *patientPhoneLabel = [[UILabel alloc] init];
-//    patientPhoneLabel.textColor = CommenTextColor;
-//    patientPhoneLabel.font = CommenTitleFont;
-//    [nameAndPhoneSuperView addSubview:patientPhoneLabel];
-//    self.patientPhoneLabel = patientPhoneLabel;
-    
     //介绍人内容视图
     UILabel *introducerNameLabel = [[UILabel alloc] init];
     introducerNameLabel.textColor = CommenTextColor;
@@ -169,12 +161,19 @@
     self.phoneButton = phoneButton;
     [self addSubview:phoneButton];
     
-    //微信按钮
-    UIButton *weixinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
-    self.weixinButton = weixinButton;
-    [weixinButton addTarget:self action:@selector(weixinButtonClick) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:weixinButton];
+    //添加预约
+    UIButton *messageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [messageButton setTitle:@"消息" forState:UIControlStateNormal];
+    messageButton.titleLabel.font = CommenTitleFont;
+    [messageButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    messageButton.backgroundColor = [UIColor colorWithHex:0x42c112];
+    messageButton.layer.cornerRadius = 2;
+    messageButton.layer.masksToBounds = YES;
+    [messageButton sizeToFit];
+    [messageButton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [messageButton addTarget:self action:@selector(messageButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    self.messageButton = messageButton;
+    [self addSubview:messageButton];
     
     //添加预约
     UIButton *addReserveButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -240,8 +239,8 @@
     CGFloat buttonW = 40;
     CGFloat buttonH = 25;
     self.addReserveButton.frame = CGRectMake(kScreenWidth - buttonW - Margin, (RowHeight - buttonH) / 2, buttonW, buttonH);
-    self.weixinButton.frame = CGRectMake(self.addReserveButton.left - buttonW - Margin, (RowHeight - buttonH) / 2, buttonW, buttonH);
-    self.phoneButton.frame = CGRectMake(self.weixinButton.left - buttonW, (RowHeight - buttonH) / 2, buttonW, buttonH);
+    self.messageButton.frame = CGRectMake(self.addReserveButton.left - buttonW - Margin, (RowHeight - buttonH) / 2, buttonW, buttonH);
+    self.phoneButton.frame = CGRectMake(self.messageButton.left - buttonW, (RowHeight - buttonH) / 2, buttonW, buttonH);
     
     //添加各行之间的分割线
     for (int i = 0; i < 3; i++) {
@@ -260,16 +259,6 @@
     UIView *divider = [[UIView alloc] initWithFrame:frame];
     divider.backgroundColor = MyColor(235, 235, 235);
     [self addSubview:divider];
-}
-
-- (void)setIsWeixin:(BOOL)isWeixin{
-    _isWeixin = isWeixin;
-    
-    if (self.isWeixin) {
-        [self.weixinButton setImage:[UIImage imageNamed:@"weixin_green"] forState:UIControlStateNormal];
-    }else{
-        [self.weixinButton setImage:[UIImage imageNamed:@"weixin_gray"] forState:UIControlStateNormal];
-    }
 }
 
 - (void)setIntroducerName:(NSString *)introducerName{
@@ -326,18 +315,12 @@
 }
 
 #pragma mark -微信扫描
-- (void)weixinButtonClick{
-    if (self.isWeixin) {
-        //跳转到即时通讯页面
-        ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:self.detailPatient.ckeyid conversationType:eConversationTypeChat];
-        chatController.title = self.detailPatient.patient_name;
-        [self.viewController.navigationController pushViewController:chatController animated:YES];
-    }else{
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-        QrCodeViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodeViewController"];
-        qrVC.patient = self.detailPatient;
-        [self.viewController.navigationController pushViewController:qrVC animated:YES];
-    }
+- (void)messageButtonClick{
+    //跳转到即时通讯页面
+    ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:self.detailPatient.ckeyid conversationType:eConversationTypeChat];
+    chatController.title = self.detailPatient.patient_name;
+    [self.viewController.navigationController pushViewController:chatController animated:YES];
+
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -351,42 +334,6 @@
     }
 }
 
-#pragma mark -发信息
-- (void)messageButtonClick{
-    if (self.detailPatient.patient_phone) {
-        if( [MFMessageComposeViewController canSendText] ){
-            MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
-            controller.recipients = @[self.detailPatient.patient_phone];
-            controller.body = @"";
-            controller.messageComposeDelegate = self;
-            //跳转到发送短信的页面
-            [self.viewController presentViewController:controller animated:YES completion:nil];
-            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
-        }
-        else{
-            [SVProgressHUD showErrorWithStatus:@"设备没有短信功能"];
-        }
-    }else{
-        [SVProgressHUD showImage:nil status:@"患者未留电话"];
-    }
-}
-//短信是否发送成功
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
-    [controller dismissViewControllerAnimated:NO completion:nil];//关键的一句   不能为YES
-    switch ( result ) {
-        case MessageComposeResultCancelled:
-            [SVProgressHUD showImage:nil status:@"取消发送信息"];
-            break;
-        case MessageComposeResultFailed:
-            [SVProgressHUD showImage:nil status:@"发送信息失败"];
-            break;
-        case MessageComposeResultSent:
-            [SVProgressHUD showImage:nil status:@"发送信息成功"];
-            break;
-        default:
-            break;
-    }
-}
 
 #pragma mark - 添加预约
 - (void)addReserveButtonClick{

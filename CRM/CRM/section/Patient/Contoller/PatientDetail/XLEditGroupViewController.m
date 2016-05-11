@@ -16,6 +16,7 @@
 #import "DBManager+AutoSync.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLEditGroupViewController ()<CustomAlertViewDelegate,XLEditGroupCellDelegate>
 
@@ -23,6 +24,8 @@
 
 @property (nonatomic, strong)NSMutableArray *orginSelectGroups;
 @property (nonatomic, strong)NSMutableArray *orginUnSelectGroups;
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -60,6 +63,8 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"完成"];
     self.title = @"选择分组";
+    
+    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"noGroup_alert" top:110 showButton:NO buttonClickBlock:nil];
 }
 
 #pragma mark - 完成按钮点击
@@ -119,6 +124,12 @@
 - (void)requestData{
     [SVProgressHUD showWithStatus:@"正在加载"];
     [DoctorGroupTool getGroupListWithDoctorId:[AccountManager currentUserid] ckId:@"" patientId:@"" success:^(NSArray *result) {
+        if (result.count == 0) {
+            self.noResultAlertView.hidden = NO;
+        }else{
+            self.noResultAlertView.hidden = YES;
+        }
+        
         [SVProgressHUD dismiss];
         if (self.isEdit) {
             if (self.currentGroups.count > 0) {

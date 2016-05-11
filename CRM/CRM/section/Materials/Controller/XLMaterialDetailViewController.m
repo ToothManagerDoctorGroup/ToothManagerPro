@@ -143,7 +143,7 @@
     [bgView addSubview:label];
     
     UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [nameButton setTitle:@"姓名" forState:UIControlStateNormal];
+    [nameButton setTitle:@"患者" forState:UIControlStateNormal];
     [nameButton setFrame:CGRectMake(0, 0, commonW, commonH)];
     [nameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     nameButton.titleLabel.font = [UIFont systemFontOfSize:15];

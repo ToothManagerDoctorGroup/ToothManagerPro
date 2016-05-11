@@ -112,7 +112,8 @@
     self.userSex.text = [doctorInfo.doctor_gender isEqualToString:@"0"] ? @"女" : @"男";
     //计算出生年份
     NSInteger birthYear = [[doctorInfo.doctor_birthday substringToIndex:4] integerValue];
-    self.userAge.text = [NSString stringWithFormat:@"%d",(int)([self getYear] - birthYear)];
+    NSString *ageStr = [NSString stringWithFormat:@"%d",(int)([self getYear] - birthYear)];
+    self.userAge.text = [ageStr intValue] == 0 ? @"" : ageStr;
     self.userDepartment.text = doctorInfo.doctor_dept;
     self.userHospital.text = doctorInfo.doctor_hospital;
     self.userAcademicTitle.text = doctorInfo.doctor_position;
@@ -204,45 +205,23 @@
     [actionSheet showInView:self.view];
 }
 #pragma mark ActionSheet Delegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    
-    switch (buttonIndex) {
-        case 0:
-        {
-            //从相册
-            UIImagePickerController *pickerImage = [[UIImagePickerController alloc] init];
-            if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-                pickerImage.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            }
-            pickerImage.delegate = self;
-            pickerImage.allowsEditing = YES;
-            [self presentViewController:pickerImage animated:YES completion:nil];
-        }
-            break;
-        case 1:
-        {
-            //摄像头
-            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-                UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
-                UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-                picker.delegate = self;
-                picker.allowsEditing = YES;
-                picker.sourceType = sourceType;
-                [self presentViewController:picker animated:YES completion:nil];
-            }else {
-                [SVProgressHUD showErrorWithStatus:@"您的设备没有摄像头"];
-            }
-        }
-            break;
-        case 2:
-        {}
-            break;
-            
-        default:
-            break;
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    if (buttonIndex > 1) {
+        return;
     }
+    
+    UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+    picker.delegate = self;
+    picker.allowsEditing = YES;
+    if (buttonIndex == 0) {
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    } else if (buttonIndex == 1) {
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    }
+    [self presentViewController:picker animated:YES completion:^{
+    }];
 }
+
 
 #pragma mark - UIImagePicker Delegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -367,7 +346,7 @@
     }else{
         self.currentDoctor.doctor_skill = content;
     }
-    
+    [self uploadDoctorInfo];
 }
 
 #pragma mark - 上传个人信息

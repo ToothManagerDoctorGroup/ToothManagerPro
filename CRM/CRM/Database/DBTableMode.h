@@ -146,6 +146,7 @@ typedef CGFloat Money;
 + (Patient *)patientWithMixResult:(FMResultSet *)result;//只用于患者列表信息
 + (Patient *)patientlWithResult:(FMResultSet *)result;
 + (NSString *)statusStrWithIntegerStatus:(PatientStatus)status;
++ (UIColor *)statusColorWithIntegerStatus:(PatientStatus)status;
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat;
 
 @end

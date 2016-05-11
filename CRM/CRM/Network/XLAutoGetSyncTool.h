@@ -16,9 +16,9 @@ Declare_ShareInstance(XLAutoGetSyncTool);
 
 - (void)getDoctorTable;//同步医生信息
 - (void)getMaterialTable;//同步材料信息
-- (void)getIntroducerTable;//同步介绍人信息
+- (void)getIntroducerTableHasNext:(BOOL)hasNext;//同步介绍人信息
 - (void)getPatientTable;//同步患者信息
-- (void)getReserverecordTable;//同步预约信息
+- (void)getReserverecordTableHasNext:(BOOL)hasNext;//同步预约信息
 - (void)getPatIntrMapTable;//同步患者介绍人信息
 - (void)getRepairDoctorTable;//同步修复医生信息
 

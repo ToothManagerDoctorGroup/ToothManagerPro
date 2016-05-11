@@ -15,6 +15,7 @@
 #import "NSString+Conversion.h"
 #import "AccountManager.h"
 #import "MyDateTool.h"
+#import "UIColor+Extension.h"
 
 //NSString * const ITI = @"ITI";
 //NSString * const DENTIS = @"DENTIS"; //诺贝尔，ITI，奥齿泰，费亚丹
@@ -333,6 +334,27 @@ NSString * const Repaired = @"已修复";
             return OtherStr;
             break;
     }
+}
+
++ (UIColor *)statusColorWithIntegerStatus:(PatientStatus)status{
+    UIColor *color = [UIColor blackColor];
+    switch (status) {
+        case PatientStatusUntreatment:
+            color = [UIColor colorWithHex:0x00a0ea];
+            break;
+        case PatientStatusUnplanted:
+            color = [UIColor colorWithHex:0xff3b31];
+            break;
+        case PatientStatusUnrepaired:
+            color = [UIColor colorWithHex:0x37ab4e];
+            break;
+        case PatientStatusRepaired:
+            color = [UIColor colorWithHex:0x888888];
+            break;
+        default:
+            break;
+    }
+    return color;
 }
 
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat {

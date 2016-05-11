@@ -17,7 +17,7 @@
 #define CommonWidth 50
 #define LINE_HEIGHT .5
 
-@interface XLFilterDoctorView ()<XLThreaterSelectViewControllerDelegate>{
+@interface XLFilterDoctorView ()<XLThreaterSelectViewControllerDelegate,XLFilterDoctorListViewDelegate>{
     UIView *_dividerViewBottom;
     UIView *_dividerViewMid;
     
@@ -65,7 +65,7 @@
     [self addSubview:_chooseSuperView];
     
     _tintLabel = [[UILabel alloc] init];
-    _tintLabel.text = @"请选择治疗医生";
+    _tintLabel.text = @"请选择修复医生";
     _tintLabel.font = [UIFont systemFontOfSize:15];
     _tintLabel.textColor = [UIColor colorWithHex:0xbbbbbb];
     [_chooseSuperView addSubview:_tintLabel];
@@ -79,6 +79,7 @@
     [_chooseSuperView addSubview:_dividerViewMid];
     
     _listView = [[XLFilterDoctorListView alloc] init];
+    _listView.delegate = self;
     [self addSubview:_listView];
     
     //设置frame
@@ -115,7 +116,8 @@
 - (void)setSelectDoctors:(NSArray *)selectDoctors{
     _selectDoctors = selectDoctors;
     
-    _listView.sourceArray = selectDoctors;
+    [_listView.sourceArray removeAllObjects];
+    _listView.sourceArray = [selectDoctors mutableCopy];
     //重新设置frame
     [self setUpSubviewFrame];
 }
@@ -127,8 +129,19 @@
 #pragma mark - XLThreaterSelectViewControllerDelegate
 - (void)threaterSelectViewController:(XLThreaterSelectViewController *)selectVc didSelectDoctors:(NSArray *)selectDocs{
     self.selectDoctors = selectDocs;
+    [self setUpDelegateWithArray:selectDocs];
+}
+
+#pragma mark - XLFilterDoctorListViewDelegate
+- (void)filterDoctorListView:(XLFilterDoctorListView *)listView didChooseDoctors:(NSArray *)doctors{
+    _selectDoctors = doctors;
+    [self setUpDelegateWithArray:doctors];
+}
+//设置代理
+- (void)setUpDelegateWithArray:(NSArray *)array{
+    //刷新视图
     if (self.delegate && [self.delegate respondsToSelector:@selector(filterDoctorView:didSelectDoctors:)]) {
-        [self.delegate filterDoctorView:self didSelectDoctors:selectDocs];
+        [self.delegate filterDoctorView:self didSelectDoctors:array];
     }
 }
 

@@ -24,6 +24,7 @@
 #import "XLPatientTotalInfoModel.h"
 #import "CRMUserDefalut.h"
 #import "XLGuideImageView.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLGroupManagerViewController ()<MLKMenuPopoverDelegate,CustomAlertViewDelegate,UIAlertViewDelegate,UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource>{
     BOOL ifNameBtnSelected;
@@ -40,21 +41,16 @@
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
-/**
- *  菜单选项
- */
+//菜单选项
 @property (nonatomic, strong)NSArray *menuList;
-/**
- *  菜单弹出视图
- */
+//菜单弹出视图
 @property (nonatomic, strong)MLKMenuPopover *menuPopover;
-
-/**
- *  当前选中的组员
- */
+//当前选中的组员
 @property (nonatomic, strong)GroupMemberModel *selectModel;
 
 @property (nonatomic, assign)BOOL canEdit;//是否进入编辑状态
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -206,6 +202,8 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
+    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"groupDetail_alert" top:144 showButton:NO buttonClickBlock:nil];
+    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
@@ -240,10 +238,9 @@
             [_tableView reloadData];
             
             if (result.count == 0) {
-                [CRMUserDefalut isShowedForKey:GroupMemberNew_IsShowedKey showedBlock:^{
-                    XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_new_tint"]];
-                    [guidImageView showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES];
-                }];
+                self.noResultAlertView.hidden = NO;
+            }else{
+                self.noResultAlertView.hidden = YES;
             }
             
         } failure:^(NSError *error) {
@@ -578,6 +575,11 @@
     NSArray *searchResults;
     if ([searchText isNotEmpty]) {
         searchResults = [ChineseSearchEngine resultArraySearchGroupPatientsOnArray:self.patientCellModeArray withSearchText:searchText];
+        if (searchResults.count == 0) {
+            self.searchController.hideNoResult = NO;
+        }else{
+            self.searchController.hideNoResult = YES;
+        }
         
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:searchResults];

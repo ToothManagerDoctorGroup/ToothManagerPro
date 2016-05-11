@@ -390,16 +390,23 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    
+ 
+    WS(weakSelf);
     if ([searchText isNotEmpty]) {
         if (self.type == DoctorSelectTypeAdd) {
             //请求网络数据
             XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
             [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
                 
+                if (array.count == 0) {
+                    weakSelf.searchController.hideNoResult = NO;
+                }else{
+                    weakSelf.searchController.hideNoResult = YES;
+                }
+                
                 //判断是否存在
                 for (Doctor *doc in array) {
-                    for (XLTeamMemberModel *model in self.existMembers) {
+                    for (XLTeamMemberModel *model in weakSelf.existMembers) {
                         if ([doc.ckeyid isEqualToString:[model.member_id stringValue]]) {
                             doc.isExist = YES;
                             break;
@@ -407,9 +414,9 @@
                     }
                 }
                 
-                [self.searchController.resultsSource removeAllObjects];
-                [self.searchController.resultsSource addObjectsFromArray:array];
-                [self.searchController.searchResultsTableView reloadData];
+                [weakSelf.searchController.resultsSource removeAllObjects];
+                [weakSelf.searchController.resultsSource addObjectsFromArray:array];
+                [weakSelf.searchController.searchResultsTableView reloadData];
             } failure:^(NSError *error) {
                 if (error) {
                     NSLog(@"error:%@",error);
@@ -419,6 +426,11 @@
             //查询本地数组
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"doctor_name CONTAINS %@", searchText]; //predicate只能是对象
             NSArray *filteredArray = [self.searchHistoryArray filteredArrayUsingPredicate:predicate];
+            if (filteredArray.count == 0) {
+                weakSelf.searchController.hideNoResult = NO;
+            }else{
+                weakSelf.searchController.hideNoResult = YES;
+            }
             
             [self.searchController.resultsSource removeAllObjects];
             [self.searchController.resultsSource addObjectsFromArray:filteredArray];

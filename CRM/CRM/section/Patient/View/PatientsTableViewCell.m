@@ -32,7 +32,6 @@
     self.transferLabel.text = mode.introducerName;
     self.transferLabel.adjustsFontSizeToFitWidth = YES;
     
-//    Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager currentUserid]];
     if(mode.isTransfer){
         self.zhuanZhenImageview.hidden = NO;
     }else{
@@ -40,28 +39,12 @@
     }
     
     self.countMaterial.text = [NSString stringWithFormat:@"%ld颗",(long)mode.countMaterial];
-    switch (mode.status) {
-        case PatientStatusUntreatment:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:0x00a0ea]];
-            break;
-        case PatientStatusUnplanted:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:0xff3b31]];
-            break;
-        case PatientStatusUnrepaired:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:0x37ab4e]];
-            break;
-        case PatientStatusRepaired:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:0x888888]];
-            break;
-        default:
-            break;
-    }
+    self.statusLabel.textColor = [Patient statusColorWithIntegerStatus:mode.status];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
-    // Configure the view for the selected state
 }
 
 @end

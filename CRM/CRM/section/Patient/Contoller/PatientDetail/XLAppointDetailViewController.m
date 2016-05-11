@@ -31,6 +31,7 @@
 #import "SysMessageTool.h"
 #import "PatientDetailViewController.h"
 #import "PatientsCellMode.h"
+#import "XLChatModel.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -113,17 +114,13 @@
             model.content = notification.reserve_time;
         }else if (i == 1){
             Patient *patient = [[DBManager shareInstance] getPatientCkeyid:notification.patient_id];
-            if ([patient.nickName isNotEmpty]) {
-                model.content = [NSString stringWithFormat:@"%@(%@)",patient.patient_name,patient.nickName];
-            }else{
-                model.content = patient.patient_name;
-            }
+            model.content = patient.patient_name;
         }else if (i == 2){
             model.content = notification.tooth_position;
         }else if (i == 3){
             model.content = notification.reserve_type;
         }else if (i == 4){
-            model.content = [NSString stringWithFormat:@"%@小时",notification.duration];
+            model.content = [self formatterDuration:notification.duration];
         }else if (i == 5){
             model.content = notification.therapy_doctor_name;
         }else if(i == 6){
@@ -178,6 +175,21 @@
     self.tableView.tableFooterView = footerView;
 }
 
+#pragma mark - ********************* Private Method ***********************
+#pragma mark 格式化预约时长
+- (NSString *)formatterDuration:(NSString *)duraction{
+    NSString *temp = nil;
+    if ([duraction isEqualToString:@"0.5"]) {
+        temp = @"30分钟";
+    }else if ([duraction isEqualToString:@"1.0"]){
+        temp = @"1小时";
+    }else if ([duraction isEqualToString:@"1.5"]){
+        temp = @"90分钟";
+    }else if ([duraction isEqualToString:@"2.0"]){
+        temp = @"2小时";
+    }
+    return temp;
+}
 #pragma mark - 按钮点击事件
 - (void)deleteBtnAction{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"取消预约" message:@"确认取消预约吗?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
@@ -242,6 +254,8 @@
 #pragma mark - UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0) return;
+    
+    Patient *patientTmp = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.localNoti.patient_id];
     [SVProgressHUD showWithStatus:@"正在取消预约，请稍候..."];
     [[XLAutoSyncTool shareInstance] deleteAllNeedSyncReserve_record:self.localNoti success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
@@ -264,7 +278,9 @@
                         [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.localNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
                             
                             if ([respond.code integerValue] == 200) {
-                                [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                                [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                                //将消息保存在消息记录里
+                                [weakSelf savaMessageToChatRecordWithPatient:patientTmp message:content];
                             }else{
                                 [SVProgressHUD showImage:nil status:@"消息发送失败"];
                             }
@@ -281,6 +297,7 @@
                     
                 } failure:^(NSError *error) {
                     [SVProgressHUD showErrorWithStatus:@"提醒内容获取失败，请检查网络设置"];
+                    [self popViewControllerAnimated:YES];
                     if (error) {
                         NSLog(@"error:%@",error);
                     }
@@ -295,6 +312,19 @@
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+#pragma mark - 将消息保存在消息记录中
+- (void)savaMessageToChatRecordWithPatient:(Patient *)patient message:(NSString *)message{
+    //将消息保存在消息记录里
+    XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:patient.ckeyid receiverName:patient.patient_name content:message];
+    [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+    //发送环信消息
+    [EaseSDKHelper sendTextMessage:message
+                                to:patient.ckeyid
+                       messageType:eMessageTypeChat
+                 requireEncryption:NO
+                        messageExt:nil];
 }
 
 #pragma mark - XLAddReminderViewControllerDelegate

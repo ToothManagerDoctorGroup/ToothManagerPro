@@ -9,15 +9,12 @@
 #import <UIKit/UIKit.h>
 
 //新增患者
-#define AttainNewPatient @"AttainNewPatient"
-//新的好友
-#define AttainNewFriend @"AttainNewFriend"
-//取消预约
-#define CancelReserveRecord @"CancelReserveRecord"
-//修改预约
-#define UpdateReserveRecord @"UpdateReserveRecord"
-//新增预约
-#define InsertReserveRecord @"InsertReserveRecord"
+extern NSString * const AttainNewPatient;
+extern NSString * const AttainNewFriend;
+extern NSString * const CancelReserveRecord;
+extern NSString * const UpdateReserveRecord;
+extern NSString * const InsertReserveRecord;
+
 
 @class SysMessageModel;
 @interface SysMessageCell : UITableViewCell
@@ -25,5 +22,7 @@
 @property (nonatomic, strong)SysMessageModel *model;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
+
++ (CGFloat)cellHeightWithModel:(SysMessageModel *)model;
 
 @end

@@ -12,13 +12,11 @@
 #import "DBManager+Patients.h"
 #import "CRMMacro.h"
 #import "PatientsCellMode.h"
-#import "TimAlertView.h"
 #import "MudDatePickerView.h"
 #import "SyncManager.h"
 #import "PatientDetailViewController.h"
 #import "LewPopupViewController.h"
 #import "SchedulePopMenu.h"
-#import <MessageUI/MFMessageComposeViewController.h>
 #import "AppointDetailViewController.h"
 #import "ScheduleDateButton.h"
 #import "JTCalendar.h"
@@ -31,18 +29,23 @@
 #import "AutoSyncManager.h"
 #import "SysMessageTool.h"
 #import "JSONKit.h"
-#import "MJExtension.h"
 #import "DBManager+AutoSync.h"
 #import "AutoSyncGetManager.h"
 #import "XLAppointDetailViewController.h"
 #import "CRMHttpRequest+Sync.h"
 #import "XLGuideImageView.h"
 #import "CRMUserDefalut.h"
-#import "MyDateTool.h"
 #import "CRMAppDelegate.h"
 #import "UIApplication+Version.h"
+#import "UIImage+TTMAddtion.h"
+#import "UITableView+NoResultAlert.h"
+#import "ChatViewController.h"
+#import "XLLoginTool.h"
+#import "XLAutoGetSyncTool.h"
+#import "MJRefresh.h"
+#import "XLSysMessageViewController.h"
 
-@interface MyScheduleReminderViewController ()<MFMessageComposeViewControllerDelegate,JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
+@interface MyScheduleReminderViewController ()<JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
 @property (nonatomic,retain) NSArray *remindArray;
 
@@ -50,90 +53,36 @@
 
 @property (nonatomic, strong)Patient *selectPatient;//当前选中的患者
 @property (nonatomic, assign)BOOL isHide;
-/**
- *  日历
- */
-@property (strong, nonatomic) JTCalendar *calendar;
+@property (strong, nonatomic) JTCalendar *calendar;//日历
 @property (nonatomic, weak)JTCalendarContentView *contentView;
 @property (nonatomic, weak)ScheduleDateButton *buttonView;
 @property (nonatomic, weak)UILabel *messageCountLabel;//消息提示框
-
 @property (nonatomic, weak)UIView *noResultView;//无查询结果的提示页面
-
 @property (nonatomic, strong)NSMutableArray *currentMonthArray;//当前月的数据
+
+@property (nonatomic, strong)NSTimer *messageTimer;//消息处理的定时器
 
 @end
 
 @implementation MyScheduleReminderViewController
 
-- (NSMutableArray *)currentMonthArray{
-    if (!_currentMonthArray) {
-        _currentMonthArray = [NSMutableArray array];
-    }
-    return _currentMonthArray;
-}
-
-- (UIView *)noResultView{
-    if (!_noResultView) {
-        UIView *noResultView = [[UIView alloc] initWithFrame:CGRectMake(0, 0,m_tableView.width, m_tableView.height)];
-        self.noResultView = noResultView;
-        noResultView.backgroundColor = [UIColor whiteColor];
-        
-        UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, kScreenWidth, 40)];
-        textLabel.text = @"没有日程安排";
-        textLabel.font = [UIFont systemFontOfSize:15];
-        textLabel.textColor = MyColor(136, 136, 136);
-        textLabel.textAlignment = NSTextAlignmentCenter;
-        [noResultView addSubview:textLabel];
-        
-        [m_tableView addSubview:noResultView];
-    }
-    return _noResultView;
-}
-
+#pragma mark - ********************* Life Method ***********************
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
     self.title = @"日程表";
-//    self.view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     //设置消息按钮
     [self setUpMessageItem];
-
-    
-    
-    UIImage *image1 = [[UIImage imageNamed:@"ic_tabbar_qi"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    UIImage *image2 = [[UIImage imageNamed:@"ic_tabbar_qi_active"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:image1 selectedImage:image2];
-    [self.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIColor colorWithRed:59.0f/255.0f green:161.0f/255.0f blue:233.0f/255.0f alpha:1], NSForegroundColorAttributeName,
-                                             nil] forState:UIControlStateSelected];
-    [self.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIColor lightGrayColor], NSForegroundColorAttributeName,
-                                             nil] forState:UIControlStateNormal];
+    //更新registerId
+    [self updateUserRegisterId];
+    //创建定时器，自动处理消息
+    [self createMessageTimer];
     
 }
-
-#pragma mark - 轻扫手势
-- (void)swipUpAction:(UISwipeGestureRecognizer *)swip{
-    if (!self.calendar.calendarAppearance.isWeekMode) {
-        self.buttonView.isSelected = NO;
-        [self didClickDateButton];
-    }
-}
-
-- (void)swipDownAction:(UISwipeGestureRecognizer *)swip{
-    if (self.calendar.calendarAppearance.isWeekMode) {
-        self.buttonView.isSelected = YES;
-        [self didClickDateButton];
-    }
-}
-
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    
     [SVProgressHUD dismiss];
 }
 
@@ -145,12 +94,49 @@
     if (self.remindArray.count == 0) {
         self.noResultView.hidden = NO;
     }else{
-        
         self.noResultView.hidden = YES;
     }
-    
 }
-//请求未读的数据
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    if (!self.calendar.calendarAppearance.isWeekMode && self.isHide == NO) {
+        [self didClickDateButton];
+        self.isHide = YES;
+    }
+    //判断是否显示提示页
+    [CRMUserDefalut isShowedForKey:Schedule_IsShowedKey showedBlock:^{
+        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alert"]];
+        [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
+    }];
+    
+    //是否显示更新提示
+    [self showNewVersion];
+}
+
+#pragma mark - ********************* Private Method ***********************
+#pragma mark 轻扫手势
+- (void)swipUpAction:(UISwipeGestureRecognizer *)swip{
+    if (!self.calendar.calendarAppearance.isWeekMode) {
+        self.buttonView.isSelected = NO;
+        [self didClickDateButton];
+    }
+}
+- (void)swipDownAction:(UISwipeGestureRecognizer *)swip{
+    if (self.calendar.calendarAppearance.isWeekMode) {
+        self.buttonView.isSelected = YES;
+        [self didClickDateButton];
+    }
+}
+
+#pragma mark 下拉刷新事件
+- (void)headerRefreshAction:(MJRefreshLegendHeader *)header{
+    //请求所有的预约数据
+    [[XLAutoGetSyncTool shareInstance] getReserverecordTableHasNext:NO];
+}
+
+#pragma mark 请求未读的数据
 - (void)requestUnreadMessageCount{
     //请求未读消息数
     [SysMessageTool getUnReadMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
@@ -169,7 +155,7 @@
     }];
 }
 
-#pragma mark - 设置消息按钮
+#pragma mark 设置消息按钮
 - (void)setUpMessageItem{
     UIButton *messageButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [messageButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -189,23 +175,6 @@
     self.messageCountLabel = messageCountLabel;
     [messageButton addSubview:messageCountLabel];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:messageButton];
-}
-
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-    
-    if (!self.calendar.calendarAppearance.isWeekMode && self.isHide == NO) {
-        [self didClickDateButton];
-        self.isHide = YES;
-    }
-    //判断是否显示提示页
-    [CRMUserDefalut isShowedForKey:Schedule_IsShowedKey showedBlock:^{
-        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alert"]];
-        [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
-    }];
-    
-    //是否显示更新提示
-    [self showNewVersion];
 }
 
 -(void)onLeftButtonAction:(id)sender{
@@ -237,42 +206,18 @@
     
 }
 
-#pragma mark - 消息按钮点击事件
+#pragma mark 消息按钮点击事件
 - (void)messageAction{
-    WMPageController *pageController = [self p_defaultController];
-    pageController.title = @"我的消息";
-    pageController.menuViewStyle = WMMenuViewStyleLine;
-    pageController.titleSizeSelected = 15;
-    pageController.titleColorSelected = MyColor(0, 139, 232);
-    pageController.menuHeight = 44;
-    pageController.bounces = NO;
-    pageController.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:pageController animated:YES];
+    XLSysMessageViewController *sysMessageVc = [[XLSysMessageViewController alloc] initWithStyle:UITableViewStylePlain];
+    sysMessageVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:sysMessageVc animated:YES];
 }
 
-#pragma mark - 创建控制器
-- (WMPageController *)p_defaultController {
-    NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
-    NSMutableArray *titles = [[NSMutableArray alloc] init];
-    Class class;
-    for (int i = 0; i < 2; i++) {
-        NSString *title;
-        if (i == 0) {
-            title = @"未读";
-            class = [UnReadMessageViewController class];
-        }else{
-            title = @"已读";
-            class = [ReadMessageViewController class];
-        }
-        [viewControllers addObject:class];
-        [titles addObject:title];
+#pragma mark 消息定时器处理
+- (void)createMessageTimer{
+    if (!_messageTimer) {
+//        _messageTimer = [NSTimer timerWithTimeInterval:<#(NSTimeInterval)#> target:<#(nonnull id)#> selector:<#(nonnull SEL)#> userInfo:<#(nullable id)#> repeats:<#(BOOL)#>]
     }
-    WMPageController *pageVC = [[WMPageController alloc] initWithViewControllerClasses:viewControllers andTheirTitles:titles];
-    pageVC.pageAnimatable = YES;
-    pageVC.menuItemWidth = kScreenWidth * 0.5;
-    pageVC.postNotification = YES;
-    pageVC.bounces = YES;
-    return pageVC;
 }
 
 - (void)initView
@@ -326,6 +271,14 @@
     [self.view addSubview:m_tableView];
     [self setExtraCellLineHidden:m_tableView];
     
+    //添加下拉刷新
+    [m_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction:)];
+    m_tableView.header.updatedTimeHidden = YES;
+    
+    //设置提醒视图
+    self.noResultView = [m_tableView createNoResultAlertViewWithImageName:@"schedule_noresult_alert" top:60 showButton:NO buttonClickBlock:nil];
+    
+    //添加通知
     [self addNotificationObserver];
 }
 
@@ -348,7 +301,7 @@
     [self getAllDataWithCurrentDate:[NSDate date]];
     
 }
-#pragma mark - 根据当前时间查询当月或当周所有的数据
+#pragma mark 根据当前时间查询当月或当周所有的数据
 - (void)getAllDataWithCurrentDate:(NSDate *)currentDate{
     [self.currentMonthArray removeAllObjects];
     //查询月数据
@@ -392,6 +345,10 @@
 - (void)handNotification:(NSNotification *)notifacation {
     if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:SyncGetSuccessNotification] || [notifacation.name isEqualToString:NotificationDeleted] || [notifacation.name isEqualToString:PatientDeleteNotification]) {
         
+        if ([m_tableView.header isRefreshing]) {
+            [m_tableView.header endRefreshing];
+        }
+        
         [self getAllDataWithCurrentDate:self.selectDate];
         
         if (self.remindArray.count == 0) {
@@ -408,7 +365,8 @@
     }
 }
 
-#pragma tableView delegate&dataSource
+#pragma mark - ******************* Delegate / DataSource *********************
+#pragma mark tableView delegate&dataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -432,12 +390,9 @@
             LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
             BOOL ret = [[LocalNotificationCenter shareInstance] removeLocalNotification:notifi];
             if (ret) {
-//                self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[dateFormatter stringFromDate:self.selectDate]];
-//                self.remindArray = [self updateListTimeArray:self.remindArray];
                 [self getAllDataWithCurrentDate:self.selectDate];
                 
                 [m_tableView reloadData];
-                
                 //自动同步信息
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Delete dataEntity:[notifi.keyValues JSONString] syncStatus:@"0"];
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
@@ -528,40 +483,13 @@
 }
 #pragma mark - 发短信
 - (void)junpToMessageWithNotification:(LocalNotification *)notifi{
-    if(![NSString isEmptyString:self.selectPatient.patient_phone]){
-        if( [MFMessageComposeViewController canSendText] ){
-            MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
-            controller.recipients = @[self.selectPatient.patient_phone];
-            controller.body = @"";
-            controller.messageComposeDelegate = self;
-            //跳转到发送短信的页面
-            [self presentViewController:controller animated:YES completion:nil];
-            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
-        }
-        else{
-            [SVProgressHUD showErrorWithStatus:@"设备没有短信功能"];
-        }
-    }else{
-        [SVProgressHUD showImage:nil status:@"患者未留电话"];
-    }
+    //跳转到即时通讯页面
+    ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:self.selectPatient.ckeyid conversationType:eConversationTypeChat];
+    chatController.title = self.selectPatient.patient_name;
+    chatController.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:chatController animated:YES];
 }
-//短信是否发送成功
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
-    [controller dismissViewControllerAnimated:NO completion:nil];//关键的一句   不能为YES
-    switch ( result ) {
-        case MessageComposeResultCancelled:
-            [SVProgressHUD showImage:nil status:@"取消发送信息"];
-            break;
-        case MessageComposeResultFailed:
-            [SVProgressHUD showImage:nil status:@"发送信息失败"];
-            break;
-        case MessageComposeResultSent:
-            [SVProgressHUD showImage:nil status:@"发送信息成功"];
-            break;
-        default:
-            break;
-    }
-}
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(alertView.tag == 101){
         if(buttonIndex == 0){
@@ -705,6 +633,22 @@
             [alertView show];
         }
     }];
+}
+#pragma mark - ********************* Lazy Method ***********************
+#pragma mark 初始化控件
+- (NSMutableArray *)currentMonthArray{
+    if (!_currentMonthArray) {
+        _currentMonthArray = [NSMutableArray array];
+    }
+    return _currentMonthArray;
+}
+
+#pragma mark 更新版本之后，需要调用，替换为registerId
+- (void)updateUserRegisterId{
+    NSString *registerId = [CRMUserDefalut objectForKey:RegisterId];
+    if ([registerId isNotEmpty]) {
+        [XLLoginTool updateUserRegisterIdWithUserId:[AccountManager currentUserid] registerId:[CRMUserDefalut objectForKey:RegisterId] success:^(CRMHttpRespondModel *respond) {} failure:^(NSError *error) {}];
+    }
 }
 
 

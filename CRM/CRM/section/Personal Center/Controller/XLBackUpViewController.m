@@ -53,7 +53,7 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
-    return @"说明:数据备份到云端后，当您刷机或更换手机时，存储在种牙管家的数据不会丢失";
+    return @"说明:数据备份到云端后，当您刷机或更换手机时，储存在种牙管家的数据都能够恢复回来";
 }
 - (IBAction)backUpAction:(id)sender {
     if (self.dataList.count == 0) {

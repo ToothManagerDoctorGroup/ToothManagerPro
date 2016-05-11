@@ -25,6 +25,7 @@
 
 @property (nonatomic, weak)XLTextViewPlaceHolder *textView;
 @property (nonatomic, weak)UILabel *placeHolderLabel;
+@property (nonatomic, weak)UILabel *limitLabel;
 @property (nonatomic, strong)NSArray *allergyNames;
 @property (nonatomic, strong)NSArray *anamnesises;
 
@@ -82,6 +83,15 @@
     textView.returnKeyType = UIReturnKeyDone;
     self.textView = textView;
     [bgView addSubview:textView];
+    
+    UILabel *limitLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - 200 - margin, textView.bottom - 20, 200, 20)];
+    limitLabel.font = [UIFont systemFontOfSize:12];
+    limitLabel.textColor = [UIColor colorWithHex:0xbbbbbb];
+    limitLabel.textAlignment = NSTextAlignmentRight;
+    limitLabel.text = [NSString stringWithFormat:@"还可输入%ld个字",self.limit - (unsigned long)self.content.length];
+    self.limitLabel = limitLabel;
+    [bgView addSubview:limitLabel];
+    
     //添加通知，监听textView的内容的变化
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(textChanged) name:UITextViewTextDidChangeNotification object:nil];
     
@@ -168,10 +178,7 @@
 
 #pragma mark - 保存
 - (void)onRightButtonAction:(id)sender{
-//    if (self.textView.text.length == 0) {
-//        [SVProgressHUD showErrorWithStatus:@"内容不能为空!"];
-//        return;
-//    }
+
     ValidationResult result = [NSString isValidLength:self.textView.text length:400];
     if (result == ValidationResultInValid) {
         [SVProgressHUD showImage:nil status:@"内容过长，请重新输入"];
@@ -215,6 +222,18 @@
         _textView.hidePlaceHolder = YES;
     }else{
         _textView.hidePlaceHolder = NO;
+    }
+    
+    if (self.limit != 0) {
+        self.limitLabel.hidden = NO;
+        NSInteger number = [self.textView.text length];
+        if (number > self.limit) {
+            self.textView.text = [self.textView.text substringToIndex:self.limit];
+            number = self.limit;
+        }
+        self.limitLabel.text = [NSString stringWithFormat:@"还可输入%ld个字",self.limit - (long)number];
+    }else{
+        self.limitLabel.hidden = YES;
     }
 }
 

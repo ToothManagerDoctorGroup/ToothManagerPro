@@ -111,4 +111,13 @@
 - (PatientIntroducerMap *)getPatientIntroducerMapByPatientId:(NSString *)patientId doctorId:(NSString *)doctorId intrId:(NSString *)intrId;
 - (Introducer *)getIntroducerByCkeyId:(NSString *)ckeyId;
 - (Introducer *)getIntroducerByIntrid:(NSString *)intrId;
+
+/**
+ *  获取患者的介绍人信息
+ *
+ *  @param patientId 患者id
+ *
+ *  @return 介绍人姓名
+ */
+- (NSString *)getPatientIntrNameWithPatientId:(NSString *)patientId;
 @end

@@ -77,8 +77,6 @@
         _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width, 44)];
         _searchBar.delegate = self;
         _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        _searchBar.backgroundColor = MyColor(238, 238, 238);
-
         [_searchBar moveBackgroundView];
     }
     
@@ -355,13 +353,17 @@
 {
     __weak typeof(self) weakSelf = self;
     [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataArray searchText:(NSString *)searchText collationStringSelector:@selector(title) resultBlock:^(NSArray *results) {
-        if (results) {
+        if (results && results.count > 0) {
+            weakSelf.searchController.hideNoResult = YES;
+        }else{
+            weakSelf.searchController.hideNoResult = NO;
+        }
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.searchController.resultsSource removeAllObjects];
                 [weakSelf.searchController.resultsSource addObjectsFromArray:results];
                 [weakSelf.searchController.searchResultsTableView reloadData];
             });
-        }
+        
     }];
 }
 

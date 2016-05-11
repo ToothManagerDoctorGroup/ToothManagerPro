@@ -37,6 +37,12 @@
 #define NOtificationUpdated @"NotificationUpdated"   //更新了提醒
 #define NotificationDeleted @"NotificationDeleted"   //删除了提醒
 
+/**********************医嘱****************************/
+#define ChooseAdviceNotification @"ChooseAdviceNotification"   //选择了医嘱
+#define MedicalAdviceAddSuccessNotification @"MedicalAdviceAddSuccessNotification"//创建医嘱成功
+#define MedicalAdviceUpdateSuccessNotification @"MedicalAdviceUpdateSuccessNotification"//更新医嘱成功
+#define MedicalAdviceDeleteSuccessNotification @"MedicalAdviceDeleteSuccessNotification"//删除医嘱成功
+
 /**********************耗材信息****************************/
 #define MedicalExpenseDeleteNotification @"MedicalExpenseDeleteNotification" //耗材信息被删除
 
@@ -65,8 +71,6 @@
 #define MessageTemplateAddNotification @"MessageTemplateAddNotification"//添加
 #define MessageTemplateEditNotification @"MessageTemplateEditNotification"//修改
 #define MessageTemplateDeleteNotification @"MessageTemplateDeleteNotification"//删除
-
-
 /**********************治疗方案****************************/
 #define TreatePlanAddNotification @"TreatePlanAddNotification" //添加治疗方案
 #define TreatePlanEditNotification @"TreatePlanEditNotification" //修改治疗方案

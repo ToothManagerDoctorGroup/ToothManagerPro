@@ -180,34 +180,46 @@
 }
 
 - (void)buttonAction:(UIButton *)button{
-    self.selectBtn.selected = NO;
-    button.selected = YES;
-    self.selectBtn = button;
     
-    if (button.tag == 300 + self.sourceArray.count - 1) {
-        self.isCustomTime = button.isSelected;
-    }else{
+    if (self.selectBtn == button) {
+        button.selected = NO;
+        self.selectBtn = nil;
         self.isCustomTime = NO;
-        _startTimeField.text = @"";
-        _endTimeField.text = @"";
-    }
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(filterTimeView:timeState:)]) {
-        switch (button.tag - 300) {
-            case 0:
-                [self.delegate filterTimeView:self timeState:FilterTimeStateDay];
-                break;
-            case 1:
-                [self.delegate filterTimeView:self timeState:FilterTimeStateWeek];
-                break;
-            case 2:
-                [self.delegate filterTimeView:self timeState:FilterTimeStateMonth];
-                break;
-            case 3:
-                [self.delegate filterTimeView:self timeState:FilterTimeStateCustom];
-                break;
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(filterTimeView:timeState:)]) {
+            [self.delegate filterTimeView:self timeState:FilterTimeStateUnSelect];
+        }
+    }else{
+        self.selectBtn.selected = NO;
+        button.selected = YES;
+        self.selectBtn = button;
+        
+        if (button.tag == 300 + self.sourceArray.count - 1) {
+            self.isCustomTime = button.isSelected;
+        }else{
+            self.isCustomTime = NO;
+            _startTimeField.text = @"";
+            _endTimeField.text = @"";
+        }
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(filterTimeView:timeState:)]) {
+            switch (button.tag - 300) {
+                case 0:
+                    [self.delegate filterTimeView:self timeState:FilterTimeStateDay];
+                    break;
+                case 1:
+                    [self.delegate filterTimeView:self timeState:FilterTimeStateWeek];
+                    break;
+                case 2:
+                    [self.delegate filterTimeView:self timeState:FilterTimeStateMonth];
+                    break;
+                case 3:
+                    [self.delegate filterTimeView:self timeState:FilterTimeStateCustom];
+                    break;
+            }
         }
     }
+    
 }
 
 - (void)setIsCustomTime:(BOOL)isCustomTime{

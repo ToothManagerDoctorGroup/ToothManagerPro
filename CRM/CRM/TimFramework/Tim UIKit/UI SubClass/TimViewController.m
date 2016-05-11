@@ -14,6 +14,7 @@
 #import "UIViewController+MMDrawerController.h"
 #import "CRMAppDelegate.h"
 #import "UIColor+Extension.h"
+#import "UINavigationItem+Margin.h"
 
 @interface TimViewController () <UIAlertViewDelegate>
 
@@ -71,6 +72,10 @@
 
 - (void)refreshData {
     // Do any data setup when want to refresh data.
+}
+
+- (void)showNoResultViewInView:(UIView *)view top:(CGFloat)top{
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -55,6 +55,7 @@
 #import "DoctorTool.h"
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
+#import "XLChatModel.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -95,27 +96,23 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSLog(@"viewDidLoad");
     //添加编辑状态监听
     [self addNotificationObserver];
     
-    //初始化导航栏
-    [self initView];
-    
     //加载子视图
     [self setUpSubView];
-    
-    //获取患者分组信息
-    [self requestGroupData];
 }
-
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
+    NSLog(@"viewWillAppear");
     //添加键盘状态监听
     [self addNotification];
     
-    [self initData];
+    [self setUpData];
     [self refreshView];
 }
 
@@ -158,18 +155,8 @@
     }
 }
 
-
-#pragma mark -设置导航栏
-- (void)initView {
-    [super initView];
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.title = @"患者详情";
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"patient_detail_menu"]];
-}
-
 #pragma mark -加载数据
-- (void)initData {
-    [super initData];
+- (void)setUpData {
     
     _detailPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
     if (_detailPatient == nil) {
@@ -188,31 +175,16 @@
         //为控件赋值
     _headerMedicalView.medicalCases = array;
     
+    //获取患者分组信息
+    [self requestGroupData];
+    //获取绑定信息
+    [self getPaitientIsBind];
 }
 
 - (void)refreshView {
     [super refreshView];
     self.detailPatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
-    //获取患者绑定微信的状态
-    [MyPatientTool getWeixinStatusWithPatientId:self.detailPatient.ckeyid success:^(CRMHttpRespondModel *respondModel) {
-        if ([respondModel.result isEqualToString:@"1"]) {
-            //绑定
-            _headerInfoView.isWeixin = YES;
-            self.isBind = YES;
-        }else{
-            //未绑定
-            _headerInfoView.isWeixin = NO;
-            self.isBind = NO;
-        }
-
-    } failure:^(NSError *error) {
-        //未绑定
-        _headerInfoView.isWeixin = NO;
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-        if (error) {
-             NSLog(@"error:%@",error);
-        }
-    }];
+    
     _headerInfoView.detailPatient = self.detailPatient;
     
     if(self.changeIntroducer != nil){
@@ -260,6 +232,27 @@
     //重新加载数据
     [self comments];
 }
+#pragma mark - 获取患者是否绑定微信信息
+- (void)getPaitientIsBind{
+    //获取患者绑定微信的状态
+    WS(weakSelf);
+    [MyPatientTool getWeixinStatusWithPatientId:self.detailPatient.ckeyid success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //绑定
+            weakSelf.isBind = YES;
+        }else{
+            weakSelf.isBind = NO;
+        }
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        //未绑定
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
 #pragma mark - 获取患者分组信息
 - (void)requestGroupData{
     [DoctorGroupTool getGroupListWithDoctorId:[AccountManager currentUserid] ckId:@"" patientId:_detailPatient.ckeyid success:^(NSArray *result) {
@@ -275,6 +268,11 @@
 
 #pragma mark -加载子视图
 - (void)setUpSubView{
+    
+    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    self.title = @"患者详情";
+    [self setRightBarButtonWithImage:[UIImage imageNamed:@"patient_detail_menu"]];
+    
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.view addGestureRecognizer:tap];
     
@@ -478,7 +476,7 @@
     }else if(selectedIndex == 3){
         //判断当前介绍人是否存在
         if([[DBManager shareInstance] isInIntroducerTable:_detailPatient.patient_phone]){
-            [SVProgressHUD showImage:nil status:@"介绍人已存在，不能重复转换"];
+            [SVProgressHUD showImage:nil status:@"该患者已经是您的介绍人"];
         }else{
             TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"升级介绍人" message:@"确定将患者升级为介绍人吗?" cancelHandler:^{
             } comfirmButtonHandlder:^{
@@ -545,11 +543,6 @@
 - (void)patientToIntroducerSuccess:(NSDictionary *)result{
     if ([result integerForKey:@"Code"] == 200) {
         [SVProgressHUD showImage:nil status:@"升级成功"];
-        //发送微信消息
-//        [[DoctorManager shareInstance] weiXinMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager shareInstance].currentUser.userid toDoctor:@"" withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
-//        } failedBlock:^(NSError *error){
-//            [SVProgressHUD showImage:nil status:error.localizedDescription];
-//        }];
         //获取提醒数据
         __weak typeof(self) weakSelf = self;
         [DoctorTool newYuYueMessagePatient:_detailPatient.ckeyid fromDoctor:[AccountManager currentUserid] therapyDoctorId:@"" withMessageType:@"介绍人" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *respond) {
@@ -561,6 +554,17 @@
                     [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:_detailPatient.ckeyid isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
                         if ([respond.code integerValue] == 200) {
                             [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                            
+                            //将消息保存在消息记录里
+                            XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:_detailPatient.ckeyid receiverName:_detailPatient.patient_name content:content];
+                            [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+                            
+                            //发送环信消息
+                            [EaseSDKHelper sendTextMessage:content
+                                                        to:_detailPatient.ckeyid
+                                               messageType:eMessageTypeChat
+                                         requireEncryption:NO
+                                                messageExt:nil];
                         }else{
                             [SVProgressHUD showImage:nil status:@"消息发送失败"];
                         }
@@ -675,6 +679,10 @@
     
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientsCellMode.patientId];
     patient.introducer_id = selectIntroducer.ckeyid;//表明是本地介绍人
+    patient.intr_name = selectIntroducer.intr_name;//介绍人姓名
+    //更新患者信息
+    InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
+    [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
     
     //获取原来的介绍人信息
     PatientIntroducerMap *mapOrigin = [[DBManager shareInstance]getPatientIntroducerMapByPatientId:self.detailPatient.ckeyid];

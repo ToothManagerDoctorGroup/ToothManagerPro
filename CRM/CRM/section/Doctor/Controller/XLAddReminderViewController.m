@@ -42,6 +42,7 @@
 #import "SysMessageTool.h"
 #import "MyDateTool.h"
 #import "EditAllergyViewController.h"
+#import "XLChatModel.h"
 
 #define AddReserveType @"新增预约"
 #define CancelReserveType @"取消预约"
@@ -266,6 +267,7 @@
 #pragma mark - 修改预约方法
 - (void)updateReserveRecordSuccess{
 
+    Patient *patientTmp = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.currentNoti.patient_id];
     //向本地保存一条预约信息
     if([[LocalNotificationCenter shareInstance] addLocalNotification:self.currentNoti]){
         //更新所有病历的下次预约时间
@@ -286,6 +288,7 @@
         NSString *template = [NSString stringWithFormat:@"您好，我是%@医生，原定于%@的预约已调整为%@，请您准时就诊。如有疑问请随时联系！",[AccountManager shareInstance].currentUser.name,preDateStr,currentDateStr];
         __weak typeof(self) weakSelf = self;
         XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:template Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+            //退出当前页面
             [weakSelf popToScheduleVc];
             if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(addReminderViewController:didUpdateReserveRecord:)]) {
                 [weakSelf.delegate addReminderViewController:weakSelf didUpdateReserveRecord:weakSelf.currentNoti];
@@ -299,7 +302,9 @@
                 }
                 
                 if ([respond.code integerValue] == 200) {
-                    [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                    [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                    //将消息保存在消息记录里
+                    [weakSelf savaMessageToChatRecordWithPatient:patientTmp message:content];
                 }else{
                     [SVProgressHUD showImage:nil status:@"消息发送失败"];
                 }
@@ -322,7 +327,7 @@
 
 #pragma mark - 保存本地预约,给患者发送预约信息
 - (void)saveNotificationWithNoti:(LocalNotification *)noti sendWeiXin:(BOOL)isSend{
-    
+    Patient *patientTmp = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.currentNoti.patient_id];
     [SVProgressHUD showWithStatus:@"正在添加预约，请稍候..."];
     [[XLAutoSyncTool shareInstance] postAllNeedSyncReserve_record:noti success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
@@ -366,7 +371,9 @@
                         [SVProgressHUD showWithStatus:@"正在发送消息"];
                         [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
                             if ([respond.code integerValue] == 200) {
-                                [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                                [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                                //将消息保存在消息记录里
+                                [weakSelf savaMessageToChatRecordWithPatient:patientTmp message:content];
                             }else{
                                 [SVProgressHUD showImage:nil status:@"消息发送失败"];
                             }
@@ -458,7 +465,9 @@
                     [SVProgressHUD showWithStatus:@"正在发送消息"];
                     [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
                         if ([respond.code integerValue] == 200) {
-                            [SVProgressHUD showImage:nil status:@"消息发送成功"];;
+                            [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                            //将消息保存在消息记录里
+                            [weakSelf savaMessageToChatRecordWithPatient:tmppatient message:content];
                         }else{
                             [SVProgressHUD showImage:nil status:@"消息发送失败"];
                         }
@@ -507,6 +516,19 @@
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+#pragma mark - 将消息保存在消息记录中
+- (void)savaMessageToChatRecordWithPatient:(Patient *)patient message:(NSString *)message{
+    //将消息保存在消息记录里
+    XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:patient.ckeyid receiverName:patient.patient_name content:message];
+    [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+    //发送环信消息
+    [EaseSDKHelper sendTextMessage:message
+                                to:patient.ckeyid
+                       messageType:eMessageTypeChat
+                 requireEncryption:NO
+                        messageExt:nil];
 }
 
 #pragma mark - 退出到日程表
@@ -661,6 +683,7 @@
                 EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
                 allergyVc.title = @"备注";
                 allergyVc.content = self.yuyueRemarkLabel.text;
+                allergyVc.limit = 200;
                 allergyVc.type = EditAllergyViewControllerRemark;
                 allergyVc.delegate = self;
                 [self pushViewController:allergyVc animated:YES];
@@ -702,6 +725,7 @@
                 //跳转到修改备注页面
                 EditAllergyViewController *allergyVc = [[EditAllergyViewController alloc] init];
                 allergyVc.title = @"备注";
+                allergyVc.limit = 200;
                 allergyVc.content = self.yuyueRemarkLabel.text;
                 allergyVc.type = EditAllergyViewControllerRemark;
                 allergyVc.delegate = self;

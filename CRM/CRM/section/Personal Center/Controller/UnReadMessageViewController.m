@@ -37,10 +37,13 @@
 #import "DoctorInfoModel.h"
 #import "XLNewFriendNotiViewController.h"
 #import "MJRefresh.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface UnReadMessageViewController ()
 
 @property (nonatomic, strong)NSArray *dataList;
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -71,6 +74,8 @@
 - (void)initSubViews{
     [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerAction)];
     self.tableView.header.updatedTimeHidden = YES;
+    
+    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"message_alert.png" top:60 showButton:NO buttonClickBlock:nil];
 }
 
 #pragma mark - 下拉刷新
@@ -83,6 +88,11 @@
         
         if ([self.tableView.header isRefreshing]) {
             [self.tableView.header endRefreshing];
+        }
+        if (result.count == 0) {
+            self.noResultAlertView.hidden = NO;
+        }else{
+            self.noResultAlertView.hidden = YES;
         }
         
         self.dataList = result;
@@ -250,10 +260,11 @@
 #pragma mark - 设置消息已读
 - (void)setMessageReadWithModel:(SysMessageModel *)model noOperate:(BOOL)noOperate{
     //将消息设置为已读
+    WS(weakSelf);
     [SysMessageTool setMessageReadedWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
         [SVProgressHUD dismiss];
         //重新请求数据
-        [self requestData];
+        [weakSelf requestData];
         if (!noOperate) {
             if ([model.message_type isEqualToString:AttainNewPatient]) {
                 //跳转到新的患者详情页面
@@ -262,12 +273,12 @@
                 PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
                 detailVc.patientsCellMode = cellModel;
                 detailVc.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:detailVc animated:YES];
+                [weakSelf.navigationController pushViewController:detailVc animated:YES];
             }else if ([model.message_type isEqualToString:CancelReserveRecord]){
                 // 2.跳转到患者预约列表
                 XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
                 appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
-                [self.navigationController pushViewController:appointVc animated:YES];
+                [weakSelf.navigationController pushViewController:appointVc animated:YES];
                 [[NSNotificationCenter defaultCenter] postNotificationName:NotificationDeleted object:nil];
                 
             }else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
@@ -279,7 +290,7 @@
                 //跳转到预约详情页面
                 XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
                 detailVc.localNoti = local;
-                [self.navigationController pushViewController:detailVc animated:YES];
+                [weakSelf.navigationController pushViewController:detailVc animated:YES];
             }
         }
         //发送通知
@@ -324,11 +335,14 @@
                 }];
             }else{
                 //设置已读
+                [SVProgressHUD showErrorWithStatus:@"该预约已被取消"];
                 [self setMessageReadWithModel:msgModel noOperate:NO];
                 
             }
         }else{
             [SVProgressHUD showErrorWithStatus:@"预约信息获取失败"];
+            //设置已读
+            [self setMessageReadWithModel:msgModel noOperate:YES];
         }
         
     } failure:^(NSError *error) {

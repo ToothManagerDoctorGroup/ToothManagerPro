@@ -11,7 +11,6 @@
 #import "DBTableMode.h"
 #import "AccountManager.h"
 #import "DBManager+User.h"
-#import "QrCodeViewController.h"
 #import "DBManager+Doctor.h"
 #import "CommonMacro.h"
 #import "UIImageView+WebCache.h"
@@ -48,7 +47,9 @@
 #import "XLBackUpViewController.h"
 #import "DBManager+AutoSync.h"
 #import "NSString+TTMAddtion.h"
-#import "UIApplication+Version.h"
+
+/*******测试******/
+#import "XLChatRecordViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -122,13 +123,6 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    [UIApplication checkNewVersionWithAppleID:@"901754828" handler:^(BOOL newVersion, NSURL *updateURL) {
-        if (newVersion) {
-            NSLog(@"有新版本");
-        }else{
-            NSLog(@"没有新版本");
-        }
-    }];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{

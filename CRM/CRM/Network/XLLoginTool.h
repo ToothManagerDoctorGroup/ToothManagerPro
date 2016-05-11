@@ -21,5 +21,14 @@
  *  @param failure  失败回调
  */
 + (void)loginWithNickName:(NSString *)nickName password:(NSString *)password success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
+/**
+ *  更新用户推送所需registerId
+ *
+ *  @param userId     用户id
+ *  @param registerId 注册id
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)updateUserRegisterIdWithUserId:(NSString *)userId registerId:(NSString *)registerId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 
 @end

@@ -96,6 +96,11 @@
  */
 - (void)cancelTouchRecord;
 
+/**
+ *  改变输入框的frame
+ */
+- (void)changeInputViewFrame;
+
 @end
 
 @protocol EMChatToolbarDelegate <NSObject>

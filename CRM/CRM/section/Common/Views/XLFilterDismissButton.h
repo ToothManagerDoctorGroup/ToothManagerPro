@@ -6,8 +6,18 @@
 //  Copyright © 2016年 TimTiger. All rights reserved.
 //
 
+@class XLFilterDismissButton;
+@protocol XLFilterDismissButtonDelegate <NSObject>
+
+@optional
+- (void)filterDismissButton:(XLFilterDismissButton *)dismissButton animalViewTouchesMoved:(CGFloat)distance;
+- (void)filterDismissButton:(XLFilterDismissButton *)dismissButton animalViewTouchesEnded:(CGFloat)distance;
+
+@end
 
 @interface XLFilterDismissButton : UIControl
+
+@property (nonatomic, weak)id<XLFilterDismissButtonDelegate> delegate;
 
 - (CGFloat)fixHeight;
 

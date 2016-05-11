@@ -23,7 +23,7 @@
 #import "QrCodePatientViewController.h"
 #import "XLGuideImageView.h"
 #import "DBManager+Patients.h"
-
+#import "UINavigationItem+Margin.h"
 #import "CRMAppDelegate.h"
 #import "Reachability.h"
 #import "UITabBar+BadgeView.h"
@@ -51,6 +51,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 @property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
 @property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
+
 
 @end
 
@@ -150,10 +151,10 @@ static NSString *kConversationChatter = @"ConversationChatter";
 {
     //日程提醒
     _scheduleReminderVC = [[MyScheduleReminderViewController alloc] init];
+    [self setTabbarItemState:_scheduleReminderVC withTitle:@"日程表" withImage1:@"ic_tabbar_qi" withImage2:@"ic_tabbar_qi_active"];
     TimNavigationViewController *viewController1=[[TimNavigationViewController alloc]initWithRootViewController:_scheduleReminderVC];
     
     //介绍人
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     _introducerVC = [[XLIntroducerViewController alloc] init];
     [self setTabbarItemState:_introducerVC withTitle:@"介绍人" withImage1:@"ic_tabbar_jieshaoren_grey" withImage2:@"ic_tabbar_jiashaoren_blue"];
     _introducerVC.isHome = YES;
@@ -166,6 +167,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     
     
     //我的空间
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     _account = [storyboard instantiateViewControllerWithIdentifier:@"AccountViewController"];
     TimNavigationViewController* ncViewController4=[[TimNavigationViewController alloc]initWithRootViewController:_account];
     [self setTabbarItemState:_account withTitle:@"我" withImage1:@"ic_tabbar_me" withImage2:@"ic_tabbar_me_active"];
@@ -554,6 +556,11 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [self.navigationController popToViewController:self animated:NO];
         [self setSelectedViewController:_patientVc];
     }
+}
+
+#pragma mark - 账号被踢出的回调
+- (void)didLoginFromOtherDevice{
+    [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
 }
 
 @end

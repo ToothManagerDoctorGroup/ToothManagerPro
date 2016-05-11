@@ -47,4 +47,7 @@ Declare_ShareInstance(DBManager);
 //更新表数据
 - (void)updateDB;
 
+//清空本地数据
+- (BOOL)clearLocalData;
+
 @end

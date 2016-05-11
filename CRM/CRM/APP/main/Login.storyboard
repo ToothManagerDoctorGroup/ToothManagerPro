@@ -293,7 +293,7 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MUV-xg-G4A">
                                                     <rect key="frame" x="25" y="121" width="270" height="1"/>
                                                     <animations/>
-                                                    <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="X33-so-Sn5"/>
                                                     </constraints>
@@ -301,7 +301,7 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rXX-r9-o1U">
                                                     <rect key="frame" x="25" y="165" width="270" height="1"/>
                                                     <animations/>
-                                                    <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="KOV-Q7-63d"/>
                                                     </constraints>
@@ -309,7 +309,7 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n1X-ch-g4C">
                                                     <rect key="frame" x="25" y="78" width="270" height="1"/>
                                                     <animations/>
-                                                    <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="xcF-bJ-rSa"/>
                                                     </constraints>
@@ -317,7 +317,7 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nDU-jg-ifx">
                                                     <rect key="frame" x="25" y="208" width="270" height="1"/>
                                                     <animations/>
-                                                    <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="UkE-sl-H8y"/>
                                                     </constraints>
@@ -404,18 +404,6 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="176"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zdX-Pc-aYz">
-                                                    <rect key="frame" x="38" y="60" width="107" height="32"/>
-                                                    <animations/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="107" id="1F8-HS-UiP"/>
-                                                        <constraint firstAttribute="height" constant="32" id="ddd-pL-maz"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
-                                                    <state key="normal" title="注册即表示同意">
-                                                        <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </state>
-                                                </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SHJ-Uc-7CF">
                                                     <rect key="frame" x="27" y="18" width="266" height="40"/>
                                                     <animations/>
@@ -430,32 +418,57 @@
                                                         <action selector="signupAction:" destination="klo-qV-B5Q" eventType="touchUpInside" id="axk-kA-4hT"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qeE-rg-MK3">
-                                                    <rect key="frame" x="127" y="60" width="154" height="32"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CEz-dI-ZdO">
+                                                    <rect key="frame" x="55" y="58" width="210" height="35"/>
+                                                    <subviews>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zdX-Pc-aYz">
+                                                            <rect key="frame" x="0.0" y="2" width="88" height="32"/>
+                                                            <animations/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="32" id="RS3-78-ekd"/>
+                                                                <constraint firstAttribute="width" constant="88" id="fUZ-KC-oFv"/>
+                                                            </constraints>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                                            <state key="normal" title="注册即表示同意">
+                                                                <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                            </state>
+                                                        </button>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qeE-rg-MK3">
+                                                            <rect key="frame" x="90" y="2" width="120" height="32"/>
+                                                            <animations/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="32" id="Lpp-QN-uT5"/>
+                                                                <constraint firstAttribute="width" constant="120" id="Znp-Py-8Dc"/>
+                                                            </constraints>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                                            <state key="normal" title="《种牙管家服务协议》">
+                                                                <color key="titleColor" red="0.12549019607843137" green="0.55294117647058827" blue="0.89411764705882346" alpha="1" colorSpace="calibratedRGB"/>
+                                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                            </state>
+                                                            <connections>
+                                                                <action selector="readlisenseAction:" destination="klo-qV-B5Q" eventType="touchUpInside" id="aNh-nl-a9K"/>
+                                                            </connections>
+                                                        </button>
+                                                    </subviews>
                                                     <animations/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="32" id="Cz6-gs-dGu"/>
+                                                        <constraint firstItem="zdX-Pc-aYz" firstAttribute="leading" secondItem="CEz-dI-ZdO" secondAttribute="leading" id="0Gy-L4-Lko"/>
+                                                        <constraint firstItem="qeE-rg-MK3" firstAttribute="centerY" secondItem="CEz-dI-ZdO" secondAttribute="centerY" id="I8l-4Y-ulB"/>
+                                                        <constraint firstItem="zdX-Pc-aYz" firstAttribute="centerY" secondItem="CEz-dI-ZdO" secondAttribute="centerY" id="KIs-P2-UUs"/>
+                                                        <constraint firstAttribute="height" constant="35" id="Kov-9b-VzS"/>
+                                                        <constraint firstAttribute="width" constant="210" id="RlT-0U-mLA"/>
+                                                        <constraint firstAttribute="trailing" secondItem="qeE-rg-MK3" secondAttribute="trailing" id="qcL-KJ-Yjl"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
-                                                    <state key="normal" title="《种牙管家服务协议》">
-                                                        <color key="titleColor" red="0.12549019607843137" green="0.55294117647058827" blue="0.89411764705882346" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="readlisenseAction:" destination="klo-qV-B5Q" eventType="touchUpInside" id="aNh-nl-a9K"/>
-                                                    </connections>
-                                                </button>
+                                                </view>
                                             </subviews>
                                             <animations/>
                                             <constraints>
+                                                <constraint firstItem="CEz-dI-ZdO" firstAttribute="centerX" secondItem="Pfg-hr-JeN" secondAttribute="centerX" id="2id-D0-CPT"/>
                                                 <constraint firstItem="SHJ-Uc-7CF" firstAttribute="leading" secondItem="Pfg-hr-JeN" secondAttribute="leading" constant="27" id="3MM-rQ-gUS"/>
-                                                <constraint firstItem="zdX-Pc-aYz" firstAttribute="leading" secondItem="Pfg-hr-JeN" secondAttribute="leading" constant="38" id="Brf-MC-7td"/>
                                                 <constraint firstAttribute="trailing" secondItem="SHJ-Uc-7CF" secondAttribute="trailing" constant="27" id="Esv-B6-FDY"/>
                                                 <constraint firstItem="SHJ-Uc-7CF" firstAttribute="top" secondItem="Pfg-hr-JeN" secondAttribute="top" constant="18" id="Gcd-gb-BXy"/>
-                                                <constraint firstAttribute="trailing" secondItem="qeE-rg-MK3" secondAttribute="trailing" constant="39" id="KQq-ov-tSM"/>
-                                                <constraint firstItem="zdX-Pc-aYz" firstAttribute="top" secondItem="SHJ-Uc-7CF" secondAttribute="bottom" constant="2" id="Kkb-gN-Jbz"/>
-                                                <constraint firstItem="qeE-rg-MK3" firstAttribute="top" secondItem="SHJ-Uc-7CF" secondAttribute="bottom" constant="2" id="Oai-gW-8Gq"/>
-                                                <constraint firstItem="qeE-rg-MK3" firstAttribute="leading" secondItem="Pfg-hr-JeN" secondAttribute="leading" constant="127" id="RjH-3m-4De"/>
+                                                <constraint firstItem="CEz-dI-ZdO" firstAttribute="top" secondItem="SHJ-Uc-7CF" secondAttribute="bottom" id="Gqk-i8-NEj"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>

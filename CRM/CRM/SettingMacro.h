@@ -41,6 +41,8 @@
 #define GroupMemberNew_IsShowedKey @"GroupMemberNew_IsShowedKey"
 //当用户关闭通讯录权限的时候，提醒用户打开权限
 #define AddressBook_IsShowKey @"AddressBook_IsShowKey"
+//是否手动点击同步
+#define HandleToSyncGetKey @"HandleToSyncGetKey"
 
 /*************************提示更新设置*********************/
 #define NewVersionUpdate_TimeKey @"NewVersionUpdate_TimeKey"

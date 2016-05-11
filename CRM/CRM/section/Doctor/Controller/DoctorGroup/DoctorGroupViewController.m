@@ -19,14 +19,15 @@
 #import "XLGuideImageView.h"
 #import "DoctorGroupTool.h"
 #import "AccountManager.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface DoctorGroupViewController ()<CustomAlertViewDelegate,UIAlertViewDelegate>
 
 @property (nonatomic, strong)NSMutableArray *dataList;
 
-@property (nonatomic, weak)UILabel *alertLabel;
-
 @property (nonatomic, strong)DoctorGroupModel *selectModel;
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -78,15 +79,7 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"addgroup"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    
-    UILabel *alertLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, self.tableView.width, 50)];
-    alertLabel.text = @"赶快给您的患者分组吧!";
-    alertLabel.textColor = MyColor(187, 187, 187);
-    alertLabel.font = [UIFont systemFontOfSize:16];
-    alertLabel.textAlignment = NSTextAlignmentCenter;
-    alertLabel.hidden = YES;
-    self.alertLabel = alertLabel;
-    [self.tableView addSubview:alertLabel];
+    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"groupList_alert.png" top:60 showButton:NO buttonClickBlock:nil];
 }
 
 #pragma mark - 重新请求数据
@@ -104,14 +97,9 @@
         [self.tableView reloadData];
         
         if (self.dataList.count == 0) {
-            self.alertLabel.hidden = NO;
-            //是否显示提示页
-            [CRMUserDefalut isShowedForKey:GroupNew_IsShowedKey showedBlock:^{
-                XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"group_alert"]];
-                [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
-            }];
+            self.noResultAlertView.hidden = NO;
         }else{
-            self.alertLabel.hidden = YES;
+            self.noResultAlertView.hidden = YES;
         }
         
     } failure:^(NSError *error) {

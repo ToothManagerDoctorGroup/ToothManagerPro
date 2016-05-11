@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *QrCodeImageView;
 
 @property (nonatomic, assign)BOOL isDoctor;
-@property (nonatomic, strong)Patient *patient;
+@property (nonatomic, copy)NSString *patientId;
+@property (weak, nonatomic) IBOutlet UIView *sendMessageView;
 
 @end

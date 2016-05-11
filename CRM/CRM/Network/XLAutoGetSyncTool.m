@@ -92,7 +92,6 @@ Realize_ShareInstance(XLAutoGetSyncTool)
 }
 
 #pragma mark - SyncGet
-
 - (void)getAllDataShowSuccess:(BOOL)showSuccess{
     self.showSuccess = showSuccess;
     [self getDoctorTable];
@@ -100,7 +99,6 @@ Realize_ShareInstance(XLAutoGetSyncTool)
 
 #pragma mark -获取医生信息
 - (void)getDoctorTable{
-    
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *docServLastSyncDate = [self getCurrentSyncTimeWithTableName:DoctorTableName];
     if (nil == docServLastSyncDate) {
@@ -127,7 +125,7 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 //设置最后一次同步时间
                 [weakSelf setLastSyncTimeWithTableName:DoctorTableName];
                 //获取介绍人信息
-                [weakSelf getIntroducerTable];
+                [weakSelf getIntroducerTableHasNext:YES];
                 
             }else{
                 NSLog(@"获取医生好友数据异常code:%ld",[respond.code integerValue]);
@@ -138,7 +136,7 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     }];
 }
 #pragma mark -获取介绍人信息
-- (void)getIntroducerTable{
+- (void)getIntroducerTableHasNext:(BOOL)hasNext{
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
@@ -165,14 +163,27 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                         }
                     }
                     [weakSelf setLastSyncTimeWithTableName:IntroducerTableName];
+                if (hasNext) {
                     //获取患者信息
                     [weakSelf getPatientTable];
+                }else{
+                    //发送通知
+                    [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerCreatedNotification object:nil];
+                }
                 
             }else{
+                if (!hasNext) {
+                    //发送通知
+                    [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerCreatedNotification object:nil];
+                }
                 NSLog(@"获取介绍人数据异常code:%ld",[respond.code integerValue]);
             }
        });
     } failure:^(NSError *error) {
+        if (!hasNext) {
+            //发送通知
+            [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerCreatedNotification object:nil];
+        }
         NSLog(@"IntroducerTable_Error:%@",error);
     }];
 }
@@ -246,7 +257,7 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 //设置最后同步时间
                 [weakSelf setLastSyncTimeWithTableName:MaterialTableName];
                 //获取预约数据
-                [weakSelf getReserverecordTable];
+                [weakSelf getReserverecordTableHasNext:YES];
             }else{
                 NSLog(@"获取材料数据异常code:%ld",[respond.code integerValue]);
             }
@@ -256,7 +267,7 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     }];
 }
 #pragma mark -获取预约数据
-- (void)getReserverecordTable{
+- (void)getReserverecordTableHasNext:(BOOL)hasNext{
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *rcServLastSyncDate = [self getCurrentSyncTimeWithTableName:LocalNotificationTableName];
     
@@ -282,13 +293,23 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 }
                 //设置最后同步时间
                 [weakSelf setLastSyncTimeWithTableName:LocalNotificationTableName];
-                //获取PatientIntrMap数据
-                [weakSelf getPatIntrMapTable];
+                if (hasNext) {
+                    //获取PatientIntrMap数据
+                    [weakSelf getPatIntrMapTable];
+                }else{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
+                }
             }else{
+                if (!hasNext) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
+                }
                 NSLog(@"获取预约数据异常code:%ld",[respond.code integerValue]);
             }
         });
     } failure:^(NSError *error) {
+        if (!hasNext) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
+        }
         NSLog(@"LocalNotificationTable_Error:%@",error);
     }];
 }
@@ -560,30 +581,30 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                         
                         //如果存在CT图片，将图片URL存放在数组中
                         if ([ctlib.ct_image isNotEmpty]) {
-                            [self.downloadMedicalCasesCTImages addObject:ctlib];
+                            [weakSelf.downloadMedicalCasesCTImages addObject:ctlib];
                         }
                     }
                 }
                 //设置最后同步时间
                 [weakSelf setLastSyncTimeWithTableName:CTLibTableName];
                 //判断是否发送同步成功通知
-                if (self.showSuccess) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+                if (weakSelf.showSuccess) {
                     //同步结束
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [SVProgressHUD showSuccessWithStatus:@"同步成功"];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
                     });
                 }
                 
                 //判断是否有CT图片
                 if (self.downloadMedicalCasesCTImages.count > 0) {
-                    if ([self.downloadMedicalCasesCTImages count] <= MaxDownLoadCount) {
-                        for (int i=0; i < [self.downloadMedicalCasesCTImages count]; i++) {
-                            [self.curDownLoadMc addObject:[self.downloadMedicalCasesCTImages objectAtIndex:i]];
+                    if ([weakSelf.downloadMedicalCasesCTImages count] <= MaxDownLoadCount) {
+                        for (int i=0; i < [weakSelf.downloadMedicalCasesCTImages count]; i++) {
+                            [weakSelf.curDownLoadMc addObject:[weakSelf.downloadMedicalCasesCTImages objectAtIndex:i]];
                         }
                     } else {
                         for (int i=0; i < MaxDownLoadCount; i++) {
-                            [self.curDownLoadMc addObject:[self.downloadMedicalCasesCTImages objectAtIndex:i]];
+                            [weakSelf.curDownLoadMc addObject:[weakSelf.downloadMedicalCasesCTImages objectAtIndex:i]];
                         }
                     }
                     [weakSelf downLoadCTLibImage];

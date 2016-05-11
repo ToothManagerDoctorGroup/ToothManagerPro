@@ -58,11 +58,11 @@
     self.textView = textView;
     [bgView addSubview:textView];
     
-    UILabel *statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - 100 - margin, textView.bottom + margin * 0.5, 100, 30)];
-    statusLabel.font = [UIFont systemFontOfSize:15];
-    statusLabel.textColor = [UIColor colorWithHex:0x888888];
+    UILabel *statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - 200 - margin, textView.bottom - 20, 200, 20)];
+    statusLabel.font = [UIFont systemFontOfSize:12];
+    statusLabel.textColor = [UIColor colorWithHex:0xbbbbbb];
     statusLabel.textAlignment = NSTextAlignmentRight;
-    statusLabel.text = [NSString stringWithFormat:@"0/%d",self.limit];
+    statusLabel.text = [NSString stringWithFormat:@"还可输入%ld个字",self.limit - (unsigned long)self.currentContent.length];
     self.statusLabel = statusLabel;
     [bgView addSubview:statusLabel];
     
@@ -112,7 +112,7 @@
             self.textView.text = [self.textView.text substringToIndex:self.limit];
             number = self.limit;
         }
-        self.statusLabel.text = [NSString stringWithFormat:@"%ld/%d",(long)number,self.limit];
+        self.statusLabel.text = [NSString stringWithFormat:@"还可输入%ld个字",self.limit - (long)number];
     }else{
         self.statusLabel.hidden = YES;
     }

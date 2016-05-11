@@ -17,5 +17,11 @@ Declare_ShareInstance(RemoteNotificationCenter);
 - (void)didReceiveRemoteNotification:(NSDictionary *)userinfo;
 
 - (void)pushToMessageVc;
+/**
+ *  获取当前显示的UITabbarViewController
+ *
+ *  @return UITabbarViewController
+ */
+- (UIViewController *)getCurrentVC;
 
 @end

@@ -74,9 +74,11 @@
     self.chatToolbar = [[EaseChatToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - chatbarHeight, self.view.frame.size.width, chatbarHeight) type:barType];
     [(EaseChatToolbar *)self.chatToolbar setDelegate:self];
     self.chatBarMoreView = (EaseChatBarMoreView*)[(EaseChatToolbar *)self.chatToolbar moreView];
-    [self.chatBarMoreView removeItematIndex:1];
-    [self.chatBarMoreView removeItematIndex:2];
-    [self.chatBarMoreView removeItematIndex:2];
+    [self setUpChatMoreViewImageWithImage:[UIImage imageNamed:@"communicate_pic"] index:0];
+    [self setUpChatMoreViewImageWithImage:[UIImage imageNamed:@"communicate_camera"] index:1];
+    [self setUpChatMoreViewImageWithImage:[UIImage imageNamed:@"communicate_yizhu"] index:2];
+    [self setUpChatMoreViewImageWithImage:[UIImage imageNamed:@"communicate_huifang"] index:3];
+    [self setUpChatMoreViewImageWithImage:[UIImage imageNamed:@"communicate_huanjiao"] index:4];
     
 //    self.faceView = (EaseFaceView*)[(EaseChatToolbar *)self.chatToolbar faceView];
     self.recordView = (EaseRecordView*)[(EaseChatToolbar *)self.chatToolbar recordView];
@@ -106,6 +108,11 @@
                                              selector:@selector(didBecomeActive)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
+}
+
+
+- (void)setUpChatMoreViewImageWithImage:(UIImage *)image index:(NSInteger)index{
+    [self.chatBarMoreView updateItemWithImage:image highlightedImage:nil title:@"照片" atIndex:index];
 }
 
 - (void)didReceiveMemoryWarning {

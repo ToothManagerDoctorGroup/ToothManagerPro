@@ -27,6 +27,8 @@ typedef NS_ENUM(NSInteger, EditAllergyViewControllerType) {
 
 @property (nonatomic, assign)EditAllergyViewControllerType type;
 
+@property (nonatomic, assign)NSInteger limit;
+
 @property (nonatomic, strong)Patient *patient;
 
 @property (nonatomic, weak)id<EditAllergyViewControllerDelegate> delegate;

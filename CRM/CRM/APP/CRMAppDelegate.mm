@@ -24,6 +24,7 @@
 #import "CRMAppDelegate+EaseMob.h"
 #import "CRMAppDelegate+JPush.h"
 #import "JPUSHService.h"
+#import "NSString+TTMAddtion.h"
 
 @interface CRMAppDelegate ()
 
@@ -35,6 +36,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
     //配置第三方SDK
     [self configThirdPartWithApplication:application option:launchOptions];
     
@@ -48,7 +50,7 @@
     [[DBManager shareInstance] createdbFile];
     [[DBManager shareInstance] createTables];
     //更新数据库表结构
-    [[DBManager shareInstance] updateDB];
+//    [[DBManager shareInstance] updateDB];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -95,6 +97,7 @@
     
 }
 
+
 #pragma mark - 跳转到主页面
 - (void)turnToMainVcWithOptions:(NSDictionary *)options{
     //判断用户是否登录
@@ -123,7 +126,7 @@
             }
         }else{
             //更新数据库表结构
-//            [[DBManager shareInstance] updateDB];
+            [[DBManager shareInstance] updateDB];
             TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
             guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
             guideController.showIndicator = NO;
@@ -156,7 +159,7 @@
         self.window.rootViewController = nav;
     }else{
         //更新数据库表结构
-//        [[DBManager shareInstance] updateDB];
+        [[DBManager shareInstance] updateDB];
         TTMUserGuideController *guideController = [[TTMUserGuideController alloc] init];
         guideController.images = @[@"nav1.png", @"nav2.png", @"nav3.png"];
         guideController.showIndicator = NO;
@@ -190,7 +193,10 @@
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
     NSLog(@"收到本地通知:%@",notification);
-    [JPUSHService showLocalNotificationAtFront:notification identifierKey:nil];
+    if ([[notification.userInfo allKeys] containsObject:@"aps"]) {
+        [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:notification.userInfo];
+    }
+
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -202,10 +208,14 @@
                              stringByReplacingOccurrencesOfString:@"<" withString:@""]
                             stringByReplacingOccurrencesOfString:@">" withString:@""]
                            stringByReplacingOccurrencesOfString:@" " withString:@""] ;
+     NSString *reister = [JPUSHService registrationID];
     [CRMUserDefalut setObject:pushToken forKey:DeviceToken];
+    [CRMUserDefalut setObject:reister forKey:RegisterId];
     
+    NSLog(@"registerId:%@",reister);
     [[EaseMob sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
+
 
 // 注册deviceToken失败
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
@@ -215,7 +225,7 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     
-    [JPUSHService handleRemoteNotification:userInfo];
+//    [JPUSHService handleRemoteNotification:userInfo];
     //关闭友盟对话框
 //    [UMessage setAutoAlert:NO];
 //    [UMessage didReceiveRemoteNotification:userInfo];
@@ -226,37 +236,34 @@
     }
 }
 
-- (void)application:(UIApplication *)application
-didReceiveRemoteNotification:(NSDictionary *)userInfo
-fetchCompletionHandler:
-(void (^)(UIBackgroundFetchResult))completionHandler {
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     
-    [JPUSHService handleRemoteNotification:userInfo];
-    //自定义弹出样式
-    NSLog(@"收到通知:%@", [self logDic:userInfo]);
-    if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-    {
-        [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
-    }else{
-        [[RemoteNotificationCenter shareInstance] pushToMessageVc];
-    }
+//        [JPUSHService handleRemoteNotification:userInfo];
+        //自定义弹出样式
+        NSLog(@"收到通知:%@", [self logDic:userInfo]);
+    
+        if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+        {
+            [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:userInfo];
+        }else{
+            //判断是否是环信的推送
+            if (![[userInfo allKeys] containsObject:@"m"]) {
+                [[RemoteNotificationCenter shareInstance] pushToMessageVc];
+            }
+        }
+    
     //这里设置app的图片的角标为0，红色但角标就会消失
     [UIApplication sharedApplication].applicationIconBadgeNumber  =  0;
     completionHandler(UIBackgroundFetchResultNewData);
 }
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
-- (void)application:(UIApplication *)application
-didRegisterUserNotificationSettings:
-(UIUserNotificationSettings *)notificationSettings {
-    [application registerForRemoteNotifications];
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+        [application registerForRemoteNotifications];
 }
 
-- (void)application:(UIApplication *)application
-handleActionWithIdentifier:(NSString *)identifier
-forLocalNotification:(UILocalNotification *)notification
-  completionHandler:(void (^)())completionHandler {
-    
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification
+    completionHandler:(void (^)())completionHandler {
 }
 
 - (void)application:(UIApplication *)application
@@ -358,6 +365,5 @@ forRemoteNotification:(NSDictionary *)userInfo
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
-
 
 @end

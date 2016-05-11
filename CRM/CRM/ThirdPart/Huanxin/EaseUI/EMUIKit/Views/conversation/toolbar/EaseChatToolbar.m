@@ -533,7 +533,7 @@
         if ([self.delegate respondsToSelector:@selector(didSendText:)]) {
             [self.delegate didSendText:textView.text];
             self.inputTextView.text = @"";
-            [self _willShowInputTextViewToHeight:[self _getTextViewContentH:self.inputTextView]];;
+            [self _willShowInputTextViewToHeight:[self _getTextViewContentH:self.inputTextView]];
         }
         
         return NO;
@@ -830,6 +830,10 @@
         [(EaseRecordView *)_recordView recordButtonTouchUpInside];
         [_recordView removeFromSuperview];
     }
+}
+
+- (void)changeInputViewFrame{
+    [self _willShowInputTextViewToHeight:[self _getTextViewContentH:self.inputTextView]];
 }
 
 @end

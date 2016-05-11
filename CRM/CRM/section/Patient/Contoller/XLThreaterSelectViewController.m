@@ -172,6 +172,7 @@
             
             UserObject *user = [AccountManager shareInstance].currentUser;
             Doctor *owner = [[Doctor alloc] init];
+            owner.ckeyid = user.userid;
             owner.doctor_name = user.name;
             owner.doctor_degree = user.degree;
             owner.doctor_hospital = user.hospitalName;
@@ -270,6 +271,9 @@
 #pragma mark -设置单元格点击事件
 - (void)selectTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    XLDoctorSelectCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    [cell selectOperation];
 }
 
 #pragma mark - XLDoctorSelectCellDelegate
@@ -312,12 +316,19 @@
     
     if ([searchText isNotEmpty]) {
         //请求网络数据
+        WS(weakSelf);
         XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
         [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
             
+            if (array.count == 0) {
+                weakSelf.searchController.hideNoResult = NO;
+            }else{
+                weakSelf.searchController.hideNoResult = YES;
+            }
+            
             //判断是否存在
             for (Doctor *doc in array) {
-                for (XLTeamMemberModel *model in self.existMembers) {
+                for (XLTeamMemberModel *model in weakSelf.existMembers) {
                     if ([doc.ckeyid isEqualToString:[model.member_id stringValue]]) {
                         doc.isExist = YES;
                         break;
@@ -325,9 +336,9 @@
                 }
             }
             
-            [self.searchController.resultsSource removeAllObjects];
-            [self.searchController.resultsSource addObjectsFromArray:array];
-            [self.searchController.searchResultsTableView reloadData];
+            [weakSelf.searchController.resultsSource removeAllObjects];
+            [weakSelf.searchController.resultsSource addObjectsFromArray:array];
+            [weakSelf.searchController.searchResultsTableView reloadData];
         } failure:^(NSError *error) {
             if (error) {
                 NSLog(@"error:%@",error);

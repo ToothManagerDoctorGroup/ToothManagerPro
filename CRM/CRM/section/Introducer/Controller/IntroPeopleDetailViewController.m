@@ -27,11 +27,14 @@
 #import "DBManager+AutoSync.h"
 #import "XLStarSelectViewController.h"
 #import "CreateIntroducerViewController.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface IntroPeopleDetailViewController ()<IntroDetailHeaderTableViewControllerDelegate,XLStarSelectViewControllerDelegate>
 
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
 @property (nonatomic,retain) IntroDetailHeaderTableViewController *tbheaderView;
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -42,7 +45,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
     }
     return self;
 }
@@ -50,10 +52,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //添加通知
     [self addNotificationObserver];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGer)];
     tap.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tap];
+    
+    //初始化
+    [self initView];
+    [self initData];
 }
 -(void)tapGer{
     [_tbheaderView.nameTextField resignFirstResponder];
@@ -80,11 +87,12 @@
 {
     [super initData];
     
-  //  patientArray = [[DBManager shareInstance] getPatientByIntroducerId:self.introducer.ckeyid];
-    
-   
     patientArray = [[DBManager shareInstance] getPatientByIntroducerId:self.introducer.ckeyid];
-    
+    if (patientArray.count == 0) {
+        self.noResultAlertView.hidden = NO;
+    }else{
+        self.noResultAlertView.hidden = YES;
+    }
     
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
     for (NSInteger i = 0; i < patientArray.count; i++) {
@@ -94,6 +102,7 @@
         cellMode.introducerId = patientTmp.introducer_id;
         cellMode.name = patientTmp.patient_name;
         cellMode.phone = patientTmp.patient_phone;
+        cellMode.status = patientTmp.patient_status;
         cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
         cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
@@ -105,6 +114,13 @@
     [super refreshData];
     introducer = [[DBManager shareInstance] getIntroducerByIntroducerID:introducer.ckeyid];
     patientArray = [[DBManager shareInstance] getPatientByIntroducerId:self.introducer.ckeyid];
+    
+    if (patientArray.count == 0) {
+        self.noResultAlertView.hidden = NO;
+    }else{
+        self.noResultAlertView.hidden = YES;
+    }
+    
     [_patientCellModeArray removeAllObjects];
     for (NSInteger i = 0; i < patientArray.count; i++) {
         Patient *patientTmp = [patientArray objectAtIndex:i];
@@ -113,11 +129,17 @@
         cellMode.introducerId = patientTmp.introducer_id;
         cellMode.name = patientTmp.patient_name;
         cellMode.phone = patientTmp.patient_phone;
+        cellMode.status = patientTmp.patient_status;
         cellMode.introducerName = [[DBManager shareInstance] getIntroducerByIntroducerID:patientTmp.introducer_id].intr_name;
         cellMode.statusStr = [Patient statusStrWithIntegerStatus:patientTmp.patient_status];
         cellMode.countMaterial = [[DBManager shareInstance] numberMaterialsExpenseWithPatientId:patientTmp.ckeyid];
         [_patientCellModeArray addObject:cellMode];
     }
+}
+
+#pragma mark - 获取介绍人数据
+- (void)getIntroducerData{
+    
 }
 
 - (void)dealloc {
@@ -144,6 +166,9 @@
     myTableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     [self.view addSubview:myTableView];
     
+    //添加
+    self.noResultAlertView = [myTableView createNoResultAlertViewWithImageName:@"intrDetail_alert" top:190 showButton:NO buttonClickBlock:nil];
+    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introducer" bundle:nil];
     _tbheaderView = [storyboard instantiateViewControllerWithIdentifier:@"IntroDetailHeaderTableViewController"];
     _tbheaderView.delegate = self;
@@ -152,7 +177,6 @@
     
     if (self.isEdit) {
         //编辑模式
-//        [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
         [self setRightBarButtonWithTitle:@"保存"];
         myTableView.hidden = YES;
          self.title = @"编辑介绍人";

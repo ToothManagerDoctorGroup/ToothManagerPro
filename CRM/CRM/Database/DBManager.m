@@ -178,6 +178,26 @@ Realize_ShareInstance(DBManager);
     }];
 }
 
+- (BOOL)clearLocalData{
+    __block BOOL ret;
+    NSArray *tables = @[DoctorTableName,MaterialTableName,IntroducerTableName,PatientTableName,CTLibTableName,MedicalCaseTableName,MedicalExpenseTableName,MedicalRecordableName,MedicalReserveTableName,LocalNotificationTableName,PatIntrMapTableName,RepairDocTableName,PatientConsultationTableName];
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        [db beginTransaction];
+        
+        for (int i = 0; i < tables.count; i++) {
+            NSString *sqlStr = [NSString stringWithFormat:@"DELETE FROM %@",tables[i]];
+            ret = [db executeUpdate:sqlStr];
+            if (!ret) {
+                [db rollback];
+                return;
+            }
+        }
+        [db commit];
+    }];
+    return ret;
+}
+
+
 - (void)initMaterial{
 }
 

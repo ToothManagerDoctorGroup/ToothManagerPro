@@ -12,23 +12,6 @@
 #import "CRMUserDefalut.h"
 #import "DBManager.h"
 
-/**
- *  DEF_STATIC_CONST_STRING(,doctor_version2);         //医生表名
- DEF_STATIC_CONST_STRING(,material_version2);
- DEF_STATIC_CONST_STRING(,introducer_version2);
- DEF_STATIC_CONST_STRING(,patient_version2);
- DEF_STATIC_CONST_STRING(,ct_lib_version2);
- DEF_STATIC_CONST_STRING(,medical_case_version2);
- DEF_STATIC_CONST_STRING(,medical_expense_version2);
- DEF_STATIC_CONST_STRING(,medical_record_version2);
- DEF_STATIC_CONST_STRING(,medical_reserve_version2);
- DEF_STATIC_CONST_STRING(, local_notificaion_version2);
- DEF_STATIC_CONST_STRING(UserTableName,user_table_version2);
- DEF_STATIC_CONST_STRING(SysMsgTableName, sys_msg_version2);
- DEF_STATIC_CONST_STRING(, patient_introducer_map_version2);
- DEF_STATIC_CONST_STRING(, repair_doctor_version2)
- DEF_STATIC_CONST_STRING(, patient_consultation_version2);
- */
 
 #define Patient_AutoSync_Time_Key [NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]
 #define Doctor_AutoSync_Time_Key [NSString stringWithFormat:@"syncDataGet%@%@", DoctorTableName, [AccountManager currentUserid]]
@@ -102,6 +85,13 @@
     
 }
 
++ (void)resetSyncTime{
+    NSArray *dataList = @[Patient_AutoSync_Time_Key,Doctor_AutoSync_Time_Key,Material_AutoSync_Time_Key,Introducer_AutoSync_Time_Key,CTLib_AutoSync_Time_Key,MedicalCase_AutoSync_Time_Key,MedicalExpense_AutoSync_Time_Key,MedicalRecord_AutoSync_Time_Key,MedicalReserve_AutoSync_Time_Key,LocalNotification_AutoSync_Time_Key,PatIntrMap_AutoSync_Time_Key,PatientConsultation_AutoSync_Time_Key,RepairDoc_AutoSync_Time_Key];
+    for (NSString *key in dataList) {
+        [CRMUserDefalut setObject:[NSString defaultDateString] forKey:key];
+    }
+}
+
 #pragma mark - UUDatePickerDelegate
 - (void)uuDatePicker:(UUDatePicker *)datePicker year:(NSString *)year month:(NSString *)month day:(NSString *)day hour:(NSString *)hour minute:(NSString *)minute weekDay:(NSString *)weekDay{
     self.timeField.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@:00",year,month,day,hour,minute];
@@ -113,8 +103,6 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    
-    
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{

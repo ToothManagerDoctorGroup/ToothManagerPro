@@ -114,7 +114,7 @@
 }
 //登录
 - (IBAction)loginInAction:(id)sender {
-    
+    WS(weakSelf);
     [SVProgressHUD showWithStatus:@"正在登录"];
     [XLLoginTool loginWithNickName:self.userNameField.text password:self.passwordField.text success:^(CRMHttpRespondModel *respond) {
         
@@ -123,9 +123,11 @@
             [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
             UserObject *userobj = [[AccountManager shareInstance] currentUser];
             //获取用户信息
-            [self requestUserInfoWithUserId:userobj.userid];
+            [weakSelf requestUserInfoWithUserId:userobj.userid];
+            //将加密后的密码保存到本地
+            [CRMUserDefalut setObject:resultDic[@"Password"] forKey:LatestUserPassword];
             //环信登录
-            [self easeMobLoginWithUserName:userobj.userid password:resultDic[@"Password"]];
+            [weakSelf easeMobLoginWithUserName:userobj.userid password:resultDic[@"Password"]];
         }else{
             if ([respond.code integerValue] == 203) {
                 [SVProgressHUD dismiss];
@@ -187,6 +189,11 @@
 #pragma mark - 环信用户登录
 - (void)easeMobLoginWithUserName:(NSString *)userName password:(NSString *)password{
     //环信账号登录
+    //判断当前环信账号是否已登录
+    if ([[EaseMob sharedInstance].chatManager isLoggedIn]) {
+        //退出当前登录
+        [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
+    }
     [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userName password:password completion:^(NSDictionary *loginInfo, EMError *error) {
         
         if (loginInfo && !error) {
@@ -200,7 +207,6 @@
             //设置离线推送的样式
             options.displayStyle = ePushNotificationDisplayStyle_simpleBanner;
             [[EaseMob sharedInstance].chatManager asyncUpdatePushOptions:options];
-            
             //发送自动登陆状态通知
             [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
             

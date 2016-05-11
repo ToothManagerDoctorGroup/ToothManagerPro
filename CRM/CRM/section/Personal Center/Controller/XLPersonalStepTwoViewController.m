@@ -82,16 +82,6 @@
 }
 #pragma mark - 设置控件内容
 - (void)setUpData{
-//    NSString *headImgPath = [CRMUserDefalut objectForKey:@"avatar"];
-//    if (headImgPath != nil) {
-//        NSError *error;
-//        NSData *imgData = [NSData dataWithContentsOfFile:headImgPath options:NSDataReadingUncached error:&error];
-//        if (imgData.length > 0) {
-//            UIImage *image = [UIImage imageWithData:imgData scale:.5];
-//            self.headImageView.image = image;
-//        }
-//    }
-    
     self.headImageView.image = [UIImage imageNamed:@"user_icon"];
     
     //设置修改内容
@@ -111,9 +101,7 @@
 }
 
 #pragma mark - ActionSheet Delegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     switch (buttonIndex) {
         case 0:
         {
@@ -142,14 +130,11 @@
             }
         }
             break;
-        case 2:
-        {}
-            break;
-            
         default:
             break;
     }
 }
+
 
 //选择男
 - (IBAction)menSelectActon:(id)sender {

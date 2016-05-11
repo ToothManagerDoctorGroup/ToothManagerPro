@@ -21,8 +21,6 @@ typedef NS_ENUM(NSInteger, XLDataSelectViewControllerType) {
 
 @optional
 - (void)dataSelectViewController:(XLDataSelectViewController *)dataVc didSelectContent:(NSString *)content type:(XLDataSelectViewControllerType)type;
-
-
 @end
 
 @interface XLDataSelectViewController : TimDisplayViewController

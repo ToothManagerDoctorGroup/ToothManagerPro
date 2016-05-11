@@ -19,11 +19,14 @@
 #import "CRMHttpRespondModel.h"
 #import "XLGuideView.h"
 #import "CRMUserDefalut.h"
+#import <MessageUI/MessageUI.h>
+#import "DBManager+Patients.h"
+#import "DBTableMode.h"
 
 
 #define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
 
-@interface QrCodeViewController ()<WXApiDelegate,XLGuideViewDelegate,UIActionSheetDelegate>{
+@interface QrCodeViewController ()<WXApiDelegate,XLGuideViewDelegate,UIActionSheetDelegate,MFMessageComposeViewControllerDelegate>{
     NSString *weiXinPageUrl;
 }
 
@@ -46,17 +49,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"我的二维码";
-    [self setRightBarButtonWithTitle:@"分享"];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
-//    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-//    [self refreshView];
-//    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-//    } failedBlock:^(NSError *error) {
-//        [SVProgressHUD showImage:nil status:error.localizedDescription];
-//    }];
-    
     if (self.isDoctor) {
+        [self setRightBarButtonWithTitle:@"分享"];
+        self.sendMessageView.hidden = YES;
         //判断本地是否存在二维码的url
         NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
         if (qrcodeUrl == nil) {
@@ -68,7 +65,8 @@
             [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
         }
     }else{
-        [MyPatientTool getPateintKeyIdWithPatientCKeyId:self.patient.ckeyid success:^(CRMHttpRespondModel *respondModel) {
+        self.sendMessageView.hidden = NO;
+        [MyPatientTool getPateintKeyIdWithPatientCKeyId:self.patientId success:^(CRMHttpRespondModel *respondModel) {
             if ([respondModel.code integerValue] == 200) {
                 [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:respondModel.result isDoctor:self.isDoctor successBlock:^{
                     
@@ -85,23 +83,6 @@
         }];
     }
 }
-//获取用户的医生列表
-/*
-- (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    NSArray *dicArray = [result objectForKey:@"Result"];
-    if (dicArray && dicArray.count > 0) {
-        for (NSDictionary *dic in dicArray) {
-                UserObject *obj = [UserObject userobjectFromDic:dic];
-                [[DBManager shareInstance] updateUserWithUserObject:obj];
-                [[AccountManager shareInstance] refreshCurrentUserInfo];
-            }
-            return;
-        }
-}
-- (void)getDoctorListFailedWithError:(NSError *)error {
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
- */
 
 - (void)onRightButtonAction:(id)sender {
     
@@ -136,6 +117,48 @@
     }
     [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
     weiXinPageUrl = imageUrl;
+}
+- (IBAction)sendMessageAction:(id)sender {
+    Patient *patient = [[DBManager shareInstance] getPatientCkeyid:self.patientId];
+    if (patient == nil) return;
+    //短信发送
+    if( [MFMessageComposeViewController canSendText] )
+    {
+        NSString *urlStr = [NSString stringWithFormat:@"关注后，您将通过种牙管家微信公众号获得预约通知和诊疗医嘱:%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@&patient_id=%@",DomainRealName,Method_Weixin,[AccountManager currentUserid],patient.ckeyid];
+        
+        MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc] init];
+        controller.recipients = @[patient.patient_phone];
+        controller.navigationBar.tintColor = [UIColor redColor];
+        controller.body = urlStr;
+        controller.messageComposeDelegate = self;
+        [self presentViewController:controller animated:YES completion:nil];
+        [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送二维码名片"];//修改短信界面标题
+    }
+    else
+    {
+        [SVProgressHUD showImage:nil status:@"该设备没有短信功能"];
+    }
+}
+
+-(void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    switch (result) {
+        case MessageComposeResultSent:
+            //信息传送成功
+            
+            break;
+        case MessageComposeResultFailed:
+            //信息传送失败
+            
+            break;
+        case MessageComposeResultCancelled:
+            //信息被用户取消传送
+            
+            break;
+        default:
+            break;
+    }
 }
 
 

@@ -36,8 +36,7 @@
     self.title = @"通用设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
-//    self.dataList = @[@[@"一键将患者导入通讯录"],@[@"显示提醒内容"],@[@"是否将患者插入通讯录",@"同步日程到系统日历"],@[@"重置同步时间"]];
-    self.dataList = @[@[@"同步预约日程到系统日历",@"添加预约时显示提醒内容"],@[@"同步所有患者到通讯录",@"同步手工录入患者到通讯录"],@[@"重置同步时间"]];
+    self.dataList = @[@[@"同步预约日程到系统日历",@"添加预约时显示提醒内容"],@[@"同步所有患者到通讯录",@"同步手工录入患者到通讯录"],@[@"重置同步时间",@"清空本地数据"]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshData) name:AutoSyncTimeChangeNotification object:nil];
     
@@ -135,14 +134,19 @@
         }
     }else if (indexPath.section == 2){
         cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        NSString *resetAutoSyncTime = [CRMUserDefalut objectForKey:Patient_AutoSync_Time_Key];
-        if (resetAutoSyncTime == nil) {
-            resetAutoSyncTime = @"1970-01-01 08:00:00";
-            
-            [CRMUserDefalut setObject:resetAutoSyncTime forKey:Patient_AutoSync_Time_Key];
+        if (indexPath.row == 0) {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            NSString *resetAutoSyncTime = [CRMUserDefalut objectForKey:Patient_AutoSync_Time_Key];
+            if (resetAutoSyncTime == nil) {
+                resetAutoSyncTime = @"1970-01-01 08:00:00";
+                
+                [CRMUserDefalut setObject:resetAutoSyncTime forKey:Patient_AutoSync_Time_Key];
+            }
+            cell.detailTextLabel.text = resetAutoSyncTime;
+        }else{
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.detailTextLabel.text = @"";
         }
-        cell.detailTextLabel.text = resetAutoSyncTime;
     }
     return cell;
 }
@@ -156,11 +160,16 @@
         }
         
     }else if (indexPath.section == 2){
-        NSString *resetAutoSyncTimeKey = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]];
-        XLSingleContentWriteViewController *singleVc = [[XLSingleContentWriteViewController alloc] init];
-        singleVc.delegate = self;
-        singleVc.currentTime = resetAutoSyncTimeKey;
-        [self pushViewController:singleVc animated:YES];
+        if (indexPath.row == 0) {
+            NSString *resetAutoSyncTimeKey = [CRMUserDefalut objectForKey:[NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]];
+            XLSingleContentWriteViewController *singleVc = [[XLSingleContentWriteViewController alloc] init];
+            singleVc.delegate = self;
+            singleVc.currentTime = resetAutoSyncTimeKey;
+            [self pushViewController:singleVc animated:YES];
+        }else{
+            //清空本地数据
+            [self clearLocalData];
+        }
     }
 }
 
@@ -232,25 +241,25 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         //获取所有患者的个数
         NSArray *patients = [[DBManager shareInstance] getAllPatientWithID:[AccountManager currentUserid]];
-        NSMutableArray *existPatients = [NSMutableArray array];
+        NSInteger existsCount = 0;
         NSMutableArray *needPostPatients = [NSMutableArray array];
         for (Patient *tmpP in patients) {
             //判断患者是否存在于通讯录
             BOOL exist = [[AddressBoolTool shareInstance] getContactsWithName:tmpP.patient_name phone:tmpP.patient_phone];
             if (exist) {
-                [existPatients addObject:tmpP];
+                existsCount++;
             }else{
                 [needPostPatients addObject:tmpP];
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (existPatients.count == patients.count) {
+            if (existsCount == patients.count) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [SVProgressHUD showImage:nil status:@"暂时没有需要同步的患者"];
                 });
             }else{
                 [SVProgressHUD dismiss];
-                NSString *message = [NSString stringWithFormat:@"已有%lu个患者存在于通讯录，是否将剩余%lu个患者导入通讯录?",(unsigned long)existPatients.count,(unsigned long)needPostPatients.count];
+                NSString *message = [NSString stringWithFormat:@"已有%lu个患者存在于通讯录，是否将剩余%lu个患者导入通讯录?",(unsigned long)existsCount,(unsigned long)needPostPatients.count];
                 TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"导入患者" message:message cancelHandler:^{
                 } comfirmButtonHandlder:^{
                     //完成通讯录导入
@@ -270,6 +279,29 @@
         });
     });
     
+}
+
+#pragma mark - 清空本地数据
+- (void)clearLocalData{
+    WS(weakSelf);
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"是否清空本地数据?" message:nil cancelHandler:^{
+    } comfirmButtonHandlder:^{
+       //清空本地数据
+        BOOL ret = [[DBManager shareInstance] clearLocalData];
+        if (ret) {
+            [SVProgressHUD showImage:nil status:@"本地数据已被清空"];
+            //重置同步时间
+            [XLSingleContentWriteViewController resetSyncTime];
+            
+            [weakSelf.tableView reloadData];
+            
+            //通知所有页面刷新
+            [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
+        }else{
+            [SVProgressHUD showImage:nil status:@"本地数据清空失败"];
+        }
+    }];
+    [alertView show];
 }
 
 @end

@@ -35,6 +35,7 @@ Realize_ShareInstance(CRMHttpTool);
 
 - (void)GET:(NSString *)URLString parameters:(id)parameters success:(void (^)(id))success failure:(void (^)(NSError *))failure{
     
+    
     [self.manager GET:URLString parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
@@ -150,5 +151,7 @@ Realize_ShareInstance(CRMHttpTool);
 - (void)cancelAllOperation{
     [self.manager.operationQueue cancelAllOperations];
 }
+
+
 
 @end

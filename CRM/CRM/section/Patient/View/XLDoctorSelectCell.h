@@ -25,6 +25,8 @@
 
 @property (nonatomic, assign)DoctorSelectType type;
 
+- (void)selectOperation;
+
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
 @end

@@ -8,7 +8,7 @@
 
 #define KNOTIFICATIONNAME_DELETEALLMESSAGE @"RemoveAllMessages"
 
-@class MedicalCase;
+@class MedicalCase,Patient;
 @interface ChatViewController : EaseMessageViewController
 
 @property (nonatomic, strong)MedicalCase *mCase;

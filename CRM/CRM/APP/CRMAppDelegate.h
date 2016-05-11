@@ -18,7 +18,7 @@
 }
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic)  MMDrawerController *drawerController;
+@property (strong, nonatomic) MMDrawerController *drawerController;
 
 - (NSURL *)applicationDocumentsDirectory;
 

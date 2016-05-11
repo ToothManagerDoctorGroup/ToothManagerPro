@@ -21,6 +21,7 @@
 #import "UIView+WXViewController.h"
 #import "ImageBrowserViewController.h"
 #import "AddressBoolTool.h"
+#import "DBManager+Introducer.h"
 
 #define Margin 5
 #define CommenTitleColor MyColor(69, 69, 70)
@@ -302,10 +303,11 @@
         if (!isExist) {
             [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
         }
-        
+        //获取患者的介绍人信息
+        NSString *intrName = [[DBManager shareInstance] getPatientIntrNameWithPatientId:self.medicalCase.patient_id];
         CTLib *ctLib = pic.ctLib;
         UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
-        UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.medicalCase.implant_time];
+        UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.medicalCase.implant_time intrName:intrName];
         [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
     }
 }

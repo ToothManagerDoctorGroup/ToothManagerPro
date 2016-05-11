@@ -21,6 +21,7 @@
 #import "CRMHttpRespondModel.h"
 #import "DBManager.h"
 #import "JKCountDownButton.h"
+#import "UIColor+Extension.h"
 
 @interface XLSignUpViewController ()<CRMHttpRequestPersonalCenterDelegate>
 
@@ -115,6 +116,7 @@
             
             //设置按钮不可点击
             sender.enabled = NO;
+            sender.backgroundColor = [UIColor colorWithHex:0x888888];
             //button type要 设置成custom 否则会闪动
             [sender startWithSecond:60];
             [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
@@ -123,7 +125,8 @@
             }];
             [sender didFinished:^NSString *(JKCountDownButton *countDownButton, int second) {
                 countDownButton.enabled = YES;
-                return @"重新获取";
+                sender.backgroundColor = [UIColor colorWithHex:0x00a0ea];
+                return @"获取验证码";
             }];
             
         }
@@ -150,12 +153,17 @@
 
 - (void)loginSucessWithResult:(NSDictionary *)result {
     [SVProgressHUD dismiss];
-    
-    NSDictionary *resultDic = result;
     //登录成功，创建和当前登录人对应的数据库
-    [[AccountManager shareInstance] setUserinfoWithDictionary:resultDic];
+    [[AccountManager shareInstance] setUserinfoWithDictionary:result];
+    //将加密后的密码保存到本地
+    [CRMUserDefalut setObject:result[@"Password"] forKey:LatestUserPassword];
     //环信账号登录
-    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:resultDic[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
+    //判断当前环信账号是否已登录
+    if ([[EaseMob sharedInstance].chatManager isLoggedIn]) {
+        //退出当前登录
+        [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
+    }
+    [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:[AccountManager currentUserid] password:result[@"Password"] completion:^(NSDictionary *loginInfo, EMError *error) {
             
         if (loginInfo && !error) {
             //设置是否自动登录
@@ -184,7 +192,7 @@
         
 }
 
-#pragma  mark - 保存密码到本地
+#pragma  mark - 保存账号到本地
 - (void)saveLastLoginUsername
 {
     NSString *username = [[[EaseMob sharedInstance].chatManager loginInfo] objectForKey:kSDKUsername];
@@ -194,6 +202,7 @@
         [ud synchronize];
     }
 }
+
 - (NSString*)lastLoginUsername
 {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];

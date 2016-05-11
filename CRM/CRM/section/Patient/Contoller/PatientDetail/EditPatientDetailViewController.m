@@ -84,7 +84,7 @@
     }
     
     self.patientNameField.text = patient.patient_name;
-    self.patientAgeField.text = patient.patient_age;
+    self.patientAgeField.text = [patient.patient_age intValue] == 0 ? @"" : patient.patient_age;
     self.patientGenderLabel.text = genderStr;
     self.patientAddressLabel.text = patient.patient_address;
     self.patientIdCardField.text = patient.idCardNum;
@@ -98,7 +98,6 @@
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"修改患者信息";
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     if (self.isGroup) {
         self.patientNameField.enabled = NO;
@@ -152,15 +151,10 @@
 
 #pragma mark - UITableViewDataSource
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return 0;
-    }
-    return 20;
+    return 1;
 }
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 20)];
-    view.backgroundColor = [UIColor colorWithHex:VIEWCONTROLLER_BACKGROUNDCOLOR];
-    return view;
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 10;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -267,6 +261,10 @@
 #pragma mark - XLCommonEditViewControllerDelegate
 - (void)commonEditViewController:(XLCommonEditViewController *)editVc content:(NSString *)content title:(NSString *)title{
     if ([title isEqualToString:@"姓名"]) {
+        if ([title isEmpty]) {
+            [SVProgressHUD showImage:nil status:@"姓名不能为空"];
+            return;
+        }
         ValidationResult result = [NSString isValidLength:content length:32];
         if (result == ValidationResultInValid) {
             [SVProgressHUD showImage:nil status:@"姓名过长，请重新输入"];

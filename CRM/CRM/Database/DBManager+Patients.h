@@ -204,6 +204,15 @@
 - (BOOL)insertMedicalCase:(MedicalCase *)medicalCase;
 
 /**
+ *  删除患者的关系数据
+ *
+ *  @param patientId 患者id
+ *
+ *  @return 成功YES 失败NO
+ */
+- (BOOL)deletePatientIntroducerMap:(NSString *)patientId;
+
+/**
  *  更新病例
  *
  *  @param medicalCase 病例

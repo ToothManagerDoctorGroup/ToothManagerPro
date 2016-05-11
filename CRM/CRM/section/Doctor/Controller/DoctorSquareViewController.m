@@ -16,15 +16,21 @@
 #import "CRMHttpRequest+Introducer.h"
 #import "DBManager+Doctor.h"
 #import "UISearchBar+XLMoveBgView.h"
+#import "EMSearchBar.h"
+#import "EMSearchDisplayController.h"
 
 @interface DoctorSquareViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate>
-@property (nonatomic,retain) NSArray *scellModeArray;
-@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
-@property (nonatomic,retain) NSMutableArray *searchHistoryArray;
+@property (nonatomic, strong) NSArray *scellModeArray;
+@property (nonatomic, strong) NSMutableArray *searchHistoryArray;
+
+@property (nonatomic, strong)EMSearchBar *searchBar;
+@property (nonatomic, strong)EMSearchDisplayController *searchController;
+
 @end
 
 @implementation DoctorSquareViewController 
 
+#pragma mark - Life Method
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -43,10 +49,6 @@
     [super initData];
     self.searchHistoryArray = [NSMutableArray arrayWithCapacity:0];
     self.scellModeArray = @[];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -88,22 +90,6 @@
     }
     [cell setCellWithSquareMode:doctor];
     return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-//    Doctor *doctor = nil;
-//    if ([self isSearchResultsTableView:tableView]) {
-//        doctor = [self.scellModeArray objectAtIndex:indexPath.row];
-//    } else {
-//        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
-//    }
-//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-//    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-//    userInfoVC.doctor = doctor;
-//    [self pushViewController:userInfoVC animated:YES];
 }
 
 #pragma mark - SearchDisplay delegate
@@ -170,6 +156,24 @@
 - (void)applyToBecomeIntroducerFailed:(NSError *)error {
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
+
+
+#pragma mark - UISearchDisplayDelegate
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(nullable NSString *)searchString{
+    __weak typeof(self) weakSelf = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.001);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        for (UIView *subview in weakSelf.searchDisplayController.searchResultsTableView.subviews) {
+            if ([subview isKindOfClass: [UILabel class]])
+            {
+                subview.hidden = YES;
+            }
+        }
+    });
+    return YES;
+}
+
+
 
 
 @end

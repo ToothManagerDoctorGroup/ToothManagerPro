@@ -13,6 +13,7 @@
 #import "TimTabBarViewController.h"
 #import "WMPageController.h"
 #import "TimNavigationViewController.h"
+#import "XLSysMessageViewController.h"
 
 NSString *const IntroducerRequestNotification = @"IntroducerRequestNotification";
 
@@ -34,7 +35,6 @@ Realize_ShareInstance(RemoteNotificationCenter);
 
 #pragma mark - UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-//    [UMessage sendClickReportForRemoteNotification:self.userinfo];
     switch (buttonIndex) {
         case 1:
         {
@@ -56,21 +56,24 @@ Realize_ShareInstance(RemoteNotificationCenter);
     //取到nav控制器当前显示的控制器
     UIViewController * baseVC = (UIViewController *)nav.visibleViewController;
     //如果是当前控制器是我的消息控制器的话，刷新数据即可
-    if([baseVC isKindOfClass:[WMPageController class]])
+    if([baseVC isKindOfClass:[XLSysMessageViewController class]])
     {
         NSLog(@"刷新数据");
         return;
     }
     // 否则，跳转到我的消息
-    WMPageController *pageController = [self p_defaultController];
-    pageController.title = @"我的消息";
-    pageController.menuViewStyle = WMMenuViewStyleLine;
-    pageController.titleSizeSelected = 15;
-    pageController.titleColorSelected = MyColor(0, 139, 232);
-    pageController.menuHeight = 44;
-    pageController.bounces = NO;
-    pageController.hidesBottomBarWhenPushed = YES;
-    [nav pushViewController:pageController animated:YES];
+    XLSysMessageViewController *sysMessageVc = [[XLSysMessageViewController alloc] initWithStyle:UITableViewStylePlain];
+    sysMessageVc.hidesBottomBarWhenPushed = YES;
+    [nav pushViewController:sysMessageVc animated:YES];
+//    WMPageController *pageController = [self p_defaultController];
+//    pageController.title = @"我的消息";
+//    pageController.menuViewStyle = WMMenuViewStyleLine;
+//    pageController.titleSizeSelected = 15;
+//    pageController.titleColorSelected = MyColor(0, 139, 232);
+//    pageController.menuHeight = 44;
+//    pageController.bounces = NO;
+//    pageController.hidesBottomBarWhenPushed = YES;
+//    [nav pushViewController:pageController animated:YES];
 }
 
 //获取当前屏幕显示的viewcontroller

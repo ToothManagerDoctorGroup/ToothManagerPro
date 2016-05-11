@@ -81,4 +81,7 @@
 
 }
 
+- (void)selectOperation{
+    [self selectAction:nil];
+}
 @end

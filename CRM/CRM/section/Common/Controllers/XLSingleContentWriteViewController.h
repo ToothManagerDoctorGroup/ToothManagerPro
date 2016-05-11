@@ -21,6 +21,8 @@
 
 @property (nonatomic, weak)id<XLSingleContentWriteViewControllerDelegate> delegate;
 
++ (void)resetSyncTime;
+
 @end
 
 

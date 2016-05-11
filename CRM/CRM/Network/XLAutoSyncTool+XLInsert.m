@@ -15,8 +15,6 @@
 #import "JSONKit.h"
 #import "NSString+TTMAddtion.h"
 
-#define POST_PATIENT_INTRODUCERMAP_INSERT [NSString stringWithFormat:@"%@%@/%@/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
-
 @implementation XLAutoSyncTool (XLInsert)
 
 - (void)postAllNeedSyncPatient:(Patient *)patient success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{

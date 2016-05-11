@@ -654,4 +654,35 @@
     return expense;
 }
 
+/**
+ *  判断耗材信息是否存在
+ *
+ *  @param materialName 材料的名称
+ *
+ *  @return 存在（yes） 不存在（no）
+ */
+- (BOOL)materialIsExistWithMaterialName:(NSString *)materialName{
+    if ([NSString isEmptyString:materialName]) {
+        return NO;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select count(ckeyid) as 'count' from %@ where mat_name = '%@' and doctor_id = '%@' and creation_date > datetime('%@')",MaterialTableName,materialName,[AccountManager currentUserid],[NSString defaultDateString]];
+    __block FMResultSet *result = nil;
+    __block BOOL exists = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        
+        int count = 0;
+        while ([result next]) {
+           count  = [result intForColumn:@"count"];
+        }
+        if (count > 0) {
+            exists = YES;
+        }
+        
+        [result close];
+    }];
+    return exists;
+}
+
 @end

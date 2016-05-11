@@ -117,4 +117,5 @@
  *  @param failure              失败回调
  */
 -(void)deleteAllNeedSyncPatient_consultation:(PatientConsultation *)patient_consultation success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
+
 @end

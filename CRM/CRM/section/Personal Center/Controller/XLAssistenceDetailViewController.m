@@ -34,7 +34,7 @@
     
     self.title = self.model.help_des;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    
+    self.view.backgroundColor = [UIColor whiteColor];
     
     
     NSURL *url = [NSURL URLWithString:self.model.help_url];

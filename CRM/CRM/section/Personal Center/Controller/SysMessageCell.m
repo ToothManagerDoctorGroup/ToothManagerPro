@@ -9,6 +9,16 @@
 #import "SysMessageCell.h"
 #import "SysMessageModel.h"
 #import "UIColor+Extension.h"
+//新增患者
+NSString *const AttainNewPatient = @"AttainNewPatient";
+//新的好友
+NSString *const AttainNewFriend = @"AttainNewFriend";
+//取消预约
+NSString *const CancelReserveRecord = @"CancelReserveRecord";
+//修改预约
+NSString *const UpdateReserveRecord = @"UpdateReserveRecord";
+//新增预约
+NSString *const InsertReserveRecord = @"InsertReserveRecord";
 
 #define TitleFont [UIFont systemFontOfSize:15]
 #define TitleColor [UIColor blackColor]
@@ -21,6 +31,7 @@
 @property (nonatomic, weak)UILabel *timeLabel;
 @property (nonatomic, weak)UILabel *contentLabel;
 @property (nonatomic, weak)UIView *divider;
+@property (nonatomic, weak)UIView *tintView;
 
 @end
 
@@ -48,9 +59,16 @@
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.font = TitleFont;
     titleLabel.textColor = TitleColor;
-
     self.titleLabel = titleLabel;
     [self.contentView addSubview:titleLabel];
+    
+    //是否已读
+    UIView *tintView = [[UIView alloc] init];
+    tintView.backgroundColor = [UIColor redColor];
+    tintView.layer.cornerRadius = 4;
+    tintView.layer.masksToBounds = YES;
+    self.tintView = tintView;
+    [self.contentView addSubview:tintView];
     
     //时间
     UILabel *timeLabel = [[UILabel alloc] init];
@@ -93,6 +111,12 @@
     self.timeLabel.text = self.model.create_time;
     
     self.contentLabel.text = self.model.message_content;
+    
+    if (model.is_read == 1) {
+        self.tintView.hidden = YES;
+    }else{
+        self.tintView.hidden = NO;
+    }
 }
 
 - (void)layoutSubviews{
@@ -102,6 +126,7 @@
     CGSize titleSize = [self.titleLabel.text sizeWithFont:TitleFont];
     self.titleLabel.frame = CGRectMake(margin, margin / 2, titleSize.width, 20);
     
+    self.tintView.frame = CGRectMake(self.titleLabel.right, self.titleLabel.top, 8, 8);
     
     CGSize timeSize = [self.model.create_time sizeWithFont:CommenFont];
     self.timeLabel.frame = CGRectMake(kScreenWidth - timeSize.width - margin, margin / 2, timeSize.width, 20);
@@ -113,17 +138,12 @@
     self.divider.frame = CGRectMake(0, self.height - 0.5, kScreenWidth, 0.5);
 }
 
-////tableView的侧滑是从右往左滑。而抽屉是从左往右滑。 解决方法刚刚找到了，判断滑动的视图。
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-//{
-//    // 输出点击的view的类名
-//    NSLog(@"你那是屌丝都调试%@", NSStringFromClass([touch.view class]));
-//    
-//    // 若为UITableViewCellContentView（即点击了tableViewCell），则不截获Touch事件
-//    if ([NSStringFromClass([touch.view class]) isEqualToString:@"UITableViewCellContentView"]) {
-//        return YES;
-//    }
-//    return  NO;
-//}
++ (CGFloat)cellHeightWithModel:(SysMessageModel *)model{
+    CGSize contentSize = [model.message_content sizeWithFont:[UIFont systemFontOfSize:13] constrainedToSize:CGSizeMake(kScreenWidth - 10 * 2, MAXFLOAT)];
+    if (contentSize.height + 5 + 20 + 10 + 10 > 60) {
+        return contentSize.height + 5 + 20 + 10 + 10;
+    }
+    return 60;
+}
 
 @end

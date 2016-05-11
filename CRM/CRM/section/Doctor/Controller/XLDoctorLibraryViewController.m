@@ -37,6 +37,10 @@
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
 #import "DoctorInfoViewController.h"
+#import "UITableView+NoResultAlert.h"
+#import "XLDoctorSqureViewController.h"
+#import "XLChatModel.h"
+#import "UIColor+Extension.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate,XLCommonDoctorCellDelegte>{
     UITableView *_tableView;
@@ -56,6 +60,8 @@
 @property (nonatomic, strong)XLQueryModel *queryModel;//分页所需的模型
 
 @property (nonatomic, assign)int pageIndex;
+
+@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -181,13 +187,20 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_add_doctor"]];
     
     //初始化表示图
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 40, kScreenWidth, kScreenHeight - 64 - 44 - 40) style:UITableViewStylePlain];
+    if (self.isTransfer) {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44) style:UITableViewStylePlain];
+    }else{
+        [self.view addSubview:[self setUpNewFriendView]];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44 + 44, kScreenWidth, kScreenHeight - 64 - 44 - 44) style:UITableViewStylePlain];
+    }
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = [UIColor whiteColor];
     _tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
+    
+    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"doctorFriend_alert" top:60 showButton:NO buttonClickBlock:nil];
     
     //添加上拉刷新和下拉加载
     [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
@@ -198,8 +211,6 @@
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
-    
-    [self.view addSubview:[self setUpNewFriendView]];
 }
 #pragma mark - 下拉刷新数据
 - (void)headerRefreshAction{
@@ -231,6 +242,12 @@
                 owner.doctor_image = user.img;
             
                 [self.searchHistoryArray addObject:owner];
+            }else{
+                if (array.count == 0) {
+                    self.noResultAlertView.hidden = NO;
+                }else{
+                    self.noResultAlertView.hidden = YES;
+                }
             }
         }
         
@@ -266,9 +283,8 @@
 
 #pragma mark - 医生广场入口
 - (void)onRightButtonAction:(id)sender {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
-    DoctorSquareViewController *doctorVC = [storyboard instantiateViewControllerWithIdentifier:@"DoctorSquareViewController"];
-    [self pushViewController:doctorVC animated:YES];
+    XLDoctorSqureViewController *squreVc = [[XLDoctorSqureViewController alloc] init];
+    [self pushViewController:squreVc animated:YES];
 }
 
 #pragma mark - TableView Delegate/DataSource
@@ -286,7 +302,6 @@
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, 44)];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(newFriendAction:)];
     [headerView addGestureRecognizer:tap];
-    
     headerView.backgroundColor = [UIColor whiteColor];
     
     NSString *title = @"新的好友";
@@ -309,7 +324,7 @@
     [headerView addSubview:messageCountLabel];
     
     UIView *divider = [[UIView alloc] initWithFrame:CGRectMake(0, 43, kScreenWidth, 1)];
-    divider.backgroundColor = MyColor(243, 243, 243);
+    divider.backgroundColor = [UIColor colorWithHex:0xdddddd];
     [headerView addSubview:divider];
     
     UIImageView *arrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
@@ -362,7 +377,7 @@
     //转诊病人
     if (isTransfer) {
         self.selectDoctor = doctor;
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"确认转诊给%@吗?",doctor.doctor_name] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:[NSString stringWithFormat:@"确认转诊给%@医生吗?",doctor.doctor_name] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
         alertView.tag = 110;
         [alertView show];
         
@@ -468,6 +483,8 @@
                     [SysMessageTool sendMessageWithDoctorId:weakSelf.selectDoctor.doctor_id patientId:patientId isWeixin:weakSelf.isBind isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
                         if ([respond.code integerValue] == 200) {
                             [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                            //将消息保存在消息记录里
+                            [weakSelf savaMessageToChatRecordWithPatient:tmppatient message:content];
                         }else{
                             [SVProgressHUD showImage:nil status:@"消息发送失败"];
                         }
@@ -498,17 +515,31 @@
                 NSLog(@"error:%@",error);
             }
         }];
-        
-        //发送微信消息
-//        [[DoctorManager shareInstance] weiXinMessagePatient:tmppatient.ckeyid fromDoctor:[AccountManager currentUserid] toDoctor:weakSelf.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] successBlock:^{
-//        } failedBlock:^(NSError *error) {
-//            [SVProgressHUD showImage:nil status:error.localizedDescription];
-//        }];
-        
     } else {
         [SVProgressHUD showErrorWithStatus:@"转诊患者失败"];
     }
 }
+
+- (void)transferPatientFailedWithError:(NSError *)error
+{
+    self.selectDoctor = nil;
+    [SVProgressHUD showImage:nil status:error.localizedDescription];
+}
+
+#pragma mark - 将消息保存在消息记录中
+- (void)savaMessageToChatRecordWithPatient:(Patient *)patient message:(NSString *)message{
+    //将消息保存在消息记录里
+    XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:patient.ckeyid receiverName:patient.patient_name content:message];
+    [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+    //发送环信消息
+    [EaseSDKHelper sendTextMessage:message
+                                to:patient.ckeyid
+                       messageType:eMessageTypeChat
+                 requireEncryption:NO
+                        messageExt:nil];
+}
+
+
 #pragma mark - 转诊后回调
 - (void)transferBackAction{
     self.selectDoctor = nil;
@@ -541,12 +572,6 @@
             }
         }];
     }
-}
-
-- (void)transferPatientFailedWithError:(NSError *)error
-{
-    self.selectDoctor = nil;
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
 
 #pragma mark - Cell Delegate
@@ -624,9 +649,14 @@
         XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
         [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         
-                [self.searchController.resultsSource removeAllObjects];
-                [self.searchController.resultsSource addObjectsFromArray:array];
-                [self.searchController.searchResultsTableView reloadData];
+            if (array.count == 0) {
+                self.searchController.hideNoResult = NO;
+            }else{
+                self.searchController.hideNoResult = YES;
+            }
+            [self.searchController.resultsSource removeAllObjects];
+            [self.searchController.resultsSource addObjectsFromArray:array];
+            [self.searchController.searchResultsTableView reloadData];
         } failure:^(NSError *error) {
             if (error) {
                 NSLog(@"error:%@",error);
