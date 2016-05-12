@@ -186,8 +186,10 @@
             [weakSelf.introducerCellModeArray addObjectsFromArray:arrayM];
             if (weakSelf.introducerInfoArray.count == 0) {
                 weakSelf.noIntroducerView.hidden = NO;
+                _tableView.tableHeaderView = weakSelf.noIntroducerView;
             }else{
                 weakSelf.noIntroducerView.hidden = YES;
+                _tableView.tableHeaderView = nil;
             }
             [_tableView reloadData];
             
@@ -308,18 +310,19 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
+        WS(weakSelf);
         TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
             [tableView reloadData];
         } comfirmButtonHandlder:^{
-            Introducer *intro = [self.introducerInfoArray objectAtIndex:indexPath.row];
+            Introducer *intro = [weakSelf.introducerInfoArray objectAtIndex:indexPath.row];
             BOOL ret = [[DBManager shareInstance] deleteIntroducerWithId:intro.ckeyid];
             if (ret) {
                 //删除介绍人自动同步信息
                 InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Delete dataEntity:[intro.keyValues JSONString] syncStatus:@"0"];
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 
-                [self.introducerCellModeArray removeObjectAtIndex:indexPath.row];
-                [self refreshTableView];
+                [weakSelf.introducerCellModeArray removeObjectAtIndex:indexPath.row];
+                [weakSelf refreshTableView];
             }
         }];
         [alertView show];
@@ -518,7 +521,6 @@
     if (!_noIntroducerView) {
         _noIntroducerView = [[XLNoIntroducerTintView alloc] initWithFrame:_tableView.bounds];
         _noIntroducerView.hidden = YES;
-        [_tableView addSubview:_noIntroducerView];
     }
     return _noIntroducerView;
 }

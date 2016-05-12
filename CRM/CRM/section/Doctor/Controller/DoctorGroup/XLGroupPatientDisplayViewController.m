@@ -69,8 +69,6 @@
  */
 @property (nonatomic, weak)UITableView *searchResultTableView;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation XLGroupPatientDisplayViewController
@@ -173,8 +171,6 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
-    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"groupAddMember_alert" top:144 showButton:NO buttonClickBlock:nil];
-    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
@@ -210,11 +206,6 @@
     [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
         if (isHeader) {
             [self.patientCellModeArray removeAllObjects];
-            if (result.count == 0) {
-                self.noResultAlertView.hidden = NO;
-            }else{
-                self.noResultAlertView.hidden = YES;
-            }
         }
         //将数据添加到数组中
         [self.patientCellModeArray addObjectsFromArray:result];
@@ -297,6 +288,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    [tableView createNoResultAlertViewWithImageName:@"groupAddMember_alert" showButton:NO ifNecessaryForRowCount:self.patientCellModeArray.count];
     return self.patientCellModeArray.count;
 }
 

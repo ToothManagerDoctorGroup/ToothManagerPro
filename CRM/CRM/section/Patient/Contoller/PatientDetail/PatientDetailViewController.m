@@ -703,6 +703,7 @@
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
             [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerEditedNotification object:nil];
         }
     }else{
         //表明是新增介绍人
@@ -723,6 +724,7 @@
                 [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerEditedNotification object:nil];
             }
         }
     }

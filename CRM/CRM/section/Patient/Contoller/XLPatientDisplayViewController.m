@@ -63,9 +63,6 @@
 @property (nonatomic, weak)UIButton *selectButton;
 @property (nonatomic, assign)BOOL isAsc;//判断是升序还是降序
 
-//无数据提示视图
-@property (nonatomic, weak)UIView *noResultAlertView;
-@property (nonatomic, weak)UIView *noSearchResultAlertView;
 @end
 
 @implementation XLPatientDisplayViewController
@@ -105,8 +102,6 @@
     self.pageNum = 0;
     self.status = self.patientStatus;
     self.tableView.frame = CGRectMake(0, 44 + 80, kScreenWidth, kScreenHeight - 64 - 80 - 44);
-    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"patientList_alert" top:60 showButton:NO buttonClickBlock:nil];
-    self.noSearchResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" top:60 showButton:NO buttonClickBlock:nil];
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self.view addSubview:[self setUpGroupViewAndButtons]];
@@ -199,22 +194,6 @@
                 //数据判断
                 if (weakSelf.patientInfoArray.count < CommonPageSize) {
                     weakSelf.showRefreshFooter = NO;
-                    if (weakSelf.isSearch) {
-                        weakSelf.noResultAlertView.hidden = YES;
-                        if (weakSelf.patientInfoArray.count == 0) {
-                            weakSelf.noSearchResultAlertView.hidden = NO;
-                        }else{
-                            weakSelf.noSearchResultAlertView.hidden = YES;
-                        }
-                    }else{
-                        self.noSearchResultAlertView.hidden = YES;
-                        if (weakSelf.patientInfoArray.count == 0) {
-                            weakSelf.noResultAlertView.hidden = NO;
-                        }else{
-                            weakSelf.noResultAlertView.hidden = YES;
-                        }
-                    }
-                    
                 }else{
                     weakSelf.showRefreshFooter = YES;
                 }
@@ -367,6 +346,11 @@
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (self.isSearch) {
+        [tableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" showButton:NO ifNecessaryForRowCount:self.patientCellModeArray.count];
+    }else{
+        [tableView createNoResultAlertViewWithImageName:@"patientList_alert.png" showButton:NO ifNecessaryForRowCount:self.patientCellModeArray.count];
+    }
     return self.patientCellModeArray.count;
 }
 

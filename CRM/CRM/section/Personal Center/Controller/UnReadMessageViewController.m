@@ -43,8 +43,6 @@
 
 @property (nonatomic, strong)NSArray *dataList;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation UnReadMessageViewController
@@ -74,8 +72,6 @@
 - (void)initSubViews{
     [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerAction)];
     self.tableView.header.updatedTimeHidden = YES;
-    
-    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"message_alert.png" top:60 showButton:NO buttonClickBlock:nil];
 }
 
 #pragma mark - 下拉刷新
@@ -89,12 +85,6 @@
         if ([self.tableView.header isRefreshing]) {
             [self.tableView.header endRefreshing];
         }
-        if (result.count == 0) {
-            self.noResultAlertView.hidden = NO;
-        }else{
-            self.noResultAlertView.hidden = YES;
-        }
-        
         self.dataList = result;
         //刷新表格
         [self.tableView reloadData];
@@ -115,6 +105,7 @@
 
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    [tableView createNoResultAlertViewWithImageName:@"message_alert.png" showButton:NO ifNecessaryForRowCount:self.dataList.count];
     return self.dataList.count;
 }
 

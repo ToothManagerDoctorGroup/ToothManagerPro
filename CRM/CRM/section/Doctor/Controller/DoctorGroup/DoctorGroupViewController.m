@@ -27,8 +27,6 @@
 
 @property (nonatomic, strong)DoctorGroupModel *selectModel;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation DoctorGroupViewController
@@ -79,7 +77,7 @@
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"addgroup"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"groupList_alert.png" top:60 showButton:NO buttonClickBlock:nil];
+//    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"groupList_alert.png" top:60 showButton:NO buttonClickBlock:nil];
 }
 
 #pragma mark - 重新请求数据
@@ -95,12 +93,6 @@
         [self.dataList removeAllObjects];
         [self.dataList addObjectsFromArray:result];
         [self.tableView reloadData];
-        
-        if (self.dataList.count == 0) {
-            self.noResultAlertView.hidden = NO;
-        }else{
-            self.noResultAlertView.hidden = YES;
-        }
         
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -119,6 +111,7 @@
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    [tableView createNoResultAlertViewWithImageName:@"groupList_alert.png"showButton:NO ifNecessaryForRowCount:self.dataList.count];
     return self.dataList.count;
 }
 

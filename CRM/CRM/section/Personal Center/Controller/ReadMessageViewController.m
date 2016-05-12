@@ -27,8 +27,6 @@
 
 @property (nonatomic, assign)int pageIndex;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation ReadMessageViewController
@@ -51,7 +49,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requstData) name:ReadUnReadMessageSuccessNotification object:nil];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"noMessage_alert.png" top:60 showButton:NO buttonClickBlock:nil];
     
     self.pageIndex = 1;
     
@@ -64,9 +61,6 @@
     [SysMessageTool getReadedMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid pageIndex:self.pageIndex pageSize:30 success:^(NSArray *result) {
         if (result.count > 0) {
             [self.dataList addObjectsFromArray:result];
-            self.noResultAlertView.hidden = YES;
-        }else{
-            self.noResultAlertView.hidden = NO;
         }
         if ([self.tableView.header isRefreshing]) {
             [self.tableView.header endRefreshing];
@@ -126,6 +120,7 @@
 
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    [tableView createNoResultAlertViewWithImageName:@"noMessage_alert.png" showButton:NO ifNecessaryForRowCount:self.dataList.count];
     return self.dataList.count;
 }
 

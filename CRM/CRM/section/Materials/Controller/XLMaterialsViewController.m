@@ -31,8 +31,6 @@
 @property (nonatomic, strong)EMSearchBar *searchBar;
 @property (nonatomic, strong)EMSearchDisplayController *searchController;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation XLMaterialsViewController
@@ -139,8 +137,6 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
-    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"materialList_alert" top:104 showButton:NO buttonClickBlock:nil];
-    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
@@ -153,21 +149,11 @@
 - (void)initData
 {
     dataArray = [[DBManager shareInstance] getAllMaterials];
-    if (dataArray.count == 0) {
-        self.noResultAlertView.hidden = NO;
-    }else{
-        self.noResultAlertView.hidden = YES;
-    }
 }
 
 - (void)refreshData {
     dataArray = nil;
     dataArray = [[DBManager shareInstance] getAllMaterials];
-    if (dataArray.count == 0) {
-        self.noResultAlertView.hidden = NO;
-    }else{
-        self.noResultAlertView.hidden = YES;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -207,6 +193,7 @@
 
 -  (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    [tableView createNoResultAlertViewWithImageName:@"materialList_alert" showButton:NO ifNecessaryForRowCount:dataArray.count];
     return dataArray.count;
 }
 

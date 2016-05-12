@@ -61,8 +61,6 @@
 
 @property (nonatomic, assign)int pageIndex;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation XLDoctorLibraryViewController
@@ -70,98 +68,17 @@
 @synthesize userId;
 @synthesize patientId;
 
-#pragma mark - 界面销毁
-- (NSMutableArray *)searchHistoryArray{
-    if (!_searchHistoryArray) {
-        _searchHistoryArray = [NSMutableArray array];
-    }
-    return _searchHistoryArray;
-}
-
+#pragma mark - ********************* Life Method ***********************
+#pragma mark 界面销毁
 - (void)dealloc{
     self.searchBar = nil;
     self.searchController = nil;
     _tableView = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [SVProgressHUD dismiss];
 }
-
-#pragma mark - 控件初始化
-- (UISearchBar *)searchBar
-{
-    if (!_searchBar) {
-        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        [_searchBar moveBackgroundView];
-    }
-    return _searchBar;
-}
-
-- (EMSearchDisplayController *)searchController
-{
-    if (_searchController == nil) {
-        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
-        __weak XLDoctorLibraryViewController *weakSelf = self;
-        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
-            
-            return [weakSelf setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
-        }];
-        
-        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return 68.f;
-        }];
-        
-        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            [weakSelf.searchController.searchBar endEditing:YES];
-            
-            [weakSelf selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
-        }];
-        //设置可编辑模式
-        [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
-            return YES;
-        }];
-        //编辑模式下的删除操作
-        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            Doctor *doctor = weakSelf.searchController.resultsSource[indexPath.row];
-            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确认删除该好友？" message:nil cancelHandler:^{
-            } comfirmButtonHandlder:^{
-                [SVProgressHUD showWithStatus:@"删除中..."];
-                [DoctorTool deleteFriendWithDoctorId:doctor.ckeyid introId:[[AccountManager shareInstance] currentUser].userid success:^(CRMHttpRespondModel *result) {
-                    
-                    [SVProgressHUD showSuccessWithStatus:@"删除成功"];
-                    BOOL res = [[DBManager shareInstance] deleteDoctorWithUserObject:doctor];
-                    if (res) {
-                        //删除成功
-                        [weakSelf.searchController.resultsSource removeObject:doctor];
-                        [tableView reloadData];
-                        [weakSelf headerRefreshAction];
-                        
-                    }else{
-                        [SVProgressHUD showErrorWithStatus:@"删除失败"];
-                    }
-                    
-                } failure:^(NSError *error) {
-                    if (error) {
-                        NSLog(@"error:%@",error);
-                    }
-                }];
-            }];
-            [alertView show];
-        }];
-    }
-    return _searchController;
-}
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -176,12 +93,14 @@
     }
     //加载数据
     [self initSubViews];
-    
-    [_tableView.header beginRefreshing];
 }
 
+
+#pragma mark - ********************* Private Method ***********************
 - (void)initSubViews{
 
+    NSLog(@"初始化视图");
+    
     self.title = @"医生好友";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_add_doctor"]];
@@ -200,8 +119,6 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
-    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"doctorFriend_alert" top:60 showButton:NO buttonClickBlock:nil];
-    
     //添加上拉刷新和下拉加载
     [_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction)];
     _tableView.header.updatedTimeHidden = YES;
@@ -211,24 +128,26 @@
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
+    [_tableView.header beginRefreshing];
 }
-#pragma mark - 下拉刷新数据
+#pragma mark 下拉刷新数据
 - (void)headerRefreshAction{
     self.pageIndex = 1;
     XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(CommonPageSize)];
     [self requestWlanDataWithQueryModel:queryModel isHeader:YES];
 }
-#pragma mark - 上拉加载数据
+#pragma mark 上拉加载数据
 - (void)footerRefreshAction{
     self.pageIndex++;
     XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:@"" sortField:@"" isAsc:@(YES) pageIndex:@(self.pageIndex) pageSize:@(CommonPageSize)];
     [self requestWlanDataWithQueryModel:queryModel isHeader:NO];
 }
 
-#pragma mark - 请求网络数据
+#pragma mark 请求网络数据
 - (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
     //请求网络数据
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
+        NSLog(@"网络数据请求成功");
         if (isHeader) {
             [self.searchHistoryArray removeAllObjects];
             //判断是否是选择治疗医生的状态
@@ -242,15 +161,10 @@
                 owner.doctor_image = user.img;
             
                 [self.searchHistoryArray addObject:owner];
-            }else{
-                if (array.count == 0) {
-                    self.noResultAlertView.hidden = NO;
-                }else{
-                    self.noResultAlertView.hidden = YES;
-                }
             }
+            //是否显示提示视图
+            [_tableView createNoResultAlertViewWithImageName:@"doctorFriend_alert.png" showButton:NO ifNecessaryForRowCount:array.count];
         }
-        
         //将数据添加到数组中
         [self.searchHistoryArray addObjectsFromArray:array];
         
@@ -280,23 +194,7 @@
         }
     }];
 }
-
-#pragma mark - 医生广场入口
-- (void)onRightButtonAction:(id)sender {
-    XLDoctorSqureViewController *squreVc = [[XLDoctorSqureViewController alloc] init];
-    [self pushViewController:squreVc animated:YES];
-}
-
-#pragma mark - TableView Delegate/DataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.searchHistoryArray.count;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [XLCommonDoctorCell fixHeight];
-}
-
-
+#pragma mark 添加新的好友视图
 - (UIView *)setUpNewFriendView{
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 44, kScreenWidth, 44)];
@@ -334,34 +232,7 @@
     return headerView;
 }
 
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return [self setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.searchHistoryArray];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.searchHistoryArray];
-}
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (self.isTherapyDoctor) {
-        return NO;
-    }
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    Doctor *doctor = self.searchHistoryArray[indexPath.row];
-    self.deleteDoctor = doctor;
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确定删除该好友吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-        alertView.tag = 111;
-        [alertView show];
-    }
-}
-#pragma mark -设置单元格
+#pragma mark 设置单元格
 - (UITableViewCell *)setUpTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
     XLCommonDoctorCell *cell = [XLCommonDoctorCell cellWithTableView:tableView];
     cell.tag = indexPath.row+100;
@@ -371,7 +242,7 @@
     return cell;
 }
 
-#pragma mark -设置单元格点击事件
+#pragma mark 设置单元格点击事件
 - (void)selectTableViewCellWithTableView:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath sourceArray:(NSArray *)sourceArray{
     Doctor *doctor = [sourceArray objectAtIndex:indexPath.row];
     //转诊病人
@@ -401,27 +272,67 @@
             doctorinfoVC.repairDoctorID = doctor.ckeyid;
             doctorinfoVC.ifDoctorInfo = YES;
             [self pushViewController:doctorinfoVC animated:YES];
-            
-//            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Team" bundle:nil];
-//            XLDoctorDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLDoctorDetailViewController"];
-//            detailVc.doc = doctor;
-//            [self pushViewController:detailVc animated:YES];
         }
     }
 }
 
-#pragma mark - newFriendAction
+#pragma mark newFriendAction
 - (void)newFriendAction:(UITapGestureRecognizer *)tap{
-//    NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
-//    newFriendVc.hidesBottomBarWhenPushed = YES;
-//    [self pushViewController:newFriendVc animated:YES];
     
     XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
     newFriendVc.hidesBottomBarWhenPushed = YES;
     [self pushViewController:newFriendVc animated:YES];
 }
 
-#pragma mark -UIAlertViewDelegate
+#pragma mark 医生广场入口
+- (void)onRightButtonAction:(id)sender {
+    XLDoctorSqureViewController *squreVc = [[XLDoctorSqureViewController alloc] init];
+    [self pushViewController:squreVc animated:YES];
+}
+
+#pragma mark - ******************** Delegate / DataSource *******************
+#pragma mark TableView Delegate/DataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.searchHistoryArray.count;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [XLCommonDoctorCell fixHeight];
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return [self setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.searchHistoryArray];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:self.searchHistoryArray];
+}
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.isTherapyDoctor) {
+        return NO;
+    }
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Doctor *doctor = self.searchHistoryArray[indexPath.row];
+    self.deleteDoctor = doctor;
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"确定删除该好友吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        alertView.tag = 111;
+        [alertView show];
+    }
+}
+
+#pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (alertView.tag == 110) {
         if (buttonIndex == 0) return;
@@ -456,7 +367,8 @@
         }
     }
 }
-#pragma mark - 转诊成功回调
+
+#pragma mark 转诊成功回调
 - (void)transferPatientSuccessWithResult:(NSDictionary *)result
 {
     if ([result integerForKey:@"Code"] == 200) {
@@ -574,10 +486,7 @@
     }
 }
 
-#pragma mark - Cell Delegate
-- (void)commonDoctorCell:(XLCommonDoctorCell *)cell addButtonDidSelect:(id)sender{
-
-}
+#pragma mark Cell Delegate
 - (void)addButtonDidSelected:(id)sender {
     DoctorTableViewCell *cell = (DoctorTableViewCell *)sender;
     Doctor *doctor = nil;
@@ -685,6 +594,84 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 
+}
+
+#pragma mark - ********************* Lazy Method ***********************
+- (NSMutableArray *)searchHistoryArray{
+    if (!_searchHistoryArray) {
+        _searchHistoryArray = [NSMutableArray array];
+    }
+    return _searchHistoryArray;
+}
+#pragma mark - 控件初始化
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
+        _searchBar.delegate = self;
+        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
+        [_searchBar moveBackgroundView];
+    }
+    return _searchBar;
+}
+
+- (EMSearchDisplayController *)searchController
+{
+    if (_searchController == nil) {
+        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
+        
+        __weak XLDoctorLibraryViewController *weakSelf = self;
+        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
+            
+            return [weakSelf setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
+        }];
+        
+        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+            return 68.f;
+        }];
+        
+        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [weakSelf.searchController.searchBar endEditing:YES];
+            
+            [weakSelf selectTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
+        }];
+        //设置可编辑模式
+        [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
+            return YES;
+        }];
+        //编辑模式下的删除操作
+        [_searchController setCommitEditingStyleAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            Doctor *doctor = weakSelf.searchController.resultsSource[indexPath.row];
+            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确认删除该好友？" message:nil cancelHandler:^{
+            } comfirmButtonHandlder:^{
+                [SVProgressHUD showWithStatus:@"删除中..."];
+                [DoctorTool deleteFriendWithDoctorId:doctor.ckeyid introId:[[AccountManager shareInstance] currentUser].userid success:^(CRMHttpRespondModel *result) {
+                    
+                    [SVProgressHUD showSuccessWithStatus:@"删除成功"];
+                    BOOL res = [[DBManager shareInstance] deleteDoctorWithUserObject:doctor];
+                    if (res) {
+                        //删除成功
+                        [weakSelf.searchController.resultsSource removeObject:doctor];
+                        [tableView reloadData];
+                        [weakSelf headerRefreshAction];
+                        
+                    }else{
+                        [SVProgressHUD showErrorWithStatus:@"删除失败"];
+                    }
+                    
+                } failure:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"error:%@",error);
+                    }
+                }];
+            }];
+            [alertView show];
+        }];
+    }
+    return _searchController;
 }
 
 

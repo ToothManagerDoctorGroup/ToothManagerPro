@@ -22,7 +22,6 @@
         self.searchResultsDataSource = self;
         self.searchResultsDelegate = self;
         self.delegate = self;
-        [self.searchResultsTableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" top:60 showButton:NO buttonClickBlock:nil];
     }
     return self;
 }
@@ -36,6 +35,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    [tableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" showButton:NO ifNecessaryForRowCount:self.resultsSource.count];
     return [self.resultsSource count];
 }
 

@@ -26,7 +26,8 @@
         self.searchResultsDataSource = self;
         self.searchResultsDelegate = self;
         self.delegate = self;
-        [self.searchResultsTableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" top:60 showButton:YES buttonClickBlock:nil];
+        [self.searchResultsTableView createNoSearchResultAlertViewWithImageName:@"searchBar_alert.png" showButton:YES];
+//        [self.searchResultsTableView createNoResultAlertHeaderViewWithImageName:@"searchBar_alert.png" showButton:NO ifNecessaryForRowCount:self.resultsSource.count];
     }
     return self;
 }
@@ -165,8 +166,7 @@
         if ([subview isKindOfClass: [UIImageView class]])
         {
             UIImageView *imageView = (UIImageView *)subview;
-            NSString *imagePath = [[NSBundle mainBundle] pathForResource:noResultImage ofType:@"png"];
-            imageView.image = [UIImage imageWithContentsOfFile:imagePath];
+            imageView.image = [UIImage imageNamed:noResultImage];
         }
     }
 }

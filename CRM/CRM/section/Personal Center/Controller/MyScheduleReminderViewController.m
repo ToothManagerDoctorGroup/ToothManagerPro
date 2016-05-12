@@ -58,10 +58,11 @@
 @property (nonatomic, weak)JTCalendarContentView *contentView;
 @property (nonatomic, weak)ScheduleDateButton *buttonView;
 @property (nonatomic, weak)UILabel *messageCountLabel;//消息提示框
-@property (nonatomic, weak)UIView *noResultView;//无查询结果的提示页面
 @property (nonatomic, strong)NSMutableArray *currentMonthArray;//当前月的数据
 
 @property (nonatomic, strong)NSTimer *messageTimer;//消息处理的定时器
+
+//@property (nonatomic, strong)UIView *noResultView;
 
 @end
 
@@ -73,6 +74,11 @@
     
     self.title = @"日程表";
     [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
+    
+    //设置子视图
+    [self initSubViews];
+    //加载数据
+    [self initLocalData];
     //设置消息按钮
     [self setUpMessageItem];
     //更新registerId
@@ -91,12 +97,6 @@
     [super viewWillAppear:animated];
     
     [self requestUnreadMessageCount];
-    
-    if (self.remindArray.count == 0) {
-        self.noResultView.hidden = NO;
-    }else{
-        self.noResultView.hidden = YES;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -114,6 +114,14 @@
     
     //是否显示更新提示
     [self showNewVersion];
+}
+
+- (void)dealloc {
+    [self removeNotificationObserver];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - ********************* Private Method ***********************
@@ -146,14 +154,8 @@
             self.messageCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)result.count];
         }else{
             self.messageCountLabel.hidden = YES;
-        
         }
-    } failure:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+    } failure:^(NSError *error) {}];
 }
 
 #pragma mark 设置消息按钮
@@ -224,7 +226,8 @@
     [XLMessageHandleManager beginHandle];
 }
 
-- (void)initView
+#pragma mark 初始化子视图
+- (void)initSubViews
 {
     //日历选择页面
     UIView *dateSuperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
@@ -272,20 +275,17 @@
     m_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 40 + contentView.height, kScreenWidth, kScreenHeight - 64 - 49 - 40 - contentView.height) style:UITableViewStylePlain];
     m_tableView.delegate = self;
     m_tableView.dataSource = self;
+    m_tableView.tableFooterView = [UIView new];
     [self.view addSubview:m_tableView];
-    [self setExtraCellLineHidden:m_tableView];
-    
     //添加下拉刷新
     [m_tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshAction:)];
     m_tableView.header.updatedTimeHidden = YES;
-    
-    //设置提醒视图
-    self.noResultView = [m_tableView createNoResultAlertViewWithImageName:@"schedule_noresult_alert" top:60 showButton:NO buttonClickBlock:nil];
     
     //添加通知
     [self addNotificationObserver];
 }
 
+#pragma mark 今日按钮点击
 - (void)todayAction:(UIButton *)button{
     [self getAllDataWithCurrentDate:[NSDate date]];
     
@@ -294,19 +294,20 @@
     [self.calendar setCurrentDate:[NSDate date]];
     self.buttonView.title = [self stringFromDate:[NSDate date]];
 }
-
+#pragma mark 标题按钮点击
 - (void)titleButtonClick:(UIButton *)button{
     button.selected = !button.isSelected;
 }
 
-- (void)initData {
+#pragma mark 加载数据
+- (void)initLocalData {
     dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     [self getAllDataWithCurrentDate:[NSDate date]];
-    
 }
 #pragma mark 根据当前时间查询当月或当周所有的数据
 - (void)getAllDataWithCurrentDate:(NSDate *)currentDate{
+    self.remindArray = @[];
     [self.currentMonthArray removeAllObjects];
     //查询月数据
     NSString *startDate = [MyDateTool getMonthBeginWith:currentDate];
@@ -316,6 +317,10 @@
     
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[MyDateTool stringWithDateNoTime:currentDate] array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
+    
+    
+    [m_tableView createNoResultAlertHeaderViewWithImageName:@"schedule_noresult_alert.png" showButton:NO ifNecessaryForRowCount:self.remindArray.count];
+    
 }
 
 //按照时间排序  08:00  09:00 09:30
@@ -324,7 +329,6 @@
     NSSortDescriptor *sorter=[[NSSortDescriptor alloc] initWithKey:@"reserve_time" ascending:YES];
     NSMutableArray *sortDescriptors=[[NSMutableArray alloc] initWithObjects:&sorter count:1];
     NSArray *sortArray=[remindArray1 sortedArrayUsingDescriptors:sortDescriptors];
-    
     return sortArray;
 }
 
@@ -349,22 +353,18 @@
 - (void)handNotification:(NSNotification *)notifacation {
     if ([notifacation.name isEqualToString:NotificationCreated] || [notifacation.name isEqualToString:NOtificationUpdated] || [notifacation.name isEqualToString:SyncGetSuccessNotification] || [notifacation.name isEqualToString:NotificationDeleted] || [notifacation.name isEqualToString:PatientDeleteNotification]) {
         
-        if ([m_tableView.header isRefreshing]) {
-            [m_tableView.header endRefreshing];
-        }
-        
-        [self getAllDataWithCurrentDate:self.selectDate];
-        
-        if (self.remindArray.count == 0) {
-            self.noResultView.hidden = NO;
-        }else{
-            self.noResultView.hidden = YES;
-        }
-        
-        [m_tableView reloadData];
-        //刷新日历，显示红点
-        [self.calendar reloadAppearance];
-        [self.calendar reloadData];
+        //在主线程中刷新视图
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([m_tableView.header isRefreshing]) {
+                [m_tableView.header endRefreshing];
+            }
+            [self getAllDataWithCurrentDate:self.selectDate];
+            
+            [m_tableView reloadData];
+            //刷新日历，显示红点
+            [self.calendar reloadAppearance];
+            [self.calendar reloadData];
+        });
     }
 }
 
@@ -373,36 +373,17 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+//    if (self.remindArray.count > 0) {
+//        self.noResultView.hidden = YES;
+//    }else{
+//        self.noResultView.hidden = NO;
+//    }
     return self.remindArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 50;
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return NO;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
-            [tableView reloadData];
-        } comfirmButtonHandlder:^{
-            LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
-            BOOL ret = [[LocalNotificationCenter shareInstance] removeLocalNotification:notifi];
-            if (ret) {
-                [self getAllDataWithCurrentDate:self.selectDate];
-                
-                [m_tableView reloadData];
-                //自动同步信息
-                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Delete dataEntity:[notifi.keyValues JSONString] syncStatus:@"0"];
-                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-            }
-        }];
-        [alertView show];
-    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -420,7 +401,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     LocalNotification *notifi = [self.remindArray objectAtIndex:indexPath.row];
     Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notifi.patient_id];
     self.selectPatient = patient;
@@ -503,26 +483,9 @@
         }
     }
 }
-
-- (void)setExtraCellLineHidden: (UITableView *)tableView{
-    UIView *view =[ [UIView alloc]initWithFrame:CGRectZero];
-    view.backgroundColor = [UIColor clearColor];
-    [tableView setTableFooterView:view];
-    UIView *view1 =[ [UIView alloc]initWithFrame:CGRectZero];
-    view1.backgroundColor = [UIColor clearColor];
-    [tableView setTableHeaderView:view1];
-}
-
-- (void)dealloc {
-    [self removeNotificationObserver];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 #pragma mark - ScheduleDateButtonDelegate
 - (void)didClickDateButton{
+    
     self.calendar.calendarAppearance.isWeekMode = !self.calendar.calendarAppearance.isWeekMode;
     
     CGFloat newHeight = 250;
@@ -558,7 +521,7 @@
         self.calendar.currentDateSelected = self.selectDate;
         [self.calendar setCurrentDate:self.selectDate];
     }
-    
+    [m_tableView createNoResultAlertHeaderViewWithImageName:@"schedule_noresult_alert.png" showButton:NO ifNecessaryForRowCount:self.remindArray.count];
 }
 
 
@@ -583,11 +546,8 @@
    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
     
-    if (self.remindArray.count == 0) {
-        self.noResultView.hidden = NO;
-    }else{
-        self.noResultView.hidden = YES;
-    }
+    [m_tableView createNoResultAlertHeaderViewWithImageName:@"schedule_noresult_alert.png" showButton:NO ifNecessaryForRowCount:self.remindArray.count];
+    
     [m_tableView reloadData];
 }
 
@@ -653,7 +613,5 @@
         [XLLoginTool updateUserRegisterIdWithUserId:[AccountManager currentUserid] registerId:[CRMUserDefalut objectForKey:RegisterId] success:^(CRMHttpRespondModel *respond) {} failure:^(NSError *error) {}];
     }
 }
-
-
 
 @end

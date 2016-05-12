@@ -33,7 +33,6 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
 
 @property (nonatomic, strong)NSMutableArray *dataList;
 @property (nonatomic, assign)int pageIndex;
-@property (nonatomic, weak)UIView *noResultAlertView;
 
 @end
 
@@ -56,7 +55,6 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"noMessage_alert.png" top:60 showButton:NO buttonClickBlock:nil];
     
     self.pageIndex = 1;
     //添加头部刷新控件
@@ -70,18 +68,14 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
     [SysMessageTool getMessageByQueryModel:queryModel success:^(NSArray *result) {
         if (isHeader) {
             [weakSelf.dataList removeAllObjects];
-            if (result.count > 0) {
-                weakSelf.noResultAlertView.hidden = YES;
-            }else{
-                weakSelf.noResultAlertView.hidden = NO;
-            }
-            
             if (result.count < SysMessageViewControllerPageSize) {
                 [weakSelf.tableView removeFooter];
             }else{
                 //添加上拉加载的控件
                 [weakSelf.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRefreshAction)];
             }
+            //是否显示无结果视图
+            [weakSelf.tableView createNoResultAlertViewWithImageName:@"noMessage_alert.png" showButton:NO ifNecessaryForRowCount:result.count];
         }
         [weakSelf.dataList addObjectsFromArray:result];
         
@@ -137,6 +131,10 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
     
     else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
         LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
+        if (local == nil) {
+            [SVProgressHUD showImage:nil status:@"该预约已被取消"];
+            return;
+        }
         //跳转到预约详情页面
         XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
         detailVc.localNoti = local;
@@ -248,10 +246,9 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
         //刷新当前单元格
         model.is_read = 1;
         [weakSelf.tableView reloadData];
-        
-        [SVProgressHUD dismiss];
         //重新请求数据
         if (!noOperate) {
+            [SVProgressHUD dismiss];
             if ([model.message_type isEqualToString:AttainNewPatient]) {
                 //跳转到新的患者详情页面
                 PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
@@ -293,10 +290,9 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
     LocalNotification *noti = [[DBManager shareInstance] getLocalNotificationWithCkeyId:reserve_id];
     if (noti != nil){
         //设置已读
-        [self setMessageReadWithModel:msgModel noOperate:YES];
+        [self setMessageReadWithModel:msgModel noOperate:NO];
         return;
     }
-    
     [SVProgressHUD showWithStatus:@"正在获取预约信息"];
     [SysMessageTool getReserveRecordByReserveId:reserve_id success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
@@ -327,12 +323,11 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
                 }];
             }else{
                 //设置已读
-                [SVProgressHUD showErrorWithStatus:@"该预约已被取消"];
                 [self setMessageReadWithModel:msgModel noOperate:NO];
                 
             }
         }else{
-            [SVProgressHUD showErrorWithStatus:@"预约信息获取失败"];
+            [SVProgressHUD showImage:nil status:@"该预约已被取消"];
             //设置已读
             [self setMessageReadWithModel:msgModel noOperate:YES];
         }

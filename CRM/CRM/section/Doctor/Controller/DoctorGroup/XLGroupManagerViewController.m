@@ -50,8 +50,6 @@
 
 @property (nonatomic, assign)BOOL canEdit;//是否进入编辑状态
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation XLGroupManagerViewController
@@ -202,8 +200,6 @@
     [_tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     [self.view addSubview:_tableView];
     
-    self.noResultAlertView = [_tableView createNoResultAlertViewWithImageName:@"groupDetail_alert" top:144 showButton:NO buttonClickBlock:nil];
-    
     //初始化搜索框
     [self.view addSubview:self.searchBar];
     [self searchController];
@@ -237,12 +233,6 @@
             
             [_tableView reloadData];
             
-            if (result.count == 0) {
-                self.noResultAlertView.hidden = NO;
-            }else{
-                self.noResultAlertView.hidden = YES;
-            }
-            
         } failure:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
             if (error) {
@@ -266,13 +256,13 @@
     
 }
 
-
 #pragma mark - TableView Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    [tableView createNoResultAlertViewWithImageName:@"groupDetail_alert" showButton:NO ifNecessaryForRowCount:self.patientCellModeArray.count];
     return self.patientCellModeArray.count;
 }
 

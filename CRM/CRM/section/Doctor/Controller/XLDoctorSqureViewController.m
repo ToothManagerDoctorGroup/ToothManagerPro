@@ -107,6 +107,7 @@ static const NSInteger kDoctorSqureViewControllerMenuHeight = 44;
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
+        _searchController.hideNoResult = YES;
         _searchController.noResultImage = @"noFriendSearch_alert";
         _searchController.searchButtonClickBlock = ^(){
             [weakSelf showShareActionChoose];

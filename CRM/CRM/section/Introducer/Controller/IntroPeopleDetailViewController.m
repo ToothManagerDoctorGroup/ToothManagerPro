@@ -34,8 +34,6 @@
 @property (nonatomic,retain) NSMutableArray *patientCellModeArray;
 @property (nonatomic,retain) IntroDetailHeaderTableViewController *tbheaderView;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation IntroPeopleDetailViewController
@@ -88,11 +86,6 @@
     [super initData];
     
     patientArray = [[DBManager shareInstance] getPatientByIntroducerId:self.introducer.ckeyid];
-    if (patientArray.count == 0) {
-        self.noResultAlertView.hidden = NO;
-    }else{
-        self.noResultAlertView.hidden = YES;
-    }
     
     _patientCellModeArray = [NSMutableArray arrayWithCapacity:0];
     for (NSInteger i = 0; i < patientArray.count; i++) {
@@ -114,13 +107,7 @@
     [super refreshData];
     introducer = [[DBManager shareInstance] getIntroducerByIntroducerID:introducer.ckeyid];
     patientArray = [[DBManager shareInstance] getPatientByIntroducerId:self.introducer.ckeyid];
-    
-    if (patientArray.count == 0) {
-        self.noResultAlertView.hidden = NO;
-    }else{
-        self.noResultAlertView.hidden = YES;
-    }
-    
+
     [_patientCellModeArray removeAllObjects];
     for (NSInteger i = 0; i < patientArray.count; i++) {
         Patient *patientTmp = [patientArray objectAtIndex:i];
@@ -165,9 +152,6 @@
     //去掉多余的cell
     myTableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
     [self.view addSubview:myTableView];
-    
-    //添加
-    self.noResultAlertView = [myTableView createNoResultAlertViewWithImageName:@"intrDetail_alert" top:190 showButton:NO buttonClickBlock:nil];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introducer" bundle:nil];
     _tbheaderView = [storyboard instantiateViewControllerWithIdentifier:@"IntroDetailHeaderTableViewController"];
@@ -244,6 +228,7 @@
 #pragma mark - UITableView Delegate
 -  (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    [tableView createNoResultAlertViewWithImageName:@"intrDetail_alert" showButton:NO ifNecessaryForRowCount:patientArray.count];
     return [patientArray count];
 }
 

@@ -21,8 +21,6 @@
 @property (nonatomic,retain) FriendNotificationItem *selectFriendNotiItem;
 @property (nonatomic,retain) Doctor *addDoctor;
 
-@property (nonatomic, weak)UIView *noResultAlertView;
-
 @end
 
 @implementation XLNewFriendNotiViewController
@@ -57,8 +55,6 @@
     self.title = @"新的好友";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
-    
-    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"doctorNewFriend_alert.png" top:60 showButton:NO buttonClickBlock:nil];
 }
 
 - (void)initData {
@@ -72,7 +68,6 @@
     [self.friendNotifiObj.result removeAllObjects];
     NSArray *resultArray = [result objectForKey:@"Result"];
     if (resultArray && resultArray.count > 0) {
-        self.noResultAlertView.hidden = YES;
         for (NSDictionary *dic in resultArray) {
             FriendNotificationItem *notifiItem = [FriendNotificationItem friendnotificationWithDic:dic];
             if ([notifiItem.doctor_id isEqualToString:[AccountManager currentUserid]] &&
@@ -89,8 +84,6 @@
         [archiver finishEncoding];
         NSString *path = [[CacheFactory sharedCacheFactory] saveToPathAsFileName:@"FriendNotification"];
         [data writeToFile: path atomically:YES];//写进文件
-    }else{
-        self.noResultAlertView.hidden = NO;
     }
     [SVProgressHUD dismiss];
     [self refreshView];
@@ -102,6 +95,7 @@
 
 #pragma mark - UITableViewDataSource/Delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    [tableView createNoResultAlertViewWithImageName:@"doctorNewFriend_alert.png" showButton:NO ifNecessaryForRowCount:self.friendNotifiObj.result.count];
     return self.friendNotifiObj.result.count;
 }
 

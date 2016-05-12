@@ -1027,16 +1027,16 @@
         if (repairDoctorId == nil) {
             //判断是否选择了时间
             if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
-                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,(long)status];
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and p.patient_status >= %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,(long)status];
             }else{
-                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],(long)status];
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and p.patient_status >= %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],(long)status];
             }
         }else{
             //判断是否选择了时间
             if ([startTime isNotEmpty] && [endTime isNotEmpty]) {
-                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and mc.repair_doctor in (%@) and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,repairDoctorId,(long)status];
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ >= datetime('%@') and mc.%@ <= datetime('%@') and mc.repair_doctor in (%@) and p.patient_status >= %ld",PatientTableName,MedicalCaseTableName,keyParam,startTime,keyParam,endTime,repairDoctorId,(long)status];
             }else{
-                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and mc.repair_doctor in (%@) and p.patient_status = %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],repairDoctorId,(long)status];
+                keyExtension = [NSString stringWithFormat:@"select p.* from %@ p,%@ mc where p.ckeyid=mc.patient_id and mc.%@ > datetime('%@') and mc.repair_doctor in (%@) and p.patient_status >= %ld",PatientTableName,MedicalCaseTableName,keyParam,[NSString defaultDateString],repairDoctorId,(long)status];
             }
         }
     }

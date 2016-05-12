@@ -691,6 +691,7 @@
 		3D1BAB2B1C7AE7EE00DA5E8A /* icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1BAB221C7AE7EE00DA5E8A /* icon-Small@2x.png */; };
 		3D1BAB2C1C7AE7EE00DA5E8A /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1BAB231C7AE7EE00DA5E8A /* icon.png */; };
 		3D1BAB2D1C7AE7EE00DA5E8A /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1BAB241C7AE7EE00DA5E8A /* icon@2x.png */; };
+		3D1C47091CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C47081CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m */; };
 		3D1C54781C759B1100C2A4A0 /* XLHengYaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C54771C759B1100C2A4A0 /* XLHengYaViewController.m */; };
 		3D1C547B1C759B1C00C2A4A0 /* XLRuYaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C547A1C759B1C00C2A4A0 /* XLRuYaViewController.m */; };
 		3D1C54851C75C29000C2A4A0 /* menuButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C54821C75C29000C2A4A0 /* menuButton.png */; };
@@ -2781,6 +2782,8 @@
 		3D1BAB221C7AE7EE00DA5E8A /* icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-Small@2x.png"; sourceTree = "<group>"; };
 		3D1BAB231C7AE7EE00DA5E8A /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		3D1BAB241C7AE7EE00DA5E8A /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
+		3D1C47071CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+EmptyDataSet.h"; sourceTree = "<group>"; };
+		3D1C47081CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+EmptyDataSet.m"; sourceTree = "<group>"; };
 		3D1C54761C759B1100C2A4A0 /* XLHengYaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLHengYaViewController.h; sourceTree = "<group>"; };
 		3D1C54771C759B1100C2A4A0 /* XLHengYaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLHengYaViewController.m; sourceTree = "<group>"; };
 		3D1C54791C759B1C00C2A4A0 /* XLRuYaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLRuYaViewController.h; sourceTree = "<group>"; };
@@ -8530,6 +8533,8 @@
 		3DF671571BF70B2000527B49 /* Catory */ = {
 			isa = PBXGroup;
 			children = (
+				3D1C47071CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.h */,
+				3D1C47081CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m */,
 				3D150FE81CC614F900EE7D39 /* NSDate+convenience.h */,
 				3D150FE91CC614F900EE7D39 /* NSDate+convenience.m */,
 				3D150FEC1CC614F900EE7D39 /* UIColor+expanded.h */,
@@ -11696,6 +11701,7 @@
 				3D7961541C16D96300453EB4 /* DoctorGroupViewController.m in Sources */,
 				6436DF3019B8C48100DC667E /* NSString+Conversion.m in Sources */,
 				3DE679801C9A5D06005FFFEE /* XLSwitchAlertView.m in Sources */,
+				3D1C47091CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m in Sources */,
 				3D1725A61CD21BF500EBBE82 /* XLShareManager.m in Sources */,
 				3D1B5FD01C18082B0032D949 /* MJRefreshGifFooter.m in Sources */,
 				3D0BE5DE1BF99A260023D3FA /* PayedBillViewController.m in Sources */,
