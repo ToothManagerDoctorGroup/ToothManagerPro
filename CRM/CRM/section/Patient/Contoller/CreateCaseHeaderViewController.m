@@ -192,11 +192,11 @@
     } else {
         mCase.case_name = self.casenameTextField.text;
     }
-    if ([NSString isEmptyString:self.nextReserveTextField.text]) {
-        mCase.next_reserve_time = @"";
-    } else {
-        mCase.next_reserve_time = self.nextReserveTextField.text;
-    }
+//    if ([NSString isEmptyString:self.nextReserveTextField.text]) {
+//        mCase.next_reserve_time = @"";
+//    } else {
+//        mCase.next_reserve_time = self.nextReserveTextField.text;
+//    }
     if ([NSString isEmptyString:self.repairTextField.text]) {
         mCase.repair_time = @"";
     } else {
@@ -208,17 +208,6 @@
     } else {
         mCase.tooth_position = self.toothPositionField.text;
     }
-    /*
-    if ([NSString isEmptyString:self.repairDoctorTextField.text]) {
-        mCase.repair_doctor = @"";
-    } else {
-        mCase.repair_doctor = self.repairDoctorTextField.text;
-    }
-    if ([NSString isEmptyString:self.implantTextField.text]) {
-        mCase.implant_time = @"";
-    } else {
-        mCase.implant_time = self.implantTextField.text;
-    }*/
     mCase.creation_date = [NSString currentDateString];
 }
 

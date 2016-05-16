@@ -103,6 +103,9 @@
     
     //加载子视图
     [self setUpSubView];
+    
+    //获取患者分组信息
+    [self requestGroupData];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -175,8 +178,6 @@
         //为控件赋值
     _headerMedicalView.medicalCases = array;
     
-    //获取患者分组信息
-    [self requestGroupData];
     //获取绑定信息
     [self getPaitientIsBind];
 }
@@ -255,9 +256,8 @@
 
 #pragma mark - 获取患者分组信息
 - (void)requestGroupData{
-    [DoctorGroupTool getGroupListWithDoctorId:[AccountManager currentUserid] ckId:@"" patientId:_detailPatient.ckeyid success:^(NSArray *result) {
+    [DoctorGroupTool getGroupListWithDoctorId:[AccountManager currentUserid] ckId:@"" patientId:self.patientsCellMode.patientId success:^(NSArray *result) {
         _headerInfoView.currentGroups = result;
-        
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {

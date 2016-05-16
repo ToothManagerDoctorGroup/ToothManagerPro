@@ -37,11 +37,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //去除多余的视图
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-    UIView *view = keyWindow.subviews[1];
-    [view removeFromSuperview];
-    
     //设置导航栏视图
     [self setUpNav];
     //设置数据源

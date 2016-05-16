@@ -167,7 +167,6 @@
     if (!self.isManage) {
         _chooseButton.frame = CGRectMake(self.width - RowHeight - 5, 0, RowHeight + 5, RowHeight);
     }
-    
 }
 
 #pragma mark - 按钮选中事件

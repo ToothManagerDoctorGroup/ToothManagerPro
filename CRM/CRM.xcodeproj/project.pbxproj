@@ -1279,6 +1279,10 @@
 		3DE0450E1CAD11D700177A6E /* XLCustomFilterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE0450D1CAD11D700177A6E /* XLCustomFilterView.m */; };
 		3DE045111CAD1FA600177A6E /* XLFilterAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE045101CAD1FA600177A6E /* XLFilterAlertView.m */; };
 		3DE045141CAD276C00177A6E /* XLFilterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE045131CAD276C00177A6E /* XLFilterCell.m */; };
+		3DE06FA91CE778BB00B1C09D /* XLCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE06FA81CE778BB00B1C09D /* XLCollectionViewController.m */; };
+		3DE06FAC1CE77AB600B1C09D /* XLDateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE06FAB1CE77AB600B1C09D /* XLDateCell.m */; };
+		3DE06FAF1CE77AC400B1C09D /* XLContentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE06FAE1CE77AC400B1C09D /* XLContentCell.m */; };
+		3DE06FB21CE787AC00B1C09D /* FormScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE06FB11CE787AC00B1C09D /* FormScrollView.m */; };
 		3DE127561C1A642B009C1663 /* TTMUserGuideController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE127551C1A642B009C1663 /* TTMUserGuideController.m */; };
 		3DE127591C1A6475009C1663 /* UIImage+TTMAddtion.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE127581C1A6475009C1663 /* UIImage+TTMAddtion.m */; };
 		3DE127641C1A68AE009C1663 /* nav1.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE1275B1C1A68AE009C1663 /* nav1.png */; };
@@ -1288,6 +1292,14 @@
 		3DE127681C1A68AE009C1663 /* nav2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE1275F1C1A68AE009C1663 /* nav2@2x.png */; };
 		3DE127691C1A68AE009C1663 /* nav2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DE127601C1A68AE009C1663 /* nav2@3x.png */; };
 		3DE1276F1C1A6975009C1663 /* NSString+TTMAddtion.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE1276E1C1A6975009C1663 /* NSString+TTMAddtion.m */; };
+		3DE136C01CE9AD950005B45A /* MeetModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136B71CE9AD950005B45A /* MeetModel.m */; };
+		3DE136C11CE9AD950005B45A /* MyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136B91CE9AD950005B45A /* MyCell.m */; };
+		3DE136C21CE9AD950005B45A /* MyLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136BB1CE9AD950005B45A /* MyLabel.m */; };
+		3DE136C31CE9AD950005B45A /* TimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136BD1CE9AD950005B45A /* TimeCell.m */; };
+		3DE136C41CE9AD950005B45A /* TimeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136BF1CE9AD950005B45A /* TimeView.m */; };
+		3DE136C71CE9AD9F0005B45A /* HeadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136C61CE9AD9F0005B45A /* HeadView.m */; };
+		3DE136CA1CE9ADCC0005B45A /* XLTest1ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136C91CE9ADCC0005B45A /* XLTest1ViewController.m */; };
+		3DE136D01CE9C2C40005B45A /* CustomCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE136CF1CE9C2C40005B45A /* CustomCollectionViewLayout.m */; };
 		3DE1E2931C99102600DA48EE /* MMDrawerBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE1E28B1C99102600DA48EE /* MMDrawerBarButtonItem.m */; };
 		3DE1E2941C99102600DA48EE /* MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE1E28E1C99102600DA48EE /* MMDrawerController.m */; };
 		3DE1E2951C99102600DA48EE /* MMDrawerVisualState.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE1E2901C99102600DA48EE /* MMDrawerVisualState.m */; };
@@ -1329,6 +1341,9 @@
 		3DE584511C0C2CE200B509C1 /* NSString+MyString.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE584501C0C2CE200B509C1 /* NSString+MyString.m */; };
 		3DE584551C0C2D2F00B509C1 /* NSDate+MyDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE584541C0C2D2F00B509C1 /* NSDate+MyDate.m */; };
 		3DE584581C0C398F00B509C1 /* MyBillPayedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE584571C0C398F00B509C1 /* MyBillPayedCell.m */; };
+		3DE5E7B61CE576AE00ECC4BD /* XLClinicAppointmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5E7B51CE576AE00ECC4BD /* XLClinicAppointmentViewController.m */; };
+		3DE5E7BA1CE57B3A00ECC4BD /* XLClinicAppointmentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5E7B91CE57B3A00ECC4BD /* XLClinicAppointmentModel.m */; };
+		3DE5E7BC1CE58A6C00ECC4BD /* datas.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3DE5E7BB1CE58A6C00ECC4BD /* datas.plist */; };
 		3DE5FBC11BFC2ABC001E7728 /* DoctorTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5FBC01BFC2ABC001E7728 /* DoctorTool.m */; };
 		3DE5FBC41BFC2AE3001E7728 /* DoctorInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5FBC31BFC2AE3001E7728 /* DoctorInfoModel.m */; };
 		3DE5FBCA1BFC68E1001E7728 /* PayParam.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DE5FBC91BFC68E1001E7728 /* PayParam.m */; };
@@ -3599,6 +3614,14 @@
 		3DE045101CAD1FA600177A6E /* XLFilterAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XLFilterAlertView.m; path = ../../Common/Views/XLFilterAlertView.m; sourceTree = "<group>"; };
 		3DE045121CAD276C00177A6E /* XLFilterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFilterCell.h; sourceTree = "<group>"; };
 		3DE045131CAD276C00177A6E /* XLFilterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFilterCell.m; sourceTree = "<group>"; };
+		3DE06FA71CE778BB00B1C09D /* XLCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLCollectionViewController.h; sourceTree = "<group>"; };
+		3DE06FA81CE778BB00B1C09D /* XLCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLCollectionViewController.m; sourceTree = "<group>"; };
+		3DE06FAA1CE77AB600B1C09D /* XLDateCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLDateCell.h; sourceTree = "<group>"; };
+		3DE06FAB1CE77AB600B1C09D /* XLDateCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLDateCell.m; sourceTree = "<group>"; };
+		3DE06FAD1CE77AC400B1C09D /* XLContentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLContentCell.h; sourceTree = "<group>"; };
+		3DE06FAE1CE77AC400B1C09D /* XLContentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLContentCell.m; sourceTree = "<group>"; };
+		3DE06FB01CE787AC00B1C09D /* FormScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FormScrollView.h; sourceTree = "<group>"; };
+		3DE06FB11CE787AC00B1C09D /* FormScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FormScrollView.m; sourceTree = "<group>"; };
 		3DE127541C1A642B009C1663 /* TTMUserGuideController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTMUserGuideController.h; sourceTree = "<group>"; };
 		3DE127551C1A642B009C1663 /* TTMUserGuideController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTMUserGuideController.m; sourceTree = "<group>"; };
 		3DE127571C1A6475009C1663 /* UIImage+TTMAddtion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+TTMAddtion.h"; sourceTree = "<group>"; };
@@ -3611,6 +3634,22 @@
 		3DE127601C1A68AE009C1663 /* nav2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nav2@3x.png"; sourceTree = "<group>"; };
 		3DE1276D1C1A6975009C1663 /* NSString+TTMAddtion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TTMAddtion.h"; sourceTree = "<group>"; };
 		3DE1276E1C1A6975009C1663 /* NSString+TTMAddtion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TTMAddtion.m"; sourceTree = "<group>"; };
+		3DE136B61CE9AD950005B45A /* MeetModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeetModel.h; sourceTree = "<group>"; };
+		3DE136B71CE9AD950005B45A /* MeetModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeetModel.m; sourceTree = "<group>"; };
+		3DE136B81CE9AD950005B45A /* MyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCell.h; sourceTree = "<group>"; };
+		3DE136B91CE9AD950005B45A /* MyCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyCell.m; sourceTree = "<group>"; };
+		3DE136BA1CE9AD950005B45A /* MyLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyLabel.h; sourceTree = "<group>"; };
+		3DE136BB1CE9AD950005B45A /* MyLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyLabel.m; sourceTree = "<group>"; };
+		3DE136BC1CE9AD950005B45A /* TimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeCell.h; sourceTree = "<group>"; };
+		3DE136BD1CE9AD950005B45A /* TimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeCell.m; sourceTree = "<group>"; };
+		3DE136BE1CE9AD950005B45A /* TimeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeView.h; sourceTree = "<group>"; };
+		3DE136BF1CE9AD950005B45A /* TimeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeView.m; sourceTree = "<group>"; };
+		3DE136C51CE9AD9F0005B45A /* HeadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeadView.h; sourceTree = "<group>"; };
+		3DE136C61CE9AD9F0005B45A /* HeadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeadView.m; sourceTree = "<group>"; };
+		3DE136C81CE9ADCC0005B45A /* XLTest1ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTest1ViewController.h; sourceTree = "<group>"; };
+		3DE136C91CE9ADCC0005B45A /* XLTest1ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTest1ViewController.m; sourceTree = "<group>"; };
+		3DE136CE1CE9C2C40005B45A /* CustomCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCollectionViewLayout.h; sourceTree = "<group>"; };
+		3DE136CF1CE9C2C40005B45A /* CustomCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCollectionViewLayout.m; sourceTree = "<group>"; };
 		3DE1E28A1C99102600DA48EE /* MMDrawerBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerBarButtonItem.h; sourceTree = "<group>"; };
 		3DE1E28B1C99102600DA48EE /* MMDrawerBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMDrawerBarButtonItem.m; sourceTree = "<group>"; };
 		3DE1E28C1C99102600DA48EE /* MMDrawerController+Subclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MMDrawerController+Subclass.h"; sourceTree = "<group>"; };
@@ -3684,6 +3723,11 @@
 		3DE584541C0C2D2F00B509C1 /* NSDate+MyDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+MyDate.m"; sourceTree = "<group>"; };
 		3DE584561C0C398F00B509C1 /* MyBillPayedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyBillPayedCell.h; sourceTree = "<group>"; };
 		3DE584571C0C398F00B509C1 /* MyBillPayedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyBillPayedCell.m; sourceTree = "<group>"; };
+		3DE5E7B41CE576AE00ECC4BD /* XLClinicAppointmentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLClinicAppointmentViewController.h; sourceTree = "<group>"; };
+		3DE5E7B51CE576AE00ECC4BD /* XLClinicAppointmentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLClinicAppointmentViewController.m; sourceTree = "<group>"; };
+		3DE5E7B81CE57B3A00ECC4BD /* XLClinicAppointmentModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLClinicAppointmentModel.h; sourceTree = "<group>"; };
+		3DE5E7B91CE57B3A00ECC4BD /* XLClinicAppointmentModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLClinicAppointmentModel.m; sourceTree = "<group>"; };
+		3DE5E7BB1CE58A6C00ECC4BD /* datas.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = datas.plist; sourceTree = "<group>"; };
 		3DE5FBBF1BFC2ABC001E7728 /* DoctorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoctorTool.h; sourceTree = "<group>"; };
 		3DE5FBC01BFC2ABC001E7728 /* DoctorTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoctorTool.m; sourceTree = "<group>"; };
 		3DE5FBC21BFC2AE3001E7728 /* DoctorInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoctorInfoModel.h; sourceTree = "<group>"; };
@@ -6238,6 +6282,7 @@
 		3D1B61601C1824820032D949 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3DE5E7B71CE57B1A00ECC4BD /* Appointment */,
 				3D156A941C9145EF00550C24 /* DoctorFriendList */,
 				3D1B61611C18249D0032D949 /* DoctorGroup */,
 			);
@@ -6874,6 +6919,7 @@
 		3D2A004D1C05E53B00B1EF65 /* XLCommonTools */ = {
 			isa = PBXGroup;
 			children = (
+				3DE5E7B01CE575AC00ECC4BD /* FormScrollView */,
 				3DF2C67E1CD88AAB0084C346 /* MLEmojiLabel */,
 				3D1725941CD1DD5200EBBE82 /* MGSwipeTableCell */,
 				3D2526351CD0B3FC00F1EA99 /* ODRefreshControl */,
@@ -6954,6 +7000,7 @@
 		3D37CFED1C27AC8400C595F4 /* Appointment */ = {
 			isa = PBXGroup;
 			children = (
+				3DE5E7BB1CE58A6C00ECC4BD /* datas.plist */,
 				3D37CFEE1C27ACE500C595F4 /* AppoinmentMenuViewController.h */,
 				3D37CFEF1C27ACE500C595F4 /* AppoinmentMenuViewController.m */,
 				3D37CFF51C27D5A000C595F4 /* XLSelectYuyueViewController.h */,
@@ -6964,6 +7011,8 @@
 				3D39DB1E1C2A87F900AA2EE9 /* XLReserveTypesViewController.m */,
 				3DE7A07A1C2BA98600659119 /* XLSelectCalendarViewController.h */,
 				3DE7A07B1C2BA98600659119 /* XLSelectCalendarViewController.m */,
+				3DE5E7B41CE576AE00ECC4BD /* XLClinicAppointmentViewController.h */,
+				3DE5E7B51CE576AE00ECC4BD /* XLClinicAppointmentViewController.m */,
 			);
 			name = Appointment;
 			sourceTree = "<group>";
@@ -6975,6 +7024,10 @@
 				3D37CFF31C27AFD600C595F4 /* AppointmentTableViewCell.m */,
 				3D37CFFB1C27DF1500C595F4 /* XLSelectYuyueCell.h */,
 				3D37CFFC1C27DF1500C595F4 /* XLSelectYuyueCell.m */,
+				3DE06FAA1CE77AB600B1C09D /* XLDateCell.h */,
+				3DE06FAB1CE77AB600B1C09D /* XLDateCell.m */,
+				3DE06FAD1CE77AC400B1C09D /* XLContentCell.h */,
+				3DE06FAE1CE77AC400B1C09D /* XLContentCell.m */,
 			);
 			name = Appoinment;
 			sourceTree = "<group>";
@@ -7989,6 +8042,55 @@
 			name = NewFeature;
 			sourceTree = "<group>";
 		};
+		3DE136B21CE9AD050005B45A /* ClinicAppointment */ = {
+			isa = PBXGroup;
+			children = (
+				3DE136B51CE9AD260005B45A /* Controllers */,
+				3DE136B41CE9AD210005B45A /* Views */,
+				3DE136B31CE9AD1A0005B45A /* Models */,
+			);
+			name = ClinicAppointment;
+			sourceTree = "<group>";
+		};
+		3DE136B31CE9AD1A0005B45A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		3DE136B41CE9AD210005B45A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3DE136CE1CE9C2C40005B45A /* CustomCollectionViewLayout.h */,
+				3DE136CF1CE9C2C40005B45A /* CustomCollectionViewLayout.m */,
+				3DE136C51CE9AD9F0005B45A /* HeadView.h */,
+				3DE136C61CE9AD9F0005B45A /* HeadView.m */,
+				3DE136B61CE9AD950005B45A /* MeetModel.h */,
+				3DE136B71CE9AD950005B45A /* MeetModel.m */,
+				3DE136B81CE9AD950005B45A /* MyCell.h */,
+				3DE136B91CE9AD950005B45A /* MyCell.m */,
+				3DE136BA1CE9AD950005B45A /* MyLabel.h */,
+				3DE136BB1CE9AD950005B45A /* MyLabel.m */,
+				3DE136BC1CE9AD950005B45A /* TimeCell.h */,
+				3DE136BD1CE9AD950005B45A /* TimeCell.m */,
+				3DE136BE1CE9AD950005B45A /* TimeView.h */,
+				3DE136BF1CE9AD950005B45A /* TimeView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		3DE136B51CE9AD260005B45A /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				3DE136C81CE9ADCC0005B45A /* XLTest1ViewController.h */,
+				3DE136C91CE9ADCC0005B45A /* XLTest1ViewController.m */,
+				3DE06FA71CE778BB00B1C09D /* XLCollectionViewController.h */,
+				3DE06FA81CE778BB00B1C09D /* XLCollectionViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		3DE1E2891C99102600DA48EE /* MMDrawerController */ = {
 			isa = PBXGroup;
 			children = (
@@ -8252,6 +8354,24 @@
 				3D703C681CCE0CDB00F30E78 /* XLDoctorSqureViewController.m */,
 			);
 			name = DoctorFriendList;
+			sourceTree = "<group>";
+		};
+		3DE5E7B01CE575AC00ECC4BD /* FormScrollView */ = {
+			isa = PBXGroup;
+			children = (
+				3DE06FB01CE787AC00B1C09D /* FormScrollView.h */,
+				3DE06FB11CE787AC00B1C09D /* FormScrollView.m */,
+			);
+			path = FormScrollView;
+			sourceTree = "<group>";
+		};
+		3DE5E7B71CE57B1A00ECC4BD /* Appointment */ = {
+			isa = PBXGroup;
+			children = (
+				3DE5E7B81CE57B3A00ECC4BD /* XLClinicAppointmentModel.h */,
+				3DE5E7B91CE57B3A00ECC4BD /* XLClinicAppointmentModel.m */,
+			);
+			name = Appointment;
 			sourceTree = "<group>";
 		};
 		3DE5FBBE1BFC2A9E001E7728 /* DoctorTool */ = {
@@ -9460,8 +9580,8 @@
 		64CFD85B19F7F6A5001EB0DA /* Doctor（医生好友） */ = {
 			isa = PBXGroup;
 			children = (
-				3D1B61601C1824820032D949 /* Model */,
 				64CFD85C19F7F6A5001EB0DA /* Controller */,
+				3D1B61601C1824820032D949 /* Model */,
 				64CFD86619F7F6A5001EB0DA /* View */,
 			);
 			name = "Doctor（医生好友）";
@@ -9471,6 +9591,7 @@
 		64CFD85C19F7F6A5001EB0DA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				3DE136B21CE9AD050005B45A /* ClinicAppointment */,
 				3D37CFED1C27AC8400C595F4 /* Appointment */,
 				3DE5C2E61C242256008B56DA /* DoctorFriendList */,
 				3DE7C1E71C225408001F24ED /* NewFriendMsg */,
@@ -10346,6 +10467,7 @@
 				81DA09B61A89FC2200763EBC /* rightArrow@xx.png in Resources */,
 				3D1B60581C18082B0032D949 /* VoiceSearchFeedback012@2x.png in Resources */,
 				3D1B60351C18082B0032D949 /* chatBar_colorMore_locationSelected@2x.png in Resources */,
+				3DE5E7BC1CE58A6C00ECC4BD /* datas.plist in Resources */,
 				6436DF0C19B8C48100DC667E /* unicode_to_hanyu_pinyin.txt in Resources */,
 				3DE0450B1CAD10F200177A6E /* ct_holderImage@3x.png in Resources */,
 				3D1B60A21C18082B0032D949 /* chatBar_more_face@2x.png in Resources */,
@@ -11080,6 +11202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D17259B1CD1DD5200EBBE82 /* MGSwipeButton.m in Sources */,
+				3DE136C01CE9AD950005B45A /* MeetModel.m in Sources */,
 				3DDE7FC61C1E8AD9006053DA /* JTCalendar.m in Sources */,
 				3D27F7B61C08A6A800C50CBF /* LewPopupViewAnimationSlide.m in Sources */,
 				3DDE32451CCA299A0081E57E /* UITableView+NoResultAlert.m in Sources */,
@@ -11090,6 +11213,7 @@
 				3DE27FD51C97D9F50066A1F2 /* XLContactsViewController.m in Sources */,
 				2DFE7ECC1B4A71980088B119 /* AFHTTPRequestOperation.m in Sources */,
 				3D1B60131C18082B0032D949 /* EaseRefreshTableViewController.m in Sources */,
+				3DE136C31CE9AD950005B45A /* TimeCell.m in Sources */,
 				3D1B5FB11C18082B0032D949 /* NSString+Valid.m in Sources */,
 				64BD7C8819BC094B0015D47F /* SVProgressHUD.m in Sources */,
 				3DF671611BF7139400527B49 /* ClinicCover.m in Sources */,
@@ -11124,6 +11248,7 @@
 				3D1B61671C18277E0032D949 /* GroupEntity.m in Sources */,
 				3D29063E1C8EC1DB0090AC6C /* XLJoinTreateCell.m in Sources */,
 				3D2851E31C350AC300C88917 /* XLAutoGetSyncTool.m in Sources */,
+				3DE06FB21CE787AC00B1C09D /* FormScrollView.m in Sources */,
 				3DDE7FC71C1E8AD9006053DA /* JTCalendarAppearance.m in Sources */,
 				3D1B31071C8D8EFB009F7466 /* XLTreateGroupViewController.m in Sources */,
 				3D1B61701C1831330032D949 /* GroupMemberEntity.m in Sources */,
@@ -11172,6 +11297,8 @@
 				3D1B26011BFEB04D00997FDE /* PatientDetailHeadInfoView.m in Sources */,
 				3D1B60021C18082B0032D949 /* EaseUserModel.m in Sources */,
 				64CFD90A19F7F6A6001EB0DA /* CreateIntroducerViewController.m in Sources */,
+				3DE136C11CE9AD950005B45A /* MyCell.m in Sources */,
+				3DE06FAF1CE77AC400B1C09D /* XLContentCell.m in Sources */,
 				6436DE3D19B8C48100DC667E /* CRMHttpRequest+PersonalCenter.m in Sources */,
 				3D1AB0731C00424600547809 /* MLKMenuPopover.m in Sources */,
 				6486020F1AAAE76300A57B09 /* IntroDetailHeaderTableViewController.m in Sources */,
@@ -11217,7 +11344,9 @@
 				64CFD91519F7F6A6001EB0DA /* NewMaterialsViewController.m in Sources */,
 				642D7AAA1A80790F007F8D58 /* CaseMaterialsViewController.m in Sources */,
 				3DE584581C0C398F00B509C1 /* MyBillPayedCell.m in Sources */,
+				3DE136C41CE9AD950005B45A /* TimeView.m in Sources */,
 				3D1661CA1C29288B0062009D /* XLForgetPasswordViewController.m in Sources */,
+				3DE5E7BA1CE57B3A00ECC4BD /* XLClinicAppointmentModel.m in Sources */,
 				3D309A9D1C3A7B27006FAFDB /* XLAppointDetailViewController.m in Sources */,
 				2DFE7EDA1B4A71980088B119 /* UIButton+AFNetworking.m in Sources */,
 				3D1B5FD31C18082B0032D949 /* MJRefreshLegendFooter.m in Sources */,
@@ -11226,6 +11355,7 @@
 				3D6C56481C883C0E008CC287 /* XLDiseaseRecordDetailController.m in Sources */,
 				3DDE31E21CCA06820081E57E /* XLPatientSortManager.m in Sources */,
 				3D1B5FD71C18082B0032D949 /* UIView+MJExtension.m in Sources */,
+				3DE06FA91CE778BB00B1C09D /* XLCollectionViewController.m in Sources */,
 				3DE127561C1A642B009C1663 /* TTMUserGuideController.m in Sources */,
 				3D3971131CCF621F0020DD55 /* XLAdviceSelectViewController.m in Sources */,
 				3D1B60231C18082B0032D949 /* EaseImageView.m in Sources */,
@@ -11439,6 +11569,7 @@
 				3DEA3F751C87F28D00678E3D /* XLTreatPlanDetailViewController.m in Sources */,
 				3D1A004D1CBD150B008701AE /* DBManager+Transaction.m in Sources */,
 				3DF2C6AF1CD88AAB0084C346 /* MLLabel.m in Sources */,
+				3DE136CA1CE9ADCC0005B45A /* XLTest1ViewController.m in Sources */,
 				3D150FF31CC614F900EE7D39 /* UIView+convenience.m in Sources */,
 				3D5B4F921C2D3FEC00E37140 /* XLRecordCell.m in Sources */,
 				3DAA118C1BF5C1B900FD8149 /* WMMenuView.m in Sources */,
@@ -11578,6 +11709,7 @@
 				3D1B5F9D1C18082B0032D949 /* EMAlertView.m in Sources */,
 				3D1B5F9E1C18082B0032D949 /* EMGifImage.m in Sources */,
 				3D1B5FDC1C18082B0032D949 /* MWPhotoBrowser.m in Sources */,
+				3DE5E7B61CE576AE00ECC4BD /* XLClinicAppointmentViewController.m in Sources */,
 				3D1B5FB21C18082B0032D949 /* UIImageView+HeadImage.m in Sources */,
 				2DC828F71BA2CF30001CA6A4 /* AccountViewController.m in Sources */,
 				3DAA11071BF5946300FD8149 /* MJPhotoLoadingView.m in Sources */,
@@ -11585,6 +11717,7 @@
 				3D12BBC41CABD77E007CEC79 /* CRMHttpRequest+Sync.m in Sources */,
 				3D1B5FD61C18082B0032D949 /* UIScrollView+MJRefresh.m in Sources */,
 				3D1B5FBC1C18082B0032D949 /* BaseTableViewCell.m in Sources */,
+				3DE136C71CE9AD9F0005B45A /* HeadView.m in Sources */,
 				3D25265B1CD0DA9700F1EA99 /* XLBubbleView+Image.m in Sources */,
 				6436DE2E19B8C48100DC667E /* main.m in Sources */,
 				3D1B5FB31C18082B0032D949 /* UIResponder+Router.m in Sources */,
@@ -11607,6 +11740,7 @@
 				64CFD91119F7F6A6001EB0DA /* StarPickerTableViewCell.m in Sources */,
 				3D1B60121C18082B0032D949 /* EaseMessageViewController.m in Sources */,
 				3D1B5FCD1C18082B0032D949 /* MJRefreshComponent.m in Sources */,
+				3DE136D01CE9C2C40005B45A /* CustomCollectionViewLayout.m in Sources */,
 				3D23A63B1BF2EE800029943D /* CRMHttpTool.m in Sources */,
 				3D2526271CD09AED00F1EA99 /* UINavigationItem+Margin.m in Sources */,
 				3DE7A07C1C2BA98600659119 /* XLSelectCalendarViewController.m in Sources */,
@@ -11615,6 +11749,7 @@
 				3D1B61641C1824B10032D949 /* DoctorGroupModel.m in Sources */,
 				3D15212E1C4358B800650969 /* XLEventStoreManager.m in Sources */,
 				3DDF2E981C09C0C2005F48CA /* MyUploadParam.m in Sources */,
+				3DE06FAC1CE77AB600B1C09D /* XLDateCell.m in Sources */,
 				3D16D7971C51D1F10039043F /* XLSeniorStatisticsHeaderView.m in Sources */,
 				6436DE2819B8C48100DC667E /* CRMAppDelegate.mm in Sources */,
 				3DF2C6AC1CD88AAB0084C346 /* NSAttributedString+MLExpression.m in Sources */,
@@ -11632,6 +11767,7 @@
 				3DE78BAF1C3B7ECF001F963F /* XLTextViewPlaceHolder.m in Sources */,
 				3D1B5FB91C18082B0032D949 /* RealtimeSearchUtil.m in Sources */,
 				3D27F7B31C08A6A800C50CBF /* LewPopupBackgroundView.m in Sources */,
+				3DE136C21CE9AD950005B45A /* MyLabel.m in Sources */,
 				6436DF3719B8C48100DC667E /* UITableViewHeaderFooterView+Extension.m in Sources */,
 				3D987F581C96EC100044183D /* XLCustomAlertView.m in Sources */,
 				3D181BB91CE2D0B000D11B66 /* XLMessageHandleManager.m in Sources */,

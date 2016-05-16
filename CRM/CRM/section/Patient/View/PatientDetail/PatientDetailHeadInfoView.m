@@ -398,7 +398,6 @@
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         } 
     }
-    [self setCurrentGroups:addGroups];
     
     //上传删除的分组信息
     if (deleteGroups.count > 0) {
@@ -414,7 +413,7 @@
         InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_AddPatientToGroups postType:Delete dataEntity:[param.keyValues JSONString] syncStatus:@"0"];
         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
     }
-    
+    [self setCurrentGroups:addGroups];
 }
 
 

@@ -122,7 +122,7 @@
     
     Patient *currentPatient = self.patient;
     currentPatient.patient_name = self.patientNameField.text;
-    currentPatient.patient_age = self.patientAgeField.text;
+    currentPatient.patient_age = [self.patientAgeField.text isEmpty] ? @"0" : self.patientAgeField.text;
     currentPatient.patient_gender = [self.patientGenderLabel.text isEqualToString: @"女"] ? @"0" : @"1";
     currentPatient.patient_address = self.patientAddressLabel.text;
     currentPatient.idCardNum = self.patientIdCardField.text;

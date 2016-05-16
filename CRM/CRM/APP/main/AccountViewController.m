@@ -50,6 +50,10 @@
 
 /*******测试******/
 #import "XLChatRecordViewController.h"
+#import "XLClinicAppointmentViewController.h"
+#import "AppoinmentMenuViewController.h"
+#import "XLCollectionViewController.h"
+#import "XLTest1ViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -123,6 +127,16 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
+    //自定义诊所预约视图
+//    XLClinicAppointmentViewController *appointVc = [[XLClinicAppointmentViewController alloc] init];
+//    appointVc.hidesBottomBarWhenPushed = YES;
+//    [self pushViewController:appointVc animated:YES];
+
+    //Custon
+    XLCollectionViewController *vc = [[XLCollectionViewController alloc] init];
+    vc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:vc animated:YES];
+    
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -134,39 +148,6 @@
     [SVProgressHUD dismiss];
 }
 
-//获取用户的医生列表
-/*
-- (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD dismiss];
-    NSArray *dicArray = [result objectForKey:@"Result"];
-    if (dicArray && dicArray.count > 0) {
-        for (NSDictionary *dic in dicArray) {
-            UserObject *obj = [UserObject userobjectFromDic:dic];
-            [[DBManager shareInstance] updateUserWithUserObject:obj];
-            [[AccountManager shareInstance] refreshCurrentUserInfo];
-            _detailLabel.text = obj.hospitalName;
-            _nameLabel.text = [NSString stringWithFormat:@"%@   %@",obj.name,obj.title];
-            
-            if (obj.img.length > 0) {
-                //下载图片
-//                [self downloadImageWithImageUrl:obj.img];
-                [iconImageView sd_setImageWithURL:[NSURL URLWithString:obj.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
-            }
-            
-            self.isSign = [dic[@"is_sign"] intValue] == 1 ? YES : NO;
-            //更新用户偏好中的数据
-            NSString *key = [NSString stringWithFormat:@"%@isSign",obj.userid];
-            [CRMUserDefalut setObject:[NSString stringWithFormat:@"%d",[dic[@"is_sign"] intValue]] forKey:key];
-            
-            [self refreshView];
-            return;
-        }
-    }
-}
-- (void)getDoctorListFailedWithError:(NSError *)error {
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
-*/
 - (void)refreshView{
     [super refreshView];
     
