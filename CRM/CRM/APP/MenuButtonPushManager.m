@@ -8,17 +8,20 @@
 
 #import "MenuButtonPushManager.h"
 #import "AccountManager.h"
-#import "AppoinmentMenuViewController.h"
 #import "XLSelectYuyueViewController.h"
 #import "XLQrcodePatientViewController.h"
+#import "XLAppointmentBaseViewController.h"
 
 @implementation MenuButtonPushManager
 -(void)yuyueButtonDidSelected{
     
-    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
-    selectYuyeVc.hidesBottomBarWhenPushed = YES;
-    selectYuyeVc.isHome = YES;
-    [self.viewController pushViewController:selectYuyeVc animated:YES];
+//    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
+//    selectYuyeVc.hidesBottomBarWhenPushed = YES;
+//    selectYuyeVc.isHome = YES;
+//    [self.viewController pushViewController:selectYuyeVc animated:YES];
+    XLAppointmentBaseViewController *baseVC = [[XLAppointmentBaseViewController alloc] init];
+    baseVC.hidesBottomBarWhenPushed = YES;
+    [self.viewController pushViewController:baseVC animated:YES];
     
 }
 -(void)huanzheButtonDidSeleted{

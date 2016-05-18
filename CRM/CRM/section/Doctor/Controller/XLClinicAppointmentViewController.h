@@ -10,11 +10,11 @@
 /**
  *  诊所预约视图
  */
-@interface XLClinicAppointmentViewController : UIViewController
+@class XLClinicModel,Patient;
+@interface XLClinicAppointmentViewController : TimViewController
 
-@end
+@property (nonatomic, strong)XLClinicModel *clinicModel;
 
-
-@interface CustomScrollView : UIScrollView
+@property (nonatomic, strong)Patient *patient;
 
 @end

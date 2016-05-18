@@ -19,7 +19,7 @@
 #import "UIImageView+WebCache.h"
 #import "MJPhotoBrowser.h"
 #import "MJPhoto.h"
-#import "UnSignClinicModel.h"
+#import "XLClinicModel.h"
 #import "SignDetailViewController.h"
 #import "ClinicTitleButton.h"
 

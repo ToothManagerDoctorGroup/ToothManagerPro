@@ -51,9 +51,6 @@
 /*******测试******/
 #import "XLChatRecordViewController.h"
 #import "XLClinicAppointmentViewController.h"
-#import "AppoinmentMenuViewController.h"
-#import "XLCollectionViewController.h"
-#import "XLTest1ViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -61,7 +58,6 @@
     IBOutlet UITableViewCell *_zhangHuCell;
     __weak IBOutlet UILabel *_nameLabel;
     __weak IBOutlet UILabel *_detailLabel;
-    
     
     IBOutlet UITableViewCell *_doctorCell;
     IBOutlet UITableViewCell *_zhongZhiTiCell;
@@ -98,6 +94,7 @@
     }
     
     self.title = @"我";
+    self.isSign = YES;
     
     _tableView.delegate=self;
     _tableView.dataSource=self;
@@ -128,14 +125,9 @@
 
 - (void)onRightButtonAction:(id)sender{
     //自定义诊所预约视图
-//    XLClinicAppointmentViewController *appointVc = [[XLClinicAppointmentViewController alloc] init];
-//    appointVc.hidesBottomBarWhenPushed = YES;
-//    [self pushViewController:appointVc animated:YES];
-
-    //Custon
-    XLCollectionViewController *vc = [[XLCollectionViewController alloc] init];
-    vc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:vc animated:YES];
+    XLClinicAppointmentViewController *appointVc = [[XLClinicAppointmentViewController alloc] init];
+    appointVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:appointVc animated:YES];
     
 }
 
@@ -351,8 +343,7 @@
                 
                 
             }else if(indexPath.row == 1){
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-                MyClinicViewController *clinicVc = [storyboard instantiateViewControllerWithIdentifier:@"MyClinicViewController"];
+                MyClinicViewController *clinicVc = [[MyClinicViewController alloc] initWithStyle:UITableViewStylePlain];
                 clinicVc.hidesBottomBarWhenPushed = YES;
                 [self.navigationController pushViewController:clinicVc animated:YES];
             }

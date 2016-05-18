@@ -11,7 +11,7 @@
 #import "DBTableMode.h"
 #import "AccountManager.h"
 #import "ClinicModel.h"
-#import "UnSignClinicModel.h"
+#import "XLClinicModel.h"
 
 @interface SignDetailViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *partyALabel;

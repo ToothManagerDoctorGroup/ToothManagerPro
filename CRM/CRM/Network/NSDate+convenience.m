@@ -143,4 +143,61 @@
     endOfWeek = [gregorian dateFromComponents: componentsStripped];
     return endOfWeek;
 }
+
+- (int)weakDay{
+        int weekDayStr = 0;
+        
+        NSDateComponents *comps = [[NSDateComponents alloc] init];
+        
+        NSString *str = [self description];
+        if (str.length >= 10) {
+            NSString *nowString = [str substringToIndex:10];
+            NSArray *array = [nowString componentsSeparatedByString:@"-"];
+            if (array.count == 0) {
+                array = [nowString componentsSeparatedByString:@"/"];
+            }
+            if (array.count >= 3) {
+                int year = [[array objectAtIndex:0] integerValue];
+                int month = [[array objectAtIndex:1] integerValue];
+                int day = [[array objectAtIndex:2] integerValue];
+                [comps setYear:year];
+                [comps setMonth:month];
+                [comps setDay:day];
+            }
+        }
+        
+        NSCalendar *gregorian = [[NSCalendar alloc]
+                                 initWithCalendarIdentifier:NSGregorianCalendar];
+        NSDate *_date = [gregorian dateFromComponents:comps];
+        NSDateComponents *weekdayComponents = [gregorian components:NSWeekdayCalendarUnit fromDate:_date];
+        int week = [weekdayComponents weekday];
+        week ++;
+        switch (week) {
+            case 1:
+                weekDayStr = 7;
+                break;
+            case 2:
+                weekDayStr = 1;
+                break;
+            case 3:
+                weekDayStr = 2;
+                break;
+            case 4:
+                weekDayStr = 3;
+                break;
+            case 5:
+                weekDayStr = 4;
+                break;
+            case 6:
+                weekDayStr = 5;
+                break;
+            case 7:
+                weekDayStr = 6;
+                break;
+            default:
+                weekDayStr = 0;
+                break;
+        }
+        return weekDayStr;
+}
 @end

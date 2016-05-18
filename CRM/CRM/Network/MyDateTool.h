@@ -36,14 +36,15 @@
 + (NSComparisonResult)compareWithFromDateStr:(NSString *)fromDateStr;
 //比较两个输入的日期的大小，格式为yyyy-MM-dd
 + (NSComparisonResult)compareStartDateStr:(NSString *)startDateStr endDateStr:(NSString *)endDateStr;
-
+//判断当前时间是否早于目标时间
 + (BOOL)earlyThanToday:(NSString *)targetDateStr;
-
+//判断当前时间是否晚于目标时间
 + (BOOL)lateThanToday:(NSString *)targetDateStr;
-
+//根据所给时间得到当月的最后一天
 + (NSString *)getMonthEndWith:(NSString *)dateStr;
+//根据所给时间获取当月的第一天
 + (NSString *)getMonthBeginWith:(NSDate *)date;
-
+//根据所给时间计算当月的天数
 + (NSUInteger)getMonthDayCountWithDate:(NSString *)dateStr;
 
 @end

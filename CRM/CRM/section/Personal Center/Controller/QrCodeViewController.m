@@ -124,7 +124,7 @@
     //短信发送
     if( [MFMessageComposeViewController canSendText] )
     {
-        NSString *urlStr = [NSString stringWithFormat:@"关注后，您将通过种牙管家微信公众号获得预约通知和诊疗医嘱:%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@&patient_id=%@",DomainRealName,Method_Weixin,[AccountManager currentUserid],patient.ckeyid];
+        NSString *urlStr = [NSString stringWithFormat:@"您好，我是xx医生，请点击下面链接，关注我的微信号，关注后您可以获得我的预约通知和诊疗医嘱。链接地址:%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@&patient_id=%@",DomainRealName,Method_Weixin,[AccountManager currentUserid],patient.ckeyid];
         
         MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc] init];
         controller.recipients = @[patient.patient_phone];

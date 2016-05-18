@@ -30,6 +30,14 @@
     return [self initWithFrame:CGRectZero];
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
+    CGPoint hitPoint = [self convertPoint:point fromView:self];
+    if ([self pointInside:hitPoint withEvent:event]){
+        return self;
+    }
+    return [super hitTest:point withEvent:event];
+}
+
 - (id)initWithFrame:(CGRect)frame  {
     if ((self = [super initWithFrame:frame])) {
         [self commonInit];

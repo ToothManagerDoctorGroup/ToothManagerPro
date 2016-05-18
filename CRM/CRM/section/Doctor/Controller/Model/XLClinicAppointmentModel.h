@@ -14,15 +14,24 @@
 /**
  *  当前对象所在位置
  */
-@property (nonatomic, strong)FIndexPath *indexPath;
+@property (nonatomic, strong)NSArray *indexPathList;
+/**
+ *  每个模型的原始位置
+ */
+@property (nonatomic, strong)NSIndexPath *indexPath;
+
 /**
  *  是否被占用
  */
 @property (nonatomic, assign,getter=isTakeUp)BOOL takeUp;
 /**
+ *  诊所id
+ */
+@property (nonatomic, copy)NSString *clinicId;
+/**
  *  椅位号
  */
-@property (nonatomic, copy)NSString *seat;
+@property (nonatomic, copy)NSString *seatId;
 /**
  *  预约时间
  */
@@ -31,9 +40,12 @@
  *  预约时长
  */
 @property (nonatomic, assign)float duration;
-/**s
- *  当前显示时间
+
+/**
+ *  当前的显示时间
  */
-@property (nonatomic, copy)NSString *visiableTime;
+@property (nonatomic, copy)NSString *visibleTime;
+
+
 
 @end

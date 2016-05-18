@@ -24,6 +24,7 @@
 #import "GroupMemberEntity.h"
 #import "DoctorGroupTool.h"
 #import <MessageUI/MessageUI.h>
+#import "XLAppointmentBaseViewController.h"
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]
@@ -338,11 +339,15 @@
 #pragma mark - 添加预约
 - (void)addReserveButtonClick{
     
-    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
-    selectYuyeVc.hidesBottomBarWhenPushed = YES;
-    selectYuyeVc.isAddLocationToPatient = YES;
-    selectYuyeVc.patient = self.detailPatient;
-    [self.viewController.navigationController pushViewController:selectYuyeVc animated:YES];
+//    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
+//    selectYuyeVc.hidesBottomBarWhenPushed = YES;
+//    selectYuyeVc.isAddLocationToPatient = YES;
+//    selectYuyeVc.patient = self.detailPatient;
+//    [self.viewController.navigationController pushViewController:selectYuyeVc animated:YES];
+    
+    XLAppointmentBaseViewController *baseVC = [[XLAppointmentBaseViewController alloc] init];
+    baseVC.patient = self.detailPatient;
+    [self.viewController.navigationController pushViewController:baseVC animated:YES];
 }
 #pragma mark - 选择介绍人
 - (void)introduceAction:(UITapGestureRecognizer *)tap{

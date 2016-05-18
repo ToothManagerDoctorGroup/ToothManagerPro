@@ -216,10 +216,10 @@
 
 #pragma mark 消息定时器处理
 - (void)createMessageTimer{
-//    if (!_messageTimer) {
-//        _messageTimer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
-//        [[NSRunLoop currentRunLoop] addTimer:_messageTimer forMode:NSRunLoopCommonModes];
-//    }
+    if (!_messageTimer) {
+        _messageTimer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:_messageTimer forMode:NSRunLoopCommonModes];
+    }
 }
 #pragma mark 处理未读消息
 - (void)messageAutoHandle:(NSTimer *)timer{

@@ -1595,7 +1595,11 @@
         [valueArray addObject:medicalCase.case_name];
         [valueArray addObject:medicalCase.patient_id];
         [valueArray addObject:[self isDefaultDate:medicalCase.implant_time]];
-        [valueArray addObject:[self isDefaultDate:medicalCase.next_reserve_time]];
+        if (medicalCase.next_reserve_time == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:[self isDefaultDate:medicalCase.next_reserve_time]];
+        }
         [valueArray addObject:[self isDefaultDate:medicalCase.repair_time]];
         [valueArray addObject:medicalCase.repair_doctor];
         [valueArray addObject:medicalCase.user_id];

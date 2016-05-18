@@ -52,8 +52,8 @@ static const NSInteger kSelectYuyueViewControllerCalendarHeight = 250;
     [super didReceiveMemoryWarning];
 }
 
--(void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
     
     if (self.isEditAppointment) {
         [self.calendar selectDate:[MyDateTool dateWithStringNoSec:self.reserveTime]];
@@ -70,6 +70,10 @@ static const NSInteger kSelectYuyueViewControllerCalendarHeight = 250;
     }
     
     [self.calendar reloadData];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
 }
 
 #pragma mark - Private Method

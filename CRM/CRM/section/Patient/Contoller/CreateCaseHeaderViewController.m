@@ -192,11 +192,10 @@
     } else {
         mCase.case_name = self.casenameTextField.text;
     }
-//    if ([NSString isEmptyString:self.nextReserveTextField.text]) {
-//        mCase.next_reserve_time = @"";
-//    } else {
-//        mCase.next_reserve_time = self.nextReserveTextField.text;
-//    }
+    if (mCase.next_reserve_time == nil) {
+        mCase.next_reserve_time = @"";
+    }
+    
     if ([NSString isEmptyString:self.repairTextField.text]) {
         mCase.repair_time = @"";
     } else {

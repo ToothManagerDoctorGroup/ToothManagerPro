@@ -10,4 +10,8 @@
 
 @implementation UnSignClinicModel
 
++ (NSDictionary *)replacedKeyFromPropertyName{
+    return @{@"keyId" : @"KeyId"};
+}
+
 @end

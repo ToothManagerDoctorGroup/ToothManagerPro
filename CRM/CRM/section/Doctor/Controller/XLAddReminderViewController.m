@@ -101,6 +101,7 @@
 - (void)dealloc{
     [LocalNotificationCenter shareInstance].selectPatient = nil;
 }
+
 #pragma mark - 设置按钮是否可点
 - (void)setButtonEnable:(BOOL)enable{
     self.navigationItem.rightBarButtonItem.enabled = enable;
@@ -818,7 +819,7 @@
     if ([NSString isEmptyString:doctorId]) {
         doctorId = @"";
     }
-    NSString *timeString = [NSString stringWithFormat:@"%0.0f",[[NSDate date] timeIntervalSince1970]*1000];
+    NSString *timeString = [NSString stringWithFormat:@"%0.0f",[[NSDate date] timeIntervalSince1970] * 1000];
     doctorId = [doctorId stringByAppendingString:@"_"];
     doctorId = [doctorId stringByAppendingString:timeString];
     return doctorId;

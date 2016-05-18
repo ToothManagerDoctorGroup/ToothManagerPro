@@ -1,36 +1,31 @@
 //
-//  MyClinicViewController.m
+//  XLClinicsDisplayViewController.m
 //  CRM
 //
-//  Created by Argo Zhang on 15/11/11.
-//  Copyright © 2015年 TimTiger. All rights reserved.
+//  Created by Argo Zhang on 16/5/17.
+//  Copyright © 2016年 TimTiger. All rights reserved.
 //
 
-#import "MyClinicViewController.h"
-#import "MyClinicTool.h"
-#import "AccountManager.h"
-#import "DBTableMode.h"
-#import "ClinicModel.h"
-#import "ClinicCell.h"
-#import "SearchClinicViewController.h"
-#import "ClinicDetailViewController.h"
-#import "UISearchBar+XLMoveBgView.h"
+#import "XLClinicsDisplayViewController.h"
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"
+#import "MyClinicTool.h"
+#import "AccountManager.h"
+#import "XLClinicCell.h"
+#import "XLClinicModel.h"
+#import "UISearchBar+XLMoveBgView.h"
+#import "ClinicDetailViewController.h"
 
-static const CGFloat MyClinicViewControllerCellHeight = 70;
-
-@interface MyClinicViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>
-
+@interface XLClinicsDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>
 //存放诊所对象：ClinicModel
 @property (nonatomic, strong)NSArray *dataList;
 
 @property (nonatomic, strong)EMSearchBar *searchBar;//搜索框
 @property (nonatomic, strong)EMSearchDisplayController *searchController;//搜索视图
-
 @end
 
-@implementation MyClinicViewController
+@implementation XLClinicsDisplayViewController
+
 #pragma mark - ********************* Life Method ***********************
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -57,61 +52,51 @@ static const CGFloat MyClinicViewControllerCellHeight = 70;
 #pragma mark - ********************* Private Method ***********************
 #pragma mark 设置子视图
 - (void)setUpSubViews{
-    self.title = @"我的诊所";
     self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
     [self.view addSubview:self.searchBar];
     [self searchController];
-}
-
-#pragma mark 找诊所按钮点击事件
-- (void)findClinicAction:(UITapGestureRecognizer *)tap{
-    
-    SearchClinicViewController *clinicVc = [[SearchClinicViewController alloc] initWithStyle:UITableViewStylePlain];
-    clinicVc.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:clinicVc animated:YES];
-    
 }
 
 #pragma 请求签约诊所的信息
 - (void)requestClinicInfo{
     [SVProgressHUD showWithStatus:@"正在加载"];
     WS(weakSelf);
-//    [MyClinicTool requestClinicInfoWithAreacode:@"北京" clinicName:@"" success:^(NSArray *result) {
+        [MyClinicTool requestClinicInfoWithAreacode:@"北京" clinicName:@"" success:^(NSArray *result) {
+            [SVProgressHUD dismiss];
+            //请求到数据,将数据赋值给当前数组
+            _dataList = result;
+            //刷新表格
+            [weakSelf.tableView reloadData];
+        } failure:^(NSError *error) {
+            [SVProgressHUD dismiss];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    
+//    [MyClinicTool requestClinicInfoWithDoctorId:[AccountManager currentUserid] success:^(NSArray *clinics) {
 //        [SVProgressHUD dismiss];
 //        //请求到数据,将数据赋值给当前数组
-//        _dataList = result;
+//        _dataList = clinics;
 //        //刷新表格
 //        [weakSelf.tableView reloadData];
+//        
 //    } failure:^(NSError *error) {
 //        [SVProgressHUD dismiss];
 //        if (error) {
 //            NSLog(@"error:%@",error);
 //        }
 //    }];
-    
-    [MyClinicTool requestClinicInfoWithDoctorId:[AccountManager currentUserid] success:^(NSArray *clinics) {
-        [SVProgressHUD dismiss];
-        //请求到数据,将数据赋值给当前数组
-        _dataList = clinics;
-        //刷新表格
-        [weakSelf.tableView reloadData];
-    
-    } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
 }
 
 #pragma mark 设置单元格点击事件
 - (void)setCellSelectWithIndexPath:(NSIndexPath *)indexPath source:(NSArray *)source{
     //获取当前的数据模型
-    ClinicModel *model = source[indexPath.row];
+    XLClinicModel *model = source[indexPath.row];
     //跳转到详情页面
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     ClinicDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"ClinicDetailViewController"];
-    detailVc.model = model;
+    detailVc.unsignModel = model;
     detailVc.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detailVc animated:YES];
 }
@@ -125,10 +110,10 @@ static const CGFloat MyClinicViewControllerCellHeight = 70;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     // 1.获取当前的模型数据
-    ClinicModel *model = self.dataList[indexPath.row];
+    XLClinicModel *model = self.dataList[indexPath.row];
     
     // 2.创建cell
-    ClinicCell *cell = [ClinicCell cellWithTableView:tableView];
+    XLClinicCell *cell = [XLClinicCell cellWithTableView:tableView];
     
     // 3.设置模型数据
     cell.model = model;
@@ -137,7 +122,7 @@ static const CGFloat MyClinicViewControllerCellHeight = 70;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return MyClinicViewControllerCellHeight;
+    return [XLClinicCell cellHeight];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -239,24 +224,24 @@ static const CGFloat MyClinicViewControllerCellHeight = 70;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
         _searchController.delegate = self;
-        __weak MyClinicViewController *weakSelf = self;
+        __weak XLClinicsDisplayViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             
             // 1.获取当前的模型数据
-            ClinicModel *model = weakSelf.searchController.resultsSource[indexPath.row];
+            XLClinicModel *model = weakSelf.searchController.resultsSource[indexPath.row];
             
             // 2.创建cell
-            ClinicCell *cell = [ClinicCell cellWithTableView:tableView];
+            XLClinicCell *cell = [XLClinicCell cellWithTableView:tableView];
             
             // 3.设置模型数据
             cell.model = model;
-
+            
             
             return cell;
         }];
         
         [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return MyClinicViewControllerCellHeight;
+            return [XLClinicCell cellHeight];
         }];
         
         [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
@@ -268,12 +253,6 @@ static const CGFloat MyClinicViewControllerCellHeight = 70;
     }
     
     return _searchController;
-}
-- (NSArray *)dataList{
-    if (!_dataList) {
-        _dataList = [NSArray array];
-    }
-    return _dataList;
 }
 
 

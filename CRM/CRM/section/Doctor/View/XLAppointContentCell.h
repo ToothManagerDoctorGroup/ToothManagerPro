@@ -8,8 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface XLContentCell : UICollectionViewCell
-
+@interface XLAppointContentCell : UICollectionViewCell
 
 @property (nonatomic, strong)UILabel *contentLabel;
 @end

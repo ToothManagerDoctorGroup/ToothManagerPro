@@ -11,4 +11,6 @@
 // NOTE: This class is not used in this project - actually it is removed from the target. I added it just in case you need to compare the code between Objective-C and Swift
 
 @interface CustomCollectionViewLayout : UICollectionViewLayout
+
+
 @end

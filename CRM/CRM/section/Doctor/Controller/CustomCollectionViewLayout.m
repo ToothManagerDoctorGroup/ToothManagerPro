@@ -131,6 +131,7 @@
     return self.itemAttributes[indexPath.section][indexPath.row];
 }
 
+#pragma mark - 返回每个item的frame属性
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
 {
     NSMutableArray *attributes = [@[] mutableCopy];
@@ -139,9 +140,9 @@
             return CGRectIntersectsRect(rect, [evaluatedObject frame]);
         }]]];
     }
-    
     return attributes;
 }
+
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
@@ -150,48 +151,23 @@
 
 - (CGSize)sizeForItemWithColumnIndex:(NSUInteger)columnIndex
 {
-//    NSString *text;
-//    switch (columnIndex) { // This only makes sense if the size of the items should be different
-//        case 0:
-//            text = @"Col 0";
-//            break;
-//        case 1:
-//            text = @"Col 1";
-//            break;
-//        case 2:
-//            text = @"Col 2";
-//            break;
-//        case 3:
-//            text = @"Col 3";
-//            break;
-//        case 4:
-//            text = @"Col 4";
-//            break;
-//        case 5:
-//            text = @"Col 5";
-//            break;
-//        case 6:
-//            text = @"Col 6";
-//            break;
-//        case 7:
-//            text = @"Col 7";
-//            break;
-//            
-//        default:
-//            break;
-//    }
-//    CGSize size = [text sizeWithAttributes: @{NSFontAttributeName:[UIFont systemFontOfSize:17.0f]}];
-////    if (columnIndex == 0) {
-////        size.width += 12; // In our design the first column should be the widest one
-////    }
-//    return CGSizeMake([@(size.width + 25) floatValue], 30); // Extra space of 9px for all the items
-    
     NSString *text = @"1号椅位";
     CGSize size = [text sizeWithAttributes: @{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue" size:15]}];
     if (columnIndex == 0) {
+       
         size.width += 12; // In our design the first column should be the widest one
+    }else{
+        //判断item的个数
+        NSUInteger numberOfItems = [self.collectionView numberOfItemsInSection:0];
+        if (numberOfItems < 4) {
+            CGFloat itemW = (kScreenWidth - size.width - 12 * 2) / (numberOfItems - 1);
+            size = CGSizeMake(itemW, 40);
+        }else{
+            CGFloat itemW = (kScreenWidth - size.width - 12 * 4) / (numberOfItems - 1);
+            size = CGSizeMake(itemW, 40);
+        }
     }
-    return CGSizeMake([@(size.width + 9) floatValue], 30);
+    return CGSizeMake([@(size.width + 9) floatValue], 40);
 }
 
 - (void)calculateItemsSize

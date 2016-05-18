@@ -22,4 +22,5 @@
 +(NSDate *)dateStartOfWeek;
 +(NSDate *)dateEndOfWeek;
 
+- (int)weakDay;
 @end

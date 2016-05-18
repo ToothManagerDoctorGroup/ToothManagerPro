@@ -531,11 +531,12 @@ Realize_ShareInstance(XLAutoGetSyncTool)
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+            NSLog(@"patientConsulation:%@",respond.result);
             if ([respond.code integerValue] == 200) {
                     NSArray *datas = respond.result;
                     for (NSDictionary *dic in datas) {
                         PatientConsultation *patientC = nil;
-                        if (0 != [dic count] ) {
+                        if (0 != [dic count] ){
                             patientC = [PatientConsultation PCFromPCResult:dic];
                             [[DBManager shareInstance] insertPatientConsultation:patientC];
                         }

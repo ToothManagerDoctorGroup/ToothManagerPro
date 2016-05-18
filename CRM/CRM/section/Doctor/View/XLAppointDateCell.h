@@ -1,5 +1,5 @@
 //
-//  XLCollectionViewController.h
+//  XLDateCell.h
 //  CRM
 //
 //  Created by Argo Zhang on 16/5/14.
@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface XLCollectionViewController : UIViewController
+@interface XLAppointDateCell : UICollectionViewCell
+
+@property (nonatomic, strong)UILabel *dateLabel;
 
 @end
