@@ -10,24 +10,69 @@
 #import "CRMHttpTool.h"
 #import "CRMHttpRespondModel.h"
 #import "JSONKit.h"
+#import "XLPatientTotalInfoModel.h"
+#import "NSString+TTMAddtion.h"
+#import "CRMUnEncryptedHttpTool.h"
 
 #define ActionParam @"action"
 #define Patient_NameParam @"patient_name"
 #define Patient_PhoneParam @"patient_phone"
+#define Doctor_IdParam @"doctor_id"
+#define Patient_IdParam @"ckeyId"
 
 @implementation MyPatientTool
 
-+ (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
-    
-    
-    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/PatientInfoHandler.ashx";
++ (void)getPateintKeyIdWithPatientCKeyId:(NSString *)ckeyid success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientInfoHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[ActionParam] = @"weixinBind";
-//    NSString *encodingPatientName = [patientName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    params[Patient_NameParam] = patientName;
-    params[Patient_PhoneParam] = patientPhone;
+    params[ActionParam] = [@"getPatientKeyIdByCkeyId" TripleDESIsEncrypt:YES];
+    params[@"ckeyid"] = [ckeyid TripleDESIsEncrypt:YES];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+}
+
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = [@"newgetpatientallinfo" TripleDESIsEncrypt:YES];
+    params[@"patient_id"] = [patientId TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respondT = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respondT);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+    
+}
+
++ (void)getWeixinStatusWithPatientId:(NSString *)patientId success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientInfoHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = [@"weixinBind" TripleDESIsEncrypt:YES];
+    params[Patient_IdParam] = [patientId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -68,9 +113,12 @@
     
     
     NSString *jsonString = [dataEntity JSONString];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
+    paramDic[@"action"] = [@"appoint" TripleDESIsEncrypt:YES];
+    paramDic[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
-    [CRMHttpTool POST:@"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint" parameters:paramDic success:^(id responseObject) {
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {

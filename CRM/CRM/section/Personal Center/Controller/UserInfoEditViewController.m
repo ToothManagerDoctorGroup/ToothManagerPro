@@ -21,7 +21,6 @@
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"保存"];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     //初始化子控件
     [self setUpSubViews];

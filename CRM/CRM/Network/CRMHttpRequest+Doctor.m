@@ -9,8 +9,9 @@
 #import "CRMHttpRequest+Doctor.h"
 #import "NSError+Extension.h"
 #import "NSJSONSerialization+jsonString.h"
-
+#import "NSString+TTMAddtion.h"
 #import "JSONKit.h"
+#import "AccountManager.h"
 
 @implementation CRMHttpRequest (Doctor)
 
@@ -25,9 +26,10 @@
         return;
     }
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
-    [paramDic setObject:userid forKey:@"userid"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:GetDoctorList_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:2];
+    [paramDic setObject:[@"getdatabyid" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[userid TripleDESIsEncrypt:YES] forKey:@"userid"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:GetOrSearchDoctorList_AndIcon_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 
@@ -42,30 +44,25 @@
         return;
     }
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
-    [paramDic setObject:doctorname forKey:@"username"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:SearchDoctor_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"getdata" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[doctorname TripleDESIsEncrypt:YES] forKey:@"username"];
+    [paramDic setObject:[[AccountManager currentUserid] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:GetOrSearchDoctorList_AndIcon_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 
 - (void)doctorIconWithUserId:(NSString *)userid withData:(NSData *)data{
-    /*
+    
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     [paramDic setObject:@"avatar" forKey:@"Action"];
     [paramDic setObject:userid forKey:@"KeyId"];
-    NSMutableDictionary *addParamDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [addParamDic setObject:@"avatar" forKey:@"pic"];
-    [addParamDic setObject:data forKey:@"key"];
-   TimRequestParam *param =  [TimRequestParam paramWithURLSting:DoctorIcon_URL andParams:paramDic additionParams:addParamDic  withPrefix:Doctor_Prefix];
-    [self requestWithParams:param];
-    */
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:@"avatar" forKey:@"Action"];
-    [paramDic setObject:userid forKey:@"KeyId"];
+    
     NSMutableDictionary *addParamDic = [NSMutableDictionary dictionaryWithCapacity:0];
     [addParamDic setObject:[NSString stringWithFormat:@"%@.jpg",userid] forKey:@"pic"];
     [addParamDic setObject:data forKey:@"key"];
-    TimRequestParam *param =  [TimRequestParam paramWithURLSting:DoctorIcon_URL andParams:paramDic additionParams:addParamDic  withPrefix:Doctor_Prefix];
+    
+    TimRequestParam *param =  [TimRequestParam paramWithURLSting:GetOrSearchDoctorList_AndIcon_Common_URL andParams:paramDic additionParams:addParamDic  withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
     
 }
@@ -77,19 +74,17 @@
  **/
 - (void)trasferPatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toReceiver:(NSString *)receiverId
 {
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:2];
     NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:4];
-    /*
-    [dataEntity setObject:patientIds forKey:@"patientIds"];
-    [dataEntity setObject:doctorId forKey:@"doctor_id"];
-    [dataEntity setObject:receiverId forKey:@"receiver_id"];*/
+    
     [dataEntity setObject:patientIds forKey:@"patient_id"];
     [dataEntity setObject:receiverId forKey:@"doctor_id"];
     [dataEntity setObject:doctorId forKey:@"intr_id"];
     [dataEntity setObject:@"I" forKey:@"intr_source"];
     
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
+    [paramDic setObject:[@"transfer" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:Transfer_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
     
@@ -101,26 +96,26 @@
  *  @param doctorId:医生id
  **/
 - (void)clinicMessage:(NSString *)doctorId{
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:@"getAppointment" forKey:@"Action"];
-    [paramDic setObject:doctorId forKey:@"doctor_id"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:ClinicMessage_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"getAppointment" TripleDESIsEncrypt:YES] forKey:@"Action"];
+    [paramDic setObject:[doctorId TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ClinicMessage_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 
 
 - (void)doctorClinic:(NSString *)doctorId{
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:@"getClinic" forKey:@"Action"];
-    [paramDic setObject:doctorId forKey:@"doctor_id"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:DoctorClinic_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"getClinic" TripleDESIsEncrypt:YES] forKey:@"Action"];
+    [paramDic setObject:[doctorId TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ClinicMessage_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 
 - (void)clinicSeat:(NSString *)clinicId{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:@"getList" forKey:@"Action"];
-    [paramDic setObject:clinicId forKey:@"clinicid"];
+    [paramDic setObject:[@"getList" TripleDESIsEncrypt:YES] forKey:@"Action"];
+    [paramDic setObject:[clinicId TripleDESIsEncrypt:YES] forKey:@"clinicid"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:ClinicSeat_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
@@ -128,10 +123,10 @@
 
 - (void)yuYueInfoByClinicSeatDate:(NSString *)clinicId withSeatId:(NSString *)seatId withDate:(NSString *)date{
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:@"getListBySeatAndDate" forKey:@"Action"];
-    [paramDic setObject:clinicId forKey:@"clinicid"];
-    [paramDic setObject:date forKey:@"cdate"];
-    [paramDic setObject:seatId forKey:@"seatid"];
+    [paramDic setObject:[@"getListBySeatAndDate" TripleDESIsEncrypt:YES] forKey:@"Action"];
+    [paramDic setObject:[clinicId TripleDESIsEncrypt:YES] forKey:@"clinicid"];
+    [paramDic setObject:[date TripleDESIsEncrypt:YES] forKey:@"cdate"];
+    [paramDic setObject:[seatId TripleDESIsEncrypt:YES] forKey:@"seatid"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:YuYueInfoByClinicSeatDate_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
@@ -140,18 +135,20 @@
  *
  *  @param patientIds:病人id  doctorId:医生id  message_type:类型   send_type  send_time
  **/
-- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time{
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:5];
+- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toDoctor:(NSString *)toDoctor withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time{
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionary];
     [dataEntity setObject:patientIds forKey:@"patient_id"];
     [dataEntity setObject:doctorId forKey:@"doctor_id"];
     [dataEntity setObject:message_type forKey:@"message_type"];
     [dataEntity setObject:send_type forKey:@"send_type"];
     [dataEntity setObject:send_time forKey:@"send_time"];
+    [dataEntity setObject:toDoctor forKey:@"therapy_doctor_id"];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
-    [paramDic setObject:@"SendMessage" forKey:@"action"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:WeiXin_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    [paramDic setObject:[@"SendMessage" TripleDESIsEncrypt:YES] forKey:@"action"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:WeiXin_SMS_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 
@@ -169,8 +166,9 @@
     [dataEntity setObject:send_type forKey:@"send_type"];
     [dataEntity setObject:send_time forKey:@"send_time"];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:YuYueDuanXin_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    [paramDic setObject:[@"getMessageItem" TripleDESIsEncrypt:YES] forKey:@"action"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:WeiXin_SMS_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 
@@ -199,11 +197,10 @@
     [dataEntity setObject:@"0" forKey:@"expert_result"];
     [dataEntity setObject:@"可以做" forKey:@"expert_suggestion"];
     
-    
-//    NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
     NSString *jsonString = [dataEntity JSONString];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:YuYueTuiSongClinic_URL andParams:paramDic withPrefix:Doctor_Prefix];
+    [paramDic setObject:[@"appoint" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ClinicMessage_Common_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
 }
 #pragma mark - Request CallBack
@@ -262,24 +259,32 @@
 
 #pragma mark - Success
 - (void)onDoctorRequestSuccessCallBackWith:(NSDictionary *)result andParam:(TimRequestParam *)param {
-    if ([param.requestUrl isEqualToString:SearchDoctor_URL]) {
-        [self requestSearchDoctorWithNameSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:GetDoctorList_URL]) {
-        [self requestGetDoctorListSuccess:result andParam:param];
+    if ([param.requestUrl isEqualToString:GetOrSearchDoctorList_AndIcon_Common_URL]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getdatabyid"]) {
+            [self requestGetDoctorListSuccess:result andParam:param];
+            
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getdata"]){
+            [self requestSearchDoctorWithNameSuccess:result andParam:param];
+        }
     } else if ([param.requestUrl isEqualToString:Transfer_URL]) {
         [self requestTransferSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:WeiXin_URL]){
-        [self requestWeiXinMessageSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:DoctorClinic_URL]){
-        [self requestDoctorClinicSuccess:result andParam:param];
+    } else if ([param.requestUrl isEqualToString:WeiXin_SMS_Common_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"SendMessage"]) {
+            [self requestWeiXinMessageSuccess:result andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getMessageItem"]){
+            [self requestYuYueMessageSuccess:result andParam:param];
+        }
+    } else if ([param.requestUrl isEqualToString:ClinicMessage_Common_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getClinic"]) {
+            [self requestDoctorClinicSuccess:result andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"appoint"]){
+            [self requestYuYueTuiSongClinicSuccess:result andParam:param];
+        }
+        
     } else if ([param.requestUrl isEqualToString:ClinicSeat_URL]){
         [self requestClinicSeatSuccess:result andParam:param];
     } else if ([param.requestUrl isEqualToString:YuYueInfoByClinicSeatDate_URL]){
         [self requestYuYueInfoByClinicSeatDateSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:YuYueDuanXin_URL]){
-        [self requestYuYueMessageSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:YuYueTuiSongClinic_URL]){
-        [self requestYuYueTuiSongClinicSuccess:result andParam:param];
     }
 }
 
@@ -326,24 +331,32 @@
 
 #pragma mark - Failure
 - (void)onDoctorRequestFailureCallBackWith:(NSError *)error andParam:(TimRequestParam *)param {
-    if ([param.requestUrl isEqualToString:SearchDoctor_URL]) {
-        [self requestSearchDoctorWithNameFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:GetDoctorList_URL]) {
-        [self requestGetDoctorListFailure:error andParam:param];
+    if ([param.requestUrl isEqualToString:GetOrSearchDoctorList_AndIcon_Common_URL]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getdatabyid"]) {
+            [self requestGetDoctorListFailure:error andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getdata"]){
+            [self requestSearchDoctorWithNameFailure:error andParam:param];
+        }
+        
     } else if ([param.requestUrl isEqualToString:Transfer_URL]) {
         [self requestTransferFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:WeiXin_URL]){
-        [self requestWeiXinMessageFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:DoctorClinic_URL]){
-        [self requestDoctorClinicFailure:error andParam:param];
+    } else if ([param.requestUrl isEqualToString:WeiXin_SMS_Common_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"SendMessage"]) {
+            [self requestWeiXinMessageFailure:error andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getMessageItem"]){
+            [self requestYuYueMessageFailure:error andParam:param];
+        }
+    } else if ([param.requestUrl isEqualToString:ClinicMessage_Common_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getClinic"]) {
+            [self requestDoctorClinicFailure:error andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"appoint"]){
+            [self requestYuYueTuiSongClinicFailure:error andParam:param];
+        }
+        
     } else if ([param.requestUrl isEqualToString:ClinicSeat_URL]){
         [self requestClinicSeatFailure:error andParam:param];
     } else if ([param.requestUrl isEqualToString:YuYueInfoByClinicSeatDate_URL]){
         [self requestYuYueInfoByClinicSeatDateFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:YuYueDuanXin_URL]){
-        [self requestYuYueMessageFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:YuYueTuiSongClinic_URL]){
-        [self requestYuYueTuiSongClinicFailure:error andParam:param];
     }
 }
 

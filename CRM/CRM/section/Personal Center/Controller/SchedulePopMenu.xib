@@ -29,7 +29,7 @@
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <state key="normal" title="预约详情">
-                        <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.0" green="0.62745098039215685" blue="0.91764705882352937" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="menu_button_highlighte.png">
                         <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -42,7 +42,7 @@
                     <rect key="frame" x="0.0" y="45" width="140" height="44"/>
                     <animations/>
                     <state key="normal" title="患者详情">
-                        <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.0" green="0.62745098040000002" blue="0.91764705879999997" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="menu_button_highlighte.png">
                         <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -55,7 +55,7 @@
                     <rect key="frame" x="0.0" y="90" width="140" height="44"/>
                     <animations/>
                     <state key="normal" title="打电话">
-                        <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.0" green="0.62745098040000002" blue="0.91764705879999997" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="menu_button_highlighte.png">
                         <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -67,8 +67,8 @@
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-pQ-WY9">
                     <rect key="frame" x="0.0" y="135" width="140" height="44"/>
                     <animations/>
-                    <state key="normal" title="发短信">
-                        <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="发消息">
+                        <color key="titleColor" red="0.0" green="0.62745098040000002" blue="0.91764705879999997" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="menu_button_highlighte.png">
                         <color key="titleColor" red="0.1094085479" green="0.27276062410000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>

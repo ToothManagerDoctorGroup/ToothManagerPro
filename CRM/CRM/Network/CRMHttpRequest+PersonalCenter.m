@@ -10,6 +10,7 @@
 #import "NSError+Extension.h"
 #import "AccountManager.h"
 #import "NSJSONSerialization+jsonString.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation CRMHttpRequest (PersonalCenter)
 
@@ -23,14 +24,14 @@
  */
 - (void)registerWithNickname:(NSString *)nick phone:(NSString *)phone passwd:(NSString *)passwd recommender:(NSString *)recommender validate:(NSString *)validate {
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
-    [params setObject:nick forKey:@"username"];
-    [params setObject:phone forKey:@"mobile"];
-    [params setObject:passwd forKey:@"password"];
-    [params setObject:recommender forKey:@"recommender"];
-    [params setObject:passwd forKey:@"checkpassword"];
-    [params setObject:@"huye@gmail.com" forKey:@"email"];
-    [params setObject:validate forKey:@"Validatecode"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:Register_URL andParams:params withPrefix:PersonalCenter_Prefix];
+    [params setObject:[nick TripleDESIsEncrypt:YES] forKey:@"username"];
+    [params setObject:[phone TripleDESIsEncrypt:YES] forKey:@"mobile"];
+    [params setObject:[passwd TripleDESIsEncrypt:YES] forKey:@"password"];
+    [params setObject:[recommender TripleDESIsEncrypt:YES] forKey:@"recommender"];
+    [params setObject:[passwd TripleDESIsEncrypt:YES] forKey:@"checkpassword"];
+    [params setObject:[@"huye@gmail.com" TripleDESIsEncrypt:YES] forKey:@"email"];
+    [params setObject:[validate TripleDESIsEncrypt:YES] forKey:@"Validatecode"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:RegisterOrValidate_Common_URL andParams:params withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -40,9 +41,10 @@
  *  @param phoneNumber 昵称
  */
 - (void)sendValidateToPhone:(NSString *)phoneNumber {
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
-    [params setObject:phoneNumber forKey:@"phoneNumber"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:Validate_URL andParams:params withPrefix:PersonalCenter_Prefix];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:2];
+    [params setObject:[@"getValidateCode" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [params setObject:[phoneNumber TripleDESIsEncrypt:YES] forKey:@"phoneNumber"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:RegisterOrValidate_Common_URL andParams:params withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -52,9 +54,10 @@
  *  @param phoneNumber 手机号
  */
 - (void)sendForgetValidateToPhone:(NSString *)phoneNumber{
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
-    [params setObject:phoneNumber forKey:@"phoneNumber"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:Forget_Validate_URL andParams:params withPrefix:PersonalCenter_Prefix];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:2];
+    [params setObject:[@"getValidateCode" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [params setObject:[phoneNumber TripleDESIsEncrypt:YES] forKey:@"phoneNumber"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ForgetOrUpdate_Password_Validate_URL andParams:params withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -66,8 +69,8 @@
  */
 - (void)loginWithNickName:(NSString *)nickname passwd:(NSString *)pwd {
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:nickname forKey:@"username"];
-    [paramDic setObject:pwd forKey:@"password"];
+    [paramDic setObject:[nickname TripleDESIsEncrypt:YES] forKey:@"username"];
+    [paramDic setObject:[pwd TripleDESIsEncrypt:YES] forKey:@"password"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:Login_URL andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
@@ -88,7 +91,7 @@
     [dataEntity setObject:doctor.doctor_position forKey:@"doctor_position"];
     [dataEntity setObject:doctor.doctor_degree forKey:@"doctor_degree"];
     [dataEntity setObject:doctor.doctor_image forKey:@"doctor_image"];
-    [dataEntity setObject:[NSString stringWithFormat:@"%d",doctor.auth_status] forKey:@"doctor_is_verified"];
+    [dataEntity setObject:[NSString stringWithFormat:@"%ld",(long)doctor.auth_status] forKey:@"doctor_is_verified"];
     [dataEntity setObject:doctor.auth_text forKey:@"doctor_verify_reason"];
     [dataEntity setObject:doctor.doctor_certificate forKey:@"doctor_certificate"];
     [dataEntity setObject:doctor.doctor_birthday forKey:@"doctor_birthday"];
@@ -98,8 +101,9 @@
     
     [dataEntity setObject:[NSString stringWithFormat:@"%hhd",doctor.isopen] forKey:@"is_open"];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:doctor.ckeyid forKey:@"keyid"];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
+    [paramDic setObject:[@"edit" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[doctor.ckeyid TripleDESIsEncrypt:YES] forKey:@"keyid"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
     
     TimRequestParam *param = [TimRequestParam paramWithURLSting:UpdateUserInfo_URL andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
@@ -113,12 +117,13 @@
  *  @param userId 用户Id
  */
 - (void)updatePasswdWithOldpwd:(NSString *)oldpwd newpwd:(NSString *)newpwd userId:(NSString *)userId{
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:2];
-    [paramDic setObject:oldpwd forKey:@"old"];
-    [paramDic setObject:newpwd forKey:@"new"];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:3];
+    [paramDic setObject:[@"editpass2" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[oldpwd TripleDESIsEncrypt:YES] forKey:@"old"];
+    [paramDic setObject:[newpwd TripleDESIsEncrypt:YES] forKey:@"new"];
   //  [paramDic setObject:userId forKey:@"userID"];
    //  [paramDic setObject:@"editpass2" forKey:@"action"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:UpdatePasswd_URL andParams:paramDic withPrefix:PersonalCenter_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ForgetOrUpdate_Password_Validate_URL andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -128,13 +133,15 @@
  *  @param introducer_id 介绍人id
  */
 - (void)approveIntroducerApply:(NSString *)introducer_id {
-    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionaryWithCapacity:0];
+    NSMutableDictionary *dataEntity = [NSMutableDictionary dictionary];
     [dataEntity setObject:introducer_id forKey:@"intr_id"];
     [dataEntity setObject:[AccountManager currentUserid] forKey:@"doctor_id"];
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:ApproveIntroducerApply andParams:paramDic withPrefix:PersonalCenter_Prefix];
+    [paramDic setObject:[@"approve" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ApproveOrRefuse_IntroducerApply andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -149,8 +156,11 @@
     [dataEntity setObject:[AccountManager currentUserid] forKey:@"doctor_id"];
     NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:RefuseIntroducerApply andParams:paramDic withPrefix:PersonalCenter_Prefix];
+    
+    [paramDic setObject:[@"reject" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ApproveOrRefuse_IntroducerApply andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -160,11 +170,16 @@
  *  @param user_id 医生id
  *  @param AccessToken  医生AccessToken
  */
-- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken{
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    [paramDic setObject:user_id forKey:@"userId"];
-    [paramDic setObject:AccessToken forKey:@"AccessToken"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:Qrcode_URL andParams:paramDic withPrefix:PersonalCenter_Prefix];
+- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor{
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[user_id TripleDESIsEncrypt:YES] forKey:@"userId"];
+    [paramDic setObject:[AccessToken TripleDESIsEncrypt:YES] forKey:@"AccessToken"];
+    if (!isDoctor) {
+        [paramDic setObject:[patientKeyId TripleDESIsEncrypt:YES] forKey:@"pkeyId"];
+    }
+    NSString *urlStr = [EncryptionOpen isEqualToString:Auto_Action_Open] ? Qrcode_URL_Encrypt : Qrcode_URL;
+    
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:urlStr andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 /**
@@ -176,10 +191,13 @@
  */
 - (void)forgetPasswordWithPhone:(NSString *)phone passwd:(NSString *)newpwd validate:(NSString *)validate{
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:3];
-    [params setObject:phone forKey:@"mobile"];
-    [params setObject:validate forKey:@"Validatecode"];
-    [params setObject:newpwd forKey:@"Newpass"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:Forget_Password_URL andParams:params withPrefix:PersonalCenter_Prefix];
+    
+    //?action=forgetpass
+    [params setObject:[@"forgetpass" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [params setObject:[phone TripleDESIsEncrypt:YES] forKey:@"mobile"];
+    [params setObject:[validate TripleDESIsEncrypt:YES] forKey:@"Validatecode"];
+    [params setObject:[newpwd TripleDESIsEncrypt:YES] forKey:@"Newpass"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ForgetOrUpdate_Password_Validate_URL andParams:params withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -240,26 +258,33 @@
 
 #pragma mark - Success
 - (void)onPersonalCenterRequestSuccessCallBackWith:(NSDictionary *)result andParam:(TimRequestParam *)param {
-    if ([param.requestUrl isEqualToString:Register_URL]) {
-        [self requestUserRegisterSuccess:result andParam:param];
+    
+    if ([param.requestUrl isEqualToString:RegisterOrValidate_Common_URL]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getValidateCode"]){
+            [self requestSendValidateSuccess:result andParam:param];
+        }else{
+            [self requestUserRegisterSuccess:result andParam:param];
+        }
     } else if ([param.requestUrl isEqualToString:Login_URL]) {
         [self requestUserLoginSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:UpdatePasswd_URL]) {
-        [self requestUpdatePasswdSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:ApproveIntroducerApply]) {
-        [self requestApproveIntroducerApplySuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:RefuseIntroducerApply]) {
-        [self requestRefuseIntroducerApplySuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:UpdateUserInfo_URL]) {
+    } else if ([param.requestUrl isEqualToString:ApproveOrRefuse_IntroducerApply]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"approve"]) {
+            [self requestApproveIntroducerApplySuccess:result andParam:param];
+        }else{
+            [self requestRefuseIntroducerApplySuccess:result andParam:param];
+        }
+    }else if ([param.requestUrl isEqualToString:UpdateUserInfo_URL]) {
         [self requestUpdateUserinfoSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:Validate_URL]) {
-        [self requestSendValidateSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:Forget_Validate_URL]){
-        [self requestSendForgetValidateSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:Qrcode_URL]) {
+    } else if ([param.requestUrl isEqualToString:ForgetOrUpdate_Password_Validate_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getValidateCode"]) {
+            [self requestSendForgetValidateSuccess:result andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"forgetpass"]){
+            [self requestForgetPasswordSuccess:result andParam:param];
+        }else{
+            [self requestUpdatePasswdSuccess:result andParam:param];
+        }
+    } else if ([param.requestUrl isEqualToString:[EncryptionOpen isEqualToString:Auto_Action_Open] ? Qrcode_URL_Encrypt : Qrcode_URL]) {
         [self requestQrCodeSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:Forget_Password_URL]){
-        [self requestForgetPasswordSuccess:result andParam:param];
     }
 }
 
@@ -316,26 +341,33 @@
 }
 #pragma mark - Failure
 - (void)onPersonalCenterRequestFailureCallBackWith:(NSError *)error andParam:(TimRequestParam *)param {
-    if ([param.requestUrl isEqualToString:Register_URL]) {
-        [self requestUserRegisterFailure:error andParam:param];
+    if ([param.requestUrl isEqualToString:RegisterOrValidate_Common_URL]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getValidateCode"]){
+            [self requestUserRegisterFailure:error andParam:param];
+        }else{
+            [self requestSendValidateFailure:error andParam:param];
+        }
     } else if ([param.requestUrl isEqualToString:Login_URL]) {
         [self requestUserLoginFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:UpdatePasswd_URL]) {
-        [self requestUpdatePasswdFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:ApproveIntroducerApply]) {
-        [self requestApproveIntroducerApplayFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:RefuseIntroducerApply]) {
-        [self requestRefuseIntroducerApplayFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:UpdateUserInfo_URL]) {
+    } else if ([param.requestUrl isEqualToString:ApproveOrRefuse_IntroducerApply]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"approve"]) {
+            [self requestApproveIntroducerApplayFailure:error andParam:param];
+        }else{
+            [self requestRefuseIntroducerApplayFailure:error andParam:param];
+        }
+    }else if ([param.requestUrl isEqualToString:UpdateUserInfo_URL]) {
         [self requestUpdateUserInfoFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:Validate_URL]) {
-        [self requestSendValidateFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:Forget_Validate_URL]){
-        [self requestSendForgetValidateFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:Qrcode_URL]) {
+    }else if ([param.requestUrl isEqualToString:ForgetOrUpdate_Password_Validate_URL]){
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"getValidateCode"]) {
+            [self requestSendForgetValidateFailure:error andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"forgetpass"]){
+            [self requestForgetPasswordFailure:error andParam:param];
+        }else{
+            [self requestUpdatePasswdFailure:error andParam:param];
+        }
+        
+    } else if ([param.requestUrl isEqualToString:[EncryptionOpen isEqualToString:Auto_Action_Open] ? Qrcode_URL_Encrypt : Qrcode_URL]) {
         [self requestQrCodeFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:Forget_Password_URL]){
-        [self requestForgetPasswordFailure:error andParam:param];
     }
 }
 

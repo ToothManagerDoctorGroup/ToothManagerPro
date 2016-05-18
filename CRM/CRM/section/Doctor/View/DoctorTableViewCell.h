@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "FriendNotification.h"
 
-@class AvatarView,Doctor,FriendNotification;
+@class AvatarView,Doctor,FriendNotification,DoctorInfoModel;
 @protocol DoctorTableViewCellDelegate;
 @interface DoctorTableViewCell : UITableViewCell
 
@@ -27,8 +27,7 @@
 - (IBAction)approveIntroducerAction:(id)sender;
 
 - (void)setCellWithMode:(Doctor *)doctor;
--(void)setCellWithSquareMode:(Doctor *)doctor;
-
+- (void)setCellWithSquareMode:(Doctor *)doctor;
 - (void)setCellWithFrienNotifi:(FriendNotificationItem *)notifiItem;
 @end
 

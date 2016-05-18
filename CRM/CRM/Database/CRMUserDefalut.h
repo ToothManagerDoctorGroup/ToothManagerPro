@@ -10,7 +10,11 @@
 
 #define LatestUserID (@"LatestUserID")
 #define LatestUserName (@"LatestUserName")
+#define LatestUserPassword (@"LatestUserPassword")
 #define DeviceToken  (@"DeviceToken")
+#define RegisterId (@"RegisterId")
+
+#define KVersion (@"KVersion")
 
 @interface CRMUserDefalut : NSObject
 
@@ -33,5 +37,26 @@
 + (void)setObject:(id)object forKey:(NSString *)akey;
 
 + (id)objectForKey:(NSString *)akey;
+
+/**
+ *  获取当前的版本号
+ *
+ *  @return 版本号
+ */
++ (NSString *)getAppVersion;
+/**
+ *  保存版本号
+ *
+ *  @param version 版本号
+ */
++ (void)obtainAppVersion;
+
+/**
+ *  判断是否显示
+ *
+ *  @param key         key
+ *  @param showedBlock 已显示的回调
+ */
++ (void)isShowedForKey:(NSString *)key showedBlock:(void (^)())showedBlock;
 
 @end

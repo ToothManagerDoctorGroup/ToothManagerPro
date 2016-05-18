@@ -8,6 +8,7 @@
 
 #import "CRMHttpRequest+Notification.h"
 #import "NSError+Extension.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation CRMHttpRequest (Notification)
 
@@ -21,8 +22,11 @@
         return;
     }
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
-    [paramDic setObject:userid forKey:@"uid"];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+
+    [paramDic setObject:[@"getdata" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[userid TripleDESIsEncrypt:YES] forKey:@"uid"];
+    
     TimRequestParam *param = [TimRequestParam paramWithURLSting:NotificationFriends_URL andParams:paramDic withPrefix:Notification_Prefix];
     [self requestWithParams:param];
 }
@@ -39,10 +43,11 @@
         return;
     }
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
-    [paramDic setObject:userid forKey:@"uid"];
-    [paramDic setObject:sync_time forKey:@"sync_time"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:NotificationInpatient_URL andParams:paramDic withPrefix:Notification_Prefix];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"inpatient" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[userid TripleDESIsEncrypt:YES] forKey:@"uid"];
+    [paramDic setObject:[sync_time TripleDESIsEncrypt:YES] forKey:@"sync_time"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:NotificationPatient_Common_URL andParams:paramDic withPrefix:Notification_Prefix];
     [self requestWithParams:param];
 }
 
@@ -58,10 +63,11 @@
         return;
     }
     
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
-    [paramDic setObject:userid forKey:@"uid"];
-    [paramDic setObject:sync_time forKey:@"sync_time"];
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:NotificationOutpatient_URL andParams:paramDic withPrefix:Notification_Prefix];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"outpatient" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[userid TripleDESIsEncrypt:YES] forKey:@"uid"];
+    [paramDic setObject:[sync_time TripleDESIsEncrypt:YES] forKey:@"sync_time"];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:NotificationPatient_Common_URL andParams:paramDic withPrefix:Notification_Prefix];
     [self requestWithParams:param];
 }
 
@@ -74,8 +80,9 @@
     if (userid == nil) {
         return;
     }
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithCapacity:1];
-    [paramDic setObject:userid forKey:@"uid"];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"getdata" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[userid TripleDESIsEncrypt:YES] forKey:@"uid"];
     TimRequestParam *param = [TimRequestParam paramWithURLSting:NotificationSystem_URL andParams:paramDic withPrefix:Notification_Prefix];
     [self requestWithParams:param];
 }
@@ -127,7 +134,6 @@
     @finally {
         
     }
-    
 }
 
 - (void)onNotificationRequestFailure:(NSError *)error withParam:(TimRequestParam *)param {
@@ -140,10 +146,13 @@
         [self requestFriendsNotificationListSuccess:result andParam:param];
     } else if ([param.requestUrl isEqualToString:NotificationSystem_URL]) {
         [self requestSystemNotificationListSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:NotificationInpatient_URL]) {
-        [self requestInpatientNotificationListSuccess:result andParam:param];
-    } else if ([param.requestUrl isEqualToString:NotificationOutpatient_URL]) {
-        [self requestOutpatientNotificationListSuccess:result andParam:param];
+    } else if ([param.requestUrl isEqualToString:NotificationPatient_Common_URL]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"inpatient"]) {
+            [self requestInpatientNotificationListSuccess:result andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"outpatient"]){
+            [self requestOutpatientNotificationListSuccess:result andParam:param];
+        }
+        
     }
 }
 
@@ -169,10 +178,12 @@
         [self requestFriendsNotificationListFailure:error andParam:param];
     } else if ([param.requestUrl isEqualToString:NotificationSystem_URL]) {
         [self requestSystemNotificationListFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:NotificationInpatient_URL]) {
-        [self requestInpatientNotificationListFailure:error andParam:param];
-    } else if ([param.requestUrl isEqualToString:NotificationOutpatient_URL]) {
-        [self requestOutpatientNotificationListFailure:error andParam:param];
+    } else if ([param.requestUrl isEqualToString:NotificationPatient_Common_URL]) {
+        if ([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"inpatient"]) {
+            [self requestInpatientNotificationListFailure:error andParam:param];
+        }else if([[param.params[@"action"] TripleDESIsEncrypt:NO] isEqualToString:@"outpatient"]){
+            [self requestOutpatientNotificationListFailure:error andParam:param];
+        }
     }
 }
 

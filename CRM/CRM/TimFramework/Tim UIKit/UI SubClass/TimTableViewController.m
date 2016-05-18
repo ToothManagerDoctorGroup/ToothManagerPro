@@ -13,6 +13,7 @@
 #import "UIBarButtonItem+Extension.h"
 #import "CRMAppDelegate.h"
 #import "UIColor+Extension.h"
+#import "UINavigationItem+Margin.h"
 
 @interface TimTableViewController ()
 
@@ -291,7 +292,7 @@
 - (void)handNotification:(NSNotification *)notifacation {
     if ([notifacation.name isEqualToString:UIKeyboardWillShowNotification]) {
         [self keyboardWillShow];
-    } if ([notifacation.name isEqualToString:UITextFieldTextDidBeginEditingNotification]) {
+    }else if ([notifacation.name isEqualToString:UITextFieldTextDidBeginEditingNotification]) {
         
     }
 }

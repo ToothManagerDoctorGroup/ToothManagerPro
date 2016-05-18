@@ -33,15 +33,24 @@ typedef NS_ENUM(NSInteger, RequestMethod) {
 
 @end
 
+/**
+ *  响应对象
+ */
 @interface ResponderObject : NSObject
 @property (nonatomic,weak) id object;
 @end
 
+/**
+ *  基本网络请求对象
+ */
 @interface TimRequestBase : NSObject
-{
- 
-}
+/**
+ *  网络对象的所有响应者
+ */
 @property (nonatomic,readonly)  NSMutableArray *responders;
+/**
+ *  基础的URL
+ */
 @property (nonatomic,copy) NSURL *BaseURL;
 
 //添加、移除 网络回调响应者

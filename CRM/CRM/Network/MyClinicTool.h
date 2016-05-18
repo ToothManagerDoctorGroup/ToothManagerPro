@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class ClinicDetailModel;
+@class ClinicDetailModel,XLOperationStatusModel;
 @interface MyClinicTool : NSObject
 /*
     请求签约诊所的具体信息
@@ -60,5 +60,15 @@
  *  @param failure  失败回调
  */
 + (void)getMaterialListWithClinicId:(NSString *)clinicId matType:(NSString *)type success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
+/**
+ *  根据诊所id查找指定时间内的营业状态
+ *
+ *  @param clinicId   诊所id
+ *  @param curDateStr 当前时间
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getOperatingStatusWithClinicId:(NSString *)clinicId curDateStr:(NSString *)curDateStr success:(void (^)(XLOperationStatusModel *statusModel))success failure:(void (^)(NSError *error))failure;
 
 @end

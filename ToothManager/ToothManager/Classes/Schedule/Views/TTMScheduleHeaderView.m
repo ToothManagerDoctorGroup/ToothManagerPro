@@ -48,16 +48,16 @@
  */
 - (void)setup {
     // 广告图
-    UIImage *adImage = [UIImage imageNamed:@"schedule_ad"];
-    UIImageView *adImageView = [[UIImageView alloc] initWithImage:adImage];
-    CGFloat imageHeight = (adImage.size.height / adImage.size.width) * ScreenWidth;
-    adImageView.frame = CGRectMake(0, 0, ScreenWidth, imageHeight);
-    [self addSubview:adImageView];
+//    UIImage *adImage = [UIImage imageNamed:@"schedule_ad"];
+//    UIImageView *adImageView = [[UIImageView alloc] initWithImage:adImage];
+//    CGFloat imageHeight = (adImage.size.height / adImage.size.width) * ScreenWidth;
+//    adImageView.frame = CGRectMake(0, 0, ScreenWidth, imageHeight);
+//    [self addSubview:adImageView];
     
     // 日期控制视图
     UIView *dateControlView = [[UIView alloc] init];
     dateControlView.backgroundColor = [UIColor whiteColor];
-    dateControlView.frame = CGRectMake(0, adImageView.bottom, ScreenWidth, kDateControlViewH);
+    dateControlView.frame = CGRectMake(0, 0, ScreenWidth, kDateControlViewH);
     [self addSubview:dateControlView];
     
     // 中间半圆视图

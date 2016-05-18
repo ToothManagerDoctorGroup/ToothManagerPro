@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="XLJoinConsultationCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="59.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="cq3-Zj-YjA">
+                        <rect key="frame" x="292" y="21" width="13" height="18"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="13" id="7E6-IW-Lwc"/>
+                            <constraint firstAttribute="height" constant="18" id="k2q-Hz-Yhd"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="李荣浩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="igl-PW-7bt">
+                        <rect key="frame" x="232" y="19" width="60" height="21"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="60" id="0M3-xc-zet"/>
+                            <constraint firstAttribute="height" constant="21" id="GXr-TA-jtN"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gZv-0X-yC7" customClass="XLAvatarView">
+                        <rect key="frame" x="187" y="10" width="40" height="40"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="40" id="ZVJ-WM-H45"/>
+                            <constraint firstAttribute="width" constant="40" id="dl0-l0-xIU"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="患者：王晓霞" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="idU-cx-vgw">
+                        <rect key="frame" x="15" y="20" width="162" height="21"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="MlU-RW-u3l"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="gZv-0X-yC7" firstAttribute="leading" secondItem="idU-cx-vgw" secondAttribute="trailing" constant="10" id="0mO-pS-s8C"/>
+                    <constraint firstItem="igl-PW-7bt" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="0w7-EG-lTt"/>
+                    <constraint firstItem="gZv-0X-yC7" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9ZZ-9r-Dep"/>
+                    <constraint firstItem="idU-cx-vgw" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="HYM-BQ-eXO"/>
+                    <constraint firstItem="cq3-Zj-YjA" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="MJs-Rq-cFA"/>
+                    <constraint firstItem="idU-cx-vgw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="bgZ-nw-dYT"/>
+                    <constraint firstAttribute="trailing" secondItem="cq3-Zj-YjA" secondAttribute="trailing" constant="15" id="gIR-K2-YYi"/>
+                    <constraint firstItem="igl-PW-7bt" firstAttribute="leading" secondItem="gZv-0X-yC7" secondAttribute="trailing" constant="5" id="hV6-ny-D4r"/>
+                    <constraint firstItem="cq3-Zj-YjA" firstAttribute="leading" secondItem="igl-PW-7bt" secondAttribute="trailing" id="uIv-AM-pK9"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="avatarView" destination="gZv-0X-yC7" id="T1X-p1-oRh"/>
+                <outlet property="doctorNameLabel" destination="igl-PW-7bt" id="ZMZ-d3-94U"/>
+                <outlet property="patientNameLabel" destination="idU-cx-vgw" id="YLh-PG-KIF"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="arrow_crm.png" width="13" height="18"/>
+    </resources>
+</document>

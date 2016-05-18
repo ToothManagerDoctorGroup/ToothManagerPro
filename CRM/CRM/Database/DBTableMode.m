@@ -14,6 +14,8 @@
 #import "NSDate+Conversion.h"
 #import "NSString+Conversion.h"
 #import "AccountManager.h"
+#import "MyDateTool.h"
+#import "UIColor+Extension.h"
 
 //NSString * const ITI = @"ITI";
 //NSString * const DENTIS = @"DENTIS"; //诺贝尔，ITI，奥齿泰，费亚丹
@@ -125,11 +127,11 @@ NSString * const Repaired = @"已修复";
 //            return NuoBeiEr;
 //            break;
     switch (type) {
-        case MaterialTypeMaterial:
-            return MaterialStr;
+        case MaterialTypeOther:
+            return OtherStr;
             break;
         default:
-            return OtherStr;
+            return MaterialStr;
             break;
     }
 }
@@ -160,9 +162,14 @@ NSString * const Repaired = @"已修复";
     medicalCase.repair_time = [result stringForColumn:@"repair_time"];
     medicalCase.case_status = [result intForColumn:@"case_status"];
     medicalCase.repair_doctor = [result stringForColumn:@"repair_doctor"];
+    medicalCase.repair_doctor_name = [result stringForColumn:@"repair_doctor_name"];
     medicalCase.user_id = [result stringForColumn:@"user_id"];
     medicalCase.doctor_id = [result stringForColumn:@"doctor_id"];
     medicalCase.creation_date_sync = [result stringForColumn:@"creation_date_sync"];
+    
+    medicalCase.tooth_position = [result stringForColumn:@"tooth_position"];
+    medicalCase.team_notice = [result stringForColumn:@"team_notice"];
+    medicalCase.hxGroupId = [result stringForColumn:@"hxGroupId"];
     
     return medicalCase;
 }
@@ -178,11 +185,17 @@ NSString * const Repaired = @"已修复";
     tmpMedicalCase.next_reserve_time = [medcas timeStringForKey:@"next_reserve_time"];
     tmpMedicalCase.patient_id = [medcas stringForKey:@"patient_id"];
     tmpMedicalCase.repair_doctor = [medcas stringForKey:@"repair_doctor"];
+    tmpMedicalCase.repair_doctor_name = [medcas stringForKey:@"repair_doctor_name"];
     tmpMedicalCase.repair_time = [medcas timeStringForKey:@"repair_time"];
     tmpMedicalCase.update_date = [NSString defaultDateString];
     tmpMedicalCase.sync_time = [medcas stringForKey:@"sync_time"];
     tmpMedicalCase.doctor_id = [medcas stringForKey:@"doctor_id"];
     tmpMedicalCase.creation_date = [medcas stringForKey:@"creation_time"];
+    
+    tmpMedicalCase.tooth_position = [medcas stringForKey:@"tooth_position"];
+    tmpMedicalCase.team_notice = [medcas stringForKey:@"team_notice"];
+    tmpMedicalCase.hxGroupId = [medcas stringForKey:@"HxGroupId"];
+    
     return tmpMedicalCase;
 
 }
@@ -210,6 +223,7 @@ NSString * const Repaired = @"已修复";
     expense.expense_price = [result doubleForColumn:@"expense_price"];
     expense.expense_money = [result doubleForColumn:@"expense_money"];
     expense.update_date = [result stringForColumn:@"update_date"];
+    expense.creation_date = [result stringForColumn:@"creation_date"];
     expense.user_id = [result stringForColumn:@"user_id"];
     expense.doctor_id = [result stringForColumn:@"doctor_id"];
     expense.creation_date_sync = [result stringForColumn:@"creation_date_sync"];
@@ -246,17 +260,35 @@ NSString * const Repaired = @"已修复";
     if (self) {
         self.patient_name = @"";
         self.patient_phone = @"";
-        self.patient_age = @"20";
+        self.patient_age = @"0";
         self.patient_avatar = @"";
-        self.patient_gender = @"1";
+        self.patient_gender = @"2";
         self.introducer_id = @"";
         self.patient_status = PatientStatusUntreatment;
         self.ori_user_id = @"";
         self.intr_name = @"";
+        
+        self.patient_allergy = @"";
+        self.patient_remark = @"";
+        self.idCardNum = @"";
+        self.patient_address = @"";
+        self.anamnesis = @"";
+        self.nickName = @"";
+        
     }
     return self;
 }
-
++ (Patient *)patientWithMixResult:(FMResultSet *)result{
+    Patient * patient = [[Patient alloc]init];
+    patient.ckeyid = [result stringForColumn:@"ckeyid"];
+    patient.patient_name = [result stringForColumn:@"patient_name"];
+    patient.patient_phone = [result stringForColumn:@"patient_phone"];
+    patient.patient_status = [result intForColumn:@"patient_status"];
+    patient.intr_name = [result stringForColumn:@"intr_name"];
+    patient.expense_num = [result intForColumn:@"expense_num"];
+    patient.nickName = [result stringForColumn:@"nickName"];
+    return patient;
+}
 + (Patient *)patientlWithResult:(FMResultSet *)result {
     Patient * patient = [[Patient alloc]init];
     patient.ckeyid = [result stringForColumn:@"ckeyid"];
@@ -272,6 +304,15 @@ NSString * const Repaired = @"已修复";
     patient.sync_time = [result stringForColumn:@"sync_time"];
     patient.doctor_id = [result stringForColumn:@"doctor_id"];
     patient.intr_name = [result stringForColumn:@"intr_name"];
+    patient.creation_date = [result stringForColumn:@"creation_date"];
+    
+    patient.patient_allergy = [result stringForColumn:@"patient_allergy"];
+    patient.patient_remark = [result stringForColumn:@"patient_remark"];
+    patient.idCardNum = [result stringForColumn:@"IdCardNum"];
+    patient.patient_address = [result stringForColumn:@"patient_address"];
+    patient.anamnesis = [result stringForColumn:@"Anamnesis"];
+    patient.nickName = [result stringForColumn:@"NickName"];
+    
     return patient;
 }
 
@@ -295,6 +336,27 @@ NSString * const Repaired = @"已修复";
     }
 }
 
++ (UIColor *)statusColorWithIntegerStatus:(PatientStatus)status{
+    UIColor *color = [UIColor blackColor];
+    switch (status) {
+        case PatientStatusUntreatment:
+            color = [UIColor colorWithHex:0x00a0ea];
+            break;
+        case PatientStatusUnplanted:
+            color = [UIColor colorWithHex:0xff3b31];
+            break;
+        case PatientStatusUnrepaired:
+            color = [UIColor colorWithHex:0x37ab4e];
+            break;
+        case PatientStatusRepaired:
+            color = [UIColor colorWithHex:0x888888];
+            break;
+        default:
+            break;
+    }
+    return color;
+}
+
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat {
     Patient *tmpPatient = [[Patient alloc]init];
     
@@ -312,7 +374,15 @@ NSString * const Repaired = @"已修复";
     tmpPatient.doctor_id = [pat stringForKey:@"doctor_id"];
     tmpPatient.user_id = [AccountManager currentUserid];
     tmpPatient.intr_name = [pat stringForKey:@"intr_name"];
-    //tmpPatient.update_date = [pat stringForKey:@"update_time"];
+    tmpPatient.update_date = [pat stringForKey:@"update_time"];
+    tmpPatient.creation_date = [pat stringForKey:@"creation_time"];
+    
+    tmpPatient.patient_allergy = [pat stringForKey:@"patient_allergy"];
+    tmpPatient.patient_remark = [pat stringForKey:@"patient_remark"];
+    tmpPatient.idCardNum = [pat stringForKey:@"IdCardNum"];
+    tmpPatient.patient_address = [pat stringForKey:@"patient_address"];
+    tmpPatient.anamnesis = [pat stringForKey:@"Anamnesis"];
+    tmpPatient.nickName = [pat stringForKey:@"NickName"];
     
     return tmpPatient;
     
@@ -457,10 +527,44 @@ NSString * const Repaired = @"已修复";
     tmpDoctor.doctor_id = [dic stringForKey:@"doctor_id"];
     tmpDoctor.user_id = [AccountManager currentUserid];
     
+    tmpDoctor.isExist = [dic integerForKey:@"is_exists"];
+    
     tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
     tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
     tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
     tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    
+    return tmpDoctor;
+}
+
++ (Doctor *)DoctorWithPatientCountFromDoctorResult:(NSDictionary *)dic{
+    Doctor *tmpDoctor = [[Doctor alloc]init];
+    tmpDoctor.ckeyid = [dic stringForKey:@"doctor_id"];
+    tmpDoctor.creation_date = [dic stringForKey:@"creation_time"];
+    tmpDoctor.doctor_certificate = [dic stringForKey:@"doctor_certificate"];
+    tmpDoctor.doctor_name = [dic stringForKey:@"doctor_name"];
+    tmpDoctor.doctor_phone = [dic stringForKey:@"doctor_phone"];
+    tmpDoctor.doctor_position = [dic stringForKey:@"doctor_position"];
+    tmpDoctor.doctor_degree = [dic stringForKey:@"doctor_degree"];
+    tmpDoctor.doctor_image = [dic stringForKey:@"doctor_image"];
+    tmpDoctor.doctor_dept = [dic stringForKey:@"doctor_dept"];
+    tmpDoctor.doctor_hospital = [dic stringForKey:@"doctor_hospital"];
+    tmpDoctor.auth_status = [dic integerForKey:@"doctor_is_verified"];
+    tmpDoctor.auth_text = [dic stringForKey:@"doctor_verify_reason"];
+    tmpDoctor.isopen = [dic integerForKey:@"is_open"];
+    tmpDoctor.sync_time =[dic stringForKey:@"sync_time"];
+    tmpDoctor.doctor_email = @"";
+    tmpDoctor.auth_pic = @"";
+    tmpDoctor.update_date = [NSString defaultDateString];
+    tmpDoctor.doctor_id = [dic stringForKey:@"doctor_id"];
+    tmpDoctor.user_id = [AccountManager currentUserid];
+    
+    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
+    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    
+    tmpDoctor.patient_count = [dic stringForKey:@"patient_count"];
     return tmpDoctor;
 }
 
@@ -507,9 +611,15 @@ NSString * const Repaired = @"已修复";
     if (self) {
         self.ct_image = @"";
         self.ct_desc = @"";
-        self.creationdate = @"";
+        self.creation_date = @"";
     }
     return self;
+}
+
+- (NSString *)ct_image_detailUrl{
+    NSString *uploadUrl = [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm];
+    NSString *urlImage = [NSString stringWithFormat:@"%@%@_%@", uploadUrl, self.ckeyid, self.ct_image];
+    return urlImage;
 }
 
 +(CTLib *)libWithResult:(FMResultSet *)result {
@@ -522,10 +632,11 @@ NSString * const Repaired = @"已修复";
     lib.ct_image = [result stringForColumn:@"ct_image"];
     lib.ct_desc = [result stringForColumn:@"ct_desc"];
     lib.update_date = [result stringForColumn:@"update_date"];
-    lib.creationdate = [result stringForColumn:@"creation_date"];
+    lib.creation_date = [result stringForColumn:@"creation_date"];
     lib.user_id = [result stringForColumn:@"user_id"];
     lib.doctor_id = [result stringForColumn:@"doctor_id"];
     lib.creation_date_sync = [result stringForColumn:@"creation_date_sync"];
+    lib.is_main = [result stringForColumn:@"is_main"];
     return lib;
 }
 
@@ -542,7 +653,8 @@ NSString * const Repaired = @"已修复";
     templib.update_date = [NSString defaultDateString];
     templib.sync_time = [medCT stringForKey:@"sync_time"];
     templib.doctor_id = [medCT stringForKey:@"doctor_id"];
-    templib.creationdate = [medCT stringForKey:@"creation_time"];
+    templib.creation_date = [medCT stringForKey:@"creation_time"];
+    templib.is_main = [medCT stringForKey:@"is_main"];
     
     return templib;
     
@@ -805,10 +917,10 @@ NSString * const Repaired = @"已修复";
     user.img = [result stringForColumn:@"img"];
     
     
-//    user.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
-//    user.doctor_gender = [result stringForColumn:@"doctor_gender"];
-//    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
-//    user.doctor_skill = [result stringForColumn:@"doctor_skill"];
+    user.doctor_birthday = [result stringForColumn:@"doctor_birthday"];
+    user.doctor_gender = [result stringForColumn:@"doctor_gender"];
+    user.doctor_cv = [result stringForColumn:@"doctor_cv"];
+    user.doctor_skill = [result stringForColumn:@"doctor_skill"];
     return user;
 }
 
@@ -845,10 +957,10 @@ NSString * const Repaired = @"已修复";
     self.img = [dic stringForKey:@"img" placeholder:@"无"];
     
 #warning 添加新代码
-//    self.doctor_birthday = [dic stringForKey:@"doctor_birthday" placeholder:@""];
-//    self.doctor_gender = [dic stringForKey:@"doctor_gender" placeholder:@""];
-//    self.doctor_cv = [dic stringForKey:@"doctor_cv" placeholder:@""];
-//    self.doctor_skill = [dic stringForKey:@"doctor_skill" placeholder:@""];
+    self.doctor_birthday = [dic stringForKey:@"doctor_birthday" placeholder:@""];
+    self.doctor_gender = [dic stringForKey:@"doctor_gender" placeholder:@""];
+    self.doctor_cv = [dic stringForKey:@"doctor_cv" placeholder:@""];
+    self.doctor_skill = [dic stringForKey:@"doctor_skill" placeholder:@""];
 }
 
 
@@ -872,11 +984,39 @@ NSString * const Repaired = @"已修复";
 //    tmpDoctor.auth_pic = @"";
 //    tmpDoctor.update_date = [NSString defaultDateString];
     
-//    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
-//    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
-//    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
-//    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
+    tmpDoctor.doctor_birthday = [dic stringForKey:@"doctor_birthday"];
+    tmpDoctor.doctor_gender = [dic stringForKey:@"doctor_gender"];
+    tmpDoctor.doctor_cv = [dic stringForKey:@"doctor_cv"];
+    tmpDoctor.doctor_skill = [dic stringForKey:@"doctor_skill"];
     return tmpDoctor;
+}
+
+@end
+
+@implementation InfoAutoSync
+
++ (InfoAutoSync *)InfoAutoSyncWithResult:(FMResultSet *)result{
+    InfoAutoSync *info = [[InfoAutoSync alloc]init];
+    info.info_id = [result intForColumn:@"id"];
+    info.data_type = [result stringForColumn:@"data_type"];
+    info.post_type = [result stringForColumn:@"post_type"];
+    info.dataEntity = [result stringForColumn:@"dataEntity"];
+    info.sync_status = [result stringForColumn:@"sync_status"];
+    info.autoSync_CreateDate = [result stringForColumn:@"autoSync_CreateDate"];
+    info.syncCount = [result intForColumn:@"syncCount"];
+    return info;
+}
+
+
+- (instancetype)initWithDataType:(NSString *)dataType postType:(NSString *)postType dataEntity:(NSString *)dataEntity syncStatus:(NSString *)syncStatus{
+    InfoAutoSync *info = [[InfoAutoSync alloc] init];
+    info.data_type = dataType;
+    info.post_type = postType;
+    info.dataEntity = dataEntity;
+    info.sync_status = syncStatus;
+    info.autoSync_CreateDate = [MyDateTool stringWithDateyyyyMMddHHmmss:[NSDate date]];
+    info.syncCount = 0;
+    return info;
 }
 
 @end

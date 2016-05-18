@@ -13,6 +13,12 @@ extern NSString * const RepeatIntervalWeek;
 extern NSString * const RepeatIntervalMonth;
 extern NSString * const RepeatIntervalNone;
 
+typedef NS_ENUM(NSInteger,ExpenseState){
+    ExpenseStateUpdate = 0, //修改
+    ExpenseStateAdd = 1,    //新增
+    ExpenseStateDelete = 2  //删除
+};
+
 typedef NS_ENUM(NSInteger, MaterialType) {
     MaterialTypeOther = 1,
     MaterialTypeMaterial = 2,
@@ -74,9 +80,17 @@ typedef CGFloat Money;
 @property (nonatomic, copy)NSString *doctor_cv; //医生个人简介
 @property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
 
+/**
+ *  临时字段，不做数据库的存储操作
+ */
+@property (nonatomic, assign)BOOL is_exists;
+@property (nonatomic, copy)NSString *patient_count;
+@property (nonatomic, assign)BOOL isSelect;//是否选中
+@property (nonatomic, assign)BOOL isExist;//是否存在
+
 +(Doctor *)doctorlWithResult:(FMResultSet *)result;
 + (Doctor *)DoctorFromDoctorResult:(NSDictionary *)dic;
-
++ (Doctor *)DoctorWithPatientCountFromDoctorResult:(NSDictionary *)dic;
 @end
 
 @interface RepairDoctor : Doctor
@@ -118,9 +132,21 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *sync_time;  //同步时间
 @property (nonatomic,copy) NSString *case_update_time;
 @property (nonatomic,copy) NSString *intr_name;
+//新增患者字段
+@property (nonatomic, copy)NSString *patient_allergy;//患者过敏史
+@property (nonatomic, copy)NSString *patient_remark;//医生给患者的备注信息
+@property (nonatomic, copy)NSString *idCardNum;//身份证号（原有字段是IdCardNum）
+@property (nonatomic, copy)NSString *patient_address;//患者家庭地址
+@property (nonatomic, copy)NSString *anamnesis;//既往病史（原有字段是Anamnesis）
+@property (nonatomic, copy)NSString *nickName;//昵称(原有字段NickName)
 
+//本地所用字段，与服务器无关
+@property (nonatomic, assign)NSInteger expense_num;//种植体数量
+
++ (Patient *)patientWithMixResult:(FMResultSet *)result;//只用于患者列表信息
 + (Patient *)patientlWithResult:(FMResultSet *)result;
 + (NSString *)statusStrWithIntegerStatus:(PatientStatus)status;
++ (UIColor *)statusColorWithIntegerStatus:(PatientStatus)status;
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat;
 
 @end
@@ -146,10 +172,12 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *case_id;      //病例id
 @property (nonatomic,copy) NSString *ct_image;             //CT图片地址
 @property (nonatomic,copy) NSString *ct_desc;              //CT描述
-@property (nonatomic,copy) NSString *creationdate;   //创建时间
+@property (nonatomic,copy) NSString *creation_date;   //创建时间
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
-@property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
+@property (nonatomic,copy) NSString *creation_date_sync;      //创建日期,用于同步
+@property (nonatomic, copy)NSString *is_main;//1:主照片  0:不是主照片
+
 
 +(CTLib *)libWithResult:(FMResultSet *)result;
 +(CTLib *)CTLibFromCTLibResult:(NSDictionary *)medCT;
@@ -165,11 +193,16 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *next_reserve_time;    //下次预约时间
 @property (nonatomic,copy) NSString *repair_time;          //修复时间
 @property (nonatomic,readwrite) NSInteger case_status;     //病例状态
-@property (nonatomic,copy) NSString *repair_doctor;        //修复医生
+@property (nonatomic,copy) NSString *repair_doctor;        //修复医生id
+@property (nonatomic, copy)NSString *repair_doctor_name;   //修复医生名称
 @property (nonatomic,copy)  NSString *creation_date;      //创建日期
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;  //同步时间
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
+
+@property (nonatomic, copy)NSString *tooth_position;//病历对应牙位
+@property (nonatomic, copy)NSString *team_notice;//团队注意事项
+@property (nonatomic, copy)NSString *hxGroupId;//环信群组的id
 
 + (MedicalCase *)medicalCaseWithResult:(FMResultSet *)result;
 + (MedicalCase *)MedicalCaseFromPatientMedicalCase:(NSDictionary *)medcas;
@@ -189,6 +222,12 @@ typedef CGFloat Money;
 @property (nonatomic,copy)  NSString *creation_date;      //创建日期
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
 
+/**
+ *  材料名称，操作状态，只做显示用，不涉及数据库操作
+ */
+@property (nonatomic, copy)NSString *mat_name;
+@property (nonatomic, assign)ExpenseState state;//操作状态
+
 
 + (MedicalExpense *)expenseWithResult:(FMResultSet *)result;
 + (MedicalExpense *)MEFromMEResult:(NSDictionary *)medEx;
@@ -204,6 +243,11 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *update_date;
 @property (nonatomic,copy) NSString *sync_time;      //同步时间
 @property (nonatomic,copy)  NSString *creation_date_sync;      //创建日期,用于同步
+
+/**
+ *  创建人姓名，临时字段
+ */
+@property (nonatomic, copy)NSString *doctor_name;
 
 + (MedicalRecord *)medicalRecordWithResult:(FMResultSet *)result;
 + (MedicalRecord *)MRFromMRResult:(NSDictionary *)medRe;
@@ -282,10 +326,10 @@ typedef CGFloat Money;
 @property (nonatomic,copy) NSString *authText;
 @property (nonatomic,copy) NSString *authPic;
 
-//@property (nonatomic, copy)NSString *doctor_birthday; //医生的生日
-//@property (nonatomic, copy)NSString *doctor_gender; //医生性别
-//@property (nonatomic, copy)NSString *doctor_cv; //医生个人简介
-//@property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
+@property (nonatomic, copy)NSString *doctor_birthday; //医生的生日
+@property (nonatomic, copy)NSString *doctor_gender; //医生性别
+@property (nonatomic, copy)NSString *doctor_cv; //医生个人简介
+@property (nonatomic, copy)NSString *doctor_skill; //医生的职业技能
 
 + (UserObject *)userobjectWithResult:(FMResultSet *)result;
 + (NSString *)authStringWithStatus:(AuthStatus)status;
@@ -318,3 +362,37 @@ typedef CGFloat Money;
 @end
 
 #endif
+
+@interface InfoAutoSync : NSObject
+/**
+ *  主键id
+ */
+@property (nonatomic, assign)NSInteger info_id;
+/**
+ *  数据的类型
+ */
+@property (nonatomic, copy)NSString *data_type;
+/**
+ *  上传的类型：insert,update,delete
+ */
+@property (nonatomic, copy)NSString *post_type;
+/**
+ *  具体的数据
+ */
+@property (nonatomic, copy)NSString *dataEntity;
+/**
+ *  同步的状态：0:未上传  1:上传中 2:上传成功 3:上传失败 4:上传失败后传入服务器
+ */
+@property (nonatomic, copy)NSString *sync_status;
+/**
+ *  创建时间  yyyyMMddHHmmss
+ */
+@property (nonatomic, copy)NSString *autoSync_CreateDate;
+/**
+ *  上传次数，当服务器发生异常时，限制最大上传次数50
+ */
+@property (nonatomic, assign)int syncCount;//上传次数，最大限制50次
+
++ (InfoAutoSync *)InfoAutoSyncWithResult:(FMResultSet *)result;
+- (instancetype)initWithDataType:(NSString *)dataType postType:(NSString *)postType dataEntity:(NSString *)dataEntity syncStatus:(NSString *)syncStatus;
+@end

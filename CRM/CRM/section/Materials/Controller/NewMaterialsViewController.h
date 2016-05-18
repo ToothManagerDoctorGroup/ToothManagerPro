@@ -12,7 +12,9 @@
 {
 }
 
-@property (nonatomic,readwrite) BOOL edit;
+@property (nonatomic,readwrite) BOOL edit;//是否是编辑状态
+@property (nonatomic, assign)BOOL showPatients;//是否显示患者列表
+
 @property (nonatomic,copy) NSString *materialId;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nameTextField;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *priceTextField;

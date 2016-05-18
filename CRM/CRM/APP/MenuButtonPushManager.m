@@ -7,19 +7,26 @@
 //
 
 #import "MenuButtonPushManager.h"
-#import "AddReminderViewController.h"
-#import "QrCodePatientViewController.h"
+#import "AccountManager.h"
+#import "XLSelectYuyueViewController.h"
+#import "XLQrcodePatientViewController.h"
+#import "XLAppointmentBaseViewController.h"
 
 @implementation MenuButtonPushManager
 -(void)yuyueButtonDidSelected{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    AddReminderViewController *addReminderVC = [storyboard instantiateViewControllerWithIdentifier:@"AddReminderViewController"];
-    addReminderVC.hidesBottomBarWhenPushed = YES;
-    [self.viewController pushViewController:addReminderVC animated:YES];
+    
+//    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
+//    selectYuyeVc.hidesBottomBarWhenPushed = YES;
+//    selectYuyeVc.isHome = YES;
+//    [self.viewController pushViewController:selectYuyeVc animated:YES];
+    XLAppointmentBaseViewController *baseVC = [[XLAppointmentBaseViewController alloc] init];
+    baseVC.hidesBottomBarWhenPushed = YES;
+    [self.viewController pushViewController:baseVC animated:YES];
+    
 }
 -(void)huanzheButtonDidSeleted{
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    QrCodePatientViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"QrCodePatientViewController"];
+    XLQrcodePatientViewController *qrVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLQrcodePatientViewController"];
     qrVC.hidesBottomBarWhenPushed = YES;
     [self.viewController pushViewController:qrVC animated:YES];
 }

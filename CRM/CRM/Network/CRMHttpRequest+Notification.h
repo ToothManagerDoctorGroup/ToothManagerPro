@@ -9,10 +9,12 @@
 #import "CRMHttpRequest.h"
 
 DEF_STATIC_CONST_STRING(Notification_Prefix,Notification);
-DEF_URL NotificationFriends_URL = @"http://122.114.62.57/his.crm/ashx/NotificationFriendHandler.ashx?action=getdata";
-DEF_URL NotificationSystem_URL = @"http://122.114.62.57/his.crm/ashx/NotificationSystemHandler.ashx?action=getdata";
-DEF_URL NotificationInpatient_URL = @"http://122.114.62.57/his.crm/ashx/GetMessage.ashx?action=inpatient";
-DEF_URL NotificationOutpatient_URL = @"http://122.114.62.57/his.crm/ashx/GetMessage.ashx?action=outpatient";
+
+#define NotificationFriends_URL [NSString stringWithFormat:@"%@%@/%@/NotificationFriendHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+#define NotificationSystem_URL [NSString stringWithFormat:@"%@%@/%@/NotificationSystemHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+#define NotificationPatient_Common_URL [NSString stringWithFormat:@"%@%@/%@/GetMessage.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
 @interface CRMHttpRequest (Notification)
 

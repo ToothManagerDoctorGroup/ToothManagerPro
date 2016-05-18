@@ -8,18 +8,20 @@
 
 #import "CRMHttpRequest.h"
 
+
 DEF_STATIC_CONST_STRING(Doctor_Prefix,Doctor);
-DEF_URL GetDoctorList_URL =  @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=getdatabyid";
-DEF_URL SearchDoctor_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx?action=getdata";
-DEF_URL Transfer_URL = @"http://122.114.62.57/his.crm/ashx/NotificationPatientHandler.ashx?action=transfer";
-DEF_URL WeiXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx";
-DEF_URL ClinicMessage_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-DEF_URL DoctorIcon_URL = @"http://122.114.62.57/his.crm/ashx/DoctorInfoHandler.ashx";
-DEF_URL DoctorClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-DEF_URL ClinicSeat_URL = @"http://122.114.62.57/clinicServer/ashx/SeatHandler.ashx";
-DEF_URL YuYueInfoByClinicSeatDate_URL = @"http://122.114.62.57/clinicServer/ashx/AppointmentsHandler.ashx";
-DEF_URL YuYueDuanXin_URL = @"http://122.114.62.57/Weixin/ashx/DoctorPatientMapHandler.ashx?action=getMessageItem";
-DEF_URL YuYueTuiSongClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint";
+
+#define GetOrSearchDoctorList_AndIcon_Common_URL [NSString stringWithFormat:@"%@%@/%@/DoctorInfoHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+#define Transfer_URL [NSString stringWithFormat:@"%@%@/%@/NotificationPatientHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+#define WeiXin_SMS_Common_URL [NSString stringWithFormat:@"%@%@/%@/DoctorPatientMapHandler.ashx",DomainName,Method_Weixin,Method_Ashx]
+
+#define ClinicMessage_Common_URL [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+#define ClinicSeat_URL [NSString stringWithFormat:@"%@%@/%@/SeatHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx]
+
+#define YuYueInfoByClinicSeatDate_URL [NSString stringWithFormat:@"%@%@/%@/AppointmentsHandler.ashx",DomainName,Method_ClinicServer,Method_Ashx]
 
 @interface CRMHttpRequest (Doctor)
 
@@ -89,7 +91,7 @@ DEF_URL YuYueTuiSongClinic_URL = @"http://122.114.62.57/his.crm/ashx/ClinicMessa
  *
  *  @param patientIds:病人id  doctorId:医生id  message_type:类型   send_type  send_time
  **/
-- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time;
+- (void)weiXinMessagePatient:(NSString *)patientIds fromDoctor:(NSString *)doctorId toDoctor:(NSString *)toDoctor withMessageType:(NSString *)message_type withSendType:(NSString *)send_type withSendTime:(NSString *)send_time;
 
 /**
  *  预约短信消息推送

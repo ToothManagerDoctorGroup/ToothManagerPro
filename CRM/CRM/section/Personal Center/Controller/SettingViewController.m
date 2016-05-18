@@ -8,14 +8,19 @@
 
 #import "SettingViewController.h"
 #import "AboutProductViewController.h"
-#import "UMFeedback.h"
 #import "ServerPrivacyViewController.h"
 #import "ChangePasswdViewController.h"
 #import "AccountManager.h"
 #import "TimNavigationViewController.h"
+#import "CRMUserDefalut.h"
+#import "XLSettingViewController.h"
+#import "XLAdviseFeedBackViewController.h"
+#import "XLUserAssistenceViewController.h"
 
 @interface SettingViewController (){
     
+    IBOutlet UITableViewCell *_userAssistence;
+    IBOutlet UITableViewCell *_settingCell;
     __weak IBOutlet UITableView *_tableView;
     IBOutlet UITableViewCell *_guanyuwomenCell;
     IBOutlet UITableViewCell *_yijianfankuiCell;
@@ -24,6 +29,8 @@
     IBOutlet UITableViewCell *_genggaimimaCell;
     IBOutlet UITableViewCell *_tuichuCell;
 }
+
+@property (nonatomic, assign)BOOL isOpen;//提醒是否打开
 
 @end
 
@@ -41,16 +48,12 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor clearColor];
     
     _versionLabel.text = [NSString stringWithFormat:@"v%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
     
-  
-    
     _tableView.delegate=self;
     _tableView.dataSource=self;
-    _tableView.backgroundColor=[UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    
+    _tableView.backgroundColor = MyColor(238, 238, 238);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -65,9 +68,9 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section==0){
-        return 3;
+        return 4;
     }else{
-        return 2;
+        return 3;
     }
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -90,11 +93,15 @@
             return _yijianfankuiCell;
         }else if (indexPath.row == 2){
             return _fuwuCell;
+        }else if (indexPath.row == 3){
+            return _userAssistence;
         }
     }else if (indexPath.section == 1){
         if(indexPath.row == 0){
             return _genggaimimaCell;
-        }else if (indexPath.row == 1){
+        }else if(indexPath.row == 1){
+            return _settingCell;
+        }else {
             return _tuichuCell;
         }
     }
@@ -114,40 +121,56 @@
             
         }
         else if (indexPath.row == 1){
-            UIViewController *feedbackVC = [UMFeedback feedbackViewController];
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(0, 0, 45, 44);
-            [button setImage:[UIImage imageNamed:@"btn_back.png"] forState:UIControlStateNormal];
-            [[UMFeedback sharedInstance] setBackButton:button];
-            feedbackVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:feedbackVC animated:YES];
+            XLAdviseFeedBackViewController *feedBackVc = [[XLAdviseFeedBackViewController alloc] init];
+            feedBackVc.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:feedBackVc animated:YES];
             
         }else if (indexPath.row == 2){
                      UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
                         ServerPrivacyViewController *serverVC = [storyBoard instantiateViewControllerWithIdentifier:@"ServerPrivacyViewController"];
             serverVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:serverVC animated:YES];
+        }else if (indexPath.row == 3){
+            XLUserAssistenceViewController *assistence = [[XLUserAssistenceViewController alloc] initWithStyle:UITableViewStylePlain];
+            [self.navigationController pushViewController:assistence animated:YES];
         }
-        
     }
     
     if(indexPath.section == 1){
         if(indexPath.row == 0){
-        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Login" bundle:nil];
         ChangePasswdViewController *changepasswdVC = [storyBoard instantiateViewControllerWithIdentifier:@"ChangePasswdViewController"];
             
             changepasswdVC.hidesBottomBarWhenPushed = YES;
             
          [self.navigationController pushViewController:changepasswdVC animated:YES];
         }else if (indexPath.row == 1){
-            [[AccountManager shareInstance] logout];
+            //设置页面
+            XLSettingViewController *settingVc = [[XLSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [self pushViewController:settingVc animated:YES];
             
+        }else{
+            [SVProgressHUD showWithStatus:@"正在退出"];
+            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
+                if (error && error.errorCode != EMErrorServerNotLogin) {
+                    if (error && error.errorCode != EMErrorServerNotLogin) {
+                        [SVProgressHUD showImage:nil status:@"网络连接失败"];
+                    }
+                }
+                else{
+                    [SVProgressHUD dismiss];
+                    [[AccountManager shareInstance] logout];
+//                    [[ApplyViewController shareController] clear];
+//                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+                }
+            } onQueue:nil];
+
+//            [[AccountManager shareInstance] logout];
         }
     }
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 

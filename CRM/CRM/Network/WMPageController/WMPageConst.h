@@ -41,19 +41,6 @@ static NSString *const WMControllerDidAddToSuperViewNotification = @"WMControlle
 //  NOTE:由于缓存机制，不会在 controller 移出屏幕时销毁控制器，若想要控制器视图移除屏幕后不再收到通知，可在 -viewWillDisappear: 或 -viewDidDisappear: 中 removeObserver.并且相应的，在 -viewWillAppear: 中添加 observer
 static NSString *const WMControllerDidFullyDisplayedNotification = @"WMControllerDidFullyDisplayedNotification";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //  如果你遇到任何问题，或者有什么更好地建议，都可以联系我.
 //  有什么能改进的都可以PR哦~ github有你更美好!~
 //  好用的话还希望能够小小star一下~ :)

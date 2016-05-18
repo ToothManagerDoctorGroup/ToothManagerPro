@@ -20,7 +20,9 @@
 @implementation PatientsTableViewCell
 
 - (void)awakeFromNib {
-    // Initialization code
+    UIView *selectView = [[UIView alloc] initWithFrame:self.frame];
+    self.selectedBackgroundView = selectView;
+    selectView.backgroundColor = [UIColor colorWithHex:0xeeeeee];
 }
 
 - (void)configCellWithCellMode:(PatientsCellMode *)mode {
@@ -28,38 +30,21 @@
     self.nameLabel.adjustsFontSizeToFitWidth = YES;
     self.statusLabel.text = mode.statusStr;
     self.transferLabel.text = mode.introducerName;
+    self.transferLabel.adjustsFontSizeToFitWidth = YES;
     
-    
-    Doctor *doc = [[DBManager shareInstance]getDoctorNameByPatientIntroducerMapWithPatientId:mode.patientId withIntrId:[AccountManager shareInstance].currentUser.userid];
-    if([doc.doctor_name isNotEmpty]){
+    if(mode.isTransfer){
         self.zhuanZhenImageview.hidden = NO;
     }else{
         self.zhuanZhenImageview.hidden = YES;
     }
     
-    self.countMaterial.text = [NSString stringWithFormat:@"%ld颗",mode.countMaterial];
-    switch (mode.status) {
-        case PatientStatusUntreatment:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_YELLOW]];
-            break;
-        case PatientStatusUnplanted:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_RED]];
-            break;
-        case PatientStatusUnrepaired:
-            [self.statusLabel setTextColor:[UIColor colorWithHex:CUSTOM_GREEN]];
-            break;
-        case PatientStatusRepaired:
-            [self.statusLabel setTextColor:[UIColor blackColor]];
-            break;
-        default:
-            break;
-    }
+    self.countMaterial.text = [NSString stringWithFormat:@"%ld颗",(long)mode.countMaterial];
+    self.statusLabel.textColor = [Patient statusColorWithIntegerStatus:mode.status];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
-    // Configure the view for the selected state
 }
 
 @end

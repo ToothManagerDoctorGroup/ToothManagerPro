@@ -35,7 +35,7 @@
 }
 
 - (void)setUp{
-    self.placeholder = @"请输入会诊信息";
+    self.placeholder = @"请输入300字以内会诊信息";
     self.layer.cornerRadius = 5;
     self.layer.masksToBounds = YES;
     self.backgroundColor = [UIColor whiteColor];

@@ -8,6 +8,7 @@
 
 #import "CornerButton.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIColor+Extension.h"
 
 @implementation CornerButton
 
@@ -24,6 +25,8 @@
     [super layoutSubviews];
     self.layer.masksToBounds = YES;
     self.layer.cornerRadius = self.bounds.size.width/2;
+    self.layer.borderWidth = 1;
+    self.layer.borderColor = [UIColor colorWithHex:0xCCCCCC].CGColor;
 }
 
 @end

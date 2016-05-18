@@ -15,6 +15,7 @@
 #import "UIViewController+MMDrawerController.h"
 #import "CRMAppDelegate.h"
 #import "UIColor+Extension.h"
+#import "UINavigationItem+Margin.h"
 
 @interface TimDisplayViewController ()
 
@@ -229,6 +230,11 @@
 
 - (void)setRightBarButtonWithImage:(UIImage *)image {
     UIBarButtonItem *rightItem = [UIBarButtonItem itemWithImage:image target:self action:@selector(onRightButtonAction:)];
+    [self.navigationItem setRightBarButtonItem:rightItem];
+}
+
+- (void)setRightBarButtonWithTitle:(NSString *)title {
+    UIBarButtonItem *rightItem = [UIBarButtonItem itemWithTitle:title target:self action:@selector(onRightButtonAction:)];
     [self.navigationItem setRightBarButtonItem:rightItem];
 }
 

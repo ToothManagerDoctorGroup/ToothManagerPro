@@ -23,6 +23,18 @@
 }
 
 /**
+ *  NSDate 转成字符串
+ *
+ *  @return 字符串
+ */
+- (NSString *)dateToNSStringWithoutTime {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSString *strDate = [dateFormatter stringFromDate:self];
+    return strDate;
+}
+
+/**
  *  NSDate 转成 double
  *
  *  @return double

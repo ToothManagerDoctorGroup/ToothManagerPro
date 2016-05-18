@@ -22,12 +22,15 @@
     _imageArray = imageArray;
 //    self.contentSize = CGSizeMake(self.imageViewWidth*self.imageArray.count, 0);
     [self removeAllSubviews];
+    self.contentSize = CGSizeMake(self.imageArray.count * (self.imageViewWidth + 5), self.height);
     for (NSInteger i = 0; i < self.imageArray.count; i++) {
         TimImage *image = [self.imageArray objectAtIndex:i];
         if ([NSString isNotEmptyString:image.url]) {
-            UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(i*self.imageViewWidth, 0, self.imageViewWidth, self.bounds.size.height)];
+            UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(i*(self.imageViewWidth + 5), 0, self.imageViewWidth, self.bounds.size.height)];
             imageView.contentMode = UIViewContentModeScaleAspectFill;
-            [imageView sd_setImageLoadingWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url]];
+//            [imageView sd_setImageLoadingWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url]];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:image.url] placeholderImage:[UIImage imageNamed:image.url] options:SDWebImageRetryFailed | SDWebImageRefreshCached];
+            
             imageView.userInteractionEnabled = YES;
             imageView.clipsToBounds = YES;
             UITapGestureRecognizer *tapgesture = [[UITapGestureRecognizer alloc]init];
@@ -51,6 +54,10 @@
 }
 
 - (void)imageTouchAction:(UITapGestureRecognizer *)sender {
+    
+    UIImageView *imageView = (UIImageView *)sender.view;
+    NSLog(@"%@",imageView.image);
+    
     if (self.sdelegate && [self.sdelegate respondsToSelector:@selector(imagesScrollView:didTouchImage:)]) {
         [self.sdelegate imagesScrollView:self didTouchImage:sender.view.tag-100];
     }

@@ -57,11 +57,11 @@ static NSString * const name = @""#string;
 
 #pragma mark -------------------- Color -------------------------------------------------------
 
-#define VIEWCONTROLLER_BACKGROUNDCOLOR (0x00a0ea)
+#define VIEWCONTROLLER_BACKGROUNDCOLOR (0xF8F8F8)
 
 #pragma mark ---------------------- frame ,bounds ---------------------------------------------
 #define SELF_VIEW_BOUNDS_WIDTH   self.view.bounds.size.width
-#define SELF__VIEW_BOUNDS_HEIGHT self.view.bounds.size.height
+#define SELF_VIEW_BOUNDS_HEIGHT self.view.bounds.size.height
 
 #pragma mark -----------------------  EXTERN --------------------------------------------------
 #ifdef __cplusplus

@@ -9,6 +9,7 @@
 #import "TimRequestBase.h"
 #import "AccountManager.h"
 #import "CRMUserDefalut.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation ResponderObject
 
@@ -21,13 +22,12 @@
     //所有接口添加 userid 和 accesstoken参数
     if ([[AccountManager shareInstance] isLogin]) {
        // [reqParam.params setObject:[AccountManager shareInstance].currentUser.accesstoken forKey:@"Accesstoken"];
-        
         if ([reqParam.params objectForKey:@"userid"] == nil && [reqParam.params objectForKey:@"userId"] == nil)
-        [reqParam.params setObject:[AccountManager shareInstance].currentUser.userid forKey:@"userid"];
+        [reqParam.params setObject:[[AccountManager shareInstance].currentUser.userid TripleDESIsEncrypt:YES] forKey:@"userid"];
     }
-    [reqParam.params setObject:@"ios" forKey:@"devicetype"];
+    [reqParam.params setObject:[@"ios" TripleDESIsEncrypt:YES] forKey:@"devicetype"];
     if ([CRMUserDefalut objectForKey:DeviceToken]) {
-        [reqParam.params setObject:[CRMUserDefalut objectForKey:DeviceToken] forKey:@"devicetoken"];
+        [reqParam.params setObject:[[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES] forKey:@"devicetoken"];
     }
     reqParam.requestUrl = requestUrl;
     reqParam.method = RequestMethodPOST;
@@ -39,6 +39,7 @@
 + (TimRequestParam *)paramWithURLSting:(NSString *)requestUrl andParams:(NSDictionary *)params
                             withPrefix:(NSString *)prefix {
     TimRequestParam *reqParam = [TimRequestParam paramWithURLSting:requestUrl andParams:params];
+    
     reqParam.callbackPrefix = prefix;
     return reqParam;
 }
@@ -75,7 +76,7 @@
     }
 }
 
-//添加 网络回调响应者
+//移除 网络回调响应者
 - (void)removeResponder:(id)responder{
     @synchronized(_responders) {
         for (ResponderObject *obj in _responders) {

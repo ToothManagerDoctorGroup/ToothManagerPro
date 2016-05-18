@@ -72,7 +72,10 @@
         [columeArray addObject:@"tooth_position"];
         [columeArray addObject:@"clinic_reserve_id"];
         [columeArray addObject:@"duration"];
-        
+        [columeArray addObject:@"therapy_doctor_id"];
+        [columeArray addObject:@"therapy_doctor_name"];
+        [columeArray addObject:@"reserve_status"];
+        [columeArray addObject:@"case_id"];
         
         [valueArray addObject:notification.ckeyid];
         [valueArray addObject:notification.user_id];
@@ -83,13 +86,13 @@
         [valueArray addObject:notification.medical_place];
         [valueArray addObject:notification.medical_chair];
         
+        [valueArray addObject:[NSString currentDateString]];
+        
         if (notification.update_date == nil || [notification.update_date isEmpty]) {
             [valueArray addObject:notification.update_date];
         }else{
             [valueArray addObject:[NSString currentDateString]];
         }
-        
-        [valueArray addObject:[NSString defaultDateString]];
         if (notification.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
@@ -100,8 +103,24 @@
         [valueArray addObject:notification.tooth_position];
         [valueArray addObject:notification.clinic_reserve_id];
         [valueArray addObject:notification.duration];
+        [valueArray addObject:notification.therapy_doctor_id];
+        [valueArray addObject:notification.therapy_doctor_name];
+        if (notification.reserve_status == nil) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:notification.reserve_status];
+        }
+        if (notification.case_id == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:notification.case_id];
+        }
         
         
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -132,7 +151,7 @@
 
 - (NSArray *)localNotificationListFormDB {
     NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@')",LocalNotificationTableName,[AccountManager currentUserid],[NSString defaultDateString]];
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') and reserve_status=\"%@\"",LocalNotificationTableName,[AccountManager currentUserid],[NSString defaultDateString],@"0"];
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         result = [db executeQuery:sqlString];
@@ -171,7 +190,10 @@
         [columeArray addObject:@"tooth_position"];
         [columeArray addObject:@"clinic_reserve_id"];
         [columeArray addObject:@"duration"];
-        
+        [columeArray addObject:@"therapy_doctor_id"];
+        [columeArray addObject:@"therapy_doctor_name"];
+        [columeArray addObject:@"reserve_status"];
+        [columeArray addObject:@"case_id"];
         
         [valueArray addObject:notification.patient_id];
         [valueArray addObject:notification.reserve_type];
@@ -201,6 +223,18 @@
         [valueArray addObject:notification.tooth_position];
         [valueArray addObject:notification.clinic_reserve_id];
         [valueArray addObject:notification.duration];
+        [valueArray addObject:notification.therapy_doctor_id];
+        [valueArray addObject:notification.therapy_doctor_name];
+        if (notification.reserve_status == nil) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:notification.reserve_status];
+        }
+        if (notification.case_id == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:notification.case_id];
+        }
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\"", LocalNotificationTableName, [columeArray componentsJoinedByString:@"=?,"],notification.ckeyid];
@@ -244,6 +278,54 @@
         ret = [db executeUpdate:sqlStr];
      }];
     return ret;
+}
+
+- (LocalNotification *)getLocalNotificationWithCkeyId:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\"",LocalNotificationTableName,ckeyId];
+    __block LocalNotification *localNoti = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            localNoti = [LocalNotification notificaitonWithResult:result];
+        }
+        [result close];
+    }];
+    return localNoti;
+}
+
+- (NSArray *)localNotificationListByPatientId:(NSString *)patientId{
+    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and patient_id = \"%@\"  and creation_date > datetime('%@') and reserve_status=\"%@\"",LocalNotificationTableName,[AccountManager currentUserid],patientId,[NSString defaultDateString],@"0"];
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlString];
+        while (result && [result next]) {
+            LocalNotification *notification = [LocalNotification notificaitonWithResult:result];
+            [resultArray addObject:notification];
+        }
+        [result close];
+    }];
+    return resultArray;
+}
+
+- (NSArray *)localNotificationListWithStartDate:(NSString *)startDate endDate:(NSString *)endDate{
+    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where user_id = \"%@\" and creation_date > datetime('%@') and reserve_time >= datetime('%@') and reserve_time <= datetime('%@') and reserve_status=\"%@\"",LocalNotificationTableName,[AccountManager currentUserid],[NSString defaultDateString],startDate,endDate,@"0"];
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlString];
+        while (result && [result next]) {
+            LocalNotification *notification = [LocalNotification notificaitonWithResult:result];
+            [resultArray addObject:notification];
+        }
+        [result close];
+    }];
+    return resultArray;
 }
 
 @end

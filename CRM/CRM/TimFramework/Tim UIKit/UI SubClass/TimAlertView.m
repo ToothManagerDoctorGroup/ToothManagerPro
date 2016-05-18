@@ -36,6 +36,15 @@
     return self;
 }
 
+- (id)initWithTitle:(NSString *)title message:(NSString *)message cancel:(NSString *)cancel certain:(NSString *)certain cancelHandler:(AlertButtonHandler)cancelHandler comfirmButtonHandlder:(AlertButtonHandler)comfirmHandler{
+    self = [super initWithTitle:title message:message delegate:self cancelButtonTitle:cancel otherButtonTitles:certain, nil];
+    if (self) {
+        _cancelhandler = cancelHandler;
+        _comfirmhandler = comfirmHandler;
+    }
+    return self;
+}
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
         _cancelhandler();

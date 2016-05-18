@@ -8,8 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "TimViewController.h"
+#import "DBTableMode.h"
+
 @interface QrCodeViewController : TimViewController
 @property (weak, nonatomic) IBOutlet UIImageView *QrCodeImageView;
-//@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+
+@property (nonatomic, assign)BOOL isDoctor;
+@property (nonatomic, copy)NSString *patientId;
+@property (weak, nonatomic) IBOutlet UIView *sendMessageView;
 
 @end

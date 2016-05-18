@@ -14,8 +14,15 @@
 #import "CRMMacro.h"
 #import "DBManager+sync.h"
 #import "CRMHttpRequest+Sync.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
+#import "DBManager+AutoSync.h"
+#import "XLStarView.h"
+#import "XLStarSelectViewController.h"
+#import "NSString+Conversion.h"
 
-@interface CreateIntroducerViewController () <TimPickerTextFieldDataSource>
+
+@interface CreateIntroducerViewController () <TimPickerTextFieldDataSource,XLStarSelectViewControllerDelegate>
 
 @property (nonatomic,readonly) Introducer *introducer;
 
@@ -35,24 +42,37 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self initView];
+    [self initData];
 }
 
 - (void)initView {
     [super initView];
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"btn_complet"]];
+    [self setRightBarButtonWithTitle:@"保存"];
     [self.tableView setAllowsSelection:NO];
     if (self.edit) {
         self.title = @"编辑介绍人";
     } else {
-        self.title = @"新建介绍人";
+        self.title = @"手工新建介绍人";
     }
     
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
-    self.starTextField.bounds = self.nameTextField.bounds;
+    self.nameTextField.clearButtonMode = UITextFieldViewModeNever;
     self.phoneTextField.mode = TextFieldInputModeKeyBoard;
+    self.phoneTextField.clearButtonMode = UITextFieldViewModeNever;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.starView.level = 1;
+    self.starView.alignment = XLStarViewAlignmentRight;
+    
+    [self.starView addTarget:self action:@selector(chooseStarLevel) forControlEvents:UIControlEventTouchUpInside];
+}
+#pragma mark - 选择星级
+- (void)chooseStarLevel{
+    XLStarSelectViewController *starSelectVc = [[XLStarSelectViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    starSelectVc.delegate = self;
+    [self pushViewController:starSelectVc animated:YES];
 }
 
 - (void)initData {
@@ -60,21 +80,49 @@
     if (self.edit) {
         _introducer = [[DBManager shareInstance] getIntroducerByIntroducerID:self.introducerId];
         self.nameTextField.text = self.introducer.intr_name;
-        self.starTextField.starLevel = self.introducer.intr_level;
+        self.starView.level = self.introducer.intr_level;
         self.phoneTextField.text = self.introducer.intr_phone;
     } else {
         _introducer = [[Introducer alloc]init];
     }
 }
 
-- (void)dealloc {
-    
-}
-
 #pragma mark - Button Action
 - (void)onRightButtonAction:(id)sender {
+    if ([self.nameTextField.text isEmpty]) {
+        [SVProgressHUD showImage:nil status:@"姓名不能为空"];
+        return;
+    }
+    if ([self.nameTextField.text charaterCount] > 32) {
+        [SVProgressHUD showImage:nil status:@"介绍人姓名过长"];
+        return;
+    }
+    
+    if (self.phoneTextField.text.length == 0 || ![NSString checkAllPhoneNumber:self.phoneTextField.text]) {
+        [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
+        return;
+    }
+    BOOL exit = NO;
+    if (!self.edit) {
+        //判断当前介绍人是否存在
+        exit = [[DBManager shareInstance] isInIntroducerTable:self.phoneTextField.text];
+        if (exit) {
+            [SVProgressHUD showImage:nil status:@"该电话号码已存在，请重新输入"];
+            return;
+        }
+    }else{
+        //判断当前介绍人是否存在
+        exit = [[DBManager shareInstance] isInIntroducerTable:self.phoneTextField.text];
+        if (![self.introducer.intr_phone isEqualToString:self.phoneTextField.text]) {
+            if (exit) {
+                [SVProgressHUD showImage:nil status:@"该电话号码已存在，请重新输入"];
+                return;
+            }
+        }
+    }
+    
     self.introducer.intr_name = self.nameTextField.text;
-    self.introducer.intr_level = self.starTextField.starLevel;
+    self.introducer.intr_level = self.starView.level;
     self.introducer.intr_phone = self.phoneTextField.text;
     self.introducer.intr_id = @"0";
     BOOL ret = [[DBManager shareInstance] insertIntroducer:self.introducer];
@@ -82,17 +130,21 @@
     if (ret) {
         if (self.edit) {
             message = @"修改成功";
+            //修改介绍人自动同步信息
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Update dataEntity:[self.introducer.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+            
             [self postNotificationName:IntroducerEditedNotification object:nil];
         } else {
             message = @"创建成功";
             [self postNotificationName:IntroducerCreatedNotification object:nil];
             
-           NSArray *recordArray = [NSMutableArray  arrayWithArray:[[DBManager shareInstance] getAllNeedSyncIntroducer]];
-            if (0 != [recordArray count])
-            {
-                [[CRMHttpRequest shareInstance] postAllNeedSyncIntroducer:recordArray];
+            Introducer *tempIntr = [[DBManager shareInstance] getIntroducerByCkeyId:self.introducer.ckeyid];
+            if (tempIntr != nil) {
+                //创建介绍人自动同步信息
+                InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Introducer postType:Insert dataEntity:[tempIntr.keyValues JSONString] syncStatus:@"0"];
+                [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             }
-             
         }
         [self.view makeToast:message duration:1.0f position:@"Center"];
         [self popViewControllerAnimated:YES];
@@ -105,6 +157,11 @@
         [self.view makeToast:message duration:1.0f position:@"Center"];
     }
         
+}
+
+#pragma mark - XLStarSelectViewControllerDelegate
+- (void)starSelectViewController:(XLStarSelectViewController *)starSelectVc didSelectLevel:(NSInteger)level{
+    self.starView.level = level;
 }
 
 @end

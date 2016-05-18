@@ -8,6 +8,7 @@
 
 #import "DBManager.h"
 
+@class XLPatientTotalInfoModel;
 @interface DBManager (Patients)
 
 /*
@@ -57,9 +58,30 @@
  *@brief 获取患者表中全部患者
  *@return NSArray 返回患者数组，没有则为nil
  */
-- (NSArray *)getAllPatient;
+- (NSArray *)getAllPatientWithPage:(int)page;
 
 - (NSArray *)getAllPatientWithID:(NSString *)userid;
+
+- (NSArray *)getPatientWithKeyWords:(NSString *)keyWord;
+
+/**
+ *  根据类型获取患者信息
+ *
+ *  @param userid 好友的id
+ *  @param type   类型：（我转出去的，别人转给我的，修复的）
+ *
+ *  @return 患者数组
+ */
+- (NSArray *)getAllPatientWIthID:(NSString *)userid type:(NSString *)type;
+/**
+ *  根据类型获取患者的数量
+ *
+ *  @param userid 好友的id
+ *  @param type   类型：（我转出去的，别人转给我的，修复的）
+ *
+ *  @return 数量
+ */
+- (NSInteger)getPatientCountWithID:(NSString *)userid type:(NSString *)type;
 
 /**
  *  根据类型获取患者
@@ -68,7 +90,52 @@
  *
  *  @return 患者数组
  */
-- (NSArray *)getPatientsWithStatus:(PatientStatus )status;
+- (NSArray *)getPatientsWithStatus:(PatientStatus )status page:(int)page;
+/**
+ *  根据类型和时间查询患者
+ *
+ *  @param status    患者状态 （已种植和已修复）
+ *  @param startTime 开始时间 （种植时间或修复时间）
+ *  @param endTime   结束时间 （种植时间或修复时间）
+ *  @param cureDoctors 治疗医生
+ *  @param page      分页
+ *
+ *  @return 患者数
+ */
+- (NSArray *)getPatientsWithStatus:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime cureDoctors:(NSArray *)cureDoctors page:(int)page;
+/**
+ *  根据创建时间查询患者
+ *
+ *  @param startTime 开始时间
+ *  @param endTime   结束时间
+ *  @param page      页数
+ *
+ *  @return 患者数
+ */
+- (NSArray *)getPatientsWithStartTime:(NSString *)startTime endTime:(NSString *)endTime page:(int)page;
+/**
+ *  根据类型获取患者统计数量
+ *
+ *  @param status 患者状态
+ *
+ *  @return 患者数组
+ */
+- (int)getPatientsCountWithStatus:(PatientStatus )status;
+/**
+ *  判断这个患者是否存在
+ *
+ *  @param patient 患者
+ *
+ *  @return YES/NO
+ */
+- (BOOL)patientIsExist:(Patient *)patient;
+
+/**
+ *  获取患者总数
+ *
+ *  @return 患者总数
+ */
+- (NSInteger)getAllPatientCount;
 
 /**
  *  获取患者信息
@@ -78,6 +145,14 @@
  *  @return 患者信息
  */
 - (Patient *)getPatientWithPatientCkeyid:(NSString *)ckeyid;
+/**
+ *  获取患者信息
+ *
+ *  @param ckeyid 患者id
+ *
+ *  @return 患者信息
+ */
+- (Patient *)getPatientCkeyid:(NSString *)ckeyid;
 
 /*
  *@brief 通过患者表的introducer_id 获取介绍人表的信息
@@ -93,6 +168,14 @@
  *  @return 成功YES,失败NO
  */
 - (BOOL)insertPatientIntroducerMap:(PatientIntroducerMap *)PatIntro;
+/**
+ *  插入一条Patient Introducer Map,同步时用到
+ *
+ *  @param PatientIntroducerMap 患者介绍人对应表
+ *
+ *  @return 成功YES,失败NO
+ */
+- (BOOL)insertPatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro;
 
 /**
  *  更新患者介绍人对应表
@@ -102,6 +185,14 @@
  *  @return 成功YES,失败NO
  */
 - (BOOL)updatePatientIntroducerMap:(PatientIntroducerMap *)PatIntro;
+/**
+ *  更新患者介绍人对应表,同步时使用
+ *
+ *  @param PatientIntroducerMap 患者介绍人对应表
+ *
+ *  @return 成功YES,失败NO
+ */
+- (BOOL)updatePatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro;
 
 /**
  *  插入一条atient Introducer Map
@@ -111,6 +202,15 @@
  *  @return 成功YES,失败NO
  */
 - (BOOL)insertMedicalCase:(MedicalCase *)medicalCase;
+
+/**
+ *  删除患者的关系数据
+ *
+ *  @param patientId 患者id
+ *
+ *  @return 成功YES 失败NO
+ */
+- (BOOL)deletePatientIntroducerMap:(NSString *)patientId;
 
 /**
  *  更新病例
@@ -131,10 +231,11 @@
 - (MedicalCase *)getMedicalCaseWithCaseId:(NSString *)caseid;
 
 - (BOOL)deleteMedicalCaseWithCaseId:(NSString *)caseid;
-
 - (BOOL)deleteMedicalCaseWithPatientId:(NSString *)patientId;
 - (BOOL)deleteMedicalCaseWithPatientId_sync:(NSString *)patientId;
 - (BOOL)deleteMedicalExpenseWithCaseId_sync:(NSString *)caseid;
+//删除本地数据库中的病历数据（包括CT，耗材信息，病情描述信息）
+- (BOOL)deleteMedicalCaseWithCase_AutoSync:(MedicalCase *)mCase;
 
 /**
  *  插入一条MedicalReserve
@@ -190,6 +291,14 @@
  *  @return 会诊信息数组
  */
 - (NSArray *)getPatientConsultationWithPatientId:(NSString *)patientId;
+/**
+ *  获取会诊信息
+ *
+ *  @param ckeyid 会诊信息主键
+ *
+ *  @return 会诊信息
+ */
+- (PatientConsultation *)getPatientConsultationWithCkeyId:(NSString *)ckeyid;
 
 //删除会诊信息
 - (BOOL)deletePatientConsultationWithPatientId_sync:(NSString *)patientId;
@@ -237,6 +346,8 @@
  */
 - (NSArray *)getMedicalRecordWithCaseId:(NSString *)caseid;
 
+- (MedicalRecord *)getMedicalRecordWithCkeyId:(NSString *)ckeyId;
+
 /**
  *  插入一条CT记录
  *
@@ -260,15 +371,26 @@
 - (BOOL)deleteCTlibWithPatientId:(NSString *)patientId;
 
 - (BOOL)deleteCTlibWithLibId_sync:(NSString *)libid;
+//删除一条ct数据，然后自动上传
+- (BOOL)deleteCTlibWithCTLib_AutoSync:(CTLib *)ctLib;
+//获取ct片数据
+- (CTLib *)getCTLibWithCKeyId:(NSString *)ckeyId;
+//设置ct片为主ct
+- (BOOL)setUpMainCT:(CTLib *)ctLib;
+//获取当前病历下的主ct片
+- (NSArray *)getMainCT:(NSString *)case_id;
+//更新ct片
+- (BOOL)updateMainCTLib:(CTLib *)ctLib;
 
 /**
  *  获取CTLib中所有数据，也就是照片合集
  *
  *  @param medicalcaseid 病例id
+ *  @param asc 是否是升序排列
  *
  *  @return CTLib 数组
  */
-- (NSArray*)getCTLibArrayWithCaseId:(NSString *)medicalcaseid;
+- (NSArray*)getCTLibArrayWithCaseId:(NSString *)medicalcaseid isAsc:(BOOL)asc;
 
 /**
  *  获取CTLib 数据
@@ -297,5 +419,23 @@
  */
 - (NSArray *)getMedicalRecordByPatientId:(NSString *)patientid AndCaseId:(NSString *)caseid;
 
+/**
+ *  保存患者的所有信息到数据库
+ *
+ *  @param infoModel 患者所有信息模型
+ *
+ *  @return 是否保存成功
+ */
+- (BOOL)saveAllDownloadPatientInfoWithPatientModel:(XLPatientTotalInfoModel *)model;
+
+/**
+ *  更新患者的状态
+ *
+ *  @param status    状态
+ *  @param patientId 患者id
+ *
+ *  @return 是否更新成功
+ */
+- (BOOL)updatePatientStatus:(PatientStatus)status withPatientId:(NSString *)patientId;
 
 @end

@@ -30,7 +30,6 @@
     [super viewDidLoad];
     self.title = @"关于我们";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     _webView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"aboutus" ofType:@"htm"];
     NSString *htmlString = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];

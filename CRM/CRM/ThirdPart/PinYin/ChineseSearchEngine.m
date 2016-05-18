@@ -9,12 +9,11 @@
 #import "ChineseSearchEngine.h"
 #import "ChineseInclude.h"
 #import "PinYinForObjc.h"
-#import "DBTableMode.h"
 #import "IntroducerCellMode.h"
 #import "PatientsCellMode.h"
-#import "AddressBookViewController.h"
 #import "DBTableMode.h"
-#import "RepairDoctorCellMode.h"
+#import "GroupPatientModel.h"
+#import "GroupMemberModel.h"
 
 @implementation ChineseSearchEngine
 
@@ -104,6 +103,7 @@
 
 + (NSArray *)resultArraySearchPatientsOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText {
     NSMutableArray *searchResults = [NSMutableArray arrayWithCapacity:0];
+    
     if (searchText.length>0&&![ChineseInclude isIncludeChineseInString:searchText]) {
         for (int i=0; i<dataArray.count; i++) {
             PatientsCellMode *patient = [dataArray objectAtIndex:i];
@@ -112,6 +112,12 @@
                     NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.name];
                     NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
                     if (titleHeadResult.length>0) {
+                        [searchResults addObject:patient];
+                    }
+                    
+                    NSString *tempPhoneStr = patient.phone;
+                    NSRange phoneResult = [tempPhoneStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                    if (phoneResult.length > 0) {
                         [searchResults addObject:patient];
                     }
                 }else{
@@ -125,11 +131,23 @@
                     if (titleHeadResult.length>0) {
                         [searchResults addObject:patient];
                     }
+                    
+                    NSString *tempPhoneStr = patient.phone;
+                    NSRange phoneResult = [tempPhoneStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                    if (phoneResult.length > 0) {
+                        [searchResults addObject:patient];
+                    }
                 }
             }
             else {
                 NSRange titleResult=[patient.name rangeOfString:searchText options:NSCaseInsensitiveSearch];
                 if (titleResult.length>0) {
+                    [searchResults addObject:patient];
+                }
+                
+                NSString *tempPhoneStr = patient.phone;
+                NSRange phoneResult = [tempPhoneStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                if (phoneResult.length > 0) {
                     [searchResults addObject:patient];
                 }
             }
@@ -145,34 +163,42 @@
     return searchResults;
 }
 
-+ (NSArray *)resultArraySearchAddressBookOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText {
+
++ (NSArray *)resultArraySearchGroupPatientsOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText {
     NSMutableArray *searchResults = [NSMutableArray arrayWithCapacity:0];
     if (searchText.length>0&&![ChineseInclude isIncludeChineseInString:searchText]) {
         for (int i=0; i<dataArray.count; i++) {
-            AddressBookCellMode *patient = [dataArray objectAtIndex:i];
-            if ([ChineseInclude isIncludeChineseInString:patient.name]) {
-                
-                NSString *tempPinYinStr = [PinYinForObjc chineseConvertToPinYin:patient.name];
-                NSRange titleResult=[tempPinYinStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
-                if (titleResult.length>0) {
-                    [searchResults addObject:patient];
-                }
-                NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.name];
-                NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
-                if (titleHeadResult.length>0) {
-                    [searchResults addObject:patient];
+            GroupMemberModel *patient = [dataArray objectAtIndex:i];
+            if ([ChineseInclude isIncludeChineseInString:patient.patient_name]) {
+                if(searchText.length == 1){
+                    NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.patient_name];
+                    NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                    if (titleHeadResult.length>0) {
+                        [searchResults addObject:patient];
+                    }
+                }else{
+                    NSString *tempPinYinStr = [PinYinForObjc chineseConvertToPinYin:patient.patient_name];
+                    NSRange titleResult=[tempPinYinStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                    if (titleResult.length>0) {
+                        [searchResults addObject:patient];
+                    }
+                    NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.patient_name];
+                    NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                    if (titleHeadResult.length>0) {
+                        [searchResults addObject:patient];
+                    }
                 }
             }
             else {
-                NSRange titleResult=[patient.name rangeOfString:searchText options:NSCaseInsensitiveSearch];
+                NSRange titleResult=[patient.patient_name rangeOfString:searchText options:NSCaseInsensitiveSearch];
                 if (titleResult.length>0) {
                     [searchResults addObject:patient];
                 }
             }
         }
     } else if (searchText.length>0&&[ChineseInclude isIncludeChineseInString:searchText]) {
-        for (AddressBookCellMode *tmpPatient in dataArray) {
-            NSRange titleResult=[tmpPatient.name rangeOfString:searchText options:NSCaseInsensitiveSearch];
+        for (GroupMemberModel *tmpPatient in dataArray) {
+            NSRange titleResult=[tmpPatient.patient_name rangeOfString:searchText options:NSCaseInsensitiveSearch];
             if (titleResult.length>0) {
                 [searchResults addObject:tmpPatient];
             }
@@ -180,6 +206,7 @@
     }
     return searchResults;
 }
+
 
 + (NSArray *)resultArraySearchDoctorOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText {
     NSMutableArray *searchResults = [NSMutableArray arrayWithCapacity:0];
@@ -192,11 +219,11 @@
                 if (titleResult.length>0) {
                     [searchResults addObject:patient];
                 }
-                NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.doctor_name];
-                NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
-                if (titleHeadResult.length>0) {
-                    [searchResults addObject:patient];
-                }
+//                NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:patient.doctor_name];
+//                NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
+//                if (titleHeadResult.length>0) {
+//                    [searchResults addObject:patient];
+//                }
             }
             else {
                 NSRange titleResult=[patient.doctor_name rangeOfString:searchText options:NSCaseInsensitiveSearch];
@@ -210,44 +237,6 @@
             NSRange titleResult=[tmpPatient.doctor_name rangeOfString:searchText options:NSCaseInsensitiveSearch];
             if (titleResult.length>0) {
                 [searchResults addObject:tmpPatient];
-            }
-        }
-    }
-    return searchResults;
-}
-
-+ (NSArray *)resultArraySearchRepairDoctorOnArray:(NSArray *)dataArray withSearchText:(NSString *)searchText
-{
-    NSMutableArray *searchResults = [NSMutableArray arrayWithCapacity:0];
-    if (searchText.length>0&&![ChineseInclude isIncludeChineseInString:searchText]) {
-        for (int i=0; i<dataArray.count; i++) {
-            BOOL isAdd = NO;
-            RepairDoctorCellMode *repairDoctor = [dataArray objectAtIndex:i];
-            if ([ChineseInclude isIncludeChineseInString:repairDoctor.name]) {
-                NSString *tempPinYinStr = [PinYinForObjc chineseConvertToPinYin:repairDoctor.name];
-                NSRange titleResult=[tempPinYinStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
-                if (titleResult.length>0) {
-                    isAdd = YES;
-                    [searchResults addObject:repairDoctor];
-                }
-                NSString *tempPinYinHeadStr = [PinYinForObjc chineseConvertToPinYinHead:repairDoctor.name];
-                NSRange titleHeadResult=[tempPinYinHeadStr rangeOfString:searchText options:NSCaseInsensitiveSearch];
-                if (titleHeadResult.length>0 && isAdd == NO) {
-                    [searchResults addObject:repairDoctor];
-                }
-            }
-            else {
-                NSRange titleResult=[repairDoctor.name rangeOfString:searchText options:NSCaseInsensitiveSearch];
-                if (titleResult.length>0) {
-                    [searchResults addObject:repairDoctor];
-                }
-            }
-        }
-    } else if (searchText.length>0&&[ChineseInclude isIncludeChineseInString:searchText]) {
-        for (RepairDoctorCellMode *tmprepairDoctor in dataArray) {
-            NSRange titleResult=[tmprepairDoctor.name rangeOfString:searchText options:NSCaseInsensitiveSearch];
-            if (titleResult.length>0) {
-                [searchResults addObject:tmprepairDoctor];
             }
         }
     }

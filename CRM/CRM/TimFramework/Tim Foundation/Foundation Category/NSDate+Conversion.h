@@ -17,6 +17,8 @@
  */
 - (NSString *)dateToNSString;
 
+- (NSString *)dateToNSStringWithoutTime;
+
 /**
  *  NSDate 转成 double
  *

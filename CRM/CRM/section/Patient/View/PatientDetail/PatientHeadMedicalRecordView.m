@@ -12,6 +12,8 @@
 #import "MedicalDetailView.h"
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
+#import "UIImage+TTMAddtion.h"
+#import <Masonry.h>
 
 #define Margin 10
 
@@ -26,6 +28,8 @@
 //当前选中的病历
 @property (nonatomic, assign)NSUInteger currentIndex;
 
+
+@property (nonatomic, strong)UIImageView *noResultView;
 @end
 
 @implementation PatientHeadMedicalRecordView
@@ -51,6 +55,7 @@
 
 #pragma mark -初始化
 - (void)setUp{
+    
     self.userInteractionEnabled = YES;
     //设置自身的图片
     UIImage *image = [UIImage imageNamed:@"medical_bg"];
@@ -65,7 +70,7 @@
     
     //病历标题按钮
     UIButton *medicalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [medicalButton setTitle:@"病程" forState:UIControlStateNormal];
+    [medicalButton setTitle:@"病历" forState:UIControlStateNormal];
     [medicalButton setImage:[UIImage imageNamed:@"medical_title"] forState:UIControlStateNormal];
     [medicalButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
     medicalButton.titleLabel.font = [UIFont systemFontOfSize:16];
@@ -75,7 +80,7 @@
     
     //添加病例的按钮
     UIButton *addMedicalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [addMedicalButton setTitle:@"新增病程" forState:UIControlStateNormal];
+    [addMedicalButton setTitle:@"新增病历" forState:UIControlStateNormal];
     [addMedicalButton setImage:[UIImage imageNamed:@"medical_add"] forState:UIControlStateNormal];
     [addMedicalButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
     addMedicalButton.titleLabel.font = [UIFont systemFontOfSize:16];
@@ -92,7 +97,7 @@
     
     //编辑病例的按钮
     UIButton *editMedicalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [editMedicalButton setTitle:@"编辑病程" forState:UIControlStateNormal];
+    [editMedicalButton setTitle:@"编辑病历" forState:UIControlStateNormal];
     [editMedicalButton setImage:[UIImage imageNamed:@"medical_edit"] forState:UIControlStateNormal];
     [editMedicalButton setTitleColor:MyColor(19, 150, 233) forState:UIControlStateNormal];
     [editMedicalButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
@@ -106,10 +111,22 @@
     MedicalDetailView *medicalDetailView = [[MedicalDetailView alloc] init];
     self.medicalDetailView = medicalDetailView;
     [self addSubview:medicalDetailView];
+    
 }
 
 - (void)setMedicalCases:(NSArray *)medicalCases{
     _medicalCases = medicalCases;
+    if (medicalCases.count == 0) {
+        self.noResultView.hidden = NO;
+    }else{
+        self.noResultView.hidden = YES;
+    }
+    //重新绘制
+    [self setNeedsLayout];
+}
+
+- (void)layoutSubviews{
+    [super layoutSubviews];
     
     //病历标题的大小
     CGFloat medicalButtonW = 60;
@@ -129,16 +146,26 @@
     self.addMedicalButton.frame = CGRectMake(self.width - addMedicalButtonW - Margin * 0.3, Margin * 0.3, addMedicalButtonW, addMedicalButtonH);
     self.medicalButtonScrollView.frame = CGRectMake(0, 45, medicalButtonScrollViewW, medicalButtonScrollViewH);
     if (self.medicalCases.count > 0) {
+        
+        self.medicalButtonScrollView.hidden = NO;
+        self.editMedicalButton.hidden = NO;
+        
         self.medicalButtonScrollView.medicalCases = self.medicalCases;
         
         self.editMedicalButton.frame = CGRectMake(self.width - editMedicalButtonW - Margin * .3, 47.5, editMedicalButtonW, editMedicalButtonH);
+    }else{
+        self.medicalButtonScrollView.hidden = YES;
+        self.editMedicalButton.hidden = YES;
     }
     
     //设置数据
     self.medicalDetailView.frame = CGRectMake(0, self.medicalButtonScrollView.bottom + 1, self.width, self.height - self.medicalButtonScrollView.bottom - 1);
     
     if (self.medicalCases.count > 0) {
+        self.medicalDetailView.hidden = NO;
         self.medicalDetailView.medicalCase = self.medicalCases[0];
+    }else{
+        self.medicalDetailView.hidden = YES;
     }
 }
 
@@ -162,6 +189,21 @@
     if ([self.delegate respondsToSelector:@selector(didClickeditMedicalButtonWithMedicalCase:)]) {
         [self.delegate didClickeditMedicalButtonWithMedicalCase:self.medicalCases[self.currentIndex]];
     }
+}
+
+#pragma mark - 控件懒加载
+- (UIImageView *)noResultView{
+    if (!_noResultView) {
+        _noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:@"noMedicalcase_alert"]];
+        _noResultView.hidden = YES;
+        [self addSubview:_noResultView];
+        
+        WS(weakSelf);
+        [_noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(weakSelf);
+        }];
+    }
+    return _noResultView;
 }
 
 

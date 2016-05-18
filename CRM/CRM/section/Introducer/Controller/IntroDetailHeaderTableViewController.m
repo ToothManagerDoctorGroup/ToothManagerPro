@@ -14,16 +14,24 @@
 #import "DBManager+Doctor.h"
 #import "IntroducerManager.h"
 #import "CRMHttpRequest+Introducer.h"
+#import "XLStarView.h"
+#import "XLStarSelectViewController.h"
+#import "WXApi.h"
+#import "ShareMode.h"
+#import "Share.h"
+#import <MessageUI/MessageUI.h>
+#import "UIView+WXViewController.h"
 
-@interface IntroDetailHeaderTableViewController ()
-@property (nonatomic,retain) AvatarView *avatar;
+@interface IntroDetailHeaderTableViewController ()<XLStarSelectViewControllerDelegate,UIActionSheetDelegate,MFMessageComposeViewControllerDelegate>
+
 @end
 
 @implementation IntroDetailHeaderTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.tableView.allowsSelection = NO;
+//    self.tableView.allowsSelection = NO;
+    self.view.backgroundColor = [UIColor whiteColor];
     self.nameTextField.mode = TextFieldInputModeKeyBoard;
     self.nameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.nameTextField setBorderStyle:UITextBorderStyleNone];
@@ -32,17 +40,18 @@
     self.phoneTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.phoneTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self.phoneTextField setBorderStyle:UITextBorderStyleNone];
-    self.levelTextField.starLevel = 1;
-    self.levelTextField.borderStyle = UITextBorderStyleNone;
     
-    _avatar = [[AvatarView alloc] initWithURLString:@""];
-    _avatar.frame = CGRectMake(10, 26, 80, 80);
-    [self.view addSubview:_avatar];
-//    self.introducerNameLabel.mode = TextFieldInputModeExternal;
-//    self.introducerNameLabel.borderStyle = UITextBorderStyleNone;
-
+    
+    [self.levelView addTarget:self action:@selector(clickAction) forControlEvents:UIControlEventTouchUpInside];
 
 }
+
+- (void)clickAction{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didClickStarView)]) {
+        [self.delegate didClickStarView];
+    }
+}
+
 - (IBAction)tel:(id)sender {
     if(![NSString isEmptyString:self.phoneTextField.text]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"是否拨打该电话" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
@@ -52,6 +61,7 @@
         [SVProgressHUD showImage:nil status:@"未找到介绍人电话"];
     }
 }
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if(alertView.tag == 101){
         if(buttonIndex == 0){
@@ -61,10 +71,75 @@
             NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
         }
+    }else if (alertView.tag == 102) {
+        switch (buttonIndex) {
+            case 0:
+                //取消
+                break;
+            case 1:
+            {
+                if(![WXApi isWXAppInstalled]){
+                    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                    [alertView show];
+                }else{
+                    ShareMode *mode = [[ShareMode alloc]init];
+                    mode.title = @"介绍朋友给医生";
+                    mode.message = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,填写您朋友的信息,以便后续就诊",[AccountManager shareInstance].currentUser.name];
+                    mode.url = [NSString stringWithFormat:@"%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",DomainRealName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+                    mode.image = [UIImage imageNamed:@"crm_logo"];
+                    
+                    //微信
+                    [Share shareToPlatform:weixinFriend WithMode:mode];
+                    
+                }
+            }
+                
+                break;
+            case 2:
+                //短信发送
+                if( [MFMessageComposeViewController canSendText] )
+                {
+                     NSString *urlStr = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainRealName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+                    
+                    MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc] init];
+                    controller.recipients = @[self.phoneTextField.text];
+                    controller.navigationBar.tintColor = [UIColor redColor];
+                    controller.body = urlStr;
+                    controller.messageComposeDelegate = self;
+                    [self.view.superview.viewController presentViewController:controller animated:YES completion:nil];
+                    [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"介绍朋友"];//修改短信界面标题
+                }
+                else
+                {
+                    [SVProgressHUD showImage:nil status:@"该设备没有短信功能"];
+                }
+                break;
+                
+            default:
+                break;
+        }
     }
+}
 
-    
-   
+-(void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    [self.view.superview.viewController dismissViewControllerAnimated:YES completion:nil];
+    switch (result) {
+        case MessageComposeResultSent:
+            //信息传送成功
+            
+            break;
+        case MessageComposeResultFailed:
+            //信息传送失败
+            
+            break;
+        case MessageComposeResultCancelled:
+            //信息被用户取消传送
+            
+            break;
+        default:
+            break;
+    }
 }
 
 /*
@@ -84,79 +159,16 @@ http://118.244.234.207/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=162
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 - (IBAction)message:(id)sender {
-    if( [MFMessageComposeViewController canSendText] ){
-        
-       /*
-        NSString *string = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.userid,self.ckeyId];
+    NSString *urlStr = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:%@%@/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,DomainRealName,Method_Weixin,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
     
-       NSString *string1 = [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        [[IntroducerManager shareInstance]longUrlToShortUrl:@"2625560236" withAccessToken:[AccountManager shareInstance].currentUser.accesstoken withLongUrl:string1 successBlock:^{
-         
-        } failedBlock:^(NSError *error){
-           
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
-*/
-
-        MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc]init]; //autorelease];
-        
-        if(![NSString isEmptyString:self.phoneTextField.text]){
-            controller.recipients = [NSArray arrayWithObject:self.phoneTextField.text];
-            controller.body = [NSString stringWithFormat:@"我是%@医生,请点击以下链接,完善您朋友的信息,以便后续就诊:http://122.114.62.57/Weixin/view/Introduce/IntroduceFriends.aspx?doctor_id=%@&ckeyid=%@",[AccountManager shareInstance].currentUser.name,[AccountManager shareInstance].currentUser.userid,self.ckeyId];
-            controller.messageComposeDelegate = self;
-            
-            [self presentModalViewController:controller animated:YES];
-            
-            [[[[controller viewControllers] lastObject] navigationItem] setTitle:@"发送短信页面"];//修改短信界面标题
-        }else{
-            [SVProgressHUD showImage:nil status:@"未找到介绍人电话,不能发送信息。"];
-        }
-        
-         
-         
-    }
-    else{
-        [self alertWithTitle:@"提示信息" msg:@"设备没有短信功能"];
-    }
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"介绍朋友" message:urlStr delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"微信发送",@"短信发送", nil];
+    alertView.tag = 102;
+    [alertView show];
     
 }
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
-    
-    [controller dismissModalViewControllerAnimated:NO];//关键的一句   不能为YES
-    
-    switch ( result ) {
-        case MessageComposeResultCancelled:
-          //  [self alertWithTitle:@"提示" msg:@"取消发送信息"];
-            break;
-        case MessageComposeResultFailed:// send failed
-       //     [self alertWithTitle:@"提示" msg:@"发送信息成功"];
-            break;
-        case MessageComposeResultSent:
-       //     [self alertWithTitle:@"提示" msg:@"发送信息失败"];
-            break;
-        default:
-            break;
-    }
-}
-
-
-- (void) alertWithTitle:(NSString *)title msg:(NSString *)msg {
-    
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
-                                                    message:msg
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"确定", nil];
-    
-    [alert show];  
-    
-}
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 

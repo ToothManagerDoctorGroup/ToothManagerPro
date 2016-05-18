@@ -15,7 +15,10 @@
 @property (weak,nonatomic) id <CaseMaterialsTableViewCellDelegate> delegate;
 
 @property (weak, nonatomic) IBOutlet UILabel *materialName;
-@property (weak, nonatomic) IBOutlet TimPickerTextField *materialNum;
+@property (weak, nonatomic) IBOutlet UITextField *materialNum;
+@property (weak, nonatomic) IBOutlet UIButton *deleteButton;
+
+@property (nonatomic, copy)NSString *materialCount;
 
 - (void)setCell:(NSArray *)array;
 
@@ -25,5 +28,6 @@
 
 - (void)didBeginEdit:(CaseMaterialsTableViewCell *)cell;
 - (void)tableViewCell:(CaseMaterialsTableViewCell *)cell materialNum:(NSInteger)num;
+- (void)didDeleteCell:(CaseMaterialsTableViewCell *)cell;
 
 @end

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14C2055" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -11,24 +11,21 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" id="14d-Rp-CDe">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="14d-Rp-CDe">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <animations/>
                 </scrollView>
-                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Cny-Ey-59h">
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Cny-Ey-59h">
                     <rect key="frame" x="0.0" y="524" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="9SX-qr-Lms"/>
+                    </constraints>
                     <items>
-                        <barButtonItem width="25" style="plain" systemItem="fixedSpace" id="fqv-0i-4Uc"/>
-                        <barButtonItem title="上一页" style="done" id="nHD-q0-03l">
+                        <barButtonItem width="24" style="plain" systemItem="fixedSpace" id="rUH-ft-oBT"/>
+                        <barButtonItem title="设为来电提醒图片" id="ena-li-QmG">
                             <connections>
-                                <action selector="pageupAction:" destination="iN0-l3-epB" id="NQ3-gT-3Lu"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem width="26" style="plain" systemItem="fixedSpace" id="0Gu-41-nyz"/>
-                        <barButtonItem title="下一页" style="done" id="5YT-r5-lpH">
-                            <connections>
-                                <action selector="pagedownAction:" destination="iN0-l3-epB" id="1t2-DB-f82"/>
+                                <action selector="mainPicAction:" destination="iN0-l3-epB" id="1QW-pq-hrD"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="qa4-XZ-wPG"/>
@@ -40,9 +37,12 @@
                         <barButtonItem width="24" style="plain" systemItem="fixedSpace" id="vb6-cd-X29"/>
                     </items>
                 </toolbar>
-                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="4BQ-MD-bnS">
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4BQ-MD-bnS">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="Xe7-vR-Mbx"/>
+                    </constraints>
                     <items>
                         <barButtonItem systemItem="stop" id="aog-xI-ASR">
                             <connections>
@@ -52,17 +52,50 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="KsN-zc-Ld4"/>
                         <barButtonItem title="CT片" id="uXp-mS-3as"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="Y6s-4J-wIy"/>
-                        <barButtonItem id="QYr-FG-cBi"/>
+                        <barButtonItem title="保存" id="QYr-FG-cBi">
+                            <connections>
+                                <action selector="saveImageAction:" destination="iN0-l3-epB" id="ftd-dt-JrK"/>
+                            </connections>
+                        </barButtonItem>
                     </items>
                 </toolbar>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kGY-4o-H65">
+                    <rect key="frame" x="10" y="488" width="300" height="21"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="xtG-F7-TNj"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
+            <animations/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Cny-Ey-59h" firstAttribute="top" secondItem="kGY-4o-H65" secondAttribute="bottom" constant="15" id="4qv-1w-chi"/>
+                <constraint firstItem="kGY-4o-H65" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="6rL-zO-ZLU"/>
+                <constraint firstAttribute="bottom" secondItem="Cny-Ey-59h" secondAttribute="bottom" id="8cs-YJ-3u6"/>
+                <constraint firstItem="14d-Rp-CDe" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="9ud-3Y-19B"/>
+                <constraint firstAttribute="trailing" secondItem="14d-Rp-CDe" secondAttribute="trailing" id="BgN-RN-t80"/>
+                <constraint firstAttribute="trailing" secondItem="kGY-4o-H65" secondAttribute="trailing" constant="10" id="EN6-qa-oh3"/>
+                <constraint firstItem="4BQ-MD-bnS" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Qsu-rS-ftn"/>
+                <constraint firstItem="4BQ-MD-bnS" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Xg0-5S-vFY"/>
+                <constraint firstItem="Cny-Ey-59h" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="d0g-3K-sxW"/>
+                <constraint firstAttribute="bottom" secondItem="14d-Rp-CDe" secondAttribute="bottom" id="lqC-je-POy"/>
+                <constraint firstAttribute="trailing" secondItem="Cny-Ey-59h" secondAttribute="trailing" id="nlT-Rk-h4z"/>
+                <constraint firstAttribute="trailing" secondItem="4BQ-MD-bnS" secondAttribute="trailing" id="oHG-hl-YXL"/>
+                <constraint firstItem="14d-Rp-CDe" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="sH3-Xe-uPN"/>
+            </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <connections>
                 <outlet property="bottomBar" destination="Cny-Ey-59h" id="9uI-cG-4V2"/>
                 <outlet property="deleteButton" destination="e7P-Y2-fPk" id="xUV-ld-wmd"/>
-                <outlet property="pagedownButton" destination="5YT-r5-lpH" id="0XP-vR-cpX"/>
-                <outlet property="pageupButton" destination="nHD-q0-03l" id="IB4-kV-LK4"/>
+                <outlet property="indexLabel" destination="kGY-4o-H65" id="ZCG-ll-5V5"/>
+                <outlet property="leftBar" destination="rUH-ft-oBT" id="m6M-l8-MsX"/>
+                <outlet property="mainCTButton" destination="ena-li-QmG" id="1hQ-iK-RgV"/>
+                <outlet property="midBar" destination="qa4-XZ-wPG" id="ZO0-m2-LKc"/>
+                <outlet property="saveImageButton" destination="QYr-FG-cBi" id="woj-Ov-iUN"/>
                 <outlet property="scrollView" destination="14d-Rp-CDe" id="XdJ-kr-e6J"/>
                 <outlet property="titleBarItem" destination="uXp-mS-3as" id="Azc-2U-Q0Q"/>
                 <outlet property="topBar" destination="4BQ-MD-bnS" id="AcF-9g-jQ3"/>
@@ -70,9 +103,4 @@
             <point key="canvasLocation" x="450" y="122"/>
         </view>
     </objects>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
-    </simulatedMetricsContainer>
 </document>

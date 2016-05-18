@@ -34,14 +34,14 @@
     _nameFrame = CGRectMake(docNameX, docNameY, doctorSize.width, doctorSize.height);
     
     //计算时间frame
-    CGFloat timeX = CGRectGetMaxX(_headImgFrame) + Margin;
-    CGFloat timeY = CGRectGetMaxY(_nameFrame) + Margin;
     CGSize timeSize = [model.creation_date sizeWithFont:SendTimeFont];
+    CGFloat timeX = kScreenWidth - timeSize.width - Margin;
+    CGFloat timeY = docNameY;
     _timeFrame = CGRectMake(timeX, timeY, timeSize.width, timeSize.height);
     
     //计算内容的frame
-    CGFloat contentX = timeX;
-    CGFloat contentY = CGRectGetMaxY(_timeFrame) + Margin;
+    CGFloat contentX = docNameX;
+    CGFloat contentY = CGRectGetMaxY(_nameFrame) + Margin * 1.5;
     CGSize contentSize = [model.cons_content sizeWithFont:ContentFont constrainedToSize:CGSizeMake(kScreenWidth - Margin * 3 - _headImgFrame.size.width, MAXFLOAT)];
     _contentFrame = CGRectMake(contentX, contentY, contentSize.width, contentSize.height);
     
