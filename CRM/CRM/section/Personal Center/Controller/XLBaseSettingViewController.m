@@ -14,6 +14,8 @@
 #import "ChangePasswdViewController.h"
 #import "XLSettingViewController.h"
 #import "AccountManager.h"
+#import "XLLoginTool.h"
+#import "CRMHttpRespondModel.h"
 
 @interface XLBaseSettingViewController ()
 
@@ -119,8 +121,17 @@
     }else if (indexPath.section == 3){
         TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"确认退出当前账号吗？" cancelHandler:^{
         } comfirmButtonHandlder:^{
-            [[AccountManager shareInstance] logout];
-            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
+            
+            [SVProgressHUD showWithStatus:@"正在退出"];
+            [XLLoginTool updateUserRegisterIdWithUserId:[AccountManager currentUserid] registerId:@"" success:^(CRMHttpRespondModel *respond) {
+                if ([respond.code integerValue] == 200) {
+                    [[AccountManager shareInstance] logout];
+                    [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
+                }else{
+                    [SVProgressHUD showErrorWithStatus:@"退出失败，请检查您的网络设置"];
+                }
+            } failure:nil];
+            
         }];
         [alertView show];
     }

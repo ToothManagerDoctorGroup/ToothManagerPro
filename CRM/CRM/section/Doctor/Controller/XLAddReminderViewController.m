@@ -275,10 +275,6 @@
         [self updateNextReserveTimeWithPatientId:self.currentNoti.patient_id time:self.currentNoti.reserve_time];
         
         [SVProgressHUD showSuccessWithStatus:@"预约修改成功"];
-        //发送通知
-        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
-        
         //获取消息,发送给医生
         [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
         
@@ -444,12 +440,9 @@
             //发送转诊成功通知给医生
             if (self.isEditAppointment) {
                 [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.localNoti.ckeyid isCancel:NO notification:nil type:UpdateReserveType success:nil failure:nil];
-                //发送通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:NOtificationUpdated object:nil];
             }else{
                 //发送微信给治疗医生
                 [SysMessageTool sendWeiXinReserveNotificationWithNewReserveId:self.currentNoti.ckeyid oldReserveId:self.currentNoti.ckeyid isCancel:NO notification:nil type:AddReserveType success:^{} failure:^{}];
-                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
             }
             if (send) {
                 //发送微信消息给患者，需要医生手动发送

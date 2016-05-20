@@ -8,7 +8,7 @@
 
 #import "TimViewController.h"
 
-@class ClinicModel,XLClinicModel;
+@class ClinicModel,XLClinicModel,Patient;
 @interface ClinicDetailViewController : TimViewController
 
 //诊所模型一
@@ -16,5 +16,7 @@
 
 //诊所模型二
 @property (nonatomic, strong)XLClinicModel *unsignModel;
+
+@property (nonatomic, strong)Patient *patient;
 
 @end

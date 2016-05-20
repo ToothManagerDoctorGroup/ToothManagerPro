@@ -45,6 +45,7 @@
 #import "MJRefresh.h"
 #import "XLSysMessageViewController.h"
 #import "XLMessageHandleManager.h"
+#import "XLClinicAppointDetailViewController.h"
 
 @interface MyScheduleReminderViewController ()<JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -394,8 +395,8 @@
     
     cell.timeLabel.text = [notifi.reserve_time substringFromIndex:11];
     cell.patientNameLabel.text = patient.patient_name;
-    cell.reserveTypeLabel.text = notifi.reserve_type;
-    cell.toothLabel.text = notifi.tooth_position;
+    cell.reserveTypeLabel.text = notifi.medical_place;
+    cell.toothLabel.text = notifi.reserve_type;
     return cell;
 }
 
@@ -435,11 +436,21 @@
 }
 #pragma mark - 预约详情
 - (void)junpToAppointDetailWithNotification:(LocalNotification *)notifi{
-    //跳转到详情页面
-    XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
-    detailVc.localNoti = notifi;
-    detailVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:detailVc animated:YES];
+    //判断是否是诊所端预约
+    if ([notifi.clinic_reserve_id integerValue] == 0) {
+        //跳转到详情页面
+        XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+        detailVc.localNoti = notifi;
+        detailVc.hidesBottomBarWhenPushed = YES;
+        [self pushViewController:detailVc animated:YES];
+    }else{
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+        XLClinicAppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLClinicAppointDetailViewController"];
+        detailVc.hidesBottomBarWhenPushed = YES;
+        detailVc.clinic_reserve_id = notifi.clinic_reserve_id;
+        [self pushViewController:detailVc animated:YES];
+    }
+    
 }
 
 #pragma mark - 患者详情

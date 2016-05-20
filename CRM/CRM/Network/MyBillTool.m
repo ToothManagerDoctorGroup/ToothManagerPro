@@ -13,6 +13,7 @@
 #import "PayParam.h"
 #import "CRMHttpRespondModel.h"
 #import "NSString+TTMAddtion.h"
+#import "CRMUnEncryptedHttpTool.h"
 
 #define requestActionParam @"action"
 #define doctorIdParam @"doctor_id"
@@ -30,15 +31,15 @@
 + (void)requestBillsWithDoctorId:(NSString *)doctocId type:(NSString *)type success:(void(^)(NSArray *bills))success failure:(void(^)(NSError *error))failure{
     
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = [@"getBill" TripleDESIsEncrypt:YES];
-    params[doctorIdParam] = [doctocId TripleDESIsEncrypt:YES];
-    params[typeParam] = [type TripleDESIsEncrypt:YES];
+    params[requestActionParam] = @"getBill";
+    params[doctorIdParam] = doctocId;
+    params[typeParam] = type;
     
     NSLog(@"%@",params);
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         //将数据转换成模型对象，使用MJExtention
         NSMutableArray *array = [NSMutableArray array];
@@ -59,12 +60,12 @@
 
 + (void)requestBillDetailWithBillId:(NSString *)billId success:(void(^)(BillDetailModel *billDetail))success failure:(void(^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
+     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = [@"getBillDetail" TripleDESIsEncrypt:YES];
-    params[billIdParam] = [billId TripleDESIsEncrypt:YES];
+    params[requestActionParam] = @"getBillDetail";
+    params[billIdParam] = billId;
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         BillDetailModel *detailModel = [BillDetailModel objectWithKeyValues:responseObject[@"Result"]];
         
@@ -83,12 +84,12 @@
 
 + (void)cancleAppointWithAppointId:(NSString *)appointId success:(void (^)(NSString * result,NSNumber *code))success failure:(void (^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = [@"cancelreserve" TripleDESIsEncrypt:YES];
-    params[@"keyid"] = [appointId TripleDESIsEncrypt:YES];
+    params[requestActionParam] = @"cancelreserve";
+    params[@"keyid"] = appointId;
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         if (success) {
             success(responseObject[@"Result"],responseObject[@"Code"]);
@@ -103,12 +104,12 @@
 
 + (void)payWithPayParam:(PayParam *)payParam success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
 //    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[requestActionParam] = [@"pay" TripleDESIsEncrypt:YES];
-    params[dataEntityParam] = [[self dictionaryToJson:payParam.keyValues] TripleDESIsEncrypt:YES];
+    params[requestActionParam] = @"pay";
+    params[dataEntityParam] = [self dictionaryToJson:payParam.keyValues];
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);

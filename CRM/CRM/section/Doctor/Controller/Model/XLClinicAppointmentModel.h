@@ -29,9 +29,17 @@
  */
 @property (nonatomic, copy)NSString *clinicId;
 /**
+ *  诊所名称
+ */
+@property (nonatomic, copy)NSString *clinicName;
+/**
  *  椅位号
  */
 @property (nonatomic, copy)NSString *seatId;
+/**
+ *  椅位价格
+ */
+@property (nonatomic, assign)float seatPrice;
 /**
  *  预约时间
  */

@@ -49,8 +49,6 @@
 #import "NSString+TTMAddtion.h"
 
 /*******测试******/
-#import "XLChatRecordViewController.h"
-#import "XLClinicAppointmentViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -124,11 +122,14 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    //自定义诊所预约视图
-    XLClinicAppointmentViewController *appointVc = [[XLClinicAppointmentViewController alloc] init];
-    appointVc.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:appointVc animated:YES];
-    
+//    PayReq *request = [[PayReq alloc] init];
+//    request.partnerId = @"10000100";
+//    request.prepayId= @"1101000000140415649af9fc314aa427";
+//    request.package = @"Sign=WXPay";
+//    request.nonceStr= @"a462b76e7436e98e0ed6e13c64b4fd1c";
+//    request.timeStamp= @"1397527777";
+//    request.sign= @"582282D72DD2B03AD892830965F428CB16E7A256";
+//    [WXApi sendReq:request];
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -410,7 +411,7 @@
         [alertView show];
     }else{
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        ShareMode *mode = [[ShareMode alloc]init];
+        ShareMode *mode = [[ShareMode alloc] init];
         mode.title = @"牙医新生活倡导者：年种植上千颗不是梦";
         mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
         mode.url = [NSString stringWithFormat:@"%@%@/view/InviteFriends.aspx?doctorId=%@",DomainRealName,Method_Weixin,userobj.userid];

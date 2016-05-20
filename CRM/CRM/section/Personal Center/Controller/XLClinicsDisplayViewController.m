@@ -96,6 +96,9 @@
     //跳转到详情页面
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     ClinicDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"ClinicDetailViewController"];
+    if (self.patient) {
+        detailVc.patient = self.patient;
+    }
     detailVc.unsignModel = model;
     detailVc.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detailVc animated:YES];
@@ -129,7 +132,6 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     [self setCellSelectWithIndexPath:indexPath source:self.dataList];
-    
 }
 
 

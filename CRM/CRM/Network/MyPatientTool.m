@@ -13,6 +13,7 @@
 #import "XLPatientTotalInfoModel.h"
 #import "NSString+TTMAddtion.h"
 #import "CRMUnEncryptedHttpTool.h"
+#import "XLAppointImageUploadParam.h"
 
 #define ActionParam @"action"
 #define Patient_NameParam @"patient_name"
@@ -113,12 +114,12 @@
     
     
     NSString *jsonString = [dataEntity JSONString];
-    paramDic[@"action"] = [@"appoint" TripleDESIsEncrypt:YES];
-    paramDic[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
+    paramDic[@"action"] = @"appoint";
+    paramDic[@"DataEntity"] = jsonString;
     
-    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     
-    [[CRMHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
+    [[CRMUnEncryptedHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -126,6 +127,38 @@
         }
     } failure:^(NSError *error) {
         if(failure){
+            failure(error);
+        }
+    }];
+}
+
+
+/**
+ *  上传预约所需图片
+ *
+ *  @param param   参数模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)uploadAppointmentImageWithParam:(XLAppointImageUploadParam *)param imageData:(NSData *)imageData success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ReserverFilesHandler.ashx",DomainName,Method_ClinicServer,@"ashx"];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = @"add";
+    params[@"DataEntity"] = [param.keyValues JSONString];
+    
+    MyUploadParam *upLoadParam = [[MyUploadParam alloc] init];
+    upLoadParam.data = imageData;
+    upLoadParam.name = @"uploadfile";
+    upLoadParam.fileName = param.file_name;
+    upLoadParam.mimeType = @"image/png,image/jpeg,image/pjpeg";
+    
+    [[CRMUnEncryptedHttpTool shareInstance] POST:urlStr parameters:params uploadParam:upLoadParam success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
             failure(error);
         }
     }];

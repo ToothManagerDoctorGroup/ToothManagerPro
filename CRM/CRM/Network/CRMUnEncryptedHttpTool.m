@@ -70,7 +70,6 @@ Realize_ShareInstance(CRMUnEncryptedHttpTool);
     [self.manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:uploadParam.data name:uploadParam.name fileName:uploadParam.fileName mimeType:uploadParam.mimeType];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSString *dataStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         if (success) {
             success(responseObject);
         }

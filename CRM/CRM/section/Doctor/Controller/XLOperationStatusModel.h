@@ -45,6 +45,10 @@
 @property (nonatomic, copy)NSString *seat_id;
 //椅位名称
 @property (nonatomic, copy)NSString *seat_name;
+/**
+ *  椅位价格
+ */
+@property (nonatomic, strong)NSNumber *seat_price;
 
 @end
 
@@ -58,6 +62,7 @@
  *  椅位id
  */
 @property (nonatomic, copy)NSString *seatId;
+
 /**
  *  预约的开始时间
  */

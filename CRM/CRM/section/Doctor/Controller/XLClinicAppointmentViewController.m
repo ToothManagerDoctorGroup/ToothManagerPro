@@ -60,6 +60,10 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     self.navigationController.navigationBar.translucent = NO;
 }
 
+- (void)dealloc{
+    [self removeNotificationObserver];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
@@ -69,10 +73,30 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
 - (void)setUpSubViews{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.title = @"预约诊所";
+    
+    [self addNotificationObserver];
+    
     [self.view addSubview:self.calendar];
     [self.view addSubview:self.lineView];
     [self.view addSubview:self.appointTable];
 }
+
+- (void)addNotificationObserver{
+    [self addObserveNotificationWithName:NotificationCreated];
+}
+
+- (void)removeNotificationObserver{
+    [self removeObserverNotificationWithName:NotificationCreated];
+}
+
+- (void)handNotification:(NSNotification *)notifacation{
+    if ([notifacation.name isEqualToString:NotificationCreated]) {
+        [self.dataList removeAllObjects];
+        self.dataList = nil;
+        [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:self.currentDate]];
+    }
+}
+
 #pragma mark 根据诊所id查找指定时间内的营业状态
 - (void)getOperationStatusWithDate:(NSString *)dateStr{
     [SVProgressHUD showWithStatus:@"正在加载数据"];
@@ -293,7 +317,7 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     }
     //获取当前选择的时间的位置，判断所选时间是否被占用
     if ([self selectTimeIsOccupyWithStartTime:model.visibleTime duration:model.duration]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"当前有时间已被占用，请重新选择" delegate:nil cancelButtonTitle:@"知道了" otherButtonTitles:nil, nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"可用时间不足【预约时长】，请重新选择" delegate:nil cancelButtonTitle:@"知道了" otherButtonTitles:nil, nil];
         [alertView show];
         return;
     }
@@ -324,7 +348,8 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     [self.dataList removeAllObjects];
     self.dataList = nil;
     [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:date]];
-    NSLog(@"选中了:%@",[MyDateTool stringWithDateWithSec:date]);
+
+    NSLog(@"选中了:%@----当前时间-%d",[MyDateTool stringWithDateWithSec:date],[date weakDay]);
 }
 
 - (void)calendarCurrentPageDidChange:(FSCalendar *)calendar
@@ -347,9 +372,11 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
                 XLClinicAppointmentModel *model = [[XLClinicAppointmentModel alloc] init];
                 model.indexPath = [NSIndexPath indexPathForItem:j + 1 inSection:i + 1];
                 model.clinicId = self.clinicModel.clinic_id;
+                model.clinicName = self.clinicModel.clinic_name;
                 model.visibleTime = self.times[i];
                 XLSeatInfo *seatInfo = self.seats[j];
                 model.seatId = seatInfo.seat_id;
+                model.seatPrice = [seatInfo.seat_price floatValue];
                 [subArray addObject:model];
             }
             [mArray addObject:subArray];

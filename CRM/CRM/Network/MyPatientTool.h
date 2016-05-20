@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class CRMHttpRespondModel,XLPatientTotalInfoModel;
+@class CRMHttpRespondModel,XLPatientTotalInfoModel,XLAppointImageUploadParam;
 @interface MyPatientTool : NSObject
 
 /**
@@ -62,5 +62,13 @@
  */
 + (void)postAppointInfoTuiSongClinic:(NSString *)patientId withClinicName:(NSString*)clinic_name withCliniId:(NSString*)clinic_id withDoctorId:(NSString*)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
+/**
+ *  上传预约所需图片
+ *
+ *  @param param   参数模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)uploadAppointmentImageWithParam:(XLAppointImageUploadParam *)param imageData:(NSData *)imageData success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
 @end

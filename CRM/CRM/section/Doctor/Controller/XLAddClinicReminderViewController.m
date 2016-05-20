@@ -19,6 +19,18 @@
 #import "LocalNotificationCenter.h"
 #import "MaterialCountModel.h"
 #import "AssistCountModel.h"
+#import "DBTableMode.h"
+#import "XLClinicAppointmentModel.h"
+#import "MyPatientTool.h"
+#import "CRMHttpRespondModel.h"
+#import "MaterialModel.h"
+#import "AssistModel.h"
+#import "XLAppointImageUploadParam.h"
+#import "DoctorTool.h"
+#import "SysMessageTool.h"
+#import "XLCustomAlertView.h"
+#import "XLChatModel.h"
+#import "DBManager+Patients.h"
 
 #define Margin 10
 #define ImageWidth 60
@@ -40,13 +52,17 @@
 @property (nonatomic,strong) XLRuYaViewController *ruYaVC;//乳牙
 
 
-@property (nonatomic, strong)NSMutableArray *billImages;//术前检查单图片
-@property (nonatomic, strong)NSMutableArray *ctImages;//ct图片
+@property (nonatomic, strong)NSMutableArray *billImages;//术前检查单缩略图片
+@property (nonatomic, strong)NSMutableArray *ctImages;//ct缩略图片
+@property (nonatomic, strong)NSMutableArray *needUploadImages;//所有需要上传的图片模型
+
 
 @property (nonatomic, strong)NSArray *chooseMaterials;//选中的耗材
 @property (nonatomic, strong)NSArray *chooseAssists;//选中的助手
+@property (nonatomic, strong)LocalNotification *currentNoti;//当前预约
 
 @property (nonatomic, assign)BOOL isCtImage;//是否是选择CT图片
+@property (nonatomic, assign)BOOL isBind;//是否绑定微信
 
 @end
 
@@ -81,15 +97,207 @@
 }
 #pragma mark 加载数据
 - (void)setUpData{
+    NSString *patientId;
     if (self.patient) {
         self.patientNameLabel.text = self.patient.patient_name;
+        patientId = self.patient.ckeyid;
     }else{
         self.patientNameLabel.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
+        patientId = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
     }
+    //获取患者的微信绑定状态
+    [MyPatientTool getWeixinStatusWithPatientId:patientId success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //绑定
+            self.isBind = YES;
+        }else{
+            //未绑定
+            self.isBind = NO;
+        }
+        
+    } failure:^(NSError *error) {
+        self.isBind = NO;
+        //未绑定
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 #pragma mark  保存按钮点击
 - (void)onRightButtonAction:(id)sender{
+    if ([self.patientNameLabel.text isEmpty]) {
+        [SVProgressHUD showImage:nil status:@"请选择患者"];
+        return;
+    }
+    if ([self.reserveTypeLabel.text isEmpty]) {
+        [SVProgressHUD showImage:nil status:@"请选择预约事项"];
+        return;
+    }
     
+    LocalNotification *notification = [[LocalNotification alloc] init];
+    notification.reserve_time = self.appointModel.appointTime;
+    notification.reserve_type = self.reserveTypeLabel.text;
+    notification.medical_place = self.appointModel.clinicName;
+    notification.medical_chair = self.appointModel.seatId;
+    notification.update_date = [NSString defaultDateString];
+    notification.reserve_content = self.remarkLabel.text;
+    notification.case_id = @"";
+    
+    notification.selected = YES;
+    notification.tooth_position = self.toothPositionLabel.text;
+    notification.clinic_reserve_id = @"0";
+    notification.duration = [NSString stringWithFormat:@"%.1f",self.appointModel.duration];
+    notification.reserve_status = @"0";
+    notification.therapy_doctor_id = [AccountManager currentUserid];
+    notification.therapy_doctor_name = [[AccountManager shareInstance] currentUser].name;
+    
+    if (self.patient) {
+        notification.patient_id = self.patient.ckeyid;
+    }else{
+        notification.patient_id = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    }
+    self.currentNoti = notification;
+    
+    //计算总的money
+    float totalMoney = self.appointModel.seatPrice;
+    //获取耗材的数组
+    NSMutableArray *materialsArr = [NSMutableArray array];
+    if (self.chooseMaterials.count > 0) {
+        for (MaterialCountModel *countModel in self.chooseMaterials) {
+            MaterialModel *material = [MaterialModel modelWithMaterialCountModel:countModel];
+            
+            [materialsArr addObject:material.keyValues];
+            totalMoney = totalMoney + [material.actual_money floatValue];
+        }
+    }
+    //获取助手的数组
+    NSMutableArray *assistsArr = [NSMutableArray array];
+    if (self.chooseAssists.count > 0) {
+        for (AssistCountModel *countModel in self.chooseAssists) {
+            AssistModel *assist = [AssistModel modelWithAssistCountModel:countModel];
+            [assistsArr addObject:assist.keyValues];
+            totalMoney = totalMoney + [assist.actual_money floatValue];
+        }
+    }
+    //保存预约
+    WS(weakSelf);
+    [SVProgressHUD showWithStatus:@"正在保存预约"];
+    [MyPatientTool postAppointInfoTuiSongClinic:notification.patient_id withClinicName:self.appointModel.clinicName withCliniId:self.appointModel.clinicId withDoctorId:[AccountManager currentUserid] withAppointTime:self.appointModel.appointTime withDuration:self.appointModel.duration withSeatPrice:self.appointModel.seatPrice withAppointMoney:totalMoney withAppointType:notification.reserve_type withSeatId:self.appointModel.seatId withToothPosition:notification.tooth_position withAssist:assistsArr withMaterial:materialsArr success:^(CRMHttpRespondModel *respondModel) {
+        
+        if ([respondModel.code integerValue] == 200 || [respondModel.code integerValue] == 203) {
+            //预约保存成功
+            notification.clinic_reserve_id = respondModel.result;
+            [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
+            //上传图片
+            [weakSelf uploadAllImagesWithReserveId:notification.clinic_reserve_id];
+            
+        }else{
+            [SVProgressHUD showErrorWithStatus:@"预约失败"];
+        }
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
+
+#pragma mark 上传所有图片
+- (void)uploadAllImagesWithReserveId:(NSString *)reserveId{
+    if (self.needUploadImages.count > 0) {
+        WS(weakSelf);
+        __block NSInteger failCount = self.needUploadImages.count;
+        for (XLAppointImageUploadParam *param in self.needUploadImages) {
+            param.reserver_id = reserveId;
+            [MyPatientTool uploadAppointmentImageWithParam:param imageData:param.imageData success:^(CRMHttpRespondModel *respondModel) {
+                failCount--;
+                if (failCount == 0) {
+                    [SVProgressHUD showImage:nil status:@"保存成功"];
+                    [weakSelf getMessageToPatient];
+                }
+            } failure:^(NSError *error) {
+                failCount--;
+                if (failCount == 0) {
+                    [SVProgressHUD showImage:nil status:@"保存成功"];
+                    [weakSelf getMessageToPatient];
+                }
+                if (error) {
+                    NSLog(@"error:%@",error);
+                }
+            }];
+        }
+    }
+}
+#pragma mark 获取发送给患者的消息内容
+- (void)getMessageToPatient{
+    WS(weakSelf);
+    Patient *patientTmp = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.currentNoti.patient_id];
+    [self sendMessageWithNoti:self.currentNoti cancel:^{
+        [weakSelf popToSuperController];
+    } certain:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+        [SVProgressHUD showWithStatus:@"正在发送消息"];
+        [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                //将消息保存在消息记录里
+                [weakSelf savaMessageToChatRecordWithPatient:patientTmp message:content];
+            }else{
+                [SVProgressHUD showImage:nil status:@"消息发送失败"];
+            }
+            
+            [weakSelf popToSuperController];
+        } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+            [weakSelf popToSuperController];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }];
+}
+#pragma mark 将消息保存到消息记录里
+- (void)savaMessageToChatRecordWithPatient:(Patient *)patient message:(NSString *)message{
+    //将消息保存在消息记录里
+    XLChatModel *chatModel = [[XLChatModel alloc] initWithReceiverId:patient.ckeyid receiverName:patient.patient_name content:message];
+    [DoctorTool addNewChatRecordWithChatModel:chatModel success:nil failure:nil];
+    //发送环信消息
+    [EaseSDKHelper sendTextMessage:message
+                                to:patient.ckeyid
+                       messageType:eMessageTypeChat
+                 requireEncryption:NO
+                        messageExt:nil];
+}
+
+#pragma mark 返回上一个页面
+- (void)popToSuperController{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self popViewControllerAnimated:YES];
+    });
+}
+
+#pragma mark 发送消息
+- (void)sendMessageWithNoti:(LocalNotification *)noti cancel:(void(^)())cancel certain:(void(^)(NSString *content, BOOL wenxinSend, BOOL messageSend))certain{
+    
+    [DoctorTool yuYueMessagePatient:noti.patient_id fromDoctor:[AccountManager currentUserid] withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.appointModel.appointTime success:^(CRMHttpRespondModel *result) {
+        
+        XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+            if (cancel) {
+                cancel();
+            }
+        } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+            if (certain) {
+                certain(content,wenxinSend,messageSend);
+            }
+        }];
+        [alertView show];
+        
+    } failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:@"提醒内容获取失败，请检查网络设置"];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 #pragma mark 计算图片视图的高度
@@ -290,10 +498,10 @@
     self.chooseMaterials = materials;
     NSMutableString *str = [NSMutableString string];
     for (MaterialCountModel *model in materials) {
-        [str appendFormat:@"%@ x %ld,",model.mat_name,(long)model.num - 1];
+        [str appendFormat:@"%@ x %ld,",model.mat_name,(long)model.num];
     }
     if (str.length > 0) {
-        NSString *tempStr = [str substringToIndex:str.length];
+        NSString *tempStr = [str substringToIndex:str.length - 1];
         self.materialLabel.text = tempStr;
     }
 }
@@ -327,18 +535,25 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     WS(weakSelf);
     [picker dismissViewControllerAnimated:YES completion:^() {
-        //压缩图片
-        UIImage *resultImage = [UIImage imageCompressForSize:[info objectForKey:UIImagePickerControllerOriginalImage] targetSize:CGSizeMake(60, 60)];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            //压缩图片
+            UIImage *resultImage = [UIImage imageCompressForSize:[info objectForKey:UIImagePickerControllerOriginalImage] targetSize:CGSizeMake(60, 60)];
+            
             if (weakSelf.isCtImage) {
+                XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"ct" imageData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
                 [weakSelf.ctImages addObject:resultImage];
+                [weakSelf.needUploadImages addObject:param];
             }else{
+                XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"checklist" imageData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
                 [weakSelf.billImages addObject:resultImage];
+                [weakSelf.needUploadImages addObject:param];
             }
-            [weakSelf calculateImageViewsHeightAll:NO];
-            [weakSelf.tableView reloadData];
-        });
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf calculateImageViewsHeightAll:NO];
+                [weakSelf.tableView reloadData];
+            });
+        }
     }];
 }
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -349,21 +564,35 @@
 -(void)assetPickerController:(ZYQAssetPickerController *)picker didFinishPickingAssets:(NSArray *)assets{
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableArray *array = [NSMutableArray array];
-        for (int i=0; i<assets.count; i++) {
-            ALAsset *asset=assets[i];
-            UIImage *tempImg = [UIImage imageWithCGImage:asset.thumbnail];
-            [array addObject:tempImg];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
             if (weakSelf.isCtImage) {
+                NSMutableArray *array = [NSMutableArray array];
+                for (int i=0; i<assets.count; i++) {
+                    ALAsset *asset=assets[i];
+                    ALAssetRepresentation* representation = [asset defaultRepresentation];
+                    [array addObject:[UIImage imageWithCGImage:asset.thumbnail]];
+                    XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"ct" imageData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    [weakSelf.needUploadImages addObject:param];
+                }
                 [weakSelf.ctImages addObjectsFromArray:array];
-            }else{
+            }else {
+                NSMutableArray *array = [NSMutableArray array];
+                for (int i=0; i<assets.count; i++) {
+                    ALAsset *asset=assets[i];
+                    ALAssetRepresentation* representation = [asset defaultRepresentation];
+                    [array addObject:[UIImage imageWithCGImage:asset.thumbnail]];
+                    
+                    XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"checklist" imageData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    [weakSelf.needUploadImages addObject:param];
+                }
                 [weakSelf.billImages addObjectsFromArray:array];
             }
-            [weakSelf calculateImageViewsHeightAll:NO];
-            [weakSelf.tableView reloadData];
-        });
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [weakSelf calculateImageViewsHeightAll:NO];
+                [weakSelf.tableView reloadData];
+            });
+        }
     });
 }
 
@@ -449,5 +678,12 @@
         _ctImages = [NSMutableArray array];
     }
     return _ctImages;
+}
+
+- (NSMutableArray *)needUploadImages{
+    if (!_needUploadImages) {
+        _needUploadImages = [NSMutableArray array];
+    }
+    return _needUploadImages;
 }
 @end
