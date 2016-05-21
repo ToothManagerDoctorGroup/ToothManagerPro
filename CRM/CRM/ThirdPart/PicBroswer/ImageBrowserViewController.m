@@ -11,6 +11,7 @@
 #import "DBManager+AutoSync.h"
 #import "JSONKit.h"
 #import "MJExtension.h"
+#import "PatientManager.h"
 
 @interface ImageBrowserViewController () <PicBrowserViewDelegate>
 @property (nonatomic,retain) PicBrowserView *browserView;
@@ -182,6 +183,12 @@
 - (void)mainImgAction:(id)sender{
     __weak typeof(self) weakSelf = self;
     TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"是否将此CT片设置为来电提醒图片?" message:nil cancelHandler:^{
+        
+//        BrowserPicture *currentPic = [weakSelf.imageArray objectAtIndex:weakSelf.currentIndex];
+//        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentPic.url];
+//        //将图片保存到相册
+//         UIImageWriteToSavedPhotosAlbum(image, self, @selector(imageSavedToPhotosAlbum:didFinishSavingWithError:contextInfo:), nil);
+        
     } comfirmButtonHandlder:^{
         //获取当前显示的CTLib
         BrowserPicture *currentPic = [weakSelf.imageArray objectAtIndex:weakSelf.currentIndex];
@@ -207,6 +214,18 @@
     }];
     [alertView show];
 }
+
+//- (void)imageSavedToPhotosAlbum:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+//{
+//    NSString *message = @"呵呵";
+//    if (!error) {
+//        message = @"成功保存到相册";
+//    }else
+//    {
+//        message = [error description];
+//    }
+//    NSLog(@"message is %@",message);
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

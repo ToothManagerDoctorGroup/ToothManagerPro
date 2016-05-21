@@ -57,6 +57,7 @@
 //    }];
     
     if (self.isDoctor) {
+        [[SDImageCache sharedImageCache] removeImageForKey:[CRMUserDefalut objectForKey:QRCODE_URL_KEY]];
         //判断本地是否存在二维码的url
         NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
         if (qrcodeUrl == nil) {

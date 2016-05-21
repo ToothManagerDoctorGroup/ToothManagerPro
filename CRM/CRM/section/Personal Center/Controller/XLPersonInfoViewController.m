@@ -366,7 +366,7 @@
     }else{
         self.currentDoctor.doctor_skill = content;
     }
-    
+    [self uploadDoctorInfo];
 }
 
 #pragma mark - 上传个人信息
