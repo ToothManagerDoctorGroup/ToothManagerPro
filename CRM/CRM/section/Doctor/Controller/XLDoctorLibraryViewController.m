@@ -146,12 +146,14 @@
 #pragma mark 请求网络数据
 - (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
     //请求网络数据
+    WS(weakSelf);
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
         NSLog(@"网络数据请求成功");
+        _tableView.tableHeaderView = nil;
         if (isHeader) {
-            [self.searchHistoryArray removeAllObjects];
+            [weakSelf.searchHistoryArray removeAllObjects];
             //判断是否是选择治疗医生的状态
-            if (self.isTherapyDoctor) {
+            if (weakSelf.isTherapyDoctor) {
                 UserObject *user = [AccountManager shareInstance].currentUser;
                 Doctor *owner = [[Doctor alloc] init];
                 owner.doctor_name = user.name;
@@ -159,16 +161,17 @@
                 owner.doctor_hospital = user.hospitalName;
                 owner.doctor_position = user.title;
                 owner.doctor_image = user.img;
+                owner.ckeyid = user.userid;
             
-                [self.searchHistoryArray addObject:owner];
+                [weakSelf.searchHistoryArray addObject:owner];
             }
             //是否显示提示视图
-            [_tableView createNoResultAlertViewWithImageName:@"doctorFriend_alert.png" showButton:NO ifNecessaryForRowCount:array.count];
+            [_tableView createNoResultWithImageName:@"doctorFriend_alert.png" ifNecessaryForRowCount:array.count];
         }
         //将数据添加到数组中
-        [self.searchHistoryArray addObjectsFromArray:array];
+        [weakSelf.searchHistoryArray addObjectsFromArray:array];
         
-        if (self.searchHistoryArray.count < 50) {
+        if (weakSelf.searchHistoryArray.count < 50) {
             [_tableView removeFooter];
         }else{
             _tableView.footer.hidden = NO;
@@ -189,6 +192,7 @@
         }else{
             [_tableView.footer endRefreshing];
         }
+        [_tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.searchHistoryArray.count target:weakSelf action:@selector(headerRefreshAction)];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -344,7 +348,9 @@
             }];
         }
     }else{
-        if (buttonIndex == 0) return;
+        if (buttonIndex == 0) {
+            [_tableView reloadData];
+        };
         if (buttonIndex == 1) {
             [SVProgressHUD showWithStatus:@"删除中..."];
             [DoctorTool deleteFriendWithDoctorId:self.deleteDoctor.ckeyid introId:[[AccountManager shareInstance] currentUser].userid success:^(CRMHttpRespondModel *result) {
@@ -551,37 +557,39 @@
     return YES;
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    if ([searchText isNotEmpty]) {
-        //请求网络数据
-        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
-        [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
-        
-            if (array.count == 0) {
-                self.searchController.hideNoResult = NO;
-            }else{
-                self.searchController.hideNoResult = YES;
-            }
-            [self.searchController.resultsSource removeAllObjects];
-            [self.searchController.resultsSource addObjectsFromArray:array];
-            [self.searchController.searchResultsTableView reloadData];
-        } failure:^(NSError *error) {
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];        
-    }
-}
-
 - (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
 {
+    [self.searchController.resultsSource removeAllObjects];
+    [self.searchController.searchResultsTableView reloadData];
     return YES;
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+    if ([searchText isEmpty]) {
+        [self.searchController.resultsSource removeAllObjects];
+        [self.searchController.searchResultsTableView reloadData];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+    
+    if ([searchBar.text isNotEmpty]) {
+        //请求网络数据
+        WS(weakSelf);
+        XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchBar.text sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
+        [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
+            
+            [weakSelf.searchController.resultsSource removeAllObjects];
+            [weakSelf.searchController.resultsSource addObjectsFromArray:array];
+            [weakSelf.searchController.searchResultsTableView reloadData];
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar

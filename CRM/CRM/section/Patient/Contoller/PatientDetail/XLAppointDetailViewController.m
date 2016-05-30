@@ -33,9 +33,6 @@
 #import "PatientsCellMode.h"
 #import "XLChatModel.h"
 
-#define AddReserveType @"新增预约"
-#define CancelReserveType @"取消预约"
-#define UpdateReserveType @"修改预约"
 
 @interface XLAppointDetailViewController ()<UIAlertViewDelegate,XLAddReminderViewControllerDelegate>
 

@@ -18,6 +18,7 @@
 #import "UITableView+NoResultAlert.h"
 #import "Share.h"
 #import "ShareMode.h"
+#import "DoctorTool.h"
 
 static const NSInteger kDoctorSqureViewControllerMenuHeight = 44;
 
@@ -107,11 +108,7 @@ static const NSInteger kDoctorSqureViewControllerMenuHeight = 44;
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        _searchController.hideNoResult = YES;
-        _searchController.noResultImage = @"noFriendSearch_alert";
-        _searchController.searchButtonClickBlock = ^(){
-            [weakSelf showShareActionChoose];
-        };
+        _searchController.hideSystomNoResult = YES;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             return [weakSelf setUpTableViewCellWithTableView:tableView indexPath:indexPath sourceArray:weakSelf.searchController.resultsSource];
         }];
@@ -145,29 +142,9 @@ static const NSInteger kDoctorSqureViewControllerMenuHeight = 44;
     }];
 }
 
-#pragma mark -Doctor request Delegate
-- (void)searchDoctorWithNameFailedWithError:(NSError *)error {
-    self.searchController.hideNoResult = NO;
-    self.searchController.showButton = YES;
-    [self.searchController.resultsSource removeAllObjects];
-    [self.searchDisplayController.searchResultsTableView reloadData];
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
-
-- (void)searchDoctorWithNameSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD dismiss];
-    if ([result integerForKey:@"Code"] == 200) {
-        self.scellModeArray  = [[DoctorManager shareInstance] arrayWithDoctorResult:[result objectForKey:@"Result"]];
-        
-        self.searchController.hideNoResult = YES;
-        self.searchController.showButton = NO;
-        
-        [self.searchController.resultsSource removeAllObjects];
-        [self.searchController.resultsSource addObjectsFromArray:self.scellModeArray];
-        [self.searchDisplayController.searchResultsTableView reloadData];
-    } else {
-        [SVProgressHUD showImage:nil status:@"查询失败"];
-    }
+#pragma mark 刷新数据
+- (void)refreshSeachControllerData{
+    [self searchBarSearchButtonClicked:self.searchBar];
 }
 
 - (void)applyToBecomeIntroducerSuccess:(NSDictionary *)result {
@@ -205,12 +182,24 @@ static const NSInteger kDoctorSqureViewControllerMenuHeight = 44;
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
-    
     if ([searchBar.text isNotEmpty]) {
-        [[DoctorManager shareInstance] searchDoctorWithName:searchBar.text successBlock:^{
-            [SVProgressHUD showWithStatus:@"搜索中..."];
-        } failedBlock:^(NSError *error) {
+        WS(weakSelf);
+        [DoctorTool searchDoctorWithDoctorName:searchBar.text success:^(NSArray *result) {
+            weakSelf.scellModeArray = result;
+            weakSelf.searchController.searchResultsTableView.tableHeaderView = nil;
+            
+            [weakSelf.searchController.resultsSource removeAllObjects];
+            [weakSelf.searchController.resultsSource addObjectsFromArray:result];
+            [weakSelf.searchDisplayController.searchResultsTableView reloadData];
+            
+            [weakSelf.searchController.searchResultsTableView createNoResultWithButtonWithImageName:@"noFriendSearch_alert" ifNecessaryForRowCount:result.count buttonTitle:@"邀请好友加入" target:self action:@selector(showShareActionChoose) forControlEvents:UIControlEventTouchUpInside];
+            
+        } failure:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
+            [weakSelf.searchController.searchResultsTableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:self.scellModeArray.count target:self action:@selector(refreshSeachControllerData)];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
         }];
     }
 }
@@ -236,7 +225,7 @@ static const NSInteger kDoctorSqureViewControllerMenuHeight = 44;
     [sheetView showInView:self.view];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if(![WXApi isWXAppInstalled]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];

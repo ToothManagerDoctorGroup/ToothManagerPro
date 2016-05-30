@@ -10,19 +10,23 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "WXApi.h"
 #import "XMLDictionary.h"
-#import "XLPayParam.h"
+#import "XLPayUtils.h"
+#import "XLWXPayParam.h"
+#import "XLAlipayOrder.h"
+#import <AlipaySDK/AlipaySDK.h>
 
 @implementation XLPayManager
 Realize_ShareInstance(XLPayManager);
 
+#pragma mark - ********************* 微信支付 ***********************
 /**
  *  微信支付（所有参数由客户端）
  *
  *  @param param 支付param
  */
-- (void)payWithParam:(XLPayParam *)param{
+- (void)wxPayWithParam:(XLWXPayParam *)param{
     //将param转换成XML格式字符串
-    [self payWithXML:[param xmlStr]];
+    [self wxPayWithXML:[param xmlStr]];
 }
 
 /**
@@ -30,26 +34,25 @@ Realize_ShareInstance(XLPayManager);
  *
  *  @param param 支付param
  */
-- (void)payWithDic:(NSDictionary *)dic{
+- (void)wxPayWithDic:(NSDictionary *)dic{
     //发起微信支付，设置参数
     PayReq *request = [[PayReq alloc] init];
-//    request.openID = [dic objectForKey:@"open_id"];
-    request.partnerId = [dic objectForKey:@"mch_id"];
-    request.prepayId= [dic objectForKey:@"prepay_id"];
-    request.package = @"Sign=WXPay";
-    request.nonceStr= [dic objectForKey:@"nonce_str"];
-    //将当前事件转化成时间戳
-    NSDate *datenow = [NSDate date];
-    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)[datenow timeIntervalSince1970]];
-    UInt32 timeStamp =[timeSp intValue];
+    request.openID = [dic objectForKey:@"appid"];
+    request.partnerId = [dic objectForKey:@"partnerid"];
+    request.prepayId= [dic objectForKey:@"prepayid"];
+    request.package = [dic objectForKey:@"package"];
+    request.nonceStr= [dic objectForKey:@"noncestr"];
+    //将当前时间转化成时间戳
+//    NSDate *datenow = [NSDate date];
+//    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)[datenow timeIntervalSince1970]];
+    UInt32 timeStamp =[dic[@"timestamp"] intValue];
     request.timeStamp= timeStamp;
-    XLPayParam *param = [[XLPayParam alloc] init];
-    request.sign=[param createMD5SingForPay:@"wx43875d1f976c1ded" partnerid:request.partnerId prepayid:request.prepayId package:request.package noncestr:request.nonceStr timestamp:request.timeStamp];
+    request.sign= [dic objectForKey:@"sign"];
     //调用微信
     [WXApi sendReq:request];
 }
 
-- (void)payWithXML:(NSString *)xmlStr{
+- (void)wxPayWithXML:(NSString *)xmlStr{
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     //这里传入的xml字符串只是形似xml，但是不是正确是xml格式，需要使用af方法进行转义
     manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
@@ -78,7 +81,7 @@ Realize_ShareInstance(XLPayManager);
             NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)[datenow timeIntervalSince1970]];
             UInt32 timeStamp =[timeSp intValue];
             request.timeStamp= timeStamp;
-            XLPayParam *param = [[XLPayParam alloc] init];
+            XLWXPayParam *param = [[XLWXPayParam alloc] init];
             request.sign=[param createMD5SingForPay:@"wx43875d1f976c1ded" partnerid:request.partnerId prepayid:request.prepayId package:request.package noncestr:request.nonceStr timestamp:request.timeStamp];
             //调用微信
             [WXApi sendReq:request];
@@ -88,6 +91,21 @@ Realize_ShareInstance(XLPayManager);
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"error is %@",error);
+    }];
+}
+
+#pragma mark - ********************* 支付宝支付 ***********************
+/**
+ *  支付宝支付
+ *
+ *  @param dic 服务器返回的字典
+ */
+- (void)aliPayWithOrderString:(NSString *)orderString payCallback:(void(^)(NSDictionary *dic))payCallBack{
+    NSString *appScheme = @"alipaycomtrasendevCRM";
+    [[AlipaySDK defaultService] payOrder:orderString fromScheme:appScheme callback:^(NSDictionary *resultDic) {
+        if (payCallBack) {
+            payCallBack(resultDic);
+        }
     }];
 }
 

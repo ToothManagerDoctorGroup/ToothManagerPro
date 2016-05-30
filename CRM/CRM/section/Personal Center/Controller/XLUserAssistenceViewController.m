@@ -11,6 +11,7 @@
 #import "XLAssistenceDetailViewController.h"
 #import "XLAssistenceModel.h"
 #import "DoctorTool.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLUserAssistenceViewController ()
 
@@ -34,7 +35,7 @@
     [self setNavStyle];
     
     //请求数据
-    [self  requestData];
+    [self requestData];
 }
 
 #pragma mark - 设置导航栏样式
@@ -53,12 +54,14 @@
     [SVProgressHUD showWithStatus:@"正在加载"];
     __weak typeof(self) weakSelf = self;
     [DoctorTool getAllUsingHelpSuccess:^(NSArray *array) {
+        weakSelf.tableView.tableHeaderView = nil;
         [SVProgressHUD dismiss];
         [weakSelf.dataList addObjectsFromArray:array];
         
         [weakSelf.tableView reloadData];
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        [weakSelf.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.dataList.count target:weakSelf action:@selector(requestData)];
         if (error) {
             NSLog(@"error:%@",error.localizedDescription);
         }

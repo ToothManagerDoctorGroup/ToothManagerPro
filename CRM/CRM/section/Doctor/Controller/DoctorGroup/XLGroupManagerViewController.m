@@ -48,8 +48,6 @@
 //当前选中的组员
 @property (nonatomic, strong)GroupMemberModel *selectModel;
 
-@property (nonatomic, assign)BOOL canEdit;//是否进入编辑状态
-
 @end
 
 @implementation XLGroupManagerViewController
@@ -156,7 +154,7 @@
 
 - (NSArray *)menuList{
     if (_menuList == nil) {
-        _menuList = [NSArray arrayWithObjects:@"添加成员",@"移除成员",@"编辑组名",@"删除分组", nil];
+        _menuList = [NSArray arrayWithObjects:@"添加成员",@"编辑组名",@"删除分组", nil];
     }
     return _menuList;
 }
@@ -227,15 +225,19 @@
         //获取当前分组下的所有成员数据
         [SVProgressHUD showWithStatus:@"正在加载"];
         [DoctorGroupTool queryGroupMembersWithCkId:self.group.ckeyid success:^(NSArray *result) {
+            _tableView.tableHeaderView = nil;
             [SVProgressHUD dismiss];
             
             [_patientCellModeArray removeAllObjects];
             [_patientCellModeArray addObjectsFromArray:result];
-            
+            [_tableView createNoResultWithImageName:@"groupDetail_alert" ifNecessaryForRowCount:self.patientCellModeArray.count];
             [_tableView reloadData];
             
         } failure:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
+            if (_patientCellModeArray.count == 0) {
+                [_tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:0 target:self action:@selector(requestGroupMemberData)];
+            }
             if (error) {
                 NSLog(@"error:%@",error);
             }
@@ -244,17 +246,9 @@
 }
 
 - (void)onRightButtonAction:(id)sender{
-    if (self.canEdit) {
-        self.canEdit = NO;
-        [_tableView setEditing:self.canEdit animated:YES];
-        [self setRightBarButtonWithTitle:@"管理"];
-    }else
-    {
-        //显示菜单
-        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        [self.menuPopover showInView:keyWindow];
-    }
-    
+    //显示菜单
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    [self.menuPopover showInView:keyWindow];
 }
 
 #pragma mark - TableView Delegate
@@ -263,7 +257,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [tableView createNoResultAlertViewWithImageName:@"groupDetail_alert" showButton:NO ifNecessaryForRowCount:self.patientCellModeArray.count];
     return self.patientCellModeArray.count;
 }
 
@@ -566,11 +559,6 @@
     NSArray *searchResults;
     if ([searchText isNotEmpty]) {
         searchResults = [ChineseSearchEngine resultArraySearchGroupPatientsOnArray:self.patientCellModeArray withSearchText:searchText];
-        if (searchResults.count == 0) {
-            self.searchController.hideNoResult = NO;
-        }else{
-            self.searchController.hideNoResult = YES;
-        }
         
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:searchResults];
@@ -605,17 +593,10 @@
             [self addGroupMember];
             break;
         case 1:
-            //移除成员
-            self.canEdit = YES;
-            [_tableView setEditing:self.canEdit animated:YES];
-            //设置右侧导航栏按钮
-            [self setRightBarButtonWithTitle:@"完成"];
-            break;
-        case 2:
             //编辑组名
             [self editGroupName];
             break;
-        case 3:
+        case 2:
             //删除分组
             [self deleteGroup];
             break;

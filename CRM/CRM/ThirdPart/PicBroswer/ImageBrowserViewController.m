@@ -110,19 +110,15 @@
 }
 
 - (void)saveImageAction:(id)sender{
-    __weak typeof(self) weakSelf = self;
-    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"保存图片" message:@"是否将此图片保存到相册?" cancel:@"取消" certain:@"保存" cancelHandler:^{
-    } comfirmButtonHandlder:^{
-        //保存到相册
-        BrowserPicture *pic = [weakSelf.imageArray objectAtIndex:weakSelf.currentIndex];
-        UIImage *resultImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:pic.url];
-        if (resultImage != nil) {
-            UIImageWriteToSavedPhotosAlbum(resultImage, weakSelf, @selector(image:didFinishSavingWithError:contextInfo:), nil);
-        }else{
-            [SVProgressHUD showImage:nil status:@"当前图片不存在"];
-        }
-    }];
-    [alertView show];
+    
+    //保存到相册
+    BrowserPicture *pic = [self.imageArray objectAtIndex:self.currentIndex];
+    UIImage *resultImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:pic.url];
+    if (resultImage != nil) {
+        UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    }else{
+        [SVProgressHUD showImage:nil status:@"当前图片不存在"];
+    }
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
@@ -204,36 +200,30 @@
 }
 
 - (void)mainImgAction:(id)sender{
-    __weak typeof(self) weakSelf = self;
-    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"是否将此CT片设置为来电提醒图片?" message:nil cancelHandler:^{
-    } comfirmButtonHandlder:^{
-        //获取当前显示的CTLib
-        BrowserPicture *currentPic = [weakSelf.imageArray objectAtIndex:weakSelf.currentIndex];
-        CTLib *ct = [currentPic ctLib];
-        //将当前照片设置为主照片
-        ct.is_main = @"1";
-        
-        if([[DBManager shareInstance] setUpMainCT:ct]){
-            //将数组中的照片都设置为0
-            for (BrowserPicture *bPic in weakSelf.imageArray) {
-                if (![bPic.keyidStr isEqualToString:currentPic.keyidStr]) {
-                    bPic.ctLib.is_main = @"0";
-                }
+    //获取当前显示的CTLib
+    BrowserPicture *currentPic = [self.imageArray objectAtIndex:self.currentIndex];
+    CTLib *ct = [currentPic ctLib];
+    //将当前照片设置为主照片
+    ct.is_main = @"1";
+    
+    if([[DBManager shareInstance] setUpMainCT:ct]){
+        //将数组中的照片都设置为0
+        for (BrowserPicture *bPic in self.imageArray) {
+            if (![bPic.keyidStr isEqualToString:currentPic.keyidStr]) {
+                bPic.ctLib.is_main = @"0";
             }
         }
-        //更新当前的视图
-        [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
-        
-        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(picBrowserViewController:didSetMainImage:)]) {
-            [weakSelf.delegate picBrowserViewController:weakSelf didSetMainImage:currentPic];
-        }
-    }];
-    [alertView show];
+    }
+    //更新当前的视图
+    [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(picBrowserViewController:didSetMainImage:)]) {
+        [self.delegate picBrowserViewController:self didSetMainImage:currentPic];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

@@ -12,6 +12,7 @@
 #import "XLMessageTemplateModel.h"
 #import "UIColor+Extension.h"
 #import "XLTemplateDetailViewController.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLMessageTemplateViewController ()
 
@@ -59,12 +60,19 @@
 - (void)refreshLocalData{
     [self requestDataIsRefresh:YES];
 }
+
+- (void)refreshLocalDataNoRefresh{
+    [self requestDataIsRefresh:NO];
+}
+
 #pragma mark - 请求网络数据
 - (void)requestDataIsRefresh:(BOOL)isRefresh{
     if (!isRefresh) [SVProgressHUD showWithStatus:@"正在加载"];
-    
+    WS(weakSelf);
     [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        [self.messageTemplates removeAllObjects];
+        
+        weakSelf.tableView.tableHeaderView = nil;
+        [weakSelf.messageTemplates removeAllObjects];
         //对数据进行分组
         NSMutableArray *group1 = [NSMutableArray array];
         NSMutableArray *group2 = [NSMutableArray array];
@@ -82,16 +90,18 @@
             }
         }
         
-        [self.messageTemplates addObject:group1];
-        [self.messageTemplates addObject:group2];
-        [self.messageTemplates addObject:group3];
-        [self.messageTemplates addObject:group4];
+        [weakSelf.messageTemplates addObject:group1];
+        [weakSelf.messageTemplates addObject:group2];
+        [weakSelf.messageTemplates addObject:group3];
+        [weakSelf.messageTemplates addObject:group4];
         
         if (!isRefresh) [SVProgressHUD dismiss];
-        [self.tableView reloadData];
+        [weakSelf.tableView reloadData];
         
     } failure:^(NSError *error) {
         if (!isRefresh) [SVProgressHUD showImage:nil status:error.localizedDescription];
+        
+        [weakSelf.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.messageTemplates.count target:weakSelf action:@selector(refreshLocalDataNoRefresh)];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -109,8 +119,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section != 3) return 10;
-    return 30;
+    if (section == 3) return 30;
+    return 10;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{

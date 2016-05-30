@@ -26,9 +26,15 @@
 
 + (NSString *)stringWithDateyyyyMMddHHmmss:(NSDate *)date;
 
+
+//获取当前选择的星期 星期一和星期日的日期
 + (NSDate *)getMondayDateWithCurrentDate:(NSDate *)date;
+//获取当前选择的星期 星期一和星期日的日期
 + (NSDate *)getSundayDateWithCurrentDate:(NSDate *)date;
+//获取当前时间是周几，返回星期一-星期天
 + (NSString *)getDayWeek:(int)dayDelay;
+//获取当前时间是周几，返回1-7
++ (int)getDayIntWeekWithDate:(NSDate *)date;
 
 //比较目标时间是否在一个时间段内
 + (BOOL)timeInStartTime:(NSString *)startTime endTime:(NSString *)endTime targetTime:(NSString *)targetTime;

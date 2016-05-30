@@ -42,12 +42,6 @@
 - (NSMutableArray *)selectMarials{
     if (!_selectMarials) {
         _selectMarials = [NSMutableArray array];
-        
-        for (MaterialCountModel *model in self.dataList) {
-            if (model.num > 0) {
-                [_selectMarials addObject:model];
-            }
-        }
     }
     return _selectMarials;
 }
@@ -76,13 +70,19 @@
 }
 #pragma mark -右侧按钮点击
 - (void)onRightButtonAction:(id)sender{
+    for (MaterialCountModel *model in self.dataList) {
+        if (model.num > 0) {
+            [self.selectMarials addObject:model];
+        }
+    }
+    //调用代理方法
+    if ([self.delegate respondsToSelector:@selector(chooseMaterialViewController:didSelectMaterials:)]) {
+        [self.delegate chooseMaterialViewController:self didSelectMaterials:self.selectMarials];
+    }
     //关闭当前视图
     [self popViewControllerAnimated:YES];
     
-        //调用代理方法
-        if ([self.delegate respondsToSelector:@selector(chooseMaterialViewController:didSelectMaterials:)]) {
-            [self.delegate chooseMaterialViewController:self didSelectMaterials:self.selectMarials];
-        }
+    
     
 }
 

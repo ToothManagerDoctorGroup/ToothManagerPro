@@ -398,12 +398,6 @@
             XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
             [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
                 
-                if (array.count == 0) {
-                    weakSelf.searchController.hideNoResult = NO;
-                }else{
-                    weakSelf.searchController.hideNoResult = YES;
-                }
-                
                 //判断是否存在
                 for (Doctor *doc in array) {
                     for (XLTeamMemberModel *model in weakSelf.existMembers) {
@@ -426,11 +420,6 @@
             //查询本地数组
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"doctor_name CONTAINS %@", searchText]; //predicate只能是对象
             NSArray *filteredArray = [self.searchHistoryArray filteredArrayUsingPredicate:predicate];
-            if (filteredArray.count == 0) {
-                weakSelf.searchController.hideNoResult = NO;
-            }else{
-                weakSelf.searchController.hideNoResult = YES;
-            }
             
             [self.searchController.resultsSource removeAllObjects];
             [self.searchController.resultsSource addObjectsFromArray:filteredArray];

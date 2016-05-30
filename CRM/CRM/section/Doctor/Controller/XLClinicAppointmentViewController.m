@@ -51,7 +51,7 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     
     //加载数据
     self.currentDate = [NSDate date];
-    [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:[NSDate date]]];
+    [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:[NSDate date]] showStatus:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -93,16 +93,20 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     if ([notifacation.name isEqualToString:NotificationCreated]) {
         [self.dataList removeAllObjects];
         self.dataList = nil;
-        [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:self.currentDate]];
+        [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:self.currentDate] showStatus:NO];
     }
 }
 
 #pragma mark 根据诊所id查找指定时间内的营业状态
-- (void)getOperationStatusWithDate:(NSString *)dateStr{
-    [SVProgressHUD showWithStatus:@"正在加载数据"];
+- (void)getOperationStatusWithDate:(NSString *)dateStr showStatus:(BOOL)showStatus{
+    if (showStatus) {
+        [SVProgressHUD showWithStatus:@"正在加载数据"];
+    }
     WS(weakSelf);
     [MyClinicTool getOperatingStatusWithClinicId:self.clinicModel.clinic_id curDateStr:dateStr success:^(XLOperationStatusModel *statusModel) {
-        [SVProgressHUD dismiss];
+        if (showStatus) {
+            [SVProgressHUD dismiss];
+        }
         //获取椅位模型
         if (weakSelf.seats.count > 0) {
             [weakSelf.seats removeAllObjects];
@@ -111,13 +115,15 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
         //获取当前诊所的营业时间，计算出诊所的时间点的个数
         weakSelf.times = [weakSelf calculateTimeStatusWithTime:statusModel.business.businessHours];
         //判断是否存在被占用的时间段
-        [weakSelf getSourceListWithOccupyTimes:statusModel.timeList];
+        [weakSelf getSourceListWithStatusModel:statusModel];
         //刷新视图
         [weakSelf.appointTable reloadData];
         
         
     } failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:@"数据加载失败"];
+        if (showStatus) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -125,13 +131,26 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
 }
 
 #pragma mark 获取数据源
-- (void)getSourceListWithOccupyTimes:(NSArray *)occupyTimes{
+- (void)getSourceListWithStatusModel:(XLOperationStatusModel *)statusModel{
+    
+    //判断当前时间是否是营业时间
+    NSString *currentDateStr = [@([MyDateTool getDayIntWeekWithDate:self.currentDate]) stringValue];
+    NSArray *businessWeeks = [statusModel.business.businessWeek componentsSeparatedByString:@","];
+    if (![businessWeeks containsObject:currentDateStr]) {
+        //表明不在营业时间内
+        for (int i = 0; i < self.times.count; i++) {
+            for (XLClinicAppointmentModel *model in self.dataList[i]) {
+                model.takeUp = YES;
+            }
+        }
+        return;
+    }
     
     if (self.occupyTimeIndexPaths.count > 0) {
         [self.occupyTimeIndexPaths removeAllObjects];
     }
     
-    for (XLOccupyTime *ocyTime in occupyTimes) {
+    for (XLOccupyTime *ocyTime in statusModel.timeList) {
         int indexPathCount = (int)([ocyTime.reserveDuration floatValue] / 0.5);
         NSString *startTime = [MyDateTool stringWithDateFormatterStr:@"HH:mm" dateStr:ocyTime.reserveTime];
         //判断是否包含此时间
@@ -150,7 +169,7 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
             }
         }
         for (int i = 0; i < indexPathCount; i++) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section + i];
             [self.occupyTimeIndexPaths addObject:indexPath];
         }
     }
@@ -183,7 +202,12 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     
     NSMutableArray *arrayM = [NSMutableArray array];
     int startInt = [[startTimeArray firstObject] intValue];
-    for (int i = 0; i < count; i++) {
+    int index = 0;
+    if ([[startTimeArray lastObject] isEqualToString:@"30"]) {
+        index = 1;
+        count++;
+    }
+    for (int i = index; i < count; i++) {
         if (i%2 == 0) {
             if (startInt+i/2 < 10) {
                 [arrayM addObject:[NSString stringWithFormat:@"0%d:00",startInt+i/2]];
@@ -228,15 +252,20 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
         if (indexPath.row == 0) {
             //交叉视图
             XLAppointDateCell *dateCell = [collectionView dequeueReusableCellWithReuseIdentifier:CollectionViewDateCellIdentifier forIndexPath:indexPath];
-            dateCell.dateLabel.backgroundColor = [UIColor clearColor];
-            dateCell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"appoint_yiwei_bg"]];
+            dateCell.dateLabel.backgroundColor = [UIColor colorWithHex:0x00a0ea];
+            dateCell.dateLabel.textColor = [UIColor whiteColor];
+            dateCell.contentView.backgroundColor = [UIColor whiteColor];
+            
             dateCell.dateLabel.text = @"排班表";
             
             return dateCell;
         }else{
             XLAppointContentCell *contentCell = [collectionView dequeueReusableCellWithReuseIdentifier:CollectionViewContentCellIdentifier forIndexPath:indexPath];
-            contentCell.contentLabel.backgroundColor = [UIColor clearColor];
-            contentCell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"appoint_yiwei_bg"]];
+            contentCell.contentLabel.backgroundColor = [UIColor colorWithHex:0x00a0ea];
+            contentCell.contentLabel.font = [UIFont systemFontOfSize:15];
+            contentCell.contentLabel.textColor = [UIColor whiteColor];
+            contentCell.contentView.backgroundColor = [UIColor whiteColor];
+            
             //获取椅位模型
             XLSeatInfo *seatInfo = self.seats[indexPath.item - 1];
             contentCell.contentLabel.text = seatInfo.seat_name;
@@ -248,6 +277,7 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
             //交叉视图
             XLAppointDateCell *dateCell = [collectionView dequeueReusableCellWithReuseIdentifier:CollectionViewDateCellIdentifier forIndexPath:indexPath];
             dateCell.dateLabel.backgroundColor = [UIColor whiteColor];
+            dateCell.dateLabel.textColor = [UIColor colorWithHex:0x333333];
             dateCell.contentView.backgroundColor = [UIColor colorWithHex:0xcccccc];
             dateCell.dateLabel.text = self.times[indexPath.section - 1];
             
@@ -255,13 +285,16 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
         }else{
             
             XLAppointContentCell *contentCell = [collectionView dequeueReusableCellWithReuseIdentifier:CollectionViewContentCellIdentifier forIndexPath:indexPath];
-            contentCell.contentLabel.text = @"";
+            contentCell.contentLabel.textColor = [UIColor colorWithHex:0x888888];
+            contentCell.contentLabel.font = [UIFont systemFontOfSize:12];
             contentCell.contentView.backgroundColor = [UIColor colorWithHex:0xcccccc];
             
             XLClinicAppointmentModel *model = self.dataList[indexPath.section - 1][indexPath.row - 1];
             if (model.isTakeUp) {
-                contentCell.contentLabel.backgroundColor = [UIColor colorWithHex:0xeeeeee];
+                contentCell.contentLabel.text = @"已占用";
+                contentCell.contentLabel.backgroundColor = [UIColor colorWithHex:0xdddddd];
             }else{
+                contentCell.contentLabel.text = @"";
                 contentCell.contentLabel.backgroundColor = [UIColor whiteColor];
             }
             
@@ -293,7 +326,7 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
 }
 
 #pragma mark -ActionSheet Delegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     
     XLClinicAppointmentModel *model = self.dataList[self.selectIndexPath.section - 1][self.selectIndexPath.row - 1];
@@ -347,7 +380,7 @@ static const CGFloat ClinicAppointmentViewControllerCalendarHeight = 200;
     self.currentDate = date;
     [self.dataList removeAllObjects];
     self.dataList = nil;
-    [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:date]];
+    [self getOperationStatusWithDate:[MyDateTool stringWithDateNoTime:date]showStatus:YES];
 
     NSLog(@"选中了:%@----当前时间-%d",[MyDateTool stringWithDateWithSec:date],[date weakDay]);
 }

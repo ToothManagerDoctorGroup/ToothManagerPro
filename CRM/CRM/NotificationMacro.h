@@ -37,6 +37,12 @@
 #define NOtificationUpdated @"NotificationUpdated"   //更新了提醒
 #define NotificationDeleted @"NotificationDeleted"   //删除了提醒
 
+//支付通知
+#define WeixinPayedNotification @"WeixinPayedNotification"
+#define AlipayPayedNotification @"AlipayPayedNotification"
+#define PayedResultSuccess @"SUCCESS"
+#define PayedResultFailed @"FAILED"
+
 /**********************医嘱****************************/
 #define ChooseAdviceNotification @"ChooseAdviceNotification"   //选择了医嘱
 #define MedicalAdviceAddSuccessNotification @"MedicalAdviceAddSuccessNotification"//创建医嘱成功

@@ -429,12 +429,6 @@
 {
     if ([searchText isNotEmpty]) {
         NSArray *results = [[DBManager shareInstance] getPatientWithKeyWords:searchText];
-        if (results.count == 0) {
-            self.searchController.hideNoResult = NO;
-        }else{
-            self.searchController.hideNoResult = YES;
-        }
-        
         [self.searchController.resultsSource removeAllObjects];
         for (Patient *patient in results) {
             Patient *patientTmp = patient;

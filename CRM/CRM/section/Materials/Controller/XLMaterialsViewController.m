@@ -380,11 +380,6 @@
         //查询本地数组
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"mat_name CONTAINS %@", searchText]; //predicate只能是对象
         NSArray *filteredArray = [dataArray filteredArrayUsingPredicate:predicate];
-        if (filteredArray.count == 0) {
-            self.searchController.hideNoResult = NO;
-        }else{
-            self.searchController.hideNoResult = YES;
-        }
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:filteredArray];
         [self.searchController.searchResultsTableView reloadData];

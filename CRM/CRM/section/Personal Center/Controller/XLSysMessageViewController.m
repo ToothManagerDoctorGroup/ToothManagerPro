@@ -26,6 +26,7 @@
 #import "DoctorInfoModel.h"
 #import "XLNewFriendNotiViewController.h"
 #import "DBManager+LocalNotification.h"
+#import "CRMAppDelegate.h"
 
 static const NSInteger SysMessageViewControllerPageSize = 30;
 
@@ -66,6 +67,7 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
     WS(weakSelf);
     XLMessageQueryModel *queryModel = [[XLMessageQueryModel alloc] initWithIsRead:@(2) syncTime:@"" sortField:@"create_time" isAsc:NO pageIndex:self.pageIndex pageSize:SysMessageViewControllerPageSize];
     [SysMessageTool getMessageByQueryModel:queryModel success:^(NSArray *result) {
+        self.tableView.tableHeaderView = nil;
         if (isHeader) {
             [weakSelf.dataList removeAllObjects];
             if (result.count < SysMessageViewControllerPageSize) {
@@ -87,7 +89,17 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
         
         [weakSelf.tableView reloadData];
     } failure:^(NSError *error) {
+        if ([weakSelf.tableView.header isRefreshing]) {
+            [weakSelf.tableView.header endRefreshing];
+        }else if ([weakSelf.tableView.footer isRefreshing]){
+            [weakSelf.tableView.footer endRefreshing];
+        }
         [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (isHeader) {
+            if (weakSelf.dataList.count == 0) {
+                [self.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:0 target:self action:@selector(headerRefreshAction)];
+            }
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -97,7 +109,6 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
 #pragma mark 下拉刷新
 - (void)headerRefreshAction{
     self.pageIndex = 1;
-    [self.dataList removeAllObjects];
     [self requstDataIsHeader:YES];
 }
 #pragma mark 上拉加载
@@ -392,27 +403,22 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
 }
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     SysMessageModel *model = self.dataList[indexPath.row];
-    
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确认删除此消息吗？" message:nil cancelHandler:^{
-        } comfirmButtonHandlder:^{
-            [SysMessageTool deleteMessageWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
-                if ([respond.code integerValue] == 200) {
-                    [SVProgressHUD showSuccessWithStatus:@"删除成功"];
-                    [self.dataList removeAllObjects];
-                    self.pageIndex = 1;
-                    [self requstDataIsHeader:YES];
-                }else{
-                    [SVProgressHUD showErrorWithStatus:@"删除失败"];
-                }
-            } failure:^(NSError *error) {
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-                if (error) {
-                    NSLog(@"error:%@",error);
-                }
-            }];
+        [SysMessageTool deleteMessageWithMessageId:model.keyId success:^(CRMHttpRespondModel *respond) {
+            if ([respond.code integerValue] == 200) {
+                [SVProgressHUD showSuccessWithStatus:@"删除成功"];
+                [self.dataList removeAllObjects];
+                self.pageIndex = 1;
+                [self requstDataIsHeader:YES];
+            }else{
+                [SVProgressHUD showErrorWithStatus:@"删除失败"];
+            }
+        } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
         }];
-        [alertView show];
     }
 }
 

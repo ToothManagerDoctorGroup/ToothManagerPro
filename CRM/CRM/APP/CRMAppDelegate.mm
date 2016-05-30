@@ -23,6 +23,8 @@
 #import "CRMAppDelegate+Reachability.h"
 #import "CRMAppDelegate+EaseMob.h"
 #import "CRMAppDelegate+JPush.h"
+#import "CRMAppDelegate+ThreeDTouch.h"
+#import "CRMAppDelegate+Pay.h"
 #import "JPUSHService.h"
 #import "NSString+TTMAddtion.h"
 
@@ -58,8 +60,15 @@
     
     //页面跳转
     [self turnToMainVcWithOptions:launchOptions];
+    
+    //设置3dtouch按钮
+    [self add3DViewWithApplication:application];
 
     return YES;
+}
+
++ (CRMAppDelegate *)appDelegate{
+    return (CRMAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
 #pragma mark - 配置第三方SDK
@@ -75,15 +84,10 @@
     //百度地图
     _mapManager = [[BMKMapManager alloc]init];
     // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
-    BOOL ret = [_mapManager start:@"Yu0DYus5oGSY08r5FLwh3Dbd" generalDelegate:nil];
-    if (!ret) {
-        NSLog(@"manager start failed!");
-    }else{
-        NSLog(@"manager start success!");
-    }
-    
+    [_mapManager start:@"Yu0DYus5oGSY08r5FLwh3Dbd" generalDelegate:nil];
     //注册微信
-    [WXApi registerApp:@"wx43875d1f976c1ded"];
+//    [WXApi registerApp:@"wx43875d1f976c1ded"];
+    [WXApi registerApp:@"wx26acde952c8251cf"];
     
     //样式设置，添加通知
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
@@ -294,78 +298,6 @@ forRemoteNotification:(NSDictionary *)userInfo
     [[EaseMob sharedInstance] applicationWillTerminate:application];
 }
 
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
-{
-    return [WXApi handleOpenURL:url delegate:self];
-}
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
-    return [WXApi handleOpenURL:url delegate:self];
-}
-
-#pragma mark - WXApi delegate
--(void) onReq:(BaseReq*)req
-{
-    if([req isKindOfClass:[GetMessageFromWXReq class]])
-    {
-        // 微信请求App提供内容， 需要app提供内容后使用sendRsp返回
-        NSString *strTitle = [NSString stringWithFormat:@"微信请求App提供内容"];
-        NSString *strMsg = @"微信请求App提供内容，App要调用sendResp:GetMessageFromWXResp返回给微信";
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:strTitle message:strMsg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        alert.tag = 1000;
-        [alert show];
-    }
-    else if([req isKindOfClass:[ShowMessageFromWXReq class]])
-    {
-        ShowMessageFromWXReq* temp = (ShowMessageFromWXReq*)req;
-        WXMediaMessage *msg = temp.message;
-        
-        //显示微信传过来的内容
-        WXAppExtendObject *obj = msg.mediaObject;
-        
-        NSString *strTitle = [NSString stringWithFormat:@"微信请求App显示内容"];
-        NSString *strMsg = [NSString stringWithFormat:@"标题：%@ \n内容：%@ \n附带信息：%@ \n缩略图:%lu bytes\n\n", msg.title, msg.description, obj.extInfo, (unsigned long)msg.thumbData.length];
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:strTitle message:strMsg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
-    else if([req isKindOfClass:[LaunchFromWXReq class]])
-    {
-        //从微信启动App
-        NSString *strTitle = [NSString stringWithFormat:@"从微信启动"];
-        NSString *strMsg = @"这是从微信启动的消息";
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:strTitle message:strMsg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
-}
-#pragma mark 微信返回
--(void)onResp:(BaseResp*)resp
-{
-    //启动微信支付的response
-    NSString *payResoult = [NSString stringWithFormat:@"errcode:%d", resp.errCode];
-    if([resp isKindOfClass:[PayResp class]]){
-        //支付返回结果，实际支付结果需要去微信服务器端查询
-        switch (resp.errCode) {
-            case 0:
-                payResoult = @"支付结果：成功！";
-                break;
-            case -1:
-                payResoult = @"支付结果：失败！";
-                break;
-            case -2:
-                payResoult = @"用户已经退出支付！";
-                break;
-            default:
-                payResoult = [NSString stringWithFormat:@"支付结果：失败！retcode = %d, retstr = %@", resp.errCode,resp.errStr];
-                break;
-        }
-    }
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"支付提示" message:payResoult delegate:self cancelButtonTitle:@"知道了" otherButtonTitles: nil];
-    [alertView show];
-}
 
 - (void)dealloc{
     [self removeNetWorkNotification];

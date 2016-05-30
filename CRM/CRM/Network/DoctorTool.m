@@ -25,6 +25,7 @@
 #import "XLPatientEducationModel.h"
 #import "XLChatRecordQueryModel.h"
 #import "XLChatModel.h"
+#import "AccountManager.h"
 
 #define userIdParam @"userid"
 #define requestActionParam @"action"
@@ -63,7 +64,6 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = [@"getdatabyid" TripleDESIsEncrypt:YES];
     params[userIdParam] = [doctorId TripleDESIsEncrypt:YES];
-    
     
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
@@ -707,5 +707,51 @@
         }
     }];
 }
+
+
+/**
+ *  根据医生姓名查询医生
+ *
+ *  @param doctorName 医生姓名
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)searchDoctorWithDoctorName:(NSString *)doctorName success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    
+    if ([doctorName isEmpty]) {
+        [SVProgressHUD showImage:nil status:@"医生姓名不能为空"];
+    }
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorInfoHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[@"getdata" TripleDESIsEncrypt:YES] forKey:@"action"];
+    [paramDic setObject:[doctorName TripleDESIsEncrypt:YES] forKey:@"username"];
+    [paramDic setObject:[[AccountManager currentUserid] TripleDESIsEncrypt:YES] forKey:@"doctor_id"];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if ([respond.code integerValue] == 200) {
+            NSMutableArray *mArray = [NSMutableArray array];
+            for (NSDictionary *dic in respond.result) {
+                Doctor *doctor = [Doctor DoctorFromDoctorResult:dic];
+                [mArray addObject:doctor];
+            }
+            if (success) {
+                success(mArray);
+            }
+        }else{
+            if (success) {
+                success(@[]);
+            }
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 
 @end

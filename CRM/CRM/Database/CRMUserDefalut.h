@@ -16,6 +16,8 @@
 
 #define KVersion (@"KVersion")
 
+#define kUserIsSignKey(UserId) [NSString stringWithFormat:@"%@isSign",UserId]
+
 @interface CRMUserDefalut : NSObject
 
 /**

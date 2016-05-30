@@ -18,14 +18,13 @@
     return @[@"imageData"];
 }
 
-- (instancetype)initWithReserveId:(NSString *)reserveId fileName:(NSString *)fileName fileType:(NSString *)fileType imageData:(NSData *)imageData{
+- (instancetype)initWithThumbnailImage:(UIImage *)thumbnailImage
+                              fileType:(NSString *)fileType
+                             imageData:(NSData *)imageData{
     if (self = [super init]) {
-        self.reserver_id = reserveId;
-        if ([fileName isContainsString:@".jpg"]) {
-            self.file_name = fileName;
-        }else{
-            self.file_name = [NSString stringWithFormat:@"%@.jpg",fileName];
-        }
+        self.thumbnailImage = thumbnailImage;
+        self.reserver_id = @"";
+        self.file_name = @"image";
         self.file_type = fileType;
         self.doctor_id = [AccountManager currentUserid];
         self.creation_time = [MyDateTool stringWithDateWithSec:[NSDate date]];

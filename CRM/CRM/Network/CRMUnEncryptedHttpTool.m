@@ -10,6 +10,7 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "AFHTTPRequestOperationManager+Synchronous.h"
 #import "NSString+TTMAddtion.h"
+#import "AFHTTPSessionManager.h"
 #import "JSONKit.h"
 
 @interface CRMUnEncryptedHttpTool ()
@@ -96,6 +97,22 @@ Realize_ShareInstance(CRMUnEncryptedHttpTool);
         }
     }];
 }
+
+- (void)Upload:(NSString *)URLString
+    parameters:(id)parameters
+   uploadParam:(MyUploadParam *)uploadParam
+       success:(void (^)())success{
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        
+    } success:^(NSURLSessionDataTask *task, id responseObject) {
+        
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        
+    }];
+
+}
+
 
 - (id)SyncPOST:(NSString *)URLString
     parameters:(id)parameters

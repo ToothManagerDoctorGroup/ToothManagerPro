@@ -353,11 +353,6 @@
 {
     __weak typeof(self) weakSelf = self;
     [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataArray searchText:(NSString *)searchText collationStringSelector:@selector(title) resultBlock:^(NSArray *results) {
-        if (results && results.count > 0) {
-            weakSelf.searchController.hideNoResult = YES;
-        }else{
-            weakSelf.searchController.hideNoResult = NO;
-        }
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.searchController.resultsSource removeAllObjects];
                 [weakSelf.searchController.resultsSource addObjectsFromArray:results];

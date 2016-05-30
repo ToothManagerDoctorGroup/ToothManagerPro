@@ -11,8 +11,9 @@
 /**
  *  诊所预约详情
  */
+@class LocalNotification;
 @interface XLClinicAppointDetailViewController : TimTableViewController
 
-@property (nonatomic, copy)NSString *clinic_reserve_id;
+@property (nonatomic, strong)LocalNotification *localNoti;
 
 @end

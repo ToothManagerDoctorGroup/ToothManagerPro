@@ -294,11 +294,6 @@
     if ([searchText isNotEmpty]) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fullName CONTAINS %@", searchText]; //predicate只能是对象
         searchResults = [self.contacts filteredArrayUsingPredicate:predicate];
-        if (searchResults.count == 0) {
-            self.searchController.hideNoResult = NO;
-        }else{
-            self.searchController.hideNoResult = YES;
-        }
         
         [self.searchController.resultsSource removeAllObjects];
         [self.searchController.resultsSource addObjectsFromArray:searchResults];

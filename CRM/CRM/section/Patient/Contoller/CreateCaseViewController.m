@@ -47,6 +47,7 @@
 #import "UIImage+TTMAddtion.h"
 #import "XLChatModel.h"
 #import "EaseSDKHelper.h"
+#import "UINavigationItem+Margin.h"
 
 #define TableHeaderViewHeight 350
 @interface CreateCaseViewController () <CreateCaseHeaderViewControllerDeleate,ImageBrowserViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,CaseMaterialsViewControllerDelegate,UITableViewDataSource,UITableViewDelegate,XLHengYaDeleate,XLRuYaDelegate,XLSelectYuyueViewControllerDelegate,XLDoctorLibraryViewControllerDelegate>
@@ -618,6 +619,12 @@
     [self presentViewController:picker animated:YES completion:^{
         
     }];
+}
+#pragma mark - 解决取消按钮靠左问题
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithCustomView:[UIView new]];
+    [viewController.navigationItem setRightBarButtonItem:btn animated:NO];
 }
 
 #pragma mark - PicBrowserViewControllerdelegate

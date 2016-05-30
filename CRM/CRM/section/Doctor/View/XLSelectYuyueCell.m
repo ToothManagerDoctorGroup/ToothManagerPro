@@ -77,7 +77,7 @@
             make.left.equalTo(_timeLabel.mas_right).with.offset(margin);
         }];
         
-        CGFloat contentW = (self.width - _timeLabel.width - 20) / models.count;
+        CGFloat contentW = (kScreenWidth - _timeLabel.width - 20) / models.count;
         for (int i = 0; i < models.count; i++) {
             LocalNotification *model = models[i];
             UILabel *contentLabel = [[UILabel alloc] init];

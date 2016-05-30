@@ -10,6 +10,7 @@
 #import "ZYQAssetPickerController.h"
 #import "UIView+WXViewController.h"
 #import "UIImage+TTMAddtion.h"
+#import "UINavigationItem+Margin.h"
 
 @interface XLImageSelectView ()<ZYQAssetPickerControllerDelegate,UINavigationControllerDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate>
 
@@ -128,7 +129,7 @@
 }
 
 #pragma mark - UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if (buttonIndex == 0) {
         //拍照
         [self getImageFromCamera];

@@ -28,4 +28,6 @@
 
 @property (nonatomic, assign)NetworkStatus connectionStatus;//网络状态
 
++ (CRMAppDelegate *)appDelegate;
+
 @end

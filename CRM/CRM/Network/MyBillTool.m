@@ -82,17 +82,17 @@
 }
 
 
-+ (void)cancleAppointWithAppointId:(NSString *)appointId success:(void (^)(NSString * result,NSNumber *code))success failure:(void (^)(NSError *error))failure{
-//    NSString *urlStr = @"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx";
++ (void)cancleAppointWithAppointId:(NSString *)appointId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[requestActionParam] = @"cancelreserve";
     params[@"keyid"] = appointId;
     
     [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
-        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
-            success(responseObject[@"Result"],responseObject[@"Code"]);
+            success(respond);
         }
         
     } failure:^(NSError *error) {

@@ -52,7 +52,7 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="KsN-zc-Ld4"/>
                         <barButtonItem title="CT片" id="uXp-mS-3as"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="Y6s-4J-wIy"/>
-                        <barButtonItem title="保存" id="QYr-FG-cBi">
+                        <barButtonItem title="保存到相册" id="QYr-FG-cBi">
                             <connections>
                                 <action selector="saveImageAction:" destination="iN0-l3-epB" id="ftd-dt-JrK"/>
                             </connections>

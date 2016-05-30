@@ -748,59 +748,12 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Yxt-05-zLm" userLabel="MyClinic">
-                                        <rect key="frame" x="0.0" y="389" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Yxt-05-zLm" id="PF2-Vh-eJP">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="我的诊所" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7Q-TP-m6Y">
-                                                    <rect key="frame" x="55" y="11" width="100" height="21"/>
-                                                    <animations/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="21" id="QAN-HH-lRP"/>
-                                                        <constraint firstAttribute="width" constant="100" id="R68-Dl-Xt6"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="Kzn-1d-Km4">
-                                                    <rect key="frame" x="292" y="13" width="13" height="18"/>
-                                                    <animations/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="13" id="MAA-H5-AnO"/>
-                                                        <constraint firstAttribute="height" constant="18" id="lOW-WT-6Yk"/>
-                                                    </constraints>
-                                                </imageView>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="kj_zs.png" translatesAutoresizingMaskIntoConstraints="NO" id="HFU-Zf-JV5">
-                                                    <rect key="frame" x="15" y="12" width="20" height="20"/>
-                                                    <animations/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="20" id="3gU-AZ-PcG"/>
-                                                        <constraint firstAttribute="height" constant="20" id="7in-JS-zoW"/>
-                                                    </constraints>
-                                                </imageView>
-                                            </subviews>
-                                            <animations/>
-                                            <constraints>
-                                                <constraint firstItem="HFU-Zf-JV5" firstAttribute="centerY" secondItem="PF2-Vh-eJP" secondAttribute="centerY" id="KeC-Ry-gyl"/>
-                                                <constraint firstItem="HFU-Zf-JV5" firstAttribute="leading" secondItem="PF2-Vh-eJP" secondAttribute="leading" constant="15" id="OYX-Nf-sPH"/>
-                                                <constraint firstItem="f7Q-TP-m6Y" firstAttribute="leading" secondItem="HFU-Zf-JV5" secondAttribute="trailing" constant="20" id="aXB-cT-Ew0"/>
-                                                <constraint firstItem="f7Q-TP-m6Y" firstAttribute="centerY" secondItem="PF2-Vh-eJP" secondAttribute="centerY" id="mWq-go-4By"/>
-                                                <constraint firstAttribute="trailing" secondItem="Kzn-1d-Km4" secondAttribute="trailing" constant="15" id="u6p-9V-v4j"/>
-                                                <constraint firstItem="Kzn-1d-Km4" firstAttribute="centerY" secondItem="PF2-Vh-eJP" secondAttribute="centerY" id="vv1-7E-qCD"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <animations/>
-                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="" id="ZKS-QB-cWs">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Lfb-3J-Dfq">
-                                        <rect key="frame" x="0.0" y="469" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="425" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Lfb-3J-Dfq" id="JkV-t3-fiE">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
@@ -847,7 +800,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Ahl-MF-NaP">
-                                        <rect key="frame" x="0.0" y="513" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="469" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ahl-MF-NaP" id="lxB-CC-bxM">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
@@ -898,7 +851,7 @@
                             <tableViewSection headerTitle="" id="dIF-wD-6EQ">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="jlc-s7-32a" userLabel="备份">
-                                        <rect key="frame" x="0.0" y="593" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="549" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jlc-s7-32a" id="3Ou-0l-kRf">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
@@ -956,7 +909,7 @@
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="6yM-nn-EFA">
-                                        <rect key="frame" x="0.0" y="637" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="593" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6yM-nn-EFA" id="34k-Fp-U5m">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
@@ -1011,7 +964,6 @@
                         <outlet property="_detailLabel" destination="hAY-QS-cWV" id="Pqj-gz-3zD"/>
                         <outlet property="_doctorCell" destination="77e-1X-acM" id="MfP-ui-CcX"/>
                         <outlet property="_myBillCell" destination="MP2-Hl-IlN" id="wgt-3P-JSM"/>
-                        <outlet property="_myClinicCell" destination="Yxt-05-zLm" id="Que-XM-xb3"/>
                         <outlet property="_nameLabel" destination="qeA-J3-WMB" id="R0N-j2-nLq"/>
                         <outlet property="_shareCell" destination="Ahl-MF-NaP" id="hJr-fX-cgx"/>
                         <outlet property="_sheZhiCell" destination="6yM-nn-EFA" id="kJ1-4f-w81"/>
@@ -5464,7 +5416,6 @@
         <image name="ic_list_zhongzhiti.png" width="20" height="20"/>
         <image name="ic_tixing.png" width="20" height="20"/>
         <image name="kj_zd.png" width="46" height="46"/>
-        <image name="kj_zs.png" width="46" height="44"/>
         <image name="qrcode.png" width="35" height="35"/>
         <image name="qrcode_jiazai.png" width="200" height="200"/>
         <image name="sq_bj.png" width="498" height="81"/>

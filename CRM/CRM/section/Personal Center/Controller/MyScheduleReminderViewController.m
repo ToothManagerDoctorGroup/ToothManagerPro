@@ -63,8 +63,6 @@
 
 @property (nonatomic, strong)NSTimer *messageTimer;//消息处理的定时器
 
-//@property (nonatomic, strong)UIView *noResultView;
-
 @end
 
 @implementation MyScheduleReminderViewController
@@ -74,7 +72,6 @@
     [super viewDidLoad];
     
     self.title = @"日程表";
-    [self setLeftBarButtonWithImage:[UIImage imageNamed:@"ic_nav_tongbu"]];
     
     //设置子视图
     [self initSubViews];
@@ -107,11 +104,6 @@
         [self didClickDateButton];
         self.isHide = YES;
     }
-    //判断是否显示提示页
-    [CRMUserDefalut isShowedForKey:Schedule_IsShowedKey showedBlock:^{
-        XLGuideImageView *guidImageView = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alert"]];
-        [guidImageView showInView:[UIApplication sharedApplication].keyWindow];
-    }];
     
     //是否显示更新提示
     [self showNewVersion];
@@ -179,33 +171,6 @@
     self.messageCountLabel = messageCountLabel;
     [messageButton addSubview:messageCountLabel];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:messageButton];
-}
-
--(void)onLeftButtonAction:(id)sender{
-    
-    //判断当前是否有网络
-    CRMAppDelegate *appDelegate = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
-    if(appDelegate.connectionStatus == NotReachable){
-        [SVProgressHUD showImage:nil status:@"当前无网络"];
-        return;
-    }
-    [SVProgressHUD showWithStatus:@"同步中..."];
-    if ([[AccountManager shareInstance] isLogin]) {
-        [NSTimer scheduledTimerWithTimeInterval:0.2
-                                         target:self
-                                       selector:@selector(callSync)
-                                       userInfo:nil
-                                        repeats:NO];
-        
-    } else {
-        NSLog(@"User did not login");
-        [SVProgressHUD showWithStatus:@"同步失败，请先登录..."];
-        [SVProgressHUD dismiss];
-        [NSThread sleepForTimeInterval: 1];
-    }
-}
-- (void)callSync {
-    [[AutoSyncGetManager shareInstance] startSyncGetShowSuccess:YES];
 }
 
 #pragma mark 消息按钮点击事件
@@ -319,8 +284,7 @@
     self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:[MyDateTool stringWithDateNoTime:currentDate] array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
     
-    
-    [m_tableView createNoResultAlertHeaderViewWithImageName:@"schedule_noresult_alert.png" showButton:NO ifNecessaryForRowCount:self.remindArray.count];
+    [m_tableView createNoResultWithImageName:@"schedule_noresult_alert.png" ifNecessaryForRowCount:self.remindArray.count];
     
 }
 
@@ -447,7 +411,7 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
         XLClinicAppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLClinicAppointDetailViewController"];
         detailVc.hidesBottomBarWhenPushed = YES;
-        detailVc.clinic_reserve_id = notifi.clinic_reserve_id;
+        detailVc.localNoti = notifi;
         [self pushViewController:detailVc animated:YES];
     }
     
@@ -532,7 +496,7 @@
         self.calendar.currentDateSelected = self.selectDate;
         [self.calendar setCurrentDate:self.selectDate];
     }
-    [m_tableView createNoResultAlertHeaderViewWithImageName:@"schedule_noresult_alert.png" showButton:NO ifNecessaryForRowCount:self.remindArray.count];
+    [m_tableView createNoResultWithImageName:@"schedule_noresult_alert.png" ifNecessaryForRowCount:self.remindArray.count];
 }
 
 
@@ -557,7 +521,7 @@
    self.remindArray = [[LocalNotificationCenter shareInstance] localNotificationListWithString:selectDateStr array:self.currentMonthArray];
     self.remindArray = [self updateListTimeArray:self.remindArray];
     
-    [m_tableView createNoResultAlertHeaderViewWithImageName:@"schedule_noresult_alert.png" showButton:NO ifNecessaryForRowCount:self.remindArray.count];
+    [m_tableView createNoResultWithImageName:@"schedule_noresult_alert.png" ifNecessaryForRowCount:self.remindArray.count];
     
     [m_tableView reloadData];
 }

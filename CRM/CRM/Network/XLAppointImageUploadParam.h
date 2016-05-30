@@ -16,6 +16,10 @@
 /**
  *  {"reserver_id":"123","file_name":"123_232.jpg","file_type":"ct","doctor_id":12,"creation_time":"2016-05-18 19:18:24"}
  */
+
+@property (nonatomic, copy)NSString *imageUrl;//图片的url
+
+@property (nonatomic, strong)UIImage *thumbnailImage;//压缩图片
 /**
 *  预约id
 */
@@ -42,6 +46,8 @@
  */
 @property (nonatomic, strong)NSData *imageData;
 
-- (instancetype)initWithReserveId:(NSString *)reserveId fileName:(NSString *)fileName fileType:(NSString *)fileType imageData:(NSData *)imageData;
+- (instancetype)initWithThumbnailImage:(UIImage *)thumbnailImage
+                           fileType:(NSString *)fileType
+                          imageData:(NSData *)imageData;
 
 @end

@@ -89,7 +89,7 @@
     UIActionSheet *sheetView = [[UIActionSheet alloc] initWithTitle:@"分享" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"微信" otherButtonTitles:@"朋友圈", nil];
     [sheetView showInView:self.view];
 }
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if(![WXApi isWXAppInstalled]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];
@@ -124,7 +124,7 @@
     //短信发送
     if( [MFMessageComposeViewController canSendText] )
     {
-        NSString *urlStr = [NSString stringWithFormat:@"您好，我是xx医生，请点击下面链接，关注我的微信号，关注后您可以获得我的预约通知和诊疗医嘱。链接地址:%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@&patient_id=%@",DomainRealName,Method_Weixin,[AccountManager currentUserid],patient.ckeyid];
+        NSString *urlStr = [NSString stringWithFormat:@"您好，我是%@医生，请点击下面链接，关注我的微信号，关注后您可以获得我的预约通知和诊疗医嘱。链接地址:%@%@/view/Introduce/DoctorDetail.aspx?doctor_id=%@&patient_id=%@",[AccountManager shareInstance].currentUser.name,DomainRealName,Method_Weixin,[AccountManager currentUserid],patient.ckeyid];
         
         MFMessageComposeViewController * controller = [[MFMessageComposeViewController alloc] init];
         controller.recipients = @[patient.patient_phone];

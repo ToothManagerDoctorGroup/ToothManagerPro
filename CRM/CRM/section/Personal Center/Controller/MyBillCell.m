@@ -127,7 +127,7 @@
 - (void)setModel:(BillModel *)model{
     _model = model;
     //分割线
-    _dividerView.frame = CGRectMake(0, 0, self.frame.size.width, 5);
+    _dividerView.frame = CGRectMake(0, 0, kScreenWidth, 5);
     
     //诊所名称
     NSString *clinicName = self.model.clinic_name;
@@ -142,7 +142,7 @@
     //耗时视图
     NSString *costTime = [NSString stringWithFormat:@"共用时:%@",[self minChangeToHour:self.model.use_time]];
     CGSize costTimeSize = [costTime sizeWithFont:OtherFontSize];
-    _costTimeLabel.frame = CGRectMake(self.frame.size.width - costTimeSize.width - MarginX, (commenH - costTimeSize.height) * 0.5 + 5, costTimeSize.width, costTimeSize.height);
+    _costTimeLabel.frame = CGRectMake(kScreenWidth - costTimeSize.width - MarginX, (commenH - costTimeSize.height) * 0.5 + 5, costTimeSize.width, costTimeSize.height);
     //设置字体颜色
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:costTime];
     int length = (int)costTime.length - 3;
@@ -159,7 +159,7 @@
     NSString *action = self.model.type;
     CGSize actionSize = [action sizeWithFont:OtherFontSize];
     
-    CGFloat middleMargin = (self.frame.size.width - timeSize.width - nameSize.width - actionSize.width - MarginX * 2) / 2;
+    CGFloat middleMargin = (kScreenWidth - timeSize.width - nameSize.width - actionSize.width - MarginX * 2) / 2;
     
     //时间视图
     CGFloat timeY = commenH + (commenH - timeSize.height) * 0.5 + 5;
@@ -200,7 +200,7 @@
     //付款按钮
     CGFloat payW = 100;
     CGFloat payH = commenH - MarginY;
-    CGFloat payX = self.frame.size.width - payW - MarginX;
+    CGFloat payX = kScreenWidth - payW - MarginX;
     CGFloat payY = commenH * 2 + (commenH - payH) * 0.5 + 5;
     _payButton.frame = CGRectMake(payX, payY, payW, payH);
     
@@ -230,7 +230,7 @@
             
             [self.timer invalidate];
             self.timer = nil;
-        }else{ //待付款
+        }else{ //3   待付款
             _payButton.hidden = NO;
             [_payButton setTitle:@"去付款" forState:UIControlStateNormal];
             money = [NSString stringWithFormat:@"待付款：￥%@",self.model.total_money];

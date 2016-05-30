@@ -87,12 +87,9 @@
     //如果是测试环境
     if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
         [self setRightBarButtonWithTitle:@"测试"];
-    }else{
-//        [self setRightBarButtonWithTitle:@"存在"];
     }
     
     self.title = @"我";
-    self.isSign = YES;
     
     _tableView.delegate=self;
     _tableView.dataSource=self;
@@ -119,17 +116,13 @@
     //设置标记图片样式
     self.targetView.layer.cornerRadius = 5;
     self.targetView.layer.masksToBounds = YES;
+    //获取签约状态
+    NSString *isSignStr = [CRMUserDefalut objectForKey:kUserIsSignKey([AccountManager currentUserid])];
+    self.isSign = [isSignStr isEqualToString:@"0"] ? NO : YES;
 }
 
 - (void)onRightButtonAction:(id)sender{
-//    PayReq *request = [[PayReq alloc] init];
-//    request.partnerId = @"10000100";
-//    request.prepayId= @"1101000000140415649af9fc314aa427";
-//    request.package = @"Sign=WXPay";
-//    request.nonceStr= @"a462b76e7436e98e0ed6e13c64b4fd1c";
-//    request.timeStamp= @"1397527777";
-//    request.sign= @"582282D72DD2B03AD892830965F428CB16E7A256";
-//    [WXApi sendReq:request];
+    
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -186,7 +179,7 @@
         }else if (section==2){
             return 2;
         }else if (section==3){
-            return 2;
+            return 1;
         }else if(section == 4){
             return 2;
         }else{
@@ -235,11 +228,7 @@
                 return _tiXingMuBanCell;
             }
         }else if (indexPath.section == 3){
-            if(indexPath.row == 0){
-                return _myBillCell;
-            }else if (indexPath.row == 1){
-                return _myClinicCell;
-            }
+            return _myBillCell;
         }else if (indexPath.section == 4){
             if (indexPath.row == 0) {
                 return _shuJuFenXiCell;
@@ -331,23 +320,14 @@
     
     if (self.isSign == YES) {
         if (indexPath.section == 3) {
-            if (indexPath.row == 0) {
-                
-                WMPageController *pageController = [self p_defaultController];
-                pageController.title = @"我的账单";
-                pageController.menuViewStyle = WMMenuViewStyleLine;
-                pageController.titleSizeSelected = 15;
-                pageController.titleColorSelected = MyColor(0, 139, 232);
-                pageController.menuHeight = 44;
-                pageController.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:pageController animated:YES];
-                
-                
-            }else if(indexPath.row == 1){
-                MyClinicViewController *clinicVc = [[MyClinicViewController alloc] initWithStyle:UITableViewStylePlain];
-                clinicVc.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:clinicVc animated:YES];
-            }
+            WMPageController *pageController = [self p_defaultController];
+            pageController.title = @"我的账单";
+            pageController.menuViewStyle = WMMenuViewStyleLine;
+            pageController.titleSizeSelected = 15;
+            pageController.titleColorSelected = MyColor(0, 139, 232);
+            pageController.menuHeight = 44;
+            pageController.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:pageController animated:YES];
         }
         
         if(indexPath.section == 4){
@@ -405,7 +385,7 @@
     [sheetView showInView:self.view];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if(![WXApi isWXAppInstalled]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];

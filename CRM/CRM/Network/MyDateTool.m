@@ -168,6 +168,49 @@
     return weekDay;
 }
 
++ (int)getDayIntWeekWithDate:(NSDate *)date{
+    int weekDay;
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];//设置成中国阳历
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    NSInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekdayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;//这句我也不明白具体时用来做什么。。。
+    comps = [calendar components:unitFlags fromDate:date];
+    long weekNumber = [comps weekday]; //获取星期对应的长整形字符串
+    //    long day=[comps day];//获取日期对应的长整形字符串
+    //    long year=[comps year];//获取年对应的长整形字符串
+    //    long month=[comps month];//获取月对应的长整形字符串
+    //    long hour=[comps hour];//获取小时对应的长整形字符串
+    //    long minute=[comps minute];//获取月对应的长整形字符串
+    //    long second=[comps second];//获取秒对应的长整形字符串
+    //    NSString *riQi =[NSString stringWithFormat:@"%ld日",day];//把日期长整形转成对应的汉字字符串
+    switch (weekNumber) {
+        case 1:
+            weekDay= 7;
+            break;
+        case 2:
+            weekDay=1;
+            break;
+        case 3:
+            weekDay=2;
+            break;
+        case 4:
+            weekDay=3;
+            break;
+        case 5:
+            weekDay=4;
+            break;
+        case 6:
+            weekDay=5;
+            break;
+        case 7:
+            weekDay=6;
+            break;
+            
+        default:
+            break;
+    }
+    return weekDay;
+}
+
 + (NSComparisonResult)compareWithFromDateStr:(NSString *)fromDateStr{
     
     NSDate *fromDate = [self dateWithStringWithSec:fromDateStr];

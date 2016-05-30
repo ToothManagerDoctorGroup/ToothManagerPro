@@ -14,6 +14,7 @@
 @property (nonatomic,copy) NSString *keyidStr;   //区分图片的id (字符串)
 @property (nonatomic,copy) NSString *title;      //图片描述文字
 @property (nonatomic,copy) NSString *url;        //如果是网络图片 给地址
+@property (nonatomic, strong)UIImage *image;     //如果传过来图片对象
 
 @property (nonatomic, strong)CTLib *ctLib;//图片模型
 @end

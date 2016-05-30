@@ -76,8 +76,6 @@
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"addgroup"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-//    self.noResultAlertView = [self.tableView createNoResultAlertViewWithImageName:@"groupList_alert.png" top:60 showButton:NO buttonClickBlock:nil];
 }
 
 #pragma mark - 重新请求数据
@@ -87,15 +85,22 @@
 
 #pragma mark - 请求分组信息
 - (void)requestGroupData{
+    WS(weakSelf);
     [SVProgressHUD showWithStatus:@"正在加载"];
     [DoctorGroupTool getGroupListWithDoctorId:[[AccountManager shareInstance] currentUser].userid ckId:@"" patientId:@"" success:^(NSArray *result) {
+        weakSelf.tableView.tableHeaderView = nil;
         [SVProgressHUD dismiss];
-        [self.dataList removeAllObjects];
-        [self.dataList addObjectsFromArray:result];
-        [self.tableView reloadData];
+        [weakSelf.dataList removeAllObjects];
+        [weakSelf.dataList addObjectsFromArray:result];
+        [weakSelf.tableView createNoResultWithImageName:@"groupList_alert.png" ifNecessaryForRowCount:result.count];
+        
+        [weakSelf.tableView reloadData];
         
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (weakSelf.dataList.count == 0) {
+            [weakSelf.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:0 target:weakSelf action:@selector(requestGroupData)];
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -111,7 +116,6 @@
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    [tableView createNoResultAlertViewWithImageName:@"groupList_alert.png"showButton:NO ifNecessaryForRowCount:self.dataList.count];
     return self.dataList.count;
 }
 
@@ -143,8 +147,22 @@
     DoctorGroupModel *model = self.dataList[indexPath.row];
     self.selectModel = model;
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"删除分组" message:@"删除分组并不会删除患者信息，确认删除分组？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"删除", nil];
-        [alertView show];
+        //删除分组
+        [SVProgressHUD showWithStatus:@"正在删除"];
+        [DoctorGroupTool deleteGroupWithCkId:self.selectModel.ckeyid success:^(CRMHttpRespondModel *respondModel) {
+            if ([respondModel.code integerValue] == 200) {
+                //发送通知
+                [self requestGroupData];
+            }else{
+                [SVProgressHUD showErrorWithStatus:@"删除失败"];
+            }
+            [SVProgressHUD dismiss];
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
     }
 }
 
@@ -186,26 +204,6 @@
     }];
 }
 
-#pragma mark - UIAlertViewDelegate
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 0) return;
-    //删除分组
-    [SVProgressHUD showWithStatus:@"正在删除"];
-    [DoctorGroupTool deleteGroupWithCkId:self.selectModel.ckeyid success:^(CRMHttpRespondModel *respondModel) {
-        if ([respondModel.code integerValue] == 200) {
-            //发送通知
-            [self requestGroupData];
-        }else{
-            [SVProgressHUD showErrorWithStatus:@"删除失败"];
-        }
-        [SVProgressHUD dismiss];
-    } failure:^(NSError *error) {
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
-}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

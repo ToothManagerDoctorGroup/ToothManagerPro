@@ -17,6 +17,7 @@
 #import "BillModel.h"
 #import "WMPageConst.h"
 #import "AppointDetailViewController.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface PayedBillViewController ()
 
@@ -44,9 +45,10 @@
     [super viewDidLoad];
     self.tableView.backgroundColor = MyColor(239, 239, 239);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.tableFooterView = [UIView new];
     
     //添加通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paySuccessAction:) name:DoctorPaySuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paySuccessAction:) name:WeixinPayedNotification object:nil];
     
     //请求网络数据
     [self requestBillsDataWithType:@"2"];
@@ -55,28 +57,35 @@
 
 #pragma mark -支付成功后
 - (void)paySuccessAction:(NSNotification *)note{
-    //请求网络数据
-    [self requestBillsDataWithType:@"2"];
+    if ([note.object isEqualToString:WeixinPayedNotification]) {
+        //请求网络数据
+        [self requestBillsDataWithType:@"2"];
+    }
 }
 
 
 - (void)requestBillsDataWithType:(NSString *)type{
     [SVProgressHUD showWithStatus:@"正在加载"];
-    self.tableView.hidden = YES;
+    WS(weakSelf);
     UserObject *currentUser = [[AccountManager shareInstance] currentUser];
     [MyBillTool requestBillsWithDoctorId:currentUser.userid type:type success:^(NSArray *bills) {
+        weakSelf.tableView.tableHeaderView = nil;
         [SVProgressHUD dismiss];
-        self.dataList = bills;
+        weakSelf.dataList = bills;
         //刷新表格
-        [self.tableView reloadData];
-        //显示表格
-        self.tableView.hidden = NO;
+        [weakSelf.tableView reloadData];
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
+        [weakSelf.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.dataList.count target:weakSelf action:@selector(refreshData)];
         if (error) {
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+- (void)refreshData{
+    //请求网络数据
+    [self requestBillsDataWithType:@"2"];
 }
 
 - (void)didReceiveMemoryWarning {

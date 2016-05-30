@@ -155,7 +155,7 @@
             //登录成功
             DoctorInfoModel *doctorInfo = [DoctorInfoModel objectWithKeyValues:respond.result[0]];
             //设置当前的签约状态
-            NSString *signKey = [NSString stringWithFormat:@"%@isSign",doctorInfo.doctor_id];
+            NSString *signKey = kUserIsSignKey(doctorInfo.doctor_id);
             [CRMUserDefalut setObject:doctorInfo.is_sign forKey:signKey];
             
             UserObject *obj = [UserObject userobjectFromDic:respond.result[0]];

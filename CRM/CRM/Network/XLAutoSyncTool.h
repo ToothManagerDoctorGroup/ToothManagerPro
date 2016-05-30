@@ -12,6 +12,10 @@
 #import "CRMHttpRespondModel.h"
 #import "LocalNotificationCenter.h"
 
+#define AddReserveType @"新增预约"
+#define CancelReserveType @"取消预约"
+#define UpdateReserveType @"修改预约"
+
 #define POST_COMMONURL ([NSString stringWithFormat:@"%@%@/%@/SyncPost.ashx",DomainName,Method_His_Crm,Method_Ashx])
 #define POST_PATIENT_INTRODUCERMAP_INSERT [NSString stringWithFormat:@"%@%@/%@/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 /**

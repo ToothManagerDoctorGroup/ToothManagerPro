@@ -163,7 +163,7 @@
             CGFloat itemW = (kScreenWidth - size.width - 12 * 2) / (numberOfItems - 1);
             size = CGSizeMake(itemW, 40);
         }else{
-            CGFloat itemW = (kScreenWidth - size.width - 12 * 4) / (numberOfItems - 1);
+            CGFloat itemW = (kScreenWidth - size.width - 12 * 4) / 3;
             size = CGSizeMake(itemW, 40);
         }
     }

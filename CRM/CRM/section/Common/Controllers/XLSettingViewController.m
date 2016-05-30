@@ -36,7 +36,7 @@
     self.title = @"通用设置";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
-    self.dataList = @[@[@"同步预约日程到系统日历",@"添加预约时显示提醒内容"],@[@"同步所有患者到通讯录",@"同步手工录入患者到通讯录"],@[@"重置同步时间",@"清空本地数据"]];
+    self.dataList = @[@[@"同步预约日程到系统日历",@"添加预约时显示提醒内容"],@[@"同步所有患者到通讯录",@"同步手工录入患者到通讯录"],@[@"重置同步时间",@"清除缓存"]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshData) name:AutoSyncTimeChangeNotification object:nil];
     
@@ -284,7 +284,7 @@
 #pragma mark - 清空本地数据
 - (void)clearLocalData{
     WS(weakSelf);
-    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"是否清空本地数据?" message:nil cancelHandler:^{
+    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"确定清除本地缓存数据?" message:nil cancelHandler:^{
     } comfirmButtonHandlder:^{
        //清空本地数据
         BOOL ret = [[DBManager shareInstance] clearLocalData];

@@ -378,7 +378,7 @@
                                 [weakSelf popToScheduleVc];
                             });
                         } failure:^(NSError *error) {
-                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                            [SVProgressHUD showImage:nil status:error.localizedDescription];
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                 [weakSelf popToScheduleVc];
                             });
@@ -395,7 +395,7 @@
         }
     } failure:^(NSError *error) {
         [self setButtonEnable:YES];
-        [SVProgressHUD showErrorWithStatus:@"预约添加失败"];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -469,7 +469,7 @@
                             [weakSelf popToScheduleVc];
                         });
                     } failure:^(NSError *error) {
-                        [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                        [SVProgressHUD showImage:nil status:error.localizedDescription];
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                             [weakSelf popToScheduleVc];
                         });
@@ -505,7 +505,7 @@
         [alertView show];
         
     } failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:@"提醒内容获取失败，请检查网络设置"];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -594,6 +594,8 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBar.translucent = YES;
     NSString *patient_id;
     if (!self.isNextReserve && !self.isAddLocationToPatient && !self.isEditAppointment) {
         //是添加预约时选择患者

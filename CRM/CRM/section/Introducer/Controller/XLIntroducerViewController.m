@@ -405,11 +405,6 @@
     NSArray *searchResults;
     if ([searchText isNotEmpty]) {
         searchResults = [[DBManager shareInstance] getIntroducerByName:searchText];
-        if (searchResults.count == 0) {
-            self.searchController.hideNoResult = NO;
-        }else{
-            self.searchController.hideNoResult = YES;
-        }
         [self.searchController.resultsSource removeAllObjects];
         for (Introducer *intro in searchResults) {
             IntroducerCellMode *cellMode = [[IntroducerCellMode alloc] init];

@@ -11,6 +11,8 @@
 @interface PatientManager : NSObject
 
 #pragma mark - NewCaseViewController 
++ (NSString *)pathImageSaveToCache:(UIImage *)image withKey:(NSString *)key;
+
 + (NSString *)pathImageSaveToDisk:(UIImage *)image withKey:(NSString *)key;
 
 + (CGSize)getSizeWithString:(NSString *)string;

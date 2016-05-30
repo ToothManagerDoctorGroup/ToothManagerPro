@@ -18,6 +18,7 @@
 #import "EMSearchBar.h"
 #import "EMSearchDisplayController.h"
 
+
 static const CGFloat MyClinicViewControllerCellHeight = 70;
 
 @interface MyClinicViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>
@@ -48,6 +49,7 @@ static const CGFloat MyClinicViewControllerCellHeight = 70;
     [self setUpSubViews];
     //请求签约诊所的信息
     [self requestClinicInfo];
+    
 }
 
 - (void)didReceiveMemoryWarning {

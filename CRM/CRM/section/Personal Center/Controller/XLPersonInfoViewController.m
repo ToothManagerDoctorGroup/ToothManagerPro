@@ -21,6 +21,7 @@
 #import "XLContentWriteViewController.h"
 #import "MJRefresh.h"
 #import "CRMUserDefalut.h"
+#import "UINavigationItem+Margin.h"
 
 #define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
 
@@ -222,7 +223,12 @@
     }];
 }
 
-
+#pragma mark - 解决取消按钮靠左问题
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithCustomView:[UIView new]];
+    [viewController.navigationItem setRightBarButtonItem:btn animated:NO];
+}
 #pragma mark - UIImagePicker Delegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {

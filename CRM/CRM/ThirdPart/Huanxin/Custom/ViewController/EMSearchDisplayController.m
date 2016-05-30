@@ -26,8 +26,6 @@
         self.searchResultsDataSource = self;
         self.searchResultsDelegate = self;
         self.delegate = self;
-        [self.searchResultsTableView createNoSearchResultAlertViewWithImageName:@"searchBar_alert.png" showButton:YES];
-//        [self.searchResultsTableView createNoResultAlertHeaderViewWithImageName:@"searchBar_alert.png" showButton:NO ifNecessaryForRowCount:self.resultsSource.count];
     }
     return self;
 }
@@ -41,6 +39,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (!self.hideSystomNoResult) {
+        [self.searchResultsTableView createNoResultAlertViewWithImageName:@"searchBar_alert.png" showButton:NO ifNecessaryForRowCount:self.resultsSource.count];
+    }
     return [self.resultsSource count];
 }
 
@@ -148,47 +149,10 @@
     return YES;
 }
 
-- (void)setHideNoResult:(BOOL)hideNoResult{
-    _hideNoResult = hideNoResult;
-    
-    for (UIView *subview in self.searchResultsTableView.subviews) {
-        if ([subview isKindOfClass: [UIImageView class]])
-        {
-            subview.hidden = hideNoResult;
-        }
-    }
-}
-
-- (void)setNoResultImage:(NSString *)noResultImage{
-    _noResultImage = noResultImage;
-    
-    for (UIView *subview in self.searchResultsTableView.subviews) {
-        if ([subview isKindOfClass: [UIImageView class]])
-        {
-            UIImageView *imageView = (UIImageView *)subview;
-            imageView.image = [UIImage imageNamed:noResultImage];
-        }
-    }
-}
-
-- (void)setShowButton:(BOOL)showButton{
-    _showButton = showButton;
-    
-    for (UIView *subview in self.searchResultsTableView.subviews) {
-        if ([subview isKindOfClass: [UIButton class]])
-        {
-            UIButton *button = (UIButton *)subview;
-            button.hidden = !showButton;
-            if (showButton) {
-                [button addTarget:self action:@selector(buttonAction) forControlEvents:UIControlEventTouchUpInside];
-            }
-        }
-    }
-}
-
-- (void)buttonAction{
-    if (self.searchButtonClickBlock) {
-        self.searchButtonClickBlock();
+- (void)setHideSystomNoResult:(BOOL)hideSystomNoResult{
+    _hideSystomNoResult = hideSystomNoResult;
+    if (hideSystomNoResult) {
+        self.searchResultsTableView.backgroundView = nil;
     }
 }
 

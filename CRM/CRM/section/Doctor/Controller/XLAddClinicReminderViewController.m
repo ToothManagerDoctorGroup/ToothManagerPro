@@ -31,11 +31,15 @@
 #import "XLCustomAlertView.h"
 #import "XLChatModel.h"
 #import "DBManager+Patients.h"
+#import "XLClinicChooseCTImageController.h"
+#import "UINavigationItem+Margin.h"
+#import "XLBrowserViewController.h"
+#import "XLImageBrowserView.h"
 
 #define Margin 10
 #define ImageWidth 60
 
-@interface XLAddClinicReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,EditAllergyViewControllerDelegate,ChooseAssistViewControllerDelegate,ChooseMaterialViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,ZYQAssetPickerControllerDelegate>{
+@interface XLAddClinicReminderViewController ()<XLHengYaDeleate,XLRuYaDelegate,XLReserveTypesViewControllerDelegate,EditAllergyViewControllerDelegate,ChooseAssistViewControllerDelegate,ChooseMaterialViewControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate,ZYQAssetPickerControllerDelegate,XLClinicChooseCTImageControllerDelegate,XLBrowserViewControllerDelegate>{
     CGFloat _billImageHeight;
     CGFloat _ctImageHeight;
 }
@@ -105,27 +109,12 @@
         self.patientNameLabel.text = [LocalNotificationCenter shareInstance].selectPatient.patient_name;
         patientId = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
     }
-    //获取患者的微信绑定状态
-    [MyPatientTool getWeixinStatusWithPatientId:patientId success:^(CRMHttpRespondModel *respondModel) {
-        if ([respondModel.result isEqualToString:@"1"]) {
-            //绑定
-            self.isBind = YES;
-        }else{
-            //未绑定
-            self.isBind = NO;
-        }
-        
-    } failure:^(NSError *error) {
-        self.isBind = NO;
-        //未绑定
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+    
 }
+
 #pragma mark  保存按钮点击
 - (void)onRightButtonAction:(id)sender{
-    if ([self.patientNameLabel.text isEmpty]) {
+    if (!self.patient && ![LocalNotificationCenter shareInstance].selectPatient) {
         [SVProgressHUD showImage:nil status:@"请选择患者"];
         return;
     }
@@ -181,7 +170,7 @@
     }
     //保存预约
     WS(weakSelf);
-    [SVProgressHUD showWithStatus:@"正在保存预约"];
+    [SVProgressHUD showWithStatus:@"正在保存预约" maskType:SVProgressHUDMaskTypeClear];
     [MyPatientTool postAppointInfoTuiSongClinic:notification.patient_id withClinicName:self.appointModel.clinicName withCliniId:self.appointModel.clinicId withDoctorId:[AccountManager currentUserid] withAppointTime:self.appointModel.appointTime withDuration:self.appointModel.duration withSeatPrice:self.appointModel.seatPrice withAppointMoney:totalMoney withAppointType:notification.reserve_type withSeatId:self.appointModel.seatId withToothPosition:notification.tooth_position withAssist:assistsArr withMaterial:materialsArr success:^(CRMHttpRespondModel *respondModel) {
         
         if ([respondModel.code integerValue] == 200 || [respondModel.code integerValue] == 203) {
@@ -207,34 +196,57 @@
 - (void)uploadAllImagesWithReserveId:(NSString *)reserveId{
     if (self.needUploadImages.count > 0) {
         WS(weakSelf);
+        [SVProgressHUD showWithStatus:@"正在上传图片" maskType:SVProgressHUDMaskTypeClear];
         __block NSInteger failCount = self.needUploadImages.count;
         for (XLAppointImageUploadParam *param in self.needUploadImages) {
             param.reserver_id = reserveId;
             [MyPatientTool uploadAppointmentImageWithParam:param imageData:param.imageData success:^(CRMHttpRespondModel *respondModel) {
                 failCount--;
                 if (failCount == 0) {
-                    [SVProgressHUD showImage:nil status:@"保存成功"];
-                    [weakSelf getMessageToPatient];
+                    [weakSelf getPatientBindState];
                 }
             } failure:^(NSError *error) {
                 failCount--;
                 if (failCount == 0) {
-                    [SVProgressHUD showImage:nil status:@"保存成功"];
-                    [weakSelf getMessageToPatient];
+                    
+                    [weakSelf getPatientBindState];
                 }
                 if (error) {
                     NSLog(@"error:%@",error);
                 }
             }];
         }
+    }else{
+        [self getPatientBindState];
     }
 }
 #pragma mark 获取发送给患者的消息内容
+- (void)getPatientBindState{
+    //获取患者的微信绑定状态
+    [SVProgressHUD showWithStatus:@"图片上传成功，正在获取患者提醒消息" maskType:SVProgressHUDMaskTypeClear];
+    [MyPatientTool getWeixinStatusWithPatientId:self.currentNoti.patient_id success:^(CRMHttpRespondModel *respondModel) {
+        if ([respondModel.result isEqualToString:@"1"]) {
+            //绑定
+            self.isBind = YES;
+        }else{
+            //未绑定
+            self.isBind = NO;
+        }
+        [self getMessageToPatient];
+    } failure:^(NSError *error) {
+        self.isBind = NO;
+        [self getMessageToPatient];
+        //未绑定
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
+}
 - (void)getMessageToPatient{
     WS(weakSelf);
     Patient *patientTmp = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.currentNoti.patient_id];
     [self sendMessageWithNoti:self.currentNoti cancel:^{
-        [weakSelf popToSuperController];
+        [weakSelf popToScheduleVc];
     } certain:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
         [SVProgressHUD showWithStatus:@"正在发送消息"];
         [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
@@ -271,16 +283,23 @@
 
 #pragma mark 返回上一个页面
 - (void)popToSuperController{
+    WS(weakSelf);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self popViewControllerAnimated:YES];
+        [weakSelf popToScheduleVc];
     });
+}
+#pragma mark 返回日程表页面
+- (void)popToScheduleVc{
+    UITabBarController *rootVC = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    [rootVC setSelectedViewController:[rootVC.viewControllers objectAtIndex:0]];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark 发送消息
 - (void)sendMessageWithNoti:(LocalNotification *)noti cancel:(void(^)())cancel certain:(void(^)(NSString *content, BOOL wenxinSend, BOOL messageSend))certain{
     
     [DoctorTool yuYueMessagePatient:noti.patient_id fromDoctor:[AccountManager currentUserid] withMessageType:self.reserveTypeLabel.text withSendType:@"0" withSendTime:self.appointModel.appointTime success:^(CRMHttpRespondModel *result) {
-        
+        [SVProgressHUD dismiss];
         XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:result.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:self.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
             if (cancel) {
                 cancel();
@@ -342,20 +361,54 @@
     }
     
     for (int i = 0; i < images.count; i++) {
+        XLAppointImageUploadParam *param = images[i];
+        
         int index_x = i / count;
         int index_y = i % count;
         
         CGFloat imageX = Margin + (Margin + ImageWidth) * index_y;
         CGFloat imageY = Margin + (Margin + ImageWidth) * index_x;
         
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:images[i]];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:param.thumbnailImage];
+        imageView.tag = 100 + i;
         imageView.layer.cornerRadius = 5;
         imageView.layer.masksToBounds = YES;
+        imageView.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+        [imageView addGestureRecognizer:tap];
         imageView.frame = CGRectMake(imageX, imageY, ImageWidth, ImageWidth);
         [superView addSubview:imageView];
     }
     
     return rows * (ImageWidth + Margin) + Margin + 44;
+}
+
+#pragma mark - tapAction
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    UIImageView *imageView = (UIImageView *)tap.view;
+    NSMutableArray *picArray = [NSMutableArray arrayWithCapacity:0];
+    if (imageView.superview == self.checkBillImagesSupView) {
+        NSLog(@"术前检查图片");
+        for (XLAppointImageUploadParam *param in self.billImages) {
+            XLBrowserPicture *pic = [[XLBrowserPicture alloc] init];
+            pic.image = param.thumbnailImage;
+            pic.obj = param;
+            [picArray addObject:pic];
+        }
+    }else{
+        NSLog(@"CT图片");
+        for (XLAppointImageUploadParam *param in self.ctImages) {
+            XLBrowserPicture *pic = [[XLBrowserPicture alloc] init];
+            pic.image = param.thumbnailImage;
+            pic.obj = param;
+            [picArray addObject:pic];
+        }
+    }
+    XLBrowserViewController *picbrowserVC = [[XLBrowserViewController alloc] init];
+    picbrowserVC.delegate = self;
+    [picbrowserVC.imageArray addObjectsFromArray:picArray];
+    picbrowserVC.currentPage = imageView.tag - 100;
+    [self presentViewController:picbrowserVC animated:YES completion:nil];
 }
 
 #pragma mark 从相册获取图片
@@ -386,8 +439,28 @@
     }];
 }
 
+#pragma mark 从病历图片里面选
+- (void)getImageFromMedicalCaseCTIsCTLib:(BOOL)isCtLib{
+    
+    if (!self.patient && [LocalNotificationCenter shareInstance].selectPatient == nil) {
+        [SVProgressHUD showImage:nil status:@"请先选择患者"];
+        return;
+    }
+    
+    XLClinicChooseCTImageController *chooseCTVC = [[XLClinicChooseCTImageController alloc] init];
+    if (self.patient) {
+        chooseCTVC.patientId = self.patient.ckeyid;
+    }else{
+        chooseCTVC.patientId = [LocalNotificationCenter shareInstance].selectPatient.ckeyid;
+    }
+    chooseCTVC.title = self.patient ? [NSString stringWithFormat:@"%@的CT片",self.patient.patient_name] : [NSString stringWithFormat:@"%@的CT片",[LocalNotificationCenter shareInstance].selectPatient.patient_name];
+    chooseCTVC.delegate = self;
+    [self pushViewController:chooseCTVC animated:YES];
+}
+
 
 #pragma mark - ******************* Delegate / DataSource ******************
+#pragma mark UITableViewDelegate / DataSource
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 2) {
         return _billImageHeight;
@@ -470,13 +543,50 @@
         case 3:
         {
             //选择CT片
-            UIActionSheet *actionsheet = [[UIActionSheet alloc] initWithTitle:@"添加CT片" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"拍照" otherButtonTitles:@"相册", nil];
+            UIActionSheet *actionsheet = [[UIActionSheet alloc] initWithTitle:@"添加CT片" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"拍照" otherButtonTitles:@"相册",@"从患者CT片中选择", nil];
             actionsheet.tag = 200;
             [actionsheet setActionSheetStyle:UIActionSheetStyleDefault];
             [actionsheet showInView:self.view];
         }
             break;
     }
+    
+}
+
+#pragma mark XLBrowserViewControllerDelegate
+- (void)picBrowserViewController:(XLBrowserViewController *)controller didDeleteBrowserPicture:(XLBrowserPicture *)pic{
+    if ([pic.obj isKindOfClass:[XLAppointImageUploadParam class]]) {
+        //删除当前对象
+        if ([self.ctImages containsObject:pic.obj]) {
+            [self.ctImages removeObject:pic.obj];
+        }
+        if ([self.billImages containsObject:pic.obj]) {
+            [self.billImages removeObject:pic.obj];
+        }
+        [self.needUploadImages removeObject:pic.obj];
+    }
+    
+}
+
+- (void)picBrowserViewController:(XLBrowserViewController *)controller didFinishBrowseImages:(NSArray *)images{
+    WS(weakSelf);
+    [controller dismissViewControllerAnimated:YES completion:^{
+        //计算图片视图的高度
+        [weakSelf calculateImageViewsHeightAll:YES];
+        [weakSelf.tableView reloadData];
+    }];
+}
+
+#pragma mark XLClinicChooseCTImageControllerDelegate
+- (void)clinicChooseCTImageController:(XLClinicChooseCTImageController *)chooseCTVc didSelectImages:(NSArray *)images{
+    for (NSString *url in images) {
+        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:url];
+        XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithThumbnailImage:image fileType:@"ct" imageData:UIImageJPEGRepresentation(image, 1)];
+        [self.needUploadImages addObject:param];
+        [self.ctImages addObject:param];
+    }
+    [self calculateImageViewsHeightAll:YES];
+    [self.tableView reloadData];
     
 }
 
@@ -490,6 +600,8 @@
     if (str.length > 0) {
         NSString *tempStr = [str substringToIndex:str.length - 1];
         self.assistentLabel.text = tempStr;
+    }else{
+        self.assistentLabel.text = @"";
     }
 }
 
@@ -503,30 +615,35 @@
     if (str.length > 0) {
         NSString *tempStr = [str substringToIndex:str.length - 1];
         self.materialLabel.text = tempStr;
+    }else{
+        self.materialLabel.text = @"";
     }
 }
 
 
 #pragma mark UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex > 1) return;
-    
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if (actionSheet.tag == 100) {
+        if (buttonIndex > 1) return;
         self.isCtImage = NO;
         //选择术前检查单图片
         if (buttonIndex == 0) {
             [self getImageFromCameraIsCtLib:NO];
-        }else{
+        }else if(buttonIndex == 1){
             [self getImageFromAlbumIsCtLib:NO];
         }
         
     }else{
+        if (buttonIndex > 2) return;
         self.isCtImage = YES;
         //选择CT片
         if (buttonIndex == 0) {
             [self getImageFromCameraIsCtLib:YES];
-        }else{
+        }else if(buttonIndex == 1){
             [self getImageFromAlbumIsCtLib:YES];
+        }else{
+            //从CT图片里选
+            [self getImageFromMedicalCaseCTIsCTLib:YES];
         }
     }
 }
@@ -536,16 +653,17 @@
     WS(weakSelf);
     [picker dismissViewControllerAnimated:YES completion:^() {
         @autoreleasepool {
+            
             //压缩图片
-            UIImage *resultImage = [UIImage imageCompressForSize:[info objectForKey:UIImagePickerControllerOriginalImage] targetSize:CGSizeMake(60, 60)];
+            UIImage *resultImage = [UIImage imageWithData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
             
             if (weakSelf.isCtImage) {
-                XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"ct" imageData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
-                [weakSelf.ctImages addObject:resultImage];
+                XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithThumbnailImage:resultImage fileType:@"ct" imageData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
+                [weakSelf.ctImages addObject:param];
                 [weakSelf.needUploadImages addObject:param];
             }else{
-                XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"checklist" imageData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
-                [weakSelf.billImages addObject:resultImage];
+                XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithThumbnailImage:resultImage fileType:@"checklist" imageData:UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage],0)];
+                [weakSelf.billImages addObject:param];
                 [weakSelf.needUploadImages addObject:param];
             }
             
@@ -560,32 +678,42 @@
     [picker dismissViewControllerAnimated:YES completion:^{}];
 }
 
+#pragma mark - 解决取消按钮靠左问题
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithCustomView:[UIView new]];
+    [viewController.navigationItem setRightBarButtonItem:btn animated:NO];
+}
+
 #pragma mark - ZYQAssetPickerController Delegate
 -(void)assetPickerController:(ZYQAssetPickerController *)picker didFinishPickingAssets:(NSArray *)assets{
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @autoreleasepool {
             if (weakSelf.isCtImage) {
-                NSMutableArray *array = [NSMutableArray array];
                 for (int i=0; i<assets.count; i++) {
-                    ALAsset *asset=assets[i];
-                    ALAssetRepresentation* representation = [asset defaultRepresentation];
-                    [array addObject:[UIImage imageWithCGImage:asset.thumbnail]];
-                    XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"ct" imageData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
-                    [weakSelf.needUploadImages addObject:param];
-                }
-                [weakSelf.ctImages addObjectsFromArray:array];
-            }else {
-                NSMutableArray *array = [NSMutableArray array];
-                for (int i=0; i<assets.count; i++) {
-                    ALAsset *asset=assets[i];
-                    ALAssetRepresentation* representation = [asset defaultRepresentation];
-                    [array addObject:[UIImage imageWithCGImage:asset.thumbnail]];
                     
-                    XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithReserveId:@"" fileName:@"image" fileType:@"checklist" imageData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    ALAsset *asset=assets[i];
+                    ALAssetRepresentation* representation = [asset defaultRepresentation];
+                    UIImage *image = [UIImage imageWithData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithThumbnailImage:image fileType:@"ct" imageData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    
                     [weakSelf.needUploadImages addObject:param];
+                    [weakSelf.ctImages addObject:param];
                 }
-                [weakSelf.billImages addObjectsFromArray:array];
+                
+            }else {
+                for (int i=0; i<assets.count; i++) {
+                    ALAsset *asset=assets[i];
+                    ALAssetRepresentation* representation = [asset defaultRepresentation];
+                    UIImage *image =[UIImage imageWithData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    
+                    XLAppointImageUploadParam *param = [[XLAppointImageUploadParam alloc] initWithThumbnailImage:image fileType:@"checklist" imageData:UIImageJPEGRepresentation([UIImage imageWithCGImage:[representation fullScreenImage]],0)];
+                    
+                    [weakSelf.needUploadImages addObject:param];
+                    [weakSelf.billImages addObject:param];
+                }
+                
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 

@@ -17,6 +17,9 @@
 #import "CRMUnEncryptedHttpTool.h"
 #import "XLOperationStatusModel.h"
 #import "CRMHttpRespondModel.h"
+#import "XLClinicQueryModel.h"
+#import "JSONKit.h"
+#import "XLClinicModel.h"
 
 #define requestActionParam @"action"
 #define doctorIdParam @"doctor_id"
@@ -264,6 +267,38 @@
         if (success) {
             success(model);
         }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  模糊搜索诊所列表
+ *
+ *  @param queryModel 查询的model
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getClinicListWithQueryModel:(XLClinicQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicHandler.ashx",DomainName,Method_ClinicServer,@"ashx"];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[requestActionParam] = @"getListByParams";
+    params[@"QueryModel"] = [queryModel.keyValues JSONString];
+    
+    [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *mArray = [NSMutableArray array];
+        for (NSDictionary *dic in respond.result) {
+            XLClinicModel *model = [XLClinicModel objectWithKeyValues:dic];
+            [mArray addObject:model];
+        }
+        if (success) {
+            success(mArray);
+        }
+        
     } failure:^(NSError *error) {
         if (failure) {
             failure(error);

@@ -25,6 +25,7 @@
 #import "JSONKit.h"
 #import "XLTeamMemberModel.h"
 #import "XLDoctorSelectViewController.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLThreaterSelectViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,XLDoctorSelectCellDelegate,UISearchDisplayDelegate>{
     UITableView *_tableView;
@@ -166,7 +167,10 @@
 #pragma mark - 请求网络数据
 - (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
     //请求网络数据
+    WS(weakSelf);
     [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
+        
+        _tableView.tableHeaderView = nil;
         if (isHeader) {
             [self.searchHistoryArray removeAllObjects];
             
@@ -179,14 +183,14 @@
             owner.doctor_position = user.title;
             owner.doctor_image = user.img;
             
-            [self.searchHistoryArray addObject:owner];
+            [weakSelf.searchHistoryArray addObject:owner];
         }
         //将数据添加到数组中
-        [self.searchHistoryArray addObjectsFromArray:array];
+        [weakSelf.searchHistoryArray addObjectsFromArray:array];
         
         //判断是否存在
-        for (Doctor *doc in self.searchHistoryArray) {
-            for (Doctor *model in self.existMembers) {
+        for (Doctor *doc in weakSelf.searchHistoryArray) {
+            for (Doctor *model in weakSelf.existMembers) {
                 if ([doc.ckeyid isEqualToString:model.ckeyid]) {
                     doc.isSelect = YES;
                     break;
@@ -194,7 +198,7 @@
             }
         }
         
-        if (self.searchHistoryArray.count < 50) {
+        if (weakSelf.searchHistoryArray.count < 50) {
             [_tableView removeFooter];
         }else{
             _tableView.footer.hidden = NO;
@@ -210,6 +214,12 @@
         
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
+        if (isHeader) {
+            [_tableView.header endRefreshing];
+        }else{
+            [_tableView.footer endRefreshing];
+        }
+        [_tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.searchHistoryArray.count target:weakSelf action:@selector(headerRefreshAction)];
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -319,12 +329,6 @@
         WS(weakSelf);
         XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchText sortField:@"" isAsc:@(YES) pageIndex:@(1) pageSize:@(1000)];
         [DoctorTool getDoctorFriendListWithDoctorId:[AccountManager currentUserid] syncTime:@"" queryInfo:queryModel success:^(NSArray *array) {
-            
-            if (array.count == 0) {
-                weakSelf.searchController.hideNoResult = NO;
-            }else{
-                weakSelf.searchController.hideNoResult = YES;
-            }
             
             //判断是否存在
             for (Doctor *doc in array) {

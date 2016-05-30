@@ -51,7 +51,7 @@
     //设置子视图
     [self setUpViews];
     //加载数据
-    [self requestAllChatRecordWithBeginTime:@"" keyWord:@""];
+    [self requestAllChatRecordWithBeginTime:@"" keyWord:@"" isFirstLoad:YES];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -118,7 +118,7 @@
 }
 
 #pragma mark 加载所有聊天记录
-- (void)requestAllChatRecordWithBeginTime:(NSString *)beginTime keyWord:(NSString *)keyWord{
+- (void)requestAllChatRecordWithBeginTime:(NSString *)beginTime keyWord:(NSString *)keyWord isFirstLoad:(BOOL)isFirstLoad{
     NSString *ids = [NSString stringWithFormat:@"%@,%@",[AccountManager currentUserid],self.patient.ckeyid];
     XLChatRecordQueryModel *queryModel = [[XLChatRecordQueryModel alloc] initWithSenderId:ids receiverId:ids beginTime:beginTime endTime:@"" keyWord:keyWord sortField:@"" isAsc:YES];
     WS(weakSelf);
@@ -140,9 +140,12 @@
         [_tableView reloadData];
         
         if (result.count > 0) {
-            [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            if (isFirstLoad) {
+                [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:result.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+            }else{
+                [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            }
         }
-        
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
@@ -265,7 +268,7 @@
 - (void)calendarSelectVC:(XLCalendarSelectViewController *)calendarSelectVC didSelectDate:(NSDate *)date{
     //根据选择的时间查询数据
     [self.dataList removeAllObjects];
-    [self requestAllChatRecordWithBeginTime:[MyDateTool stringWithDateWithSec:date] keyWord:@""];
+    [self requestAllChatRecordWithBeginTime:[MyDateTool stringWithDateWithSec:date] keyWord:@"" isFirstLoad:NO];
 }
 
 #pragma mark XLChatRecordCellDelegate
@@ -418,7 +421,7 @@
             //根据选择的时间查询数据
             XLChatModel *model = weakSelf.searchController.resultsSource[indexPath.row];
             [weakSelf.dataList removeAllObjects];
-            [weakSelf requestAllChatRecordWithBeginTime:model.send_time keyWord:@""];
+            [weakSelf requestAllChatRecordWithBeginTime:model.send_time keyWord:@"" isFirstLoad:NO];
         }];
         
     }

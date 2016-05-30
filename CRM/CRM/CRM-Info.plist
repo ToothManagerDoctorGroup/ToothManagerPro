@@ -50,7 +50,17 @@
 			<string>weixin</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wx43875d1f976c1ded</string>
+				<string>wx26acde952c8251cf</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>alipay</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>alipaycomtrasendevCRM</string>
 			</array>
 		</dict>
 	</array>
@@ -60,6 +70,7 @@
 	<array>
 		<string>wechat</string>
 		<string>weixin</string>
+		<string>alipay</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

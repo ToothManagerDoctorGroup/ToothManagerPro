@@ -15,6 +15,13 @@
 #import "XLClinicModel.h"
 #import "UISearchBar+XLMoveBgView.h"
 #import "ClinicDetailViewController.h"
+#import "UITableView+NoResultAlert.h"
+#import "CRMUserDefalut.h"
+#import "AccountManager.h"
+#import "XLWebViewController.h"
+#import "XLClinicDetailViewController.h"
+#import "XLClinicQueryModel.h"
+#import "CRMHttpRespondModel.h"
 
 @interface XLClinicsDisplayViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>
 //存放诊所对象：ClinicModel
@@ -41,8 +48,7 @@
     
     //设置子视图
     [self setUpSubViews];
-    //请求签约诊所的信息
-    [self requestClinicInfo];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -50,43 +56,51 @@
 }
 
 #pragma mark - ********************* Private Method ***********************
+#pragma mark 认证按钮点击
+- (void)authodAction{
+    XLWebViewController *webVc = [[XLWebViewController alloc] init];
+    webVc.urlStr = @"http://www.ibeituan.com/his.crm/html/doctor_auth_guide.html";
+    webVc.title = @"认证";
+    webVc.hideRightButton = YES;
+    [self.navigationController pushViewController:webVc animated:YES];
+}
 #pragma mark 设置子视图
 - (void)setUpSubViews{
-    self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
-    [self.view addSubview:self.searchBar];
-    [self searchController];
+    
+    //获取当前用户的签约状态
+    NSString *isSign = [CRMUserDefalut objectForKey:kUserIsSignKey([AccountManager currentUserid])];
+    if ([isSign isEqualToString:@"1"]) {
+        self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
+        [self.view addSubview:self.searchBar];
+        [self searchController];
+        //请求签约诊所的信息
+        [self requestClinicInfo];
+    }else{
+        self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+        //未签约
+        [self.tableView createNoResultWithButtonWithImageName:@"clinic_alert_shenqingrenzheng" ifNecessaryForRowCount:0 buttonTitle:@"申请成为认证医生" target:self action:@selector(authodAction) forControlEvents:UIControlEventTouchUpInside];
+    }
 }
 
 #pragma 请求签约诊所的信息
 - (void)requestClinicInfo{
     [SVProgressHUD showWithStatus:@"正在加载"];
     WS(weakSelf);
-        [MyClinicTool requestClinicInfoWithAreacode:@"北京" clinicName:@"" success:^(NSArray *result) {
-            [SVProgressHUD dismiss];
-            //请求到数据,将数据赋值给当前数组
-            _dataList = result;
-            //刷新表格
-            [weakSelf.tableView reloadData];
-        } failure:^(NSError *error) {
-            [SVProgressHUD dismiss];
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
-        }];
-    
-//    [MyClinicTool requestClinicInfoWithDoctorId:[AccountManager currentUserid] success:^(NSArray *clinics) {
-//        [SVProgressHUD dismiss];
-//        //请求到数据,将数据赋值给当前数组
-//        _dataList = clinics;
-//        //刷新表格
-//        [weakSelf.tableView reloadData];
-//        
-//    } failure:^(NSError *error) {
-//        [SVProgressHUD dismiss];
-//        if (error) {
-//            NSLog(@"error:%@",error);
-//        }
-//    }];
+    XLClinicQueryModel *queryModel = [[XLClinicQueryModel alloc] initWithKeyWord:@"" isAsc:YES doctorId:[AccountManager currentUserid]];
+    [MyClinicTool getClinicListWithQueryModel:queryModel success:^(NSArray *result) {
+        self.tableView.tableHeaderView = nil;
+        [SVProgressHUD dismiss];
+        //请求到数据,将数据赋值给当前数组
+        _dataList = result;
+        //刷新表格
+        [weakSelf.tableView reloadData];
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        [self.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:0 target:weakSelf action:@selector(requestClinicInfo)];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 #pragma mark 设置单元格点击事件
@@ -94,14 +108,10 @@
     //获取当前的数据模型
     XLClinicModel *model = source[indexPath.row];
     //跳转到详情页面
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    ClinicDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"ClinicDetailViewController"];
-    if (self.patient) {
-        detailVc.patient = self.patient;
-    }
-    detailVc.unsignModel = model;
-    detailVc.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:detailVc animated:YES];
+    XLClinicDetailViewController *detailVC = [[XLClinicDetailViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    detailVC.clinicId = model.clinic_id;
+    detailVC.title = model.clinic_name;
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 #pragma mark - ********************* Delegate / DataSource *******************

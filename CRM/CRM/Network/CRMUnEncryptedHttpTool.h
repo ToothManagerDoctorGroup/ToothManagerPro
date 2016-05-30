@@ -68,6 +68,12 @@ Declare_ShareInstance(CRMUnEncryptedHttpTool);
        success:(void (^)())success
        failure:(void (^)(NSError *error))failure;
 
+
+- (void)Upload:(NSString *)URLString
+    parameters:(id)parameters
+   uploadParam:(MyUploadParam *)uploadParam
+       success:(void (^)())success;
+
 /**
  *  同步POST请求
  *

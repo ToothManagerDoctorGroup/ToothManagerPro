@@ -32,7 +32,9 @@
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     self.view.backgroundColor = [UIColor whiteColor];
-    [self setRightBarButtonWithTitle:@"发送"];
+    if (!self.hideRightButton) {
+        [self setRightBarButtonWithTitle:@"发送"];
+    }
     
     NSURL *url = [NSURL URLWithString:self.urlStr];
     _request = [NSURLRequest requestWithURL:url];

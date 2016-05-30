@@ -202,15 +202,17 @@
 }
 
 - (void)requestWlanDataWithQueryModel:(XLQueryModel *)queryModel isHeader:(BOOL)isHeader{
-    
+    WS(weakSelf);
     [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:self.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
+        _tableView.tableHeaderView = nil;
         if (isHeader) {
-            [self.patientCellModeArray removeAllObjects];
+            [weakSelf.patientCellModeArray removeAllObjects];
+            [_tableView createNoResultWithImageName:@"groupAddMember_alert" ifNecessaryForRowCount:result.count];
         }
         //将数据添加到数组中
-        [self.patientCellModeArray addObjectsFromArray:result];
+        [weakSelf.patientCellModeArray addObjectsFromArray:result];
         
-        if (self.patientCellModeArray.count < 50) {
+        if (weakSelf.patientCellModeArray.count < 50) {
             [_tableView removeFooter];
         }else{
             _tableView.footer.hidden = NO;
@@ -225,6 +227,16 @@
         [_tableView reloadData];
         
     } failure:^(NSError *error) {
+        if (isHeader) {
+            [_tableView.header endRefreshing];
+        }else{
+            [_tableView.footer endRefreshing];
+        }
+        if (isHeader) {
+            if (weakSelf.patientCellModeArray.count == 0) {
+                [_tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:0 target:weakSelf action:@selector(headerRefreshAction)];
+            }
+        }
         if (error) {
             NSLog(@"error:%@",error);
         }
@@ -288,7 +300,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [tableView createNoResultAlertViewWithImageName:@"groupAddMember_alert" showButton:NO ifNecessaryForRowCount:self.patientCellModeArray.count];
     return self.patientCellModeArray.count;
 }
 
@@ -551,12 +562,6 @@
     XLQueryModel *queryModel = [[XLQueryModel alloc] initWithKeyWord:searchBar.text sortField:@"" isAsc:@(true) pageIndex:@(1) pageSize:@(1000)];
     [DoctorGroupTool getGroupPatientsWithDoctorId:[AccountManager currentUserid] groupId:weakSelf.group.ckeyid queryModel:queryModel success:^(NSArray *result) {
         [SVProgressHUD dismiss];
-        
-        if (result.count == 0) {
-            self.searchController.hideNoResult = NO;
-        }else{
-            self.searchController.hideNoResult = YES;
-        }
         
         [weakSelf.searchController.resultsSource removeAllObjects];
         [weakSelf.searchController.resultsSource addObjectsFromArray:result];

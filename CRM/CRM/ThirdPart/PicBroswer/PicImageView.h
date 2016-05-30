@@ -12,7 +12,7 @@
 @interface PicImageView : UIView
 
 @property (nonatomic, copy)NSString *urlStr;
-@property (nonatomic, strong)UIImage *targetImage;
+@property (nonatomic, strong)UIImage *targetImage;//标识图片
 @property (nonatomic, assign)BOOL targetImageHidden;
 
 @end

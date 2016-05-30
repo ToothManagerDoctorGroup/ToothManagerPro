@@ -163,7 +163,7 @@
 + (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 
 
-#pragma mark - 医嘱相关
+#pragma mark - *************************医嘱相关********************
 /**
  *  查询所有的医嘱类型
  *
@@ -245,5 +245,14 @@
  */
 + (void)deleteChatRecordWithKeyId:(NSString *)keyId receiverId:(NSString *)receiverId senderId:(NSString *)senderId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 
+#pragma mark - ************************医生好友相关***********************
+/**
+ *  根据医生姓名查询医生
+ *
+ *  @param doctorName 医生姓名
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)searchDoctorWithDoctorName:(NSString *)doctorName success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
 
 @end

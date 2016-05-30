@@ -22,6 +22,7 @@
 #import "ImageBrowserViewController.h"
 #import "AddressBoolTool.h"
 #import "DBManager+Introducer.h"
+#import "XLBrowserViewController.h"
 
 #define Margin 5
 #define CommenTitleColor MyColor(69, 69, 70)
@@ -234,7 +235,7 @@
         pic.ctLib = lib;
         [picArray addObject:pic];
     }
-    
+
     ImageBrowserViewController *picbrowserVC = [[ImageBrowserViewController alloc] init];
     picbrowserVC.delegate = self;
     [picbrowserVC.imageArray addObjectsFromArray:picArray];
@@ -242,31 +243,6 @@
     [self.viewController presentViewController:picbrowserVC animated:YES completion:^{
     }];
     
-    /*
-    //获取当前点击的视图
-    UIImageView *imageView = (UIImageView *)tap.view;
-    //遍历当前图片数组，将LBPhoto模型转换成MJPhoto模型
-    NSMutableArray *mJPhotos = [NSMutableArray array];
-    int i = 0;
-    for (CTLib *photo in self.cTLibs) {
-        //将图片url转换成高清的图片url
-        MJPhoto *mjPhoto = [[MJPhoto alloc] init];
-        mjPhoto.url = [NSURL URLWithString:photo.ct_image];
-        mjPhoto.srcImageView = imageView;
-        mjPhoto.index = i;
-        [mJPhotos addObject:mjPhoto];
-        i++;
-    }
-    
-    //创建图片显示控制器对象
-//    if (!_browser) {
-//        _browser = [[MJPhotoBrowser alloc] init];
-//    }
-    MJPhotoBrowser *browser = [[MJPhotoBrowser alloc] init];
-    browser.photos = mJPhotos;
-    browser.currentPhotoIndex = imageView.tag;
-    //显示
-    [browser show];*/
 }
 #pragma mark - ImageBrowserViewControllerDelegate
 - (void)picBrowserViewController:(ImageBrowserViewController *)controller didDeleteBrowserPicture:(BrowserPicture *)pic{
@@ -317,7 +293,7 @@
     if(longPress.state == UIGestureRecognizerStateBegan){
         
         __weak typeof(self) weakSelf = self;
-        TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确认删除？" message:nil  cancelHandler:^{
+        TimAlertView *alertView = [[TimAlertView alloc]initWithTitle:@"确定删除病历？" message:nil  cancelHandler:^{
             NSLog(@"取消删除");
         } comfirmButtonHandlder:^{
             //删除数据

@@ -88,11 +88,27 @@
             }];
         }
         
+    }else{
+        self.backgroundView = nil;
     }
 }
 
-
-- (void)createNoResultAlertHeaderViewWithImageName:(NSString *)imageName showButton:(BOOL)showButton ifNecessaryForRowCount:(NSUInteger)rowCount{
+/**
+ *  创建无数据提示视图（含button）
+ *
+ *  @param imageName     图片名称
+ *  @param rowCount      数据个数
+ *  @param buttonTitle   按钮标题
+ *  @param target        target
+ *  @param action        按钮点击方法
+ *  @param controlEvents 按钮点击属性
+ */
+- (void)createNoResultWithButtonWithImageName:(NSString *)imageName
+                       ifNecessaryForRowCount:(NSUInteger)rowCount
+                                  buttonTitle:(NSString *)buttonTitle
+                                       target:(id)target
+                                       action:(SEL)action
+                             forControlEvents:(UIControlEvents)controlEvents{
         if(rowCount == 0) {
             UIView *bgView = [[UIView alloc] init];
             bgView.frame = CGRectMake(0, 0, self.width, self.height);
@@ -100,38 +116,92 @@
             UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:imageName]];
             [bgView addSubview:noResultView];
             
-            if (showButton) {
-                [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.centerX.equalTo(bgView);
-                    make.centerY.equalTo(bgView).with.offset(-60);
-                }];
-            }else{
-                [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.center.equalTo(bgView);
-                }];
-            }
-            if (showButton) {
-                UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-                [button setTitle:@"邀请好友加入" forState:UIControlStateNormal];
-                [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                button.titleLabel.font = [UIFont systemFontOfSize:15];
-                button.layer.cornerRadius = 5;
-                button.layer.masksToBounds = YES;
-                button.backgroundColor = [UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR];
-                [bgView addSubview:button];
-                
-                [button mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.centerX.equalTo(bgView);
-                    make.top.mas_equalTo(noResultView.mas_bottom).with.offset(20);
-                    make.size.mas_equalTo(CGSizeMake(270, 40));
-                }];
-            }
+            [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.equalTo(bgView);
+                make.centerY.equalTo(bgView).with.offset(-60);
+            }];
+            
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+            [button setTitle:buttonTitle forState:UIControlStateNormal];
+            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            button.titleLabel.font = [UIFont systemFontOfSize:15];
+            button.layer.cornerRadius = 5;
+            button.layer.masksToBounds = YES;
+            button.backgroundColor = [UIColor colorWithHex:NAVIGATIONBAR_BACKGROUNDCOLOR];
+            [button addTarget:target action:action forControlEvents:controlEvents];
+            [bgView addSubview:button];
+            
+            [button mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.equalTo(bgView);
+                make.top.mas_equalTo(noResultView.mas_bottom).with.offset(20);
+                make.size.mas_equalTo(CGSizeMake(270, 40));
+            }];
             
             self.tableHeaderView = bgView;
             NSLog(@"bgView:%@",NSStringFromCGRect(bgView.frame));
         }else{
             self.tableHeaderView = nil;
         }
+}
+
+
+/**
+ *  创建无数据提示视图（无button,图片无点击事件）
+ *
+ *  @param imageName 图片名称
+ *  @param rowCount  数据个数
+ */
+- (void)createNoResultWithImageName:(NSString *)imageName
+             ifNecessaryForRowCount:(NSUInteger)rowCount{
+    if(rowCount == 0) {
+        UIView *bgView = [[UIView alloc] init];
+        bgView.frame = CGRectMake(0, 0, self.width, self.height);
+        
+        UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:imageName]];
+        [bgView addSubview:noResultView];
+        
+        [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(bgView);
+        }];
+        
+        self.tableHeaderView = bgView;
+        NSLog(@"bgView:%@",NSStringFromCGRect(bgView.frame));
+    }else{
+        self.tableHeaderView = nil;
+    }
+}
+
+/**
+ *  创建无数据时的提示视图（无button,图片有点击事件）
+ *
+ *  @param imageName 图片名称
+ *  @param rowCount  数据个数
+ *  @param target    target
+ *  @param action    tapAction
+ */
+- (void)createNoResultWithImageName:(NSString *)imageName
+             ifNecessaryForRowCount:(NSUInteger)rowCount
+                             target:(id)target
+                             action:(SEL)action{
+    if(rowCount == 0) {
+        UIView *bgView = [[UIView alloc] init];
+        bgView.frame = CGRectMake(0, 0, self.width, self.height);
+        
+        UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:imageName]];
+        noResultView.userInteractionEnabled = YES;
+        [bgView addSubview:noResultView];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:target action:action];
+        [noResultView addGestureRecognizer:tap];
+        
+        [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(bgView);
+        }];
+        
+        self.tableHeaderView = bgView;
+        NSLog(@"bgView:%@",NSStringFromCGRect(bgView.frame));
+    }else{
+        self.tableHeaderView = nil;
+    }
 }
 
 @end

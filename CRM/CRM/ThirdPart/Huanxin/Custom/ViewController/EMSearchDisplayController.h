@@ -13,18 +13,11 @@
 #import <UIKit/UIKit.h>
 #import "BaseTableViewCell.h"
 
-typedef void(^EMSearchButtonClickBlock)(void);
-
 @interface EMSearchDisplayController : UISearchDisplayController<UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate>
 
 @property (strong, nonatomic) NSMutableArray *resultsSource;
 
-@property (nonatomic, assign)BOOL hideNoResult;
-
-@property (nonatomic, copy)NSString *noResultImage;
-
-@property (nonatomic, assign)BOOL showButton;
-@property (nonatomic, copy)EMSearchButtonClickBlock searchButtonClickBlock;
+@property (nonatomic, assign)BOOL hideSystomNoResult;
 
 //编辑cell时显示的风格，默认为UITableViewCellEditingStyleDelete；会将值付给[tableView:editingStyleForRowAtIndexPath:]
 @property (nonatomic) UITableViewCellEditingStyle editingStyle;

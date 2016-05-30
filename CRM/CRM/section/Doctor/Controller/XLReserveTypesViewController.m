@@ -12,6 +12,7 @@
 #import "XLMessageTemplateModel.h"
 #import "XLTemplateDetailViewController.h"
 #import "MJRefresh.h"
+#import "UITableView+NoResultAlert.h"
 
 @interface XLReserveTypesViewController ()
 
@@ -49,7 +50,6 @@
 }
 //下拉刷新
 - (void)headerRefreshAction{
-    [self.dataList removeAllObjects];
     [self requestWlanData];
 }
 
@@ -64,9 +64,12 @@
 }
 
 - (void)requestWlanData{
+    WS(weakSelf);
     [XLMessageTemplateTool getMessageTemplateByDoctorId:[AccountManager currentUserid] success:^(NSArray *result) {
-        if ([self.tableView.header isRefreshing]) {
-            [self.tableView.header endRefreshing];
+        weakSelf.tableView.tableHeaderView = nil;
+        [self.dataList removeAllObjects];
+        if ([weakSelf.tableView.header isRefreshing]) {
+            [weakSelf.tableView.header endRefreshing];
         }
         //对数据进行分组
         for (XLMessageTemplateModel *model in result) {
@@ -74,7 +77,7 @@
                 [model.message_name isEqualToString:@"转诊后通知"] ||
                 [model.message_name isEqualToString:@"成为介绍人通知"]) {
             }else{
-                [self.dataList addObject:model];
+                [weakSelf.dataList addObject:model];
             }
         }
         
@@ -83,6 +86,8 @@
     } failure:^(NSError *error) {
         if ([self.tableView.header isRefreshing]) [self.tableView.header endRefreshing];
         [SVProgressHUD showImage:nil status:error.localizedDescription];
+        [weakSelf.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.dataList.count target:weakSelf action:@selector(requestWlanData)];
+        
         if (error) {
             NSLog(@"error:%@",error);
         }

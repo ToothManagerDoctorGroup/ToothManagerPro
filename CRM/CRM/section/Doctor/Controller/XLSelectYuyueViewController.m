@@ -236,7 +236,7 @@ static const NSInteger kSelectYuyueViewControllerCalendarHeight = 250;
     [actionSheet showInView:self.view];
 }
 #pragma mark -ActionSheet Delegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     NSMutableDictionary *dicM = [NSMutableDictionary dictionary];
     switch (buttonIndex) {
