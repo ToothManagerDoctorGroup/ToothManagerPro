@@ -116,7 +116,7 @@
 - (IBAction)loginInAction:(id)sender {
     WS(weakSelf);
     [SVProgressHUD showWithStatus:@"正在登录"];
-    [XLLoginTool loginWithNickName:self.userNameField.text password:self.passwordField.text success:^(CRMHttpRespondModel *respond) {
+    [XLLoginTool newLoginWithNickName:self.userNameField.text password:self.passwordField.text success:^(CRMHttpRespondModel *respond) {
         
         if ([respond.code integerValue] == 200) {
             NSDictionary *resultDic = respond.result;

@@ -55,14 +55,13 @@
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"doctor_id"];
         
-
         [valueArray addObject:material.ckeyid];
         [valueArray addObject:material.mat_name];
         [valueArray addObject:[NSNumber numberWithInt:material.mat_type]];
         [valueArray addObject:[NSNumber numberWithFloat:material.mat_price]];
         [valueArray addObject:[NSString defaultDateString]];
         [valueArray addObject:[NSString currentDateString]];
-        if (nil == material.sync_time) {
+        if ([NSString isEmptyString:material.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:material.sync_time];
@@ -116,7 +115,7 @@
         [valueArray addObject:material.mat_name];
         [valueArray addObject:[NSNumber numberWithInt:material.mat_type]];
         [valueArray addObject:[NSNumber numberWithFloat:material.mat_price]];
-        if (nil == material.update_date) {
+        if ([NSString isEmptyString:material.update_date]) {
            [valueArray addObject:[NSString stringWithString:strCurrentDate]];
         } else {
             [valueArray addObject:material.update_date];
@@ -384,7 +383,7 @@
         [valueArray addObject:expense.user_id];
         [valueArray addObject:[NSString currentDateString]];
         [valueArray addObject:[NSString defaultDateString]];
-        if (nil == expense.sync_time) {
+        if ([NSString isEmptyString:expense.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:expense.sync_time];
@@ -457,13 +456,13 @@
         [valueArray addObject:[NSNumber numberWithFloat:expense.expense_money]];
         [valueArray addObject:expense.user_id];
         [valueArray addObject:[NSString currentDateString]];
-        if (expense.update_date == nil) {
+        if ([NSString isEmptyString:expense.update_date]) {
             [valueArray addObject:[NSString stringWithString:[currentDate description]]];
         } else {
             [valueArray addObject:[NSString stringWithString:expense.update_date]];
         }
         
-        if (nil == expense.sync_time) {
+        if ([NSString isEmptyString:expense.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:expense.sync_time];
@@ -572,6 +571,18 @@
     }];
 
     
+    return ret;
+}
+
+- (BOOL)deleteMedicalExpenseWithPatientId_sync:(NSString *)patientId{
+    if ([NSString isEmptyString:patientId]) {
+        return NO;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = \"%@\" and doctor_id = \"%@\"",MedicalExpenseTableName,patientId,[AccountManager currentUserid]];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
     return ret;
 }
 

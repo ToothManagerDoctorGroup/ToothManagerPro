@@ -311,7 +311,6 @@
 }
 
 - (void)sendTextMessage:(NSString *)text{
-    
     //发送文字
     if (!self.isBind) {
         [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:self.conversation.chatter isWeixin:NO isSms:YES txtContent:text success:^(CRMHttpRespondModel *respond) {
@@ -701,6 +700,8 @@
                         [SVProgressHUD showImage:nil status:@"登录成功"];
                         //发送自动登陆状态通知
                         [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
+                    }else{
+                        [SVProgressHUD showImage:nil status:error.description];
                     }
                 } onQueue:nil];
             }

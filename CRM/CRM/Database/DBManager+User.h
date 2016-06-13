@@ -51,7 +51,7 @@
  *
  *  @param userId 用户id
  */
-- (BOOL)upDateUserHeaderImageUrlWithUserId:(NSString *)userId;
+- (BOOL)upDateUserHeaderImageUrlWithUserId:(NSString *)userId imageUrl:(NSString *)imageUrl;
 
 /**
  *  就诊人数

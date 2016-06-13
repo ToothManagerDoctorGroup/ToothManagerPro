@@ -92,4 +92,9 @@
  */
 - (NSArray *)getAllInfo;
 
+/**
+ *  数据是否正在上传或者上传成功
+ */
+- (BOOL)isExistWithPostType:(NSString *)postType dataType:(NSString *)dataType ckeyId:(NSString *)ckeyId;
+
 @end

@@ -105,7 +105,7 @@
         [valueArray addObject:notification.duration];
         [valueArray addObject:notification.therapy_doctor_id];
         [valueArray addObject:notification.therapy_doctor_name];
-        if (notification.reserve_status == nil) {
+        if ([NSString isEmptyString:notification.reserve_status]) {
             [valueArray addObject:@"0"];
         }else{
             [valueArray addObject:notification.reserve_status];
@@ -202,17 +202,17 @@
         [valueArray addObject:notification.medical_place];
         [valueArray addObject:notification.medical_chair];
         //[valueArray addObject:notification.creation_date];
-        if (nil == notification.sync_time) {
+        if ([NSString isEmptyString:notification.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:notification.sync_time];
         }
-        if (nil == notification.creation_date) {
+        if ([NSString isEmptyString:notification.creation_date]) {
             [valueArray addObject:[NSString currentDateString]];
         } else {
             [valueArray addObject:notification.creation_date];
         }
-        if (nil == notification.update_date) {
+        if ([NSString isEmptyString:notification.update_date]) {
             [valueArray addObject:[NSString currentDateString]];
         } else {
             [valueArray addObject:notification.update_date];
@@ -225,7 +225,7 @@
         [valueArray addObject:notification.duration];
         [valueArray addObject:notification.therapy_doctor_id];
         [valueArray addObject:notification.therapy_doctor_name];
-        if (notification.reserve_status == nil) {
+        if ([NSString isEmptyString:notification.reserve_status]) {
             [valueArray addObject:@"0"];
         }else{
             [valueArray addObject:notification.reserve_status];
@@ -277,6 +277,18 @@
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
      }];
+    return ret;
+}
+
+- (BOOL)deleteLocalNotificationWithPatientId_sync:(NSString *)patientId{
+    if ([NSString isEmptyString:patientId]) {
+        return NO;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = \"%@\" and doctor_id = '%@'",LocalNotificationTableName,patientId,[AccountManager currentUserid]];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
     return ret;
 }
 

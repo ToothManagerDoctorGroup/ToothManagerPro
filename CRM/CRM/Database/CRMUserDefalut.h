@@ -34,6 +34,12 @@
  *  @param userid[in] 用户id
  */
 + (void)setLatestUserId:(NSString *)userid;
+/**
+ *  设置最后使用者的密码（环信用到）
+ *
+ *  @param password 用户密码
+ */
++ (void)setLatestUserPassword:(NSString *)password;
 
 
 + (void)setObject:(id)object forKey:(NSString *)akey;

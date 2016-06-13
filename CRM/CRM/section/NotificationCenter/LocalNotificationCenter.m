@@ -20,6 +20,7 @@
 #import <EventKit/EventKit.h>
 #import "MyDateTool.h"
 #import "XLEventStoreManager.h"
+#import "NSString+TTMAddtion.h"
 
 NSString * const RepeatIntervalDay = @"每天";
 NSString * const RepeatIntervalWeek = @"每周";
@@ -98,7 +99,7 @@ NSString * const RepeatIntervalNone = @"不重复";
     tempLN.doctor_id = [lnRe stringForKey:@"doctor_id"];
     tempLN.reserve_status = [lnRe stringForKey:@"reserve_status"];
     
-    tempLN.tooth_position = [lnRe stringForKey:@"tooth_position"];
+    tempLN.tooth_position = [[lnRe stringForKey:@"tooth_position"] convertIfNill];
     tempLN.clinic_reserve_id = [lnRe stringForKey:@"clinic_reserve_id"];
     tempLN.duration = [lnRe stringForKey:@"duration"];
     

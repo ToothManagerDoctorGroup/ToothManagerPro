@@ -143,7 +143,7 @@
             //首先更新之前的预约
             self.localNoti.reserve_status = @"1";//表示已经改约
             [SVProgressHUD showWithStatus:@"正在修改预约，请稍候..."];
-            [SysMessageTool updateReserveRecordStatusWithReserveId:self.localNoti.ckeyid success:^(CRMHttpRespondModel *respond) {
+            [SysMessageTool updateReserveRecordStatusWithReserveId:self.localNoti.ckeyid therapy_doctor_id:self.localNoti.therapy_doctor_id success:^(CRMHttpRespondModel *respond) {
                 if ([respond.code integerValue] == 200) {
                     //移除本地的通知
                     [[LocalNotificationCenter shareInstance] removeLocalNotification:self.localNoti];
@@ -608,23 +608,25 @@
         //修改预约
         patient_id = self.localNoti.patient_id;
     }
-    //获取患者绑定微信的状态
-    [MyPatientTool getWeixinStatusWithPatientId:patient_id success:^(CRMHttpRespondModel *respondModel) {
-        if ([respondModel.result isEqualToString:@"1"]) {
-            //绑定
-            self.isBind = YES;
-        }else{
-            //未绑定
+    if (![NSString isEmptyString:patient_id]) {
+        //获取患者绑定微信的状态
+        [MyPatientTool getWeixinStatusWithPatientId:patient_id success:^(CRMHttpRespondModel *respondModel) {
+            if ([respondModel.result isEqualToString:@"1"]) {
+                //绑定
+                self.isBind = YES;
+            }else{
+                //未绑定
+                self.isBind = NO;
+            }
+            
+        } failure:^(NSError *error) {
             self.isBind = NO;
-        }
-        
-    } failure:^(NSError *error) {
-        self.isBind = NO;
-        //未绑定
-        if (error) {
-            NSLog(@"error:%@",error);
-        }
-    }];
+            //未绑定
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
 }
 
 #pragma mark - UITableView  Delegate/DataSource

@@ -136,7 +136,7 @@
 #pragma mark - Delegate
 - (void)registerSucessWithResult:(NSDictionary *)result {
     [SVProgressHUD showWithStatus:@"注册成功，正在登陆"];
-    [XLLoginTool loginWithNickName:self.phoneTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
+    [XLLoginTool newLoginWithNickName:self.phoneTextField.text password:self.passwdTextField.text success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
             [self loginSucessWithResult:respond.result];
         }else{

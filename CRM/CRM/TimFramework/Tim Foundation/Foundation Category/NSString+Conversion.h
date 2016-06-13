@@ -22,6 +22,9 @@
 //format YYYY:MM:DD HH:MM:SS
 + (NSString *)currentDateTenMinuteString;
 
+//format YYYY:MM:DD HH:MM:SS
++ (NSString *)currentDateFiveMinuteString;
+
 - (NSDate *)stringToNSDate;
 
 - (NSString *)MD5;

@@ -277,7 +277,6 @@ forRemoteNotification:(NSDictionary *)userInfo
 }
 #endif
 
-
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [[EaseMob sharedInstance] applicationDidEnterBackground:application];

@@ -71,4 +71,23 @@
  */
 + (void)uploadAppointmentImageWithParam:(XLAppointImageUploadParam *)param imageData:(NSData *)imageData success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
+/**
+ *  获取患者CT的状态
+ *
+ *  @param ckeyIds CTLib的id，中间用“，”隔开
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getPatientCTStatusCTCkeyIds:(NSString *)ckeyIds success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+
+@end
+
+@interface XLPatientCTStatusModel : NSObject
+
+@property (nonatomic, copy)NSString *ckeyid;
+/**
+ *  文件状态 -1=异常，0=正常，1=数据库无记录，2=有记录没文件
+ */
+@property (nonatomic, assign)NSInteger fileStatus;
+
 @end

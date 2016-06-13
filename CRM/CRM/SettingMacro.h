@@ -48,5 +48,6 @@
 #define NewVersionUpdate_TimeKey @"NewVersionUpdate_TimeKey"
 static const NSTimeInterval NewVersionUpdateTimeInterval = 60 * 60 * 24 * 3;
 
+#define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
 
 #endif /* SettingMacro_h */

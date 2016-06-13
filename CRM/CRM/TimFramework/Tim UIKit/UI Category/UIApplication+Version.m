@@ -10,6 +10,11 @@
 
 @implementation UIApplication (Version)
 
++ (NSString *)systemVersion{
+    return [UIDevice currentDevice].systemVersion;
+}
+
+
 + (NSString *)currentVersion {
     NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
     NSString *currentVersion = [infoDic objectForKey:@"CFBundleVersion"];
@@ -53,5 +58,6 @@
 + (void)updateApplicationWithURL:(NSURL *)url {
     [[UIApplication sharedApplication] openURL:url];
 }
+
 
 @end

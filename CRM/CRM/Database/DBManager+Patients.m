@@ -18,6 +18,7 @@
 #import "XLPatientTotalInfoModel.h"
 #import "SDWebImageManager.h"
 #import "PatientManager.h"
+#import "NSString+TTMAddtion.h"
 
 #define ImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 @implementation DBManager (Patients)
@@ -85,13 +86,13 @@
         [valueArray addObject:patient.ori_user_id];
         [valueArray addObject:patient.user_id];
         [valueArray addObject:patient.introducer_id];
-        if (patient.creation_date == nil) {
+        if ([NSString isEmptyString:patient.creation_date]) {
             [valueArray addObject:[NSString currentDateString]];
         }else{
             [valueArray addObject:patient.creation_date];
         }
         [valueArray addObject:[NSString currentDateString]];
-        if (patient.sync_time == nil) {
+        if ([NSString isEmptyString:patient.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:patient.sync_time];
@@ -99,11 +100,7 @@
         [valueArray addObject:patient.doctor_id];
         
         [valueArray addObject:patient.patient_allergy];
-        if (patient.patient_remark == nil) {
-            [valueArray addObject:@""];
-        }else{
-            [valueArray addObject:patient.patient_remark];
-        }
+        [valueArray addObject:patient.patient_remark];
         [valueArray addObject:patient.idCardNum];
         [valueArray addObject:patient.patient_address];
         [valueArray addObject:patient.anamnesis];
@@ -195,38 +192,74 @@
         [columeArray addObject:@"anamnesis"];
         [columeArray addObject:@"nickName"];
         
-        
         [valueArray addObject:patient.ckeyid];
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
-        [valueArray addObject:patient.patient_avatar];
-        [valueArray addObject:patient.patient_gender];
-        [valueArray addObject:patient.patient_age];
+        if ([NSString isEmptyString:patient.patient_avatar]) {
+            [valueArray addObject:@"bb.jpg"];
+        }else{
+            [valueArray addObject:patient.patient_avatar];
+        }
+        if ([NSString isEmptyString:patient.patient_gender]) {
+            [valueArray addObject:@"2"];
+        }else{
+            [valueArray addObject:patient.patient_gender];
+        }
+        if ([NSString isEmptyString:patient.patient_age]) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:patient.patient_age];
+        }
         [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
-        [valueArray addObject:patient.ori_user_id];
+        if ([NSString isEmptyString:patient.ori_user_id]) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:patient.ori_user_id];
+        }
         [valueArray addObject:patient.user_id];
         [valueArray addObject:patient.introducer_id];
-//        [valueArray addObject:[NSString currentDateString]];
-        [valueArray addObject:patient.creation_date];
+        if ([NSString isEmptyString:patient.creation_date]) {
+            [valueArray addObject:[NSString currentDateString]];
+        }else{
+            [valueArray addObject:patient.creation_date];
+        }
         [valueArray addObject:patient.update_date];
-        if (patient.sync_time == nil) {
+        if ([NSString isEmptyString:patient.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
-        
-        [valueArray addObject:patient.patient_allergy];
+        if (patient.patient_allergy == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_allergy];
+        }
         if (patient.patient_remark == nil) {
             [valueArray addObject:@""];
         }else{
             [valueArray addObject:patient.patient_remark];
         }
-        [valueArray addObject:patient.idCardNum];
-        [valueArray addObject:patient.patient_address];
-        [valueArray addObject:patient.anamnesis];
-        [valueArray addObject:patient.nickName];
-        
+        if (patient.idCardNum == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.idCardNum];
+        }
+        if (patient.patient_address == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_address];
+        }
+        if (patient.anamnesis == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.anamnesis];
+        }
+        if (patient.nickName == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.nickName];
+        }
         
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
@@ -360,7 +393,7 @@
     [valueArray addObject:patient.introducer_id];
     [valueArray addObject:[NSString currentDateString]];
     [valueArray addObject:[NSString defaultDateString]];
-    if (patient.sync_time == nil) {
+    if ([NSString isEmptyString:patient.sync_time]) {
         [valueArray addObject:[NSString defaultDateString]];
     } else {
         [valueArray addObject:patient.sync_time];
@@ -462,19 +495,18 @@
         [valueArray addObject:patient.introducer_id];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
-        if (nil == patient.update_date) {
+        if ([NSString isEmptyString:patient.update_date]) {
             [valueArray addObject:[NSString currentDateString]];
-        }
-        else {
+        }else {
             [valueArray addObject:patient.update_date];
         }
-        if (nil == patient.creation_date) {
+        if ([NSString isEmptyString:patient.creation_date]) {
             [valueArray addObject:[NSString currentDateString]];
         }else{
             [valueArray addObject:patient.creation_date];
         }
         
-        if (patient.sync_time == nil) {
+        if ([NSString isEmptyString:patient.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:patient.sync_time];
@@ -529,6 +561,7 @@
         [columeArray addObject:@"introducer_id"]; //介绍人编号
         [columeArray addObject:@"sync_time"];
         [columeArray addObject:@"doctor_id"];
+        [columeArray addObject:@"update_date"];
         [columeArray addObject:@"creation_date"];
         [columeArray addObject:@"patient_allergy"];
         [columeArray addObject:@"patient_remark"];
@@ -539,23 +572,44 @@
         
         [valueArray addObject:patient.patient_name];
         [valueArray addObject:patient.patient_phone];
-        [valueArray addObject:patient.patient_avatar];
-        [valueArray addObject:patient.patient_gender];
-        [valueArray addObject:patient.patient_age];
+        if ([NSString isEmptyString:patient.patient_avatar]) {
+            [valueArray addObject:@"bb.jpg"];
+        }else{
+            [valueArray addObject:patient.patient_avatar];
+        }
+        if ([NSString isEmptyString:patient.patient_gender]) {
+            [valueArray addObject:@"2"];
+        }else{
+            [valueArray addObject:patient.patient_gender];
+        }
+        if ([NSString isEmptyString:patient.patient_age]) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:patient.patient_age];
+        }
         [valueArray addObject:[NSNumber numberWithInteger:patient.patient_status]];
-        [valueArray addObject:patient.ori_user_id];
+        if ([NSString isEmptyString:patient.ori_user_id]) {
+            [valueArray addObject:@"0"];
+        }else{
+            [valueArray addObject:patient.ori_user_id];
+        }
         [valueArray addObject:patient.user_id];
         [valueArray addObject:patient.introducer_id];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
         
-        if (patient.sync_time == nil) {
+        if ([NSString isEmptyString:patient.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:patient.sync_time];
         }
         [valueArray addObject:patient.doctor_id];
-        [valueArray addObject:patient.creation_date];
+        [valueArray addObject:patient.update_date];
+        if ([NSString isEmptyString:patient.creation_date]) {
+            [valueArray addObject:[NSString currentDateString]];
+        }else{
+            [valueArray addObject:patient.creation_date];
+        }
         
         [valueArray addObject:patient.patient_allergy];
         if (patient.patient_remark == nil) {
@@ -563,10 +617,26 @@
         }else{
             [valueArray addObject:patient.patient_remark];
         }
-        [valueArray addObject:patient.idCardNum];
-        [valueArray addObject:patient.patient_address];
-        [valueArray addObject:patient.anamnesis];
-        [valueArray addObject:patient.nickName];
+        if (patient.idCardNum == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.idCardNum];
+        }
+        if (patient.patient_address == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.patient_address];
+        }
+        if (patient.anamnesis == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.anamnesis];
+        }
+        if (patient.nickName == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:patient.nickName];
+        }
         
         
         // 3. 写入数据库
@@ -1145,7 +1215,7 @@
     if ([NSString isEmptyString:ckeyid]) {
         return nil;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@'",PatientTableName,ckeyid];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' and doctor_id = '%@'",PatientTableName,ckeyid,[AccountManager currentUserid]];
     __block Patient *retPatient = nil;
     __block FMResultSet *set = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -1252,7 +1322,7 @@
         [valueArray addObject:PatIntro.remark];
         [valueArray addObject:[NSString currentDateString]];
         [valueArray addObject:[NSString currentDateString]];
-        if (nil == PatIntro.sync_time) {
+        if ([NSString isEmptyString:PatIntro.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:PatIntro.sync_time];
@@ -1340,7 +1410,7 @@
         [valueArray addObject:PatIntro.remark];
         [valueArray addObject:[NSString currentDateString]];
         [valueArray addObject:[NSString currentDateString]];
-        if (nil == PatIntro.sync_time) {
+        if ([NSString isEmptyString:PatIntro.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:PatIntro.sync_time];
@@ -1362,11 +1432,10 @@
         [titleArray addObject:@"?"];
         
         // 3. 写入数据库
-        NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@) ", PatIntrMapTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
+        NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace  into %@ (%@) values (%@) ", PatIntrMapTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
-        
-        if (ret == NO) {
-            
+        if (ret) {
+            NSLog(@"insertPtientIntrMapSuccessString:%@",sqlQuery);
         }
     }];
     return ret;
@@ -1409,13 +1478,13 @@
         [valueArray addObject:PatIntro.remark];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
-        if (nil == PatIntro.update_date) {
+        if ([NSString isEmptyString:PatIntro.update_date]) {
             [valueArray addObject:[NSString currentDateString]];
         }
         else {
             [valueArray addObject:PatIntro.update_date];
         }
-        if (nil == PatIntro.sync_time) {
+        if ([NSString isEmptyString:PatIntro.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:PatIntro.sync_time];
@@ -1428,8 +1497,8 @@
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where patient_id = \"%@\" and doctor_id = \"%@\" and intr_source like '%%B'", PatIntrMapTableName, [columeArray componentsJoinedByString:@"=?,"],PatIntro.patient_id,PatIntro.doctor_id];
         ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
         
-        if (ret == NO) {
-            
+        if (ret) {
+             NSLog(@"updatePtientIntrMapSuccessString:%@",sqlQuery);
         }
         
     }];
@@ -1474,13 +1543,13 @@
         [valueArray addObject:PatIntro.remark];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
-        if (nil == PatIntro.update_date) {
+        if ([NSString isEmptyString:PatIntro.update_date]) {
             [valueArray addObject:[NSString currentDateString]];
         }
         else {
             [valueArray addObject:PatIntro.update_date];
         }
-        if (nil == PatIntro.sync_time) {
+        if ([NSString isEmptyString:PatIntro.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:PatIntro.sync_time];
@@ -1606,7 +1675,7 @@
         [valueArray addObject:[NSNumber numberWithInteger:medicalCase.case_status]];
         [valueArray addObject:medicalCase.creation_date];
         [valueArray addObject:[NSString defaultDateString]];
-        if (nil == medicalCase.sync_time) {
+        if ([medicalCase.sync_time isEmpty] || medicalCase.sync_time == nil) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:medicalCase.sync_time];
@@ -1676,7 +1745,24 @@
     if ([NSString isEmptyString:patientId]) {
         return NO;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = %@",PatIntrMapTableName,patientId];
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = '%@' and doctor_id = '%@'",PatIntrMapTableName,patientId,[AccountManager currentUserid]];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
+    return ret;
+}
+
+/**
+ *  删除指定的PatientIntroducerMap
+ *
+ *  @param patIntrMap PatientIntroducerMap
+ *
+ *  @return 是否删除成功
+ */
+- (BOOL)deletePatientIntroducerMapWithMap:(PatientIntroducerMap *)patIntrMap{
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_id = \"%@\"",PatIntrMapTableName,patIntrMap.patient_id,patIntrMap.doctor_id,patIntrMap.intr_id];
     __block BOOL ret = NO;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
@@ -1686,6 +1772,9 @@
 
 #pragma mark - 判断时间是否是默认时间
 - (NSString *)isDefaultDate:(NSString *)dateStr{
+    if (dateStr == nil) {
+        return @"";
+    }
     NSString *dateTmp = [dateStr componentsSeparatedByString:@" "][0];
     if ([dateTmp isEqualToString:@"1900-01-01"]) {
         return @"";
@@ -1742,13 +1831,13 @@
         [valueArray addObject:[NSNumber numberWithInteger:medicalCase.case_status]];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
-        if (nil == medicalCase.update_date) {
+        if ([NSString isEmptyString:medicalCase.update_date]) {
             [valueArray addObject:[NSString currentDateString]];
         }
         else {
             [valueArray addObject:medicalCase.update_date];
         }
-        if (nil == medicalCase.sync_time) {
+        if ([NSString isEmptyString:medicalCase.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:medicalCase.sync_time];
@@ -1760,9 +1849,16 @@
         }else{
             [valueArray addObject:medicalCase.repair_doctor_name];
         }
-        
-        [valueArray addObject:medicalCase.tooth_position];
-        [valueArray addObject:medicalCase.team_notice];
+        if (medicalCase.tooth_position == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.tooth_position];
+        }
+        if (medicalCase.team_notice == nil) {
+            [valueArray addObject:@""];
+        }else{
+            [valueArray addObject:medicalCase.team_notice];
+        }
         if (medicalCase.hxGroupId == nil) {
             [valueArray addObject:@""];
         }else{
@@ -1884,7 +1980,7 @@
     if ([NSString isEmptyString:patientId]) {
         return NO;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = %@",MedicalCaseTableName,patientId];
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = '%@' and doctor_id = '%@'",MedicalCaseTableName,patientId,[AccountManager currentUserid]];
     __block BOOL ret = NO;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
@@ -2041,7 +2137,7 @@
         [valueArray addObject:medicalReserve.actual_time];
         [valueArray addObject:medicalReserve.repair_time];
         [valueArray addObject:medicalReserve.user_id];
-        if (medicalReserve.update_date == nil) {
+        if ([NSString isEmptyString:medicalReserve.update_date]) {
            [valueArray addObject:[NSString currentDateString]];
         } else {
            [valueArray addObject:[NSString stringWithString:medicalReserve.update_date]];
@@ -2260,7 +2356,7 @@
         
         [valueArray addObject:patientConsultation.creation_date];
         [valueArray addObject:[NSString defaultDateString]];
-        if (nil == patientConsultation.sync_time) {
+        if ([NSString isEmptyString:patientConsultation.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:patientConsultation.sync_time];
@@ -2332,12 +2428,12 @@
         [valueArray addObject:patientConsultation.creation_date];
         //用update_date来区分是真的update还是从服务器同步后的update
         //如果是从服务器同步后update的，update_date会设置为1970年的默认时间
-        if (nil == patientConsultation.update_date) {
+        if ([NSString isEmptyString:patientConsultation.update_date]) {
             [valueArray addObject:[NSString currentDateString]];
         }else {
             [valueArray addObject:patientConsultation.update_date];
         }
-        if (nil == patientConsultation.sync_time) {
+        if ([NSString isEmptyString:patientConsultation.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:patientConsultation.sync_time];
@@ -2401,7 +2497,19 @@
     if ([NSString isEmptyString:patientId]) {
         return NO;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = %@",PatientConsultationTableName,patientId];
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = '%@' and doctor_id = '%@'",PatientConsultationTableName,patientId,[AccountManager currentUserid]];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
+    return ret;
+}
+
+- (BOOL)deletePatientConsultationWithCkeyId_sync:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return NO;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = '%@'",PatientConsultationTableName,ckeyId];
     __block BOOL ret = NO;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
@@ -2471,7 +2579,7 @@
         [valueArray addObject:medicalRecord.user_id];
         [valueArray addObject:[NSString currentDateString]];
         [valueArray addObject:[NSString defaultDateString]];
-        if (nil == medicalRecord.sync_time) {
+        if ([NSString isEmptyString:medicalRecord.sync_time]) {
           [valueArray addObject:[NSString defaultDateString]];
         } else {
           [valueArray addObject:medicalRecord.sync_time];
@@ -2536,7 +2644,7 @@
         [valueArray addObject:medicalRecord.record_content];
         [valueArray addObject:medicalRecord.user_id];
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
-        if (nil == medicalRecord.sync_time) {
+        if ([NSString isEmptyString:medicalRecord.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:medicalRecord.sync_time];
@@ -2598,13 +2706,11 @@
         return NO;
     }
     
-    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = %@",MedicalRecordableName,medicalRecordId];
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = '%@'",MedicalRecordableName,medicalRecordId];
     __block BOOL ret = NO;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
     }];
-
-    
     return ret;
 }
 
@@ -2666,6 +2772,21 @@
         }
     }];
 
+    return ret;
+}
+
+- (BOOL)deleteMedicalRecordWithCaseId_sync:(NSString *)caseid{
+    if (caseid <= 0) {
+        return NO;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where case_id = '%@' and doctor_id = '%@'",MedicalRecordableName,caseid,[AccountManager currentUserid]];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
+    
+    
     return ret;
 }
 
@@ -2775,14 +2896,14 @@
         [valueArray addObject:ctlib.ct_desc];
         [valueArray addObject:[NSString currentDateString]];
         [valueArray addObject:[NSString defaultDateString]];
-        if (nil == ctlib.sync_time) {
+        if ([NSString isEmptyString:ctlib.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:ctlib.sync_time];
         }
         [valueArray addObject:ctlib.doctor_id];
         [valueArray addObject:ctlib.creation_date];
-        if (ctlib.is_main == nil) {
+        if ([NSString isEmptyString:ctlib.is_main]) {
             [valueArray addObject:@"0"];
         }else{
             [valueArray addObject:ctlib.is_main];
@@ -2842,19 +2963,19 @@
         [valueArray addObject:ctlib.case_id];
         [valueArray addObject:ctlib.ct_image];
         [valueArray addObject:ctlib.ct_desc];
-        if (nil == ctlib.update_date) {
+        if ([NSString isEmptyString:ctlib.update_date]) {
             [valueArray addObject:[NSString stringWithString:strCurrentDate]];
         } else {
             [valueArray addObject:ctlib.update_date];
         }
-        if (nil == ctlib.sync_time) {
+        if ([NSString isEmptyString:ctlib.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:ctlib.sync_time];
         }
         [valueArray addObject:ctlib.doctor_id];
         [valueArray addObject:ctlib.creation_date];
-        if (ctlib.is_main == nil) {
+        if ([NSString isEmptyString:ctlib.is_main]) {
             [valueArray addObject:@"0"];
         }else{
             [valueArray addObject:ctlib.is_main];
@@ -2903,8 +3024,7 @@
     if ([NSString isEmptyString:libid]) {
         return NO;
     }
-    
-    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = \"%@\"",CTLibTableName,libid];
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where ckeyid = \"%@\" and doctor_id = '%@'",CTLibTableName,libid,[AccountManager currentUserid]];
     __block BOOL ret = NO;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         ret = [db executeUpdate:sqlStr];
@@ -2994,12 +3114,12 @@
     return ctLib;
 }
 
-- (BOOL)setUpMainCT:(CTLib *)ctLib{
+- (BOOL)setUpMainCT:(CTLib *)ctLib patientId:(NSString *)patientId{
     if (ctLib == nil) {
         return NO;
     }
     //获取当前病历下的主ct片
-    NSArray *mainCts = [self getMainCT:ctLib.case_id];
+    NSArray *mainCts = [self getMainCTWithPatientId:patientId];
     if (mainCts.count > 0) {
         //将主照片的状态设置为0
         for (CTLib *ct in mainCts) {
@@ -3022,13 +3142,14 @@
 }
 
 //获取病历下的主ct
-- (NSArray *)getMainCT:(NSString *)case_id{
-    if ([NSString isEmptyString:case_id]) {
+- (NSArray *)getMainCTWithPatientId:(NSString *)patient_id{
+    if ([NSString isEmptyString:patient_id]) {
         return  nil;
     }
     NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
     
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where case_id = \"%@\" and user_id = \"%@\" and creation_date_sync > datetime('%@') and is_main = \"1\"",CTLibTableName,case_id,[AccountManager currentUserid],[NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ ct where ct.is_main = '1' and creation_date_sync > datetime('%@') and ct.doctor_id='%@' and ct.case_id in (select mc.ckeyid from %@ mc where mc.patient_id = '%@')",CTLibTableName,[NSString defaultDateString],[AccountManager currentUserid],MedicalCaseTableName,patient_id];
+//    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where case_id = '%@' and user_id = '%@' and creation_date_sync > datetime('%@') and is_main = '1'",CTLibTableName,case_id,[AccountManager currentUserid],[NSString defaultDateString]];
     
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -3098,7 +3219,7 @@
         return  nil;
     }
     NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and user_id =  \"%@\" and creation_date_sync > datetime('%@')",CTLibTableName,PatientId,[AccountManager currentUserid], [NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ ct where ct.creation_date_sync > datetime('%@') and ct.doctor_id = '%@' and  ct.case_id in (select mc.ckeyid from %@ mc where mc.patient_id = '%@' and doctor_id = '%@')",CTLibTableName,[NSString defaultDateString],[AccountManager currentUserid],MedicalCaseTableName,PatientId,[AccountManager currentUserid]];
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         result = [db executeQuery:sqlStr];
@@ -3284,7 +3405,7 @@
                             [[SDImageCache sharedImageCache] removeImageForKey:ct.ct_image];
                         }
                         //将图片保存到本地
-                        NSString *key = [PatientManager pathImageSaveToDisk:[image fixOrientation] withKey:ct.ct_image];
+                        [PatientManager pathImageSaveToDisk:[image fixOrientation] withKey:ct.ct_image];
                         NSLog(@"图片下载成功:%@",urlImage);
                     }
                 }

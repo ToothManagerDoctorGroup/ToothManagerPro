@@ -13,6 +13,7 @@
 #import "AccountManager.h"
 #import "NSString+TTMAddtion.h"
 #import "CRMUnEncryptedHttpTool.h"
+#import "XLAutoSyncTool.h"
 
 @implementation SysMessageTool
 /**
@@ -104,6 +105,32 @@
         }
         if (success) {
             success(arrayM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  获取未读消息的数量
+ *
+ *  @param doctorId 医生id
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)getUnReadMessageCountWithDoctorId:(NSString *)doctorId success:(void (^)(NSString *result))success failure:(void (^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorMessageHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"action"] = [@"getUnReadMsgCount" TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        
+        CRMHttpRespondModel *res = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success([res.result stringValue]);
         }
     } failure:^(NSError *error) {
         if (failure) {
@@ -208,14 +235,16 @@
         }
     }];
 }
-+ (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
++ (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id therapy_doctor_id:(NSString *)therapy_doctor_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ReserveRecordHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"action"] = [@"updatereservestatus" TripleDESIsEncrypt:YES];
     params[@"reserve_id"] = [reserve_id TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [[AccountManager currentUserid] TripleDESIsEncrypt:YES];
+    params[@"therapy_doctor_id"] = [therapy_doctor_id TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:[[XLAutoSyncTool shareInstance] addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);

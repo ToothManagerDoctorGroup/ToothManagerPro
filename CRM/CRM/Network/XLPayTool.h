@@ -35,6 +35,8 @@
 + (void)alipayWithSubject:(NSString *)subject body:(NSString *)body totalFee:(NSString *)totalFee billId:(NSString *)billId billType:(NSString *)billType success:(void(^)(CRMHttpRespondModel *result))success failure:(void(^)(NSError *error))failure;
 @end
 
+
+
 @interface XLOrderParam : NSObject
 /**
  *  商品名称

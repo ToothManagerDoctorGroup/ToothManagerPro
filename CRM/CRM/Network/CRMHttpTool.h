@@ -65,7 +65,7 @@ Declare_ShareInstance(CRMHttpTool);
 - (void)Upload:(NSString *)URLString
     parameters:(id)parameters
    uploadParam:(MyUploadParam *)uploadParam
-       success:(void (^)())success
+       success:(void (^)(id responseObject))success
        failure:(void (^)(NSError *error))failure;
 
 /**
@@ -98,6 +98,13 @@ Declare_ShareInstance(CRMHttpTool);
  */
 - (void)cancelAllOperation;
 
+/**
+ *  打印url
+ *
+ *  @param urlStr url
+ *  @param params 参数
+ */
+- (void)logWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params;
 
 
 @end

@@ -86,7 +86,7 @@
 - (void)requestClinicInfo{
     [SVProgressHUD showWithStatus:@"正在加载"];
     WS(weakSelf);
-    XLClinicQueryModel *queryModel = [[XLClinicQueryModel alloc] initWithKeyWord:@"" isAsc:YES doctorId:[AccountManager currentUserid]];
+    XLClinicQueryModel *queryModel = [[XLClinicQueryModel alloc] initWithKeyWord:@"" isAsc:NO doctorId:[AccountManager currentUserid]];
     [MyClinicTool getClinicListWithQueryModel:queryModel success:^(NSArray *result) {
         self.tableView.tableHeaderView = nil;
         [SVProgressHUD dismiss];

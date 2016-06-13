@@ -94,6 +94,8 @@
 
 - (BOOL)deleteMedicalExpenseWithPatientId:(NSString *)patientId;
 
+- (BOOL)deleteMedicalExpenseWithPatientId_sync:(NSString *)patientId;
+
 - (BOOL)deleteMedicalExpenseWithId_sync:(NSString *)expenseId;
 
 /**

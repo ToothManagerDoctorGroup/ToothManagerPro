@@ -361,6 +361,8 @@
         //删除病历成功
         PatientDetailViewController *detailVc =  (PatientDetailViewController *)self.viewController;
         [detailVc refreshData];
+        //刷新数据
+        [[NSNotificationCenter defaultCenter] postNotificationName:PatientEditedNotification object:nil];
     } else {
         [SVProgressHUD showImage:nil status:@"删除失败"];
     }

@@ -20,7 +20,6 @@
 #import "AutoSyncGetManager.h"
 #import "XLIntroducerViewController.h"
 #import "XLGuideView.h"
-#import "QrCodePatientViewController.h"
 #import "XLGuideImageView.h"
 #import "DBManager+Patients.h"
 #import "UINavigationItem+Margin.h"
@@ -31,17 +30,21 @@
 #import "XLAutoGetSyncTool.h"
 #import "MyDateTool.h"
 #import "UIApplication+Version.h"
+#import "XLMessageHandleManager.h"
+#import "AutoSyncManager+Behaviour.h"
+#import "XLLoginTool.h"
+#import "UIApplication+Version.h"
+#import "SysMessageTool.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
-static const NSInteger kDefaultSyncGetTimeInterval = 60 * 5;
+static const NSInteger kDefaultSyncGetTimeInterval = 5;
 static const NSInteger kDefaultSyncPostTimeInterval = 2.0;
 static NSString *kMessageType = @"MessageType";
 static NSString *kConversationChatter = @"ConversationChatter";
 
 @interface TimTabBarViewController ()<EMChatManagerDelegate,XLGuideViewDelegate>{
     UIButton *menuButton;
-    
     MyScheduleReminderViewController *_scheduleReminderVC;
     XLIntroducerViewController *_introducerVC;
     PatientSegumentController *_patientVc;
@@ -51,78 +54,68 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 @property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
 @property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
+//@property (nonatomic, strong)NSTimer *messageTimer;//消息处理的定时器
 
 
 @end
 
 @implementation TimTabBarViewController
 
-
 - (void)dealloc
 {
     NSLog(@"主页面被释放");
     [self unregisterNotifications];
     //移除kvo
-    CRMAppDelegate *delegateTmp = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegateTmp removeObserver:self forKeyPath:@"connectionStatus"];
+    [[CRMAppDelegate appDelegate] removeObserver:self forKeyPath:@"connectionStatus"];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    CRMAppDelegate *delegateTmp = (CRMAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegateTmp addObserver:self forKeyPath:@"connectionStatus" options:NSKeyValueObservingOptionNew context:nil];
-    NetworkStatus status = [delegateTmp.conn currentReachabilityStatus];
-    //创建一个定时器(NSTimer)
-    if (status != NotReachable) {
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncPostTimeInterval target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
-        //将定时器添加到主队列中
-        [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-        
-        self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncGetTimeInterval target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
-        //将定时器添加到主队列中
-        [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
-    }
-    
     
     //if 使tabBarController中管理的viewControllers都符合 UIRectEdgeNone
     if ([UIDevice currentDevice].systemVersion.floatValue >= 7) {
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     
-    /**
-     *  注册通知
-     */
+    //注册通知
     [self registerNotifications];
     //设置未读数
     [self setupUnreadMessageCount];
     //初始化
     [self makeMainView];
+    //获取系统的版本限制
+    [self getVersionLimit];
+    //创建定时器
+    [self createAllTimer];
 }
 
+#pragma mark - 创建定时器，添加网络监听
+- (void)createAllTimer{
+    [[CRMAppDelegate appDelegate] addObserver:self forKeyPath:@"connectionStatus" options:NSKeyValueObservingOptionNew context:nil];
+    NetworkStatus status = [[CRMAppDelegate appDelegate].conn currentReachabilityStatus];
+    //创建一个定时器(NSTimer)
+    if (status != NotReachable) {
+        [self createSyncPostTimer];
+        [self createSyncGetTimer];
+    }
+}
+
+#pragma mark - 监听网络状态
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
     if ([keyPath isEqualToString:@"connectionStatus"]) {
+        
        NetworkStatus status = [[change valueForKey:NSKeyValueChangeNewKey] integerValue];
+        //网络发生变化时，发送通知
+        [[NSNotificationCenter defaultCenter] postNotificationName:ConnectionStatusChangedNotification object:@(status)];
         if (status == NotReachable) {
             [self.timer invalidate];
             self.timer = nil;
             [self.syncGetTimer invalidate];
-            self.timer = nil;
+            self.syncGetTimer = nil;
         }else{
-            if (self.timer == nil) {
-                //创建一个定时器(NSTimer)
-                self.timer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncPostTimeInterval target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
-                //将定时器添加到主队列中
-                [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-            }
-            
-            if (self.syncGetTimer == nil) {
-                self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncGetTimeInterval target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
-                //将定时器添加到主队列中
-                [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
-            }
+            [self createSyncPostTimer];
+            [self createSyncGetTimer];
         }
-        
     }
 }
 
@@ -130,23 +123,162 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - 创建自动上传定时器
+- (void)createSyncPostTimer{
+    if (self.timer == nil) {
+        //创建一个定时器(NSTimer)
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncPostTimeInterval target:self selector:@selector(autoSyncAction:) userInfo:nil repeats:YES];
+        //将定时器添加到主队列中
+        [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    }
+}
+
 #pragma mark - 定时器,自动上传
 - (void)autoSyncAction:(NSTimer *)timer{
     //开始同步
     BOOL ret = [[AutoSyncManager shareInstance] startAutoSync];
+    
     if (ret) {
         [self.tabBar showBadgeOnItemIndex:4];
     }else{
         [self.tabBar hideBadgeOnItemIndex:4];
     }
+    //设置未读消息
+    [self requestUnreadMessageCount];
 }
+
+#pragma mark - 创建自动下载定时器
+- (void)createSyncGetTimer{
+    if (!self.syncGetTimer) {
+        self.syncGetTimer = [NSTimer scheduledTimerWithTimeInterval:kDefaultSyncGetTimeInterval target:self selector:@selector(autoSyncGetAction:) userInfo:nil repeats:YES];
+        //将定时器添加到主队列中
+        [[NSRunLoop mainRunLoop] addTimer:self.syncGetTimer forMode:NSRunLoopCommonModes];
+    }
+}
+
 
 #pragma mark - 定时器，自动下载
 - (void)autoSyncGetAction:(NSTimer *)timer{
     //定时下载
-    [[XLAutoGetSyncTool shareInstance] getAllDataShowSuccess:NO];
+//    [[XLAutoGetSyncTool shareInstance] getAllDataShowSuccess:NO];
+    //处理行为表中的数据
+    [[AutoSyncManager shareInstance] startBehaviour];
 }
 
+#pragma mark 消息定时器处理
+- (void)createMessageTimer{
+//    if (!_messageTimer) {
+//        _messageTimer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
+//        [[NSRunLoop currentRunLoop] addTimer:_messageTimer forMode:NSRunLoopCommonModes];
+//    }
+}
+
+#pragma mark - 请求未读的消息数量
+- (void)requestUnreadMessageCount{
+    [SysMessageTool getUnReadMessageCountWithDoctorId:[AccountManager currentUserid] success:^(NSString *result) {
+        if ([result integerValue] > 0) {
+            _scheduleReminderVC.messageCountLabel.hidden = NO;
+            [self.tabBar showBadgeOnItemIndex:0];
+            _scheduleReminderVC.messageCountLabel.text = result;
+        }else{
+            [self.tabBar hideBadgeOnItemIndex:0];
+            _scheduleReminderVC.messageCountLabel.hidden = YES;
+        }
+    } failure:^(NSError *error) {}];
+}
+
+
+#pragma mark - 获取系统版本限制
+- (void)getVersionLimit{
+    [XLLoginTool getVersionLimitSuccess:^(XLVersionLimitModel *limitM) {
+        //获取当前版本号
+        NSString *currentVersion = [UIApplication currentVersion];
+        //判断是否需要强制更新
+        if ([limitM.is_forcible_update isEqualToString:@"1"]) {
+            //判断服务器的最低版本限制
+            if ([self mustUpdateWithOldVersion:currentVersion limitVersion:limitM.ios_min_version]) {
+                //判断
+                [self showNewVersionWithoutCancel];
+            }else{
+                [self showNewVersion];
+            }
+        }else{
+            //自愿更新
+            [self showNewVersion];
+        }
+        
+    } failure:^(NSError *error) {}];
+}
+
+#pragma mark - 显示新版本更新
+- (void)showNewVersionWithoutCancel{
+    //判断是否有新版本
+    [UIApplication checkNewVersionWithAppleID:@"901754828" handler:^(BOOL newVersion, NSURL *updateURL) {
+        if (newVersion) {
+            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"更新提示" message:@"种牙管家又有新版本啦!" cancel:nil certain:@"立即前往" cancelHandler:^{
+            } comfirmButtonHandlder:^{
+                [UIApplication updateApplicationWithURL:updateURL];
+            }];
+            [alertView show];
+        }
+    }];
+}
+
+#pragma mark -showNewVersion
+- (void)showNewVersion{
+    NSString *updateTime = [CRMUserDefalut objectForKey:NewVersionUpdate_TimeKey];
+    if (updateTime == nil) {
+        [self showAlertViewWithTime:updateTime];
+    }else{
+        //判断目标时间和当前时间的时间差
+        NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:[MyDateTool dateWithStringWithSec:updateTime]];
+        if (timeInterval > NewVersionUpdateTimeInterval) {
+            [self showAlertViewWithTime:[MyDateTool stringWithDateWithSec:[NSDate date]]];
+        }
+    }
+}
+
+- (void)showAlertViewWithTime:(NSString *)time{
+    //判断是否有新版本
+    [UIApplication checkNewVersionWithAppleID:@"901754828" handler:^(BOOL newVersion, NSURL *updateURL) {
+        [CRMUserDefalut setObject:time forKey:NewVersionUpdate_TimeKey];
+        if (newVersion) {
+            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"更新提示" message:@"种牙管家又有新版本啦!" cancel:@"稍后更新" certain:@"立即前往" cancelHandler:^{
+            } comfirmButtonHandlder:^{
+                [UIApplication updateApplicationWithURL:updateURL];
+            }];
+            [alertView show];
+        }
+    }];
+}
+
+#pragma mark - 比较版本号
+- (BOOL)mustUpdateWithOldVersion:(NSString *)oldVersion limitVersion:(NSString *)limitVersion{
+    NSArray *olds = [oldVersion componentsSeparatedByString:@"."];//261
+    NSArray *news = [limitVersion componentsSeparatedByString:@"."];//2711
+    NSMutableString *oldStrM = [NSMutableString string];
+    NSMutableString *newStrM = [NSMutableString string];
+    for (int i = 0; i < olds.count; i++) {
+        [oldStrM appendString:olds[i]];
+    }
+    for (int i = 0; i < news.count; i++) {
+        [newStrM appendString:news[i]];
+    }
+    if (olds.count < news.count) {
+        [oldStrM appendString:@"0"];
+    }
+    int oldV = [oldStrM intValue];
+    int newV = [newStrM intValue];
+    
+    return oldV <= newV;
+}
+
+#pragma mark 处理未读消息
+- (void)messageAutoHandle:(NSTimer *)timer{
+    [XLMessageHandleManager beginHandle];
+}
+
+#pragma mark - 设置几个主视图
 - (void)makeMainView
 {
     //日程提醒
@@ -558,7 +690,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
     }
 }
 
-#pragma mark - 账号被踢出的回调
+#pragma mark - 环信账号被踢出的回调
 - (void)didLoginFromOtherDevice{
     [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
 }

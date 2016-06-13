@@ -205,8 +205,9 @@
     CTLib *ct = [currentPic ctLib];
     //将当前照片设置为主照片
     ct.is_main = @"1";
-    
-    if([[DBManager shareInstance] setUpMainCT:ct]){
+    //获取patient_id
+    MedicalCase *mCase = [[DBManager shareInstance] getMedicalCaseWithCaseId:ct.case_id];
+    if([[DBManager shareInstance] setUpMainCT:ct patientId:mCase.patient_id]){
         //将数组中的照片都设置为0
         for (BrowserPicture *bPic in self.imageArray) {
             if (![bPic.keyidStr isEqualToString:currentPic.keyidStr]) {
@@ -214,6 +215,7 @@
             }
         }
     }
+    [SVProgressHUD showSuccessWithStatus:@"来电提醒图片设置成功"];
     //更新当前的视图
     [_browserView setCenterImage:[self.imageArray objectAtIndex:self.currentIndex]];
     

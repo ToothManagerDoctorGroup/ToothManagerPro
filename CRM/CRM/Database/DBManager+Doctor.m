@@ -25,7 +25,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where doctor_name = \"%@\" and user_id = \"%@\"",DoctorTableName,doctorobj.doctor_name,[AccountManager currentUserid]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and user_id = \"%@\"",DoctorTableName,doctorobj.ckeyid,[AccountManager currentUserid]];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -175,7 +175,7 @@
         [valueArray addObject:[NSNumber numberWithInteger:doctorobj.auth_status]];
         [valueArray addObject:doctorobj.auth_text];
         [valueArray addObject:doctorobj.auth_pic];
-        if (nil == doctorobj.update_date) {
+        if ([NSString isEmptyString:doctorobj.update_date]) {
           [valueArray addObject:[NSString stringWithString:strCurrentDate]];
         } else {
           [valueArray addObject:doctorobj.update_date];
@@ -244,7 +244,7 @@
     [valueArray addObject:[NSNumber numberWithInteger:doctorobj.auth_status]];
     [valueArray addObject:doctorobj.auth_text];
     [valueArray addObject:doctorobj.auth_pic];
-    if (nil == doctorobj.update_date) {
+    if ([NSString isEmptyString:doctorobj.update_date]) {
         [valueArray addObject:[NSString stringWithString:strCurrentDate]];
     } else {
         [valueArray addObject:doctorobj.update_date];

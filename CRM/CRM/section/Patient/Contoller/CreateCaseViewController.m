@@ -34,7 +34,6 @@
 #import "JSONKit.h"
 #import "UUDatePicker.h"
 #import "XLDoctorLibraryViewController.h"
-#import "QrCodePatientViewController.h"
 #import "DoctorTool.h"
 #import "CRMHttpRespondModel.h"
 #import "XLHengYaViewController.h"
@@ -285,12 +284,42 @@
         [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
     }
     
+    //判断是否存在主照片
+    NSArray *mainCts = [[DBManager shareInstance] getMainCTWithPatientId:self.patiendId];
+    CTLib *mainCT;
+    if (mainCts.count > 0) {
+        //表明存在主照片，无需设置
+        mainCT = nil;
+    }else{
+        //设置主照片
+        mainCT = [self.ctblibArray lastObject];
+        //获取患者数据
+        Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patiendId];
+        //判断是否开启了通讯录权限
+        if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
+            if (self.ctblibArray.count > 0) {
+                //保存患者的头像
+                BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
+                if (!isExist) {
+                    [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
+                }
+                NSString *intrName = [[DBManager shareInstance] getPatientIntrNameWithPatientId:self.patiendId];
+                UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:mainCT.ct_image];
+                UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text intrName:intrName];
+                [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
+            }
+        }
+    }
     //新增ct
     for (CTLib *lib in _addCTLibs) {
+        if (mainCT) {
+            if ([lib.ckeyid isEqualToString:mainCT.ckeyid]) {
+                lib.is_main = @"1";
+            }
+        }
         lib.patient_id = _medicalCase.patient_id;
         lib.case_id = _medicalCase.ckeyid;
-        if (nil == lib.creation_date)
-        {
+        if (nil == lib.creation_date){
             lib.creation_date = [NSString currentDateString];
         }
         libRet = [[DBManager shareInstance] insertCTLib:lib];
@@ -354,15 +383,11 @@
     }
     //添加新增加的病历记录
     for (MedicalRecord *recordTmp in self.newRecords) {
-        if ([recordTmp.record_content isEmpty]) {
-            continue;
-        }
+        if ([recordTmp.record_content isEmpty]) continue;
         recordTmp.case_id = caseid;
-        if (nil == recordTmp.creation_date)
-        {
+        if (nil == recordTmp.creation_date){
             recordTmp.creation_date = [NSString currentDateString];
         }
-        
         recordRet = [[DBManager shareInstance] insertMedicalRecord:recordTmp];
         if (recordRet == NO) {
             return NO;
@@ -454,50 +479,12 @@
             InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_Patient postType:Update dataEntity:[patient.keyValues JSONString] syncStatus:@"0"];
             [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
         }
-        //判断是否存在主照片
-        NSArray *mainArr = [[DBManager shareInstance] getMainCT:self.medicalCaseId];
-        if (mainArr.count == 0) {
-            //判断是否开启了通讯录权限
-            if ([[AddressBoolTool shareInstance] userAllowToAddress]) {
-                if (self.ctblibArray.count > 0) {
-                    //保存患者的头像
-                    BOOL isExist = [[AddressBoolTool shareInstance] getContactsWithName:patient.patient_name phone:patient.patient_phone];
-                    if (!isExist) {
-                        [[AddressBoolTool shareInstance] addContactToAddressBook:patient];
-                    }
-                    
-                    CTLib *ctLib = [self.ctblibArray lastObject];
-                    //设置主照片
-                    ctLib.is_main = @"1";
-                    if (!ctLib.creation_date_sync) {
-                        ctLib.creation_date_sync = [NSString currentDateString];
-                    }
-                    if (!ctLib.update_date) {
-                        ctLib.update_date = [NSString defaultDateString];
-                    }
-                    if (!ctLib.sync_time) {
-                        ctLib.sync_time = [NSString defaultDateString];
-                    }
-                    if([[DBManager shareInstance] updateMainCTLib:ctLib]){
-                        //添加一条更新ct片的自动同步数据
-                        InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Update dataEntity:[ctLib.keyValues JSONString] syncStatus:@"0"];
-                        [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
-                    }
-                     NSString *intrName = [[DBManager shareInstance] getPatientIntrNameWithPatientId:self.patiendId];
-                    UIImage *sourceImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:ctLib.ct_image];
-                    UIImage *image = [[AddressBoolTool shareInstance] drawImageWithSourceImage:sourceImage plantTime:self.tableHeaderView.implantTextField.text intrName:intrName];
-                    [[AddressBoolTool shareInstance] saveWithImage:image person:patient.patient_name phone:patient.patient_phone];
-                }
-            }
-        }
-        
         //发送通知
         [self postNotificationName:MedicalCaseEditedNotification object:_medicalCase];
         
         if (self.isNewPatient) {
-            
             for (UIViewController *vc in self.navigationController.viewControllers) {
-                if ([vc isKindOfClass:[QrCodePatientViewController class]] || [vc isKindOfClass:[XLPatientSelectViewController class]]) {
+                if ([vc isKindOfClass:[XLPatientSelectViewController class]]) {
                     [self popToViewController:vc animated:YES];
                     return;
                 }
@@ -520,7 +507,7 @@
 - (void)onBackButtonAction:(id)sender{
     if (self.isNewPatient) {
         for (UIViewController *vc in self.navigationController.viewControllers) {
-            if ([vc isKindOfClass:[QrCodePatientViewController class]] || [vc isKindOfClass:[XLPatientSelectViewController class]]) {
+            if ([vc isKindOfClass:[XLPatientSelectViewController class]]) {
                 [self.navigationController popToViewController:vc animated:YES];
                 return;
             }

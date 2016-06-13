@@ -14,7 +14,6 @@
     
     self = [super initWithFrame:frame];
     if (self) {
-        
         selectedTagBtnList = [[NSMutableArray alloc] init];
         self.clickBackgroundColor = [UIColor whiteColor];
         self.clickTitleColor = TextColor;

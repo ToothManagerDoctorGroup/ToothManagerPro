@@ -13,5 +13,5 @@
     UITableView *m_tableView;
     NSDateFormatter *dateFormatter;
 }
-
+@property (nonatomic, strong)UILabel *messageCountLabel;//消息提示框
 @end

@@ -36,6 +36,18 @@
     [userdefaults synchronize];
 }
 
+
+/**
+ *  设置最后使用者的密码（环信用到）
+ *
+ *  @param password 用户密码
+ */
++ (void)setLatestUserPassword:(NSString *)password{
+    NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
+    [userdefaults setObject:password forKey:LatestUserPassword];
+    [userdefaults synchronize];
+}
+
 + (void)setObject:(id)object forKey:(NSString *)akey {
      NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
     [userdefaults setObject:object forKey:akey];

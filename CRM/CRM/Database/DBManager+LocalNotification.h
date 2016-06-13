@@ -23,6 +23,8 @@
 
 - (BOOL)deleteLocalNotification_Sync:(LocalNotification *)notification;
 
+- (BOOL)deleteLocalNotificationWithPatientId_sync:(NSString *)patientId;
+
 - (LocalNotification *)getLocalNotificationWithCkeyId:(NSString *)ckeyId;
 
 - (NSArray *)localNotificationListWithStartDate:(NSString *)startDate endDate:(NSString *)endDate;

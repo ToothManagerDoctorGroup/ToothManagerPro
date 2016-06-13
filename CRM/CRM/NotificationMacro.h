@@ -11,6 +11,9 @@
 
 #pragma mark - NOtification
 
+
+#define ConnectionStatusChangedNotification (@"ConnectionStatusChangedNotification") //网络状态发生变化
+
 #define SignInSuccessNotification (@"SignInSuccessNotification")  //登陆成功
 #define SignUpSuccessNotification (@"SignUpSuccessNotification")  //注册成功
 #define SignOutSuccessNotification (@"SignOutSuccessNotification")  //注册成功

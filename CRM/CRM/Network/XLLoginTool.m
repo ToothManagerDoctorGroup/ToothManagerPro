@@ -15,6 +15,9 @@
 #import "NSString+TTMAddtion.h"
 #import "JSONKit.h"
 #import "CRMHttpTool.h"
+#import "UIApplication+Version.h"
+#import "NSString+TTMAddtion.h"
+#import "CRMHttpTool.h"
 
 @implementation XLLoginTool
 
@@ -79,12 +82,13 @@
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (void)updateUserRegisterIdWithUserId:(NSString *)userId registerId:(NSString *)registerId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
++ (void)updateUserRegisterId:(NSString *)registerId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/UpdateRegId.ashx",DomainName,Method_Ashx];
     
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
-    param[@"userid"] = [userId TripleDESIsEncrypt:YES];
+    param[@"device_token"] = [[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES];
     param[@"regid"] = [registerId TripleDESIsEncrypt:YES];
+    param[@"userid"] = [[AccountManager currentUserid] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
         
@@ -99,4 +103,96 @@
         }
     }];
 }
+/**
+ *  新的登录接口
+ *
+ *  @param nickName 用户名
+ *  @param password 密码
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)newLoginWithNickName:(NSString *)nickName password:(NSString *)password success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure{
+    ValidationResult ret = ValidationResultValid;
+    
+    ret = [password isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    if (ret == ValidationResultInValid)
+    {
+        [SVProgressHUD showImage:nil status:@"密码格式错误"];
+        return;
+    }
+    if (ret == ValidationResultValidateStringIsEmpty)
+    {
+        [SVProgressHUD showImage:nil status:@"密码不能为空"];
+        return;
+    }
+    
+    NSString *urlStr =  [NSString stringWithFormat:@"%@%@/NewLoginHandler.ashx",DomainName,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"username"] = [nickName TripleDESIsEncrypt:YES];
+    params[@"password"] = [password TripleDESIsEncrypt:YES];
+    params[@"devicetype"] = [@"ios" TripleDESIsEncrypt:YES];
+    if ([CRMUserDefalut objectForKey:DeviceToken]) {
+        params[@"devicetoken"] = [[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES];
+    }
+    if ([CRMUserDefalut objectForKey:RegisterId]) {
+        params[@"reg_id"] = [[CRMUserDefalut objectForKey:RegisterId] TripleDESIsEncrypt:YES];
+    }
+    params[@"mobile_model"] = [[NSString deviceString] TripleDESIsEncrypt:YES];//手机型号
+    params[@"sys_version"] = [[UIApplication systemVersion] TripleDESIsEncrypt:YES];//系统版本号
+    params[@"app_version"] = [[UIApplication currentVersion] TripleDESIsEncrypt:YES];//app版本号
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:urlStr params:params];
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        //字典转模型
+        CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(model);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+/**
+ *  获取客户端的版本限制
+ *
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getVersionLimitSuccess:(void (^)(XLVersionLimitModel *limitM))success failure:(void (^)(NSError *error))failure{
+    //his.crm\ashx\SysGlobalSettingHandler.ashx?action=getminversion
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/SysGlobalSettingHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"action"] = [@"getminversion" TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:param success:^(id responseObject) {
+        XLVersionLimitModel *limitM = [[XLVersionLimitModel alloc] initWithDic:responseObject];
+        if (success) {
+            success(limitM);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+@end
+
+@implementation XLVersionLimitModel
+
+- (instancetype)initWithDic:(NSDictionary *)dic{
+    if (self = [super init]) {
+        self.ios_min_version = dic[@"ios_min_version"];
+        self.android_min_version = dic[@"android_min_version"];
+        self.is_forcible_update = dic[@"is_forcible_update"];
+    }
+    return self;
+}
+
 @end

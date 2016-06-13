@@ -287,7 +287,7 @@
     //上传服务器
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"上传中..."];
-    [DoctorTool composeTeacherHeadImg:tempImage userId:[[AccountManager shareInstance] currentUser].userid success:^{
+    [DoctorTool composeTeacherHeadImg:tempImage userId:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
         //清除图片缓存
         [[SDImageCache sharedImageCache] cleanDisk];
         [[SDImageCache sharedImageCache] clearMemory];
@@ -295,7 +295,6 @@
         [weakSelf setAuthImage:tempImage];
         
         [SVProgressHUD showSuccessWithStatus:@"头像上传成功"];
-        
     } failure:^(NSError *error) {
         NSLog(@"error:%@",error);
         [SVProgressHUD showErrorWithStatus:@"头像上传失败"];

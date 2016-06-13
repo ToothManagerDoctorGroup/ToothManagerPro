@@ -183,7 +183,7 @@
                     [_tableView.footer endRefreshing];
                 }
             }
-            [weakSelf.introducerCellModeArray addObjectsFromArray:arrayM];
+            [weakSelf.introducerCellModeArray addObjectsFromArray:[arrayM copy]];
             if (weakSelf.introducerInfoArray.count == 0) {
                 weakSelf.noIntroducerView.hidden = NO;
                 _tableView.tableHeaderView = weakSelf.noIntroducerView;

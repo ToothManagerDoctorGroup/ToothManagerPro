@@ -123,12 +123,12 @@
         } comfirmButtonHandlder:^{
             
             [SVProgressHUD showWithStatus:@"正在退出"];
-            [XLLoginTool updateUserRegisterIdWithUserId:[AccountManager currentUserid] registerId:@"" success:^(CRMHttpRespondModel *respond) {
+            [XLLoginTool updateUserRegisterId:@"" success:^(CRMHttpRespondModel *respond) {
                 if ([respond.code integerValue] == 200) {
                     [[AccountManager shareInstance] logout];
                     [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
                 }else{
-                    [SVProgressHUD showErrorWithStatus:@"退出失败，请检查您的网络设置"];
+                    [SVProgressHUD showImage:nil status:@"退出失败，请检查您的网络设置"];
                 }
             } failure:nil];
             

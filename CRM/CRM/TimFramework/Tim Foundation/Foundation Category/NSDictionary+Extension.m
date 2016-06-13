@@ -14,7 +14,7 @@
 
 - (NSString *)stringForKey:(NSString *)aKey {
     if (![self objectForKey:aKey] || !aKey) {
-        return nil;
+        return @"";
     }
     
     NSString *value = [self objectForKey:aKey];
@@ -26,12 +26,12 @@
         return [NSString stringWithFormat:@"%@",value];
     }
     
-    return nil;
+    return @"";
 }
 
 - (NSString *)timeStringForKey:(NSString *)aKey {
     if (![self objectForKey:aKey] || !aKey) {
-        return nil;
+        return @"";
     }
     
     NSString *value = [self objectForKey:aKey];
@@ -61,13 +61,13 @@
         return [NSString stringWithFormat:@"%@",value];
     }
     
-    return nil;
+    return @"";
 }
 
 
 - (NSString *)stringForKey:(NSString *)aKey placeholder:(NSString *)placeholder {
     NSString *ret = [self stringForKey:aKey];
-    if (ret == nil) {
+    if ([ret isEmpty]) {
         return placeholder;
     } else {
         return ret;

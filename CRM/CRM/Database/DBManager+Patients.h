@@ -211,6 +211,14 @@
  *  @return 成功YES 失败NO
  */
 - (BOOL)deletePatientIntroducerMap:(NSString *)patientId;
+/**
+ *  删除指定的PatientIntroducerMap
+ *
+ *  @param patIntrMap PatientIntroducerMap
+ *
+ *  @return 是否删除成功
+ */
+- (BOOL)deletePatientIntroducerMapWithMap:(PatientIntroducerMap *)patIntrMap;
 
 /**
  *  更新病例
@@ -302,7 +310,14 @@
 
 //删除会诊信息
 - (BOOL)deletePatientConsultationWithPatientId_sync:(NSString *)patientId;
-
+/**
+ *  删除单条会诊信息
+ *
+ *  @param ckeyId ckeyId
+ *
+ *  @return 是否删除成功
+ */
+- (BOOL)deletePatientConsultationWithCkeyId_sync:(NSString *)ckeyId;
 
 /**
  *  插入一条病例记录
@@ -334,6 +349,8 @@
 - (BOOL)deleteMedicalRecordsWithPatientId:(NSString *)patientId;
 
 - (BOOL)deleteMedicalRecordWithCaseId:(NSString *)caseid;
+
+- (BOOL)deleteMedicalRecordWithCaseId_sync:(NSString *)caseid;
 
 - (BOOL)deleteMedicalRecordWithId_Sync:(NSString *)medicalRecordId;
 
@@ -370,15 +387,16 @@
 
 - (BOOL)deleteCTlibWithPatientId:(NSString *)patientId;
 
+
 - (BOOL)deleteCTlibWithLibId_sync:(NSString *)libid;
 //删除一条ct数据，然后自动上传
 - (BOOL)deleteCTlibWithCTLib_AutoSync:(CTLib *)ctLib;
 //获取ct片数据
 - (CTLib *)getCTLibWithCKeyId:(NSString *)ckeyId;
 //设置ct片为主ct
-- (BOOL)setUpMainCT:(CTLib *)ctLib;
+- (BOOL)setUpMainCT:(CTLib *)ctLib patientId:(NSString *)patientId;
 //获取当前病历下的主ct片
-- (NSArray *)getMainCT:(NSString *)case_id;
+- (NSArray *)getMainCTWithPatientId:(NSString *)patient_id;
 //更新ct片
 - (BOOL)updateMainCTLib:(CTLib *)ctLib;
 

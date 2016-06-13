@@ -15,7 +15,7 @@
 @implementation XLAppointImageUploadParam
 
 + (NSArray *)ignoredPropertyNames{
-    return @[@"imageData"];
+    return @[@"imageData",@"imageUrl",@"thumbnailImage"];
 }
 
 - (instancetype)initWithThumbnailImage:(UIImage *)thumbnailImage
@@ -24,7 +24,7 @@
     if (self = [super init]) {
         self.thumbnailImage = thumbnailImage;
         self.reserver_id = @"";
-        self.file_name = @"image";
+        self.file_name = @"image.jpg";
         self.file_type = fileType;
         self.doctor_id = [AccountManager currentUserid];
         self.creation_time = [MyDateTool stringWithDateWithSec:[NSDate date]];

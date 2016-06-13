@@ -17,7 +17,7 @@
         
         self.KeyWord = keyWord;
         self.IsAsc = isAsc;
-        self.SortField = @"";
+        self.SortField = @"modified_time";
         self.PageIndex = @(0);
         self.PageSize = @(0);
         self.DoctorId = doctorId;

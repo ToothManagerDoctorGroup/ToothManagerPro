@@ -49,6 +49,7 @@
 #import "NSString+TTMAddtion.h"
 
 /*******测试******/
+#import "XLMenuGridViewController.h"
 
 @interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
@@ -62,20 +63,14 @@
     IBOutlet UITableViewCell *_tiXingMuBanCell;
     IBOutlet UITableViewCell *_shuJuFenXiCell;
     IBOutlet UITableViewCell *_sheZhiCell;
-    IBOutlet UITableViewCell *_myClinicCell;
-    
     IBOutlet UITableViewCell *_shareCell;
-    
     IBOutlet UITableViewCell *_myBillCell;
+    
     __weak IBOutlet UIImageView *iconImageView;
     __weak IBOutlet UITableViewCell *_copyCell;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *targetView;
-
-@property (nonatomic, assign)BOOL isSign; //是否签约
-
-
 
 @end
 
@@ -116,13 +111,9 @@
     //设置标记图片样式
     self.targetView.layer.cornerRadius = 5;
     self.targetView.layer.masksToBounds = YES;
-    //获取签约状态
-    NSString *isSignStr = [CRMUserDefalut objectForKey:kUserIsSignKey([AccountManager currentUserid])];
-    self.isSign = [isSignStr isEqualToString:@"0"] ? NO : YES;
 }
 
 - (void)onRightButtonAction:(id)sender{
-    
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)tap{
@@ -136,7 +127,6 @@
 
 - (void)refreshView{
     [super refreshView];
-    
     [self.tableView reloadData];
 }
 
@@ -149,10 +139,10 @@
     UserObject *user = [AccountManager shareInstance].currentUser;
     _detailLabel.text = user.hospitalName;
     _nameLabel.text = [NSString stringWithFormat:@"%@   %@",user.name,user.title];
-    [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"] options:SDWebImageRefreshCached];
+    [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
     
     //查询数据库，是否有未同步的数据
-    NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"4"];
+    NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"0"];
     if (array.count > 0) {
         self.targetView.hidden = NO;
     }else{
@@ -162,43 +152,23 @@
 
 #pragma mark - UITableViewDataSource/Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    if (self.isSign == YES) {
-        return 6;
-    }else{
-        return 5;
-    }
-    
+    return 6;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (self.isSign == YES) {
-        if(section==0){
-            return 1;
-        }else if (section==1){
-            return 1;
-        }else if (section==2){
-            return 2;
-        }else if (section==3){
-            return 1;
-        }else if(section == 4){
-            return 2;
-        }else{
-            return 2;
-        }
+    if(section==0){
+        return 1;
+    }else if (section==1){
+        return 1;
+    }else if (section==2){
+        return 2;
+    }else if (section==3){
+        return 1;
+    }else if(section == 4){
+        return 2;
     }else{
-        if(section==0){
-            return 1;
-        }else if (section==1){
-            return 1;
-        }else if (section==2){
-            return 2;
-        }else if(section == 3){
-            return 2;
-        }else{
-            return 2;
-        }
+        return 2;
     }
-    
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     if(section == 0){
@@ -214,64 +184,36 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    if (self.isSign == YES) {
-        if(indexPath.section == 0){
-            return _zhangHuCell;
-        }else if (indexPath.section == 1){
-            if (indexPath.row == 0){
-                return _doctorCell;
-            }
-        }else if (indexPath.section == 2){
-            if (indexPath.row == 0) {
-                return _zhongZhiTiCell;
-            }else{
-                return _tiXingMuBanCell;
-            }
-        }else if (indexPath.section == 3){
-            return _myBillCell;
-        }else if (indexPath.section == 4){
-            if (indexPath.row == 0) {
-                return _shuJuFenXiCell;
-            }else if(indexPath.row == 1){
-                return _shareCell;
-            }
-            
-        }else if (indexPath.section == 5){
-            if (indexPath.row == 0) {
-                return _copyCell;
-            }else{
-                return _sheZhiCell;
-            }
-            
+    if(indexPath.section == 0){
+        return _zhangHuCell;
+    }else if (indexPath.section == 1){
+        if (indexPath.row == 0){
+            return _doctorCell;
         }
-    }else{
-        if(indexPath.section == 0){
-            return _zhangHuCell;
-        }else if (indexPath.section == 1){
-            if (indexPath.row == 0){
-                return _doctorCell;
-            }
-        }else if (indexPath.section == 2){
-            if (indexPath.row == 0) {
-                return _zhongZhiTiCell;
-            }else{
-                return _tiXingMuBanCell;
-            }
-        }else if (indexPath.section == 3){
-            if (indexPath.row == 0) {
-                return _shuJuFenXiCell;
-            }else if(indexPath.row == 1){
-                return _shareCell;
-            }
-        }else if (indexPath.section == 4){
-            if (indexPath.row == 0) {
-                return _copyCell;
-            }
+    }else if (indexPath.section == 2){
+        if (indexPath.row == 0) {
+            return _zhongZhiTiCell;
+        }else{
+            return _tiXingMuBanCell;
+        }
+    }else if (indexPath.section == 3){
+        return _myBillCell;
+    }else if (indexPath.section == 4){
+        if (indexPath.row == 0) {
+            return _shuJuFenXiCell;
+        }else if(indexPath.row == 1){
+            return _shareCell;
+        }
+        
+    }else if (indexPath.section == 5){
+        if (indexPath.row == 0) {
+            return _copyCell;
+        }else{
             return _sheZhiCell;
         }
+        
     }
-    
-        return nil;
+    return nil;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if(indexPath.section==0){
@@ -291,22 +233,14 @@
             userInfoVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:userInfoVC animated:YES];
         }
-    }
-    if(indexPath.section == 1){
+    }else if(indexPath.section == 1){
         if(indexPath.row == 0){
             XLDoctorLibraryViewController *doctorLibrary = [[XLDoctorLibraryViewController alloc] init];
             doctorLibrary.hidesBottomBarWhenPushed = YES;
             [self pushViewController:doctorLibrary animated:YES];
             
         }
-        //else if (indexPath.row == 1){
-//            XLJoinTeamSegumentController *segumentVc = [[XLJoinTeamSegumentController alloc] init];
-//            segumentVc.hidesBottomBarWhenPushed = YES;
-//            [self pushViewController:segumentVc animated:YES];
-            
-        //}
-    }
-    if (indexPath.section == 2) {
+    }else if (indexPath.section == 2) {
         if (indexPath.row == 0) {
             XLMaterialsViewController *materialsVC = [[XLMaterialsViewController alloc] init];
             materialsVC.hidesBottomBarWhenPushed = YES;
@@ -316,68 +250,37 @@
             templateVc.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:templateVc animated:YES];
         }
-    }
-    
-    if (self.isSign == YES) {
-        if (indexPath.section == 3) {
-            WMPageController *pageController = [self p_defaultController];
-            pageController.title = @"我的账单";
-            pageController.menuViewStyle = WMMenuViewStyleLine;
-            pageController.titleSizeSelected = 15;
-            pageController.titleColorSelected = MyColor(0, 139, 232);
-            pageController.menuHeight = 44;
-            pageController.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:pageController animated:YES];
+    }else if (indexPath.section == 3) {
+        WMPageController *pageController = [self p_defaultController];
+        pageController.title = @"我的账单";
+        pageController.menuViewStyle = WMMenuViewStyleLine;
+        pageController.titleSizeSelected = 15;
+        pageController.titleColorSelected = MyColor(0, 139, 232);
+        pageController.menuHeight = 44;
+        pageController.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:pageController animated:YES];
+    }else if(indexPath.section == 4){
+        if(indexPath.row == 0){
+            XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
+            analyse.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:analyse animated:YES];
+        }else{
+            [self showShareActionChoose];
         }
-        
-        if(indexPath.section == 4){
-            if(indexPath.row == 0){
-                XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
-                analyse.hidesBottomBarWhenPushed = YES;
-                [self pushViewController:analyse animated:YES];
-            }else{
-                [self showShareActionChoose];
-            }
-        }
-        if(indexPath.section == 5){
-            if (indexPath.row == 0) {
-                UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-                XLBackUpViewController *backUpVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLBackUpViewController"];
-                backUpVc.hidesBottomBarWhenPushed = YES;
-                [self pushViewController:backUpVc animated:YES];
-            }else if(indexPath.row == 1){
-                XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
-                baseSetting.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:baseSetting animated:YES];
-                
-            }
+    }else if(indexPath.section == 5){
+        if (indexPath.row == 0) {
+            UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+            XLBackUpViewController *backUpVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLBackUpViewController"];
+            backUpVc.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:backUpVc animated:YES];
+        }else if(indexPath.row == 1){
+            XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            baseSetting.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:baseSetting animated:YES];
             
         }
-    }else{
-        if(indexPath.section == 3){
-            if(indexPath.row == 0){
-                XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
-                analyse.hidesBottomBarWhenPushed = YES;
-                [self pushViewController:analyse animated:YES];
-            }else{
-                [self showShareActionChoose];
-            }
-        }
-        if(indexPath.section == 4){
-            if(indexPath.row == 0){
-                UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-                XLBackUpViewController *backUpVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLBackUpViewController"];
-                backUpVc.hidesBottomBarWhenPushed = YES;
-                [self pushViewController:backUpVc animated:YES];
-            }else if(indexPath.row == 1){
-                XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
-                baseSetting.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:baseSetting animated:YES];
-            }
-        }
+        
     }
-    
-    
 }
 //分享选择
 - (void)showShareActionChoose{

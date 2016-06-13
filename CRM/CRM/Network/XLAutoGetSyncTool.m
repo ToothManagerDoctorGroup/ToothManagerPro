@@ -86,9 +86,9 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     NSString *lastSyncKey = [self getSyncKeyWithTableName:tableName];
     return [userDefalut stringForKey:lastSyncKey];
 }
-#pragma mark -设置当前同步时间，默认前移10分钟
+#pragma mark -设置当前同步时间，默认前移5分钟
 - (void)setLastSyncTimeWithTableName:(NSString *)tableName{
-    [CRMUserDefalut setObject:[NSString currentDateTenMinuteString] forKey:[self getSyncKeyWithTableName:tableName]];
+    [CRMUserDefalut setObject:[NSString currentDateFiveMinuteString] forKey:[self getSyncKeyWithTableName:tableName]];
 }
 
 #pragma mark - SyncGet
@@ -124,11 +124,13 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 }
                 //设置最后一次同步时间
                 [weakSelf setLastSyncTimeWithTableName:DoctorTableName];
+                //设置行为表的同步时间
+                [CRMUserDefalut setObject:[weakSelf getCurrentSyncTimeWithTableName:DoctorTableName] forKey:AutoSync_Behaviour_SyncTime];
                 //获取介绍人信息
                 [weakSelf getIntroducerTableHasNext:YES];
                 
             }else{
-                NSLog(@"获取医生好友数据异常code:%ld",[respond.code integerValue]);
+                NSLog(@"获取医生好友数据异常code:%ld",(long)[respond.code integerValue]);
             }
         });
     } failure:^(NSError *error) {
@@ -328,6 +330,7 @@ Realize_ShareInstance(XLAutoGetSyncTool)
     [params setObject:[[CRMUserDefalut latestUserId] TripleDESIsEncrypt:YES] forKey:@"uid"];
     [params setObject:[patInServLastSyncDate TripleDESIsEncrypt:YES] forKey:@"sync_time"];
     
+    [[CRMHttpTool shareInstance ] logWithUrlStr:SYNC_GET_PATIENT_INTRODUCER_MAP_URL params:params];
     [[CRMHttpTool shareInstance] POST:SYNC_GET_PATIENT_INTRODUCER_MAP_URL parameters:params success:^(id responseObject) {
         
         __weak typeof(self) weakSelf = self;
@@ -588,6 +591,7 @@ Realize_ShareInstance(XLAutoGetSyncTool)
                 }
                 //设置最后同步时间
                 [weakSelf setLastSyncTimeWithTableName:CTLibTableName];
+                
                 //判断是否发送同步成功通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:SyncGetSuccessNotification object:nil];
                 if (weakSelf.showSuccess) {

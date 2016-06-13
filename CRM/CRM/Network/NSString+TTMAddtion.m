@@ -425,6 +425,8 @@
                             @"iPhone6,2",
                             @"iPhone7,1",
                             @"iPhone7,2",
+                            @"iPhone8,1",
+                            @"iPhone8,2",
                             
                             @"iPod1,1",
                             @"iPod2,1",
@@ -467,6 +469,8 @@
                                 @"iphone 5s(Global)",
                                 @"iphone 6Plus",
                                 @"iphone 6",
+                                @"iphone 6S",
+                                @"iphone 6SPlus",
                                 
                                 @"iPod Touch 1G",
                                 @"iPod Touch 2G",
@@ -610,5 +614,13 @@
 - (NSString *)transformToPinyin{
     
     return [PinYinForObjc chineseConvertToPinYin:self];
+}
+
+- (NSString *)convertIfNill{
+    if (self == nil) {
+        return @"";
+    }else{
+        return self;
+    }
 }
 @end

@@ -164,4 +164,49 @@
     }];
 }
 
+/**
+ *  获取患者CT的状态
+ *
+ *  @param ckeyIds CTLib的id，中间用“，”隔开
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getPatientCTStatusCTCkeyIds:(NSString *)ckeyIds success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CtLibHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = [@"getctstatus" TripleDESIsEncrypt:YES];
+    params[@"ct_ckeyids"] = [ckeyIds TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:urlStr params:params];
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *mArray = [NSMutableArray array];
+        if ([respond.code integerValue] == 200) {
+            for (NSDictionary *dic in respond.result) {
+                XLPatientCTStatusModel *model = [XLPatientCTStatusModel objectWithKeyValues:dic];
+                [mArray addObject:model];
+            }
+        }
+        if (success) {
+            success(mArray);
+        }
+        
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+}
+
+@end
+
+
+@implementation XLPatientCTStatusModel
+
++ (NSDictionary *)replacedKeyFromPropertyName{
+    return @{@"ckeyid" : @"Ckeyid",
+             @"fileStatus" : @"FileStatus"};
+}
+
 @end

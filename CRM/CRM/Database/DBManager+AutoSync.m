@@ -8,6 +8,8 @@
 
 #import "DBManager+AutoSync.h"
 #import "NSString+TTMAddtion.h"
+#import "MJExtension.h"
+#import "JSONKit.h"
 
 #define MAX_SYNC_COUNT 50
 
@@ -232,5 +234,35 @@
          [result close];
      }];
     return resultArray;
+}
+
+/**
+ *  数据是否正在上传或者上传成功
+ */
+- (BOOL)isExistWithPostType:(NSString *)postType dataType:(NSString *)dataType ckeyId:(NSString *)ckeyId{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db){
+         NSString *sqlString = [NSString stringWithFormat:@"select * from %@ where post_type='%@' and data_type = '%@' and sync_status in (0,1,2)",InfoAutoSyncTableName,postType,dataType];
+         
+         result = [db executeQuery:sqlString];
+         while ([result next])
+         {
+             InfoAutoSync * info = [InfoAutoSync InfoAutoSyncWithResult:result];
+             [resultArray addObject:info];
+         }
+         [result close];
+     }];
+    BOOL exist;
+    if ([postType isEqualToString:AutoSync_CtLib]) {
+        for (InfoAutoSync *info in resultArray) {
+            CTLib *ct = [CTLib objectWithKeyValues:[info.dataEntity objectFromJSONString]];
+            if ([ct.ckeyid isEqualToString:ckeyId]) {
+                exist = YES;
+                break;
+            }
+        }
+    }
+    return exist;
 }
 @end

@@ -75,7 +75,7 @@
     [SVProgressHUD showSuccessWithStatus:@"修改成功"];
     //重新调用登录方法
     NSString *userName = [CRMUserDefalut objectForKey:LatestUserName];
-    [XLLoginTool loginWithNickName:userName password:self.newpasswdTextField.text success:^(CRMHttpRespondModel *respond) {
+    [XLLoginTool newLoginWithNickName:userName password:self.newpasswdTextField.text success:^(CRMHttpRespondModel *respond) {
         //更新本地保存的加密密码
         if ([respond.code integerValue] == 200) {
             [CRMUserDefalut setObject:respond.result[@"Password"] forKey:LatestUserPassword];

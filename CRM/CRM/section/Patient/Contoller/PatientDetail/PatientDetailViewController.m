@@ -106,15 +106,16 @@
     
     //获取患者分组信息
     [self requestGroupData];
+    
+    //获取患者的CT片的状态
+    [self requestPatientCTsStatus];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    
-    NSLog(@"viewWillAppear");
     //添加键盘状态监听
     [self addNotification];
-    
+    //初始化数据，刷新视图
     [self setUpData];
     [self refreshView];
 }
@@ -123,7 +124,6 @@
     [super viewDidDisappear:animated];
     
     selectIntroducer = nil;
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -254,6 +254,38 @@
     }];
 }
 
+#pragma mark - 获取患者的CT状态
+- (void)requestPatientCTsStatus{
+    //获取所有的CT片的id
+    NSArray *cts = [[DBManager shareInstance] getCTLibArrayWithPatientId:self.patientsCellMode.patientId];
+    NSMutableString *ctids = [NSMutableString string];
+    for (CTLib *ct in cts) {
+        [ctids appendFormat:@"%@,",ct.ckeyid];
+    }
+    if (ctids.length > 0) {
+        NSString *idStr = [ctids substringToIndex:ctids.length - 1];
+        [MyPatientTool getPatientCTStatusCTCkeyIds:idStr success:^(NSArray *result) {
+            //判断获取到的数据状态
+            if (result.count > 0) {
+                for (XLPatientCTStatusModel *statusM in result) {
+                    if (statusM.fileStatus > 0) {
+                        if (![[DBManager shareInstance] isExistWithPostType:Insert dataType:AutoSync_CtLib ckeyId:statusM.ckeyid]) {
+                            //如果行为表中不存在此数据，则重新添加
+                            CTLib *ct = [[DBManager shareInstance] getCTLibWithCKeyId:statusM.ckeyid];
+                            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_CtLib postType:Insert dataEntity:[ct.keyValues JSONString] syncStatus:@"0"];
+                            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+                        }
+                    }
+                }
+            }
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+    }
+}
+
 #pragma mark - 获取患者分组信息
 - (void)requestGroupData{
     [DoctorGroupTool getGroupListWithDoctorId:[AccountManager currentUserid] ckId:@"" patientId:self.patientsCellMode.patientId success:^(NSArray *result) {
@@ -382,6 +414,27 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        //删除当前的会诊信息
+        CommentModelFrame *modelF = self.comments[indexPath.row];
+        //删除本地的会诊信息
+        BOOL ret = [[DBManager shareInstance] deletePatientConsultationWithCkeyId_sync:modelF.model.ckeyid];
+        if (ret) {
+            [self.comments removeObjectAtIndex:indexPath.row];
+            //刷新当前被删除的行
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_PatientConsultation postType:Delete dataEntity:[modelF.model.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning {

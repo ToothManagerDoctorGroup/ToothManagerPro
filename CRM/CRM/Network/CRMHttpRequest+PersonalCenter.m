@@ -11,6 +11,8 @@
 #import "AccountManager.h"
 #import "NSJSONSerialization+jsonString.h"
 #import "NSString+TTMAddtion.h"
+#import "XLAutoSyncTool.h"
+#import "CRMHttpTool.h"
 
 @implementation CRMHttpRequest (PersonalCenter)
 
@@ -141,7 +143,7 @@
     [paramDic setObject:[@"approve" TripleDESIsEncrypt:YES] forKey:@"action"];
     [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
     
-    TimRequestParam *param = [TimRequestParam paramWithURLSting:ApproveOrRefuse_IntroducerApply andParams:paramDic withPrefix:PersonalCenter_Prefix];
+    TimRequestParam *param = [TimRequestParam paramWithURLSting:ApproveOrRefuse_IntroducerApply andParams:[[XLAutoSyncTool shareInstance] addCommenParams:paramDic] withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];
 }
 
@@ -178,6 +180,8 @@
         [paramDic setObject:[patientKeyId TripleDESIsEncrypt:YES] forKey:@"pkeyId"];
     }
     NSString *urlStr = [EncryptionOpen isEqualToString:Auto_Action_Open] ? Qrcode_URL_Encrypt : Qrcode_URL;
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:urlStr params:paramDic];
     
     TimRequestParam *param = [TimRequestParam paramWithURLSting:urlStr andParams:paramDic withPrefix:PersonalCenter_Prefix];
     [self requestWithParams:param];

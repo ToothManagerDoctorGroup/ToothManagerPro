@@ -255,5 +255,11 @@
 
 - (NSString *)transformToPinyin;
 
+/**
+ *  判断是否为nil
+ *
+ *  @return 如果为nil，则返回@""
+ */
+- (NSString *)convertIfNill;
 
 @end

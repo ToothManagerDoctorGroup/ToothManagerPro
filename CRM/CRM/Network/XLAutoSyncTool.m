@@ -26,9 +26,9 @@ Realize_ShareInstance(XLAutoSyncTool);
 //            [params setObject:[AccountManager shareInstance].currentUser.userid forKey:@"userid"];
 //    }
 //    [params setObject:@"ios" forKey:@"devicetype"];
-//    if ([CRMUserDefalut objectForKey:DeviceToken]) {
-//        [params setObject:[CRMUserDefalut objectForKey:DeviceToken] forKey:@"devicetoken"];
-//    }
+    if ([CRMUserDefalut objectForKey:DeviceToken]) {
+        [params setObject:[[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES] forKey:@"devicetoken"];
+    }
     
     return params;
 }

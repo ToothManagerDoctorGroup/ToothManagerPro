@@ -11,7 +11,7 @@
 #import "MyDateTool.h"
 #import "CRMUserDefalut.h"
 #import "DBManager.h"
-
+#import "AutoSync.h"
 
 #define Patient_AutoSync_Time_Key [NSString stringWithFormat:@"syncDataGet%@%@", PatientTableName, [AccountManager currentUserid]]
 #define Doctor_AutoSync_Time_Key [NSString stringWithFormat:@"syncDataGet%@%@", DoctorTableName, [AccountManager currentUserid]]
@@ -90,6 +90,10 @@
     for (NSString *key in dataList) {
         [CRMUserDefalut setObject:[NSString defaultDateString] forKey:key];
     }
+    
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    [userDefault removeObjectForKey:AutoSync_Behaviour_SyncTime];
+    [userDefault synchronize];
 }
 
 #pragma mark - UUDatePickerDelegate

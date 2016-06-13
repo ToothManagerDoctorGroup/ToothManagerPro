@@ -45,6 +45,14 @@ typedef NS_ENUM(NSInteger,SysMessageReadState){
  *  @param failure  失败回调
  */
 + (void)getUnReadMessagesWithDoctorId:(NSString *)doctorId success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+/**
+ *  获取未读消息的数量
+ *
+ *  @param doctorId 医生id
+ *  @param success  成功回调
+ *  @param failure  失败回调
+ */
++ (void)getUnReadMessageCountWithDoctorId:(NSString *)doctorId success:(void (^)(NSString *result))success failure:(void (^)(NSError *error))failure;
 
 /**
  *  获取所有的已读消息
@@ -92,7 +100,7 @@ typedef NS_ENUM(NSInteger,SysMessageReadState){
  *  @param success    成功回调
  *  @param failure    失败回调
  */
-+ (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
++ (void)updateReserveRecordStatusWithReserveId:(NSString *)reserve_id therapy_doctor_id:(NSString *)therapy_doctor_id success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *error))failure;
 
 /**
  *  获取单条预约信息

@@ -56,6 +56,20 @@
     
     return  string1;
 }
+
+//format YYYY:MM:DD HH:MM:SS
++ (NSString *)currentDateFiveMinuteString{
+    NSDate* curDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    NSDate* date1 = [[NSDate alloc] init];
+    date1 = [curDate dateByAddingTimeInterval:-300];
+    NSString *string1 =  [dateFormatter stringFromDate:date1];
+    
+    return  string1;
+}
+
 - (NSString*)MD5
 {
 	// Create pointer to the string as UTF8

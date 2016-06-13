@@ -50,19 +50,15 @@
 @interface MyScheduleReminderViewController ()<JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
 @property (nonatomic,retain) NSArray *remindArray;
-
 @property (nonatomic, strong)NSDate *selectDate;
-
 @property (nonatomic, strong)Patient *selectPatient;//当前选中的患者
 @property (nonatomic, assign)BOOL isHide;
 @property (strong, nonatomic) JTCalendar *calendar;//日历
 @property (nonatomic, weak)JTCalendarContentView *contentView;
 @property (nonatomic, weak)ScheduleDateButton *buttonView;
-@property (nonatomic, weak)UILabel *messageCountLabel;//消息提示框
 @property (nonatomic, strong)NSMutableArray *currentMonthArray;//当前月的数据
-
-@property (nonatomic, strong)NSTimer *messageTimer;//消息处理的定时器
-
+@property (nonatomic, strong)UILabel *noWlanTintView;//无网提示
+@property (nonatomic, weak)UIView *dateSuperView;
 @end
 
 @implementation MyScheduleReminderViewController
@@ -81,20 +77,11 @@
     [self setUpMessageItem];
     //更新registerId
     [self updateUserRegisterId];
-    //创建定时器，自动处理消息
-    [self createMessageTimer];
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [SVProgressHUD dismiss];
-}
-
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    [self requestUnreadMessageCount];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -104,9 +91,6 @@
         [self didClickDateButton];
         self.isHide = YES;
     }
-    
-    //是否显示更新提示
-    [self showNewVersion];
 }
 
 - (void)dealloc {
@@ -138,19 +122,6 @@
     [[XLAutoGetSyncTool shareInstance] getReserverecordTableHasNext:NO];
 }
 
-#pragma mark 请求未读的数据
-- (void)requestUnreadMessageCount{
-    //请求未读消息数
-    [SysMessageTool getUnReadMessagesWithDoctorId:[[AccountManager shareInstance] currentUser].userid success:^(NSArray *result) {
-        if (result.count > 0) {
-            self.messageCountLabel.hidden = NO;
-            self.messageCountLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)result.count];
-        }else{
-            self.messageCountLabel.hidden = YES;
-        }
-    } failure:^(NSError *error) {}];
-}
-
 #pragma mark 设置消息按钮
 - (void)setUpMessageItem{
     UIButton *messageButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -160,16 +131,15 @@
     messageButton.frame = CGRectMake(0, 0, 40, 44);
     [messageButton addTarget:self action:@selector(messageAction) forControlEvents:UIControlEventTouchUpInside];
     
-    UILabel *messageCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(26, 4, 14, 14)];
-    messageCountLabel.layer.cornerRadius = 7;
-    messageCountLabel.layer.masksToBounds = YES;
-    messageCountLabel.backgroundColor = [UIColor redColor];
-    messageCountLabel.textColor = [UIColor whiteColor];
-    messageCountLabel.textAlignment = NSTextAlignmentCenter;
-    messageCountLabel.font = [UIFont systemFontOfSize:10];
-    messageCountLabel.hidden = YES;
-    self.messageCountLabel = messageCountLabel;
-    [messageButton addSubview:messageCountLabel];
+    _messageCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(26, 4, 16, 16)];
+    _messageCountLabel.layer.cornerRadius = 8;
+    _messageCountLabel.layer.masksToBounds = YES;
+    _messageCountLabel.backgroundColor = [UIColor redColor];
+    _messageCountLabel.textColor = [UIColor whiteColor];
+    _messageCountLabel.textAlignment = NSTextAlignmentCenter;
+    _messageCountLabel.font = [UIFont systemFontOfSize:10];
+    _messageCountLabel.hidden = YES;
+    [messageButton addSubview:_messageCountLabel];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:messageButton];
 }
 
@@ -180,23 +150,12 @@
     [self pushViewController:sysMessageVc animated:YES];
 }
 
-#pragma mark 消息定时器处理
-- (void)createMessageTimer{
-    if (!_messageTimer) {
-        _messageTimer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:_messageTimer forMode:NSRunLoopCommonModes];
-    }
-}
-#pragma mark 处理未读消息
-- (void)messageAutoHandle:(NSTimer *)timer{
-    [XLMessageHandleManager beginHandle];
-}
-
 #pragma mark 初始化子视图
 - (void)initSubViews
 {
     //日历选择页面
     UIView *dateSuperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 40)];
+    self.dateSuperView = dateSuperView;
     dateSuperView.backgroundColor = MyColor(246, 246, 246);
     [self.view addSubview:dateSuperView];
     //日期显示按钮
@@ -249,6 +208,8 @@
     
     //添加通知
     [self addNotificationObserver];
+    //判断网络状态
+    [self connectionStatusChanged];
 }
 
 #pragma mark 今日按钮点击
@@ -305,6 +266,7 @@
     [self addObserveNotificationWithName:NotificationDeleted];
     [self addObserveNotificationWithName:SyncGetSuccessNotification];
     [self addObserveNotificationWithName:PatientDeleteNotification];
+    [self addObserveNotificationWithName:ConnectionStatusChangedNotification];
 }
 
 - (void)removeNotificationObserver {
@@ -313,6 +275,7 @@
     [self removeObserverNotificationWithName:NotificationDeleted];
     [self removeObserverNotificationWithName:SyncGetSuccessNotification];
     [self removeObserverNotificationWithName:PatientDeleteNotification];
+    [self removeObserverNotificationWithName:ConnectionStatusChangedNotification];
 }
 
 - (void)handNotification:(NSNotification *)notifacation {
@@ -330,6 +293,36 @@
             [self.calendar reloadAppearance];
             [self.calendar reloadData];
         });
+    }else if([notifacation.name isEqualToString:ConnectionStatusChangedNotification]){
+        //判断当前的网络状态
+        [self connectionStatusChanged];
+    }
+}
+
+#pragma mark 判断网络状态，是否显示无网络提示视图
+- (void)connectionStatusChanged{
+    NetworkStatus status = [CRMAppDelegate appDelegate].connectionStatus;
+    WS(weakSelf);
+    if (status == NotReachable) {
+        //添加无网提示视图
+        [self.view addSubview:self.noWlanTintView];
+        m_tableView.height -= 30;
+        [UIView animateWithDuration:.35 animations:^{
+            [weakSelf.view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
+                view.transform = CGAffineTransformMakeTranslation(0, 30);
+            }];
+        }];
+    }else{
+        if (!_noWlanTintView) return;
+        m_tableView.height += 30;
+        [UIView animateWithDuration:.35 animations:^{
+            [weakSelf.view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
+                view.transform = CGAffineTransformIdentity;
+            }];
+        } completion:^(BOOL finished) {
+            [_noWlanTintView removeFromSuperview];
+            _noWlanTintView = nil;
+        }];
     }
 }
 
@@ -338,11 +331,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-//    if (self.remindArray.count > 0) {
-//        self.noResultView.hidden = YES;
-//    }else{
-//        self.noResultView.hidden = NO;
-//    }
     return self.remindArray.count;
 }
 
@@ -462,6 +450,7 @@
 - (void)didClickDateButton{
     
     self.calendar.calendarAppearance.isWeekMode = !self.calendar.calendarAppearance.isWeekMode;
+    NetworkStatus status = [CRMAppDelegate appDelegate].connectionStatus;
     
     CGFloat newHeight = 250;
     if (isPad) {
@@ -473,7 +462,12 @@
     [UIView animateWithDuration:.5
                      animations:^{
                          self.contentView.height = newHeight;
-                         m_tableView.frame = CGRectMake(0, 40 + newHeight, kScreenWidth, kScreenHeight - 49 - 64 - 40 - newHeight);
+                         if (status == NotReachable) {
+                             m_tableView.frame = CGRectMake(0, 40 + newHeight + 30, kScreenWidth, kScreenHeight - 49 - 64 - 40 - newHeight - 30);
+                         }else{
+                              m_tableView.frame = CGRectMake(0, 40 + newHeight, kScreenWidth, kScreenHeight - 49 - 64 - 40 - newHeight);
+                         }
+                         
                          [self.view layoutIfNeeded];
                      }];
     
@@ -544,34 +538,7 @@
 }
 
 
-#pragma mark - 显示新版本更新
-#pragma mark -showNewVersion
-- (void)showNewVersion{
-    NSString *updateTime = [CRMUserDefalut objectForKey:NewVersionUpdate_TimeKey];
-    if (updateTime == nil) {
-        [self showAlertViewWithTime:updateTime];
-    }else{
-        //判断目标时间和当前时间的时间差
-        NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:[MyDateTool dateWithStringWithSec:updateTime]];
-        if (timeInterval > NewVersionUpdateTimeInterval) {
-            [self showAlertViewWithTime:[MyDateTool stringWithDateWithSec:[NSDate date]]];
-        }
-    }
-}
 
-- (void)showAlertViewWithTime:(NSString *)time{
-    //判断是否有新版本
-    [UIApplication checkNewVersionWithAppleID:@"901754828" handler:^(BOOL newVersion, NSURL *updateURL) {
-        [CRMUserDefalut setObject:time forKey:NewVersionUpdate_TimeKey];
-        if (newVersion) {
-            TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"更新提示" message:@"种牙管家又有新版本啦!" cancel:@"稍后更新" certain:@"立即前往" cancelHandler:^{
-            } comfirmButtonHandlder:^{
-                [UIApplication updateApplicationWithURL:updateURL];
-            }];
-            [alertView show];
-        }
-    }];
-}
 #pragma mark - ********************* Lazy Method ***********************
 #pragma mark 初始化控件
 - (NSMutableArray *)currentMonthArray{
@@ -585,8 +552,21 @@
 - (void)updateUserRegisterId{
     NSString *registerId = [CRMUserDefalut objectForKey:RegisterId];
     if ([registerId isNotEmpty]) {
-        [XLLoginTool updateUserRegisterIdWithUserId:[AccountManager currentUserid] registerId:[CRMUserDefalut objectForKey:RegisterId] success:^(CRMHttpRespondModel *respond) {} failure:^(NSError *error) {}];
+        [XLLoginTool updateUserRegisterId:[CRMUserDefalut objectForKey:RegisterId] success:^(CRMHttpRespondModel *respond) {} failure:^(NSError *error) {}];
     }
 }
+#pragma mark 无网提示视图
+- (UILabel *)noWlanTintView{
+    if (!_noWlanTintView) {
+        _noWlanTintView = [[UILabel alloc] initWithFrame:CGRectMake(0, -30, kScreenWidth, 30)];
+        _noWlanTintView.font = [UIFont systemFontOfSize:13];
+        _noWlanTintView.textColor = [UIColor colorWithHex:0xf27e00];
+        _noWlanTintView.backgroundColor = [UIColor colorWithHex:0xfff2b7];
+        _noWlanTintView.textAlignment = NSTextAlignmentCenter;
+        _noWlanTintView.text = @"当前网络不可用，请检查您的网络设置";
+    }
+    return _noWlanTintView;
+}
+
 
 @end

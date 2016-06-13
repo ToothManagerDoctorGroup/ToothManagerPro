@@ -116,13 +116,13 @@ Realize_ShareInstance(CRMHttpTool);
 }
 
 
-- (void)Upload:(NSString *)URLString parameters:(id)parameters uploadParam:(MyUploadParam *)uploadParam success:(void (^)())success failure:(void (^)(NSError *))failure{
+- (void)Upload:(NSString *)URLString parameters:(id)parameters uploadParam:(MyUploadParam *)uploadParam success:(void (^)(id responseObject))success failure:(void (^)(NSError *))failure{
     
     [self.manager POST:URLString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:uploadParam.data name:uploadParam.name fileName:uploadParam.fileName mimeType:uploadParam.mimeType];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (success) {
-            success();
+            success(responseObject);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog ( @"operation: %@", operation.responseString );
@@ -153,5 +153,14 @@ Realize_ShareInstance(CRMHttpTool);
 }
 
 
+
+- (void)logWithUrlStr:(NSString *)urlStr params:(NSDictionary *)params{
+    NSMutableString *mStr = [NSMutableString string];
+    [mStr appendFormat:@"%@?",urlStr];
+    for (NSString *key in params.allKeys) {
+        [mStr appendFormat:@"%@=%@&",key,params[key]];
+    }
+    NSLog(@"requestUrl:%@",[mStr substringToIndex:mStr.length - 1]);
+}
 
 @end

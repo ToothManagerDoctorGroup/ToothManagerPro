@@ -16,6 +16,7 @@
 #import "AccountManager.h"
 #import "MyDateTool.h"
 #import "UIColor+Extension.h"
+#import "NSString+TTMAddtion.h"
 
 //NSString * const ITI = @"ITI";
 //NSString * const DENTIS = @"DENTIS"; //诺贝尔，ITI，奥齿泰，费亚丹
@@ -97,35 +98,10 @@ NSString * const Repaired = @"已修复";
     if ([string isEqualToString:MaterialStr]) {
         return MaterialTypeMaterial;
     }
-//    } else if ([string isEqualToString:DENTIS]) {
-//        return MaterialTypeDENTIS;
-//    } else if ([string isEqualToString:NuoBeiEr]) {
-//        return MaterialTypeNuoBeiEr;
-//    } else if ([string isEqualToString:AoChiTai]) {
-//        return MaterialTypeAoChiTai;
-//    } else if ([string isEqualToString:FeiYaDan]) {
-//        return MaterialTypeFeiYaDan;
-//    }
     return MaterialTypeOther;
 }
 
 + (NSString *)typeStringWith:(MaterialType)type {
-//    switch (type) {
-//        case MaterialTypeITI:
-//            return ITI;
-//            break;
-//        case MaterialTypeDENTIS:
-//            return DENTIS;
-//            break;
-//        case MaterialTypeAoChiTai:
-//            return AoChiTai;
-//            break;
-//        case MaterialTypeFeiYaDan:
-//            return FeiYaDan;
-//            break;
-//        case MaterialTypeNuoBeiEr:
-//            return NuoBeiEr;
-//            break;
     switch (type) {
         case MaterialTypeOther:
             return OtherStr;
@@ -184,9 +160,9 @@ NSString * const Repaired = @"已修复";
     tmpMedicalCase.implant_time = [medcas timeStringForKey:@"implant_time"];
     tmpMedicalCase.next_reserve_time = [medcas timeStringForKey:@"next_reserve_time"];
     tmpMedicalCase.patient_id = [medcas stringForKey:@"patient_id"];
-    tmpMedicalCase.repair_doctor = [medcas stringForKey:@"repair_doctor"];
+    tmpMedicalCase.repair_doctor = [[medcas stringForKey:@"repair_doctor"] convertIfNill];
     tmpMedicalCase.repair_doctor_name = [medcas stringForKey:@"repair_doctor_name"];
-    tmpMedicalCase.repair_time = [medcas timeStringForKey:@"repair_time"];
+    tmpMedicalCase.repair_time = [[medcas timeStringForKey:@"repair_time"] convertIfNill];
     tmpMedicalCase.update_date = [NSString defaultDateString];
     tmpMedicalCase.sync_time = [medcas stringForKey:@"sync_time"];
     tmpMedicalCase.doctor_id = [medcas stringForKey:@"doctor_id"];
@@ -358,6 +334,7 @@ NSString * const Repaired = @"已修复";
 }
 
 + (Patient *)PatientFromPatientResult:(NSDictionary *)pat {
+    
     Patient *tmpPatient = [[Patient alloc]init];
     
     tmpPatient.ckeyid = [pat stringForKey:@"ckeyid"];
@@ -367,7 +344,7 @@ NSString * const Repaired = @"已修复";
     tmpPatient.patient_gender = [pat stringForKey:@"patient_gender"];
     tmpPatient.patient_age = [pat stringForKey:@"patient_age"];
     tmpPatient.patient_status = [[pat stringForKey:@"patient_status"] integerValue];
-    tmpPatient.introducer_id = [pat stringForKey:@"introducer_id"];
+    tmpPatient.introducer_id = [[pat stringForKey:@"introducer_id"] convertIfNill];
     tmpPatient.ori_user_id = [pat stringForKey:@"ori_doctor_id"];
    // tmpPatient.update_date = [NSString defaultDateString];
     tmpPatient.sync_time = [pat stringForKey:@"sync_time"];
@@ -376,16 +353,14 @@ NSString * const Repaired = @"已修复";
     tmpPatient.intr_name = [pat stringForKey:@"intr_name"];
     tmpPatient.update_date = [pat stringForKey:@"update_time"];
     tmpPatient.creation_date = [pat stringForKey:@"creation_time"];
-    
     tmpPatient.patient_allergy = [pat stringForKey:@"patient_allergy"];
-    tmpPatient.patient_remark = [pat stringForKey:@"patient_remark"];
+    tmpPatient.patient_remark =[pat stringForKey:@"patient_remark"];
     tmpPatient.idCardNum = [pat stringForKey:@"IdCardNum"];
     tmpPatient.patient_address = [pat stringForKey:@"patient_address"];
     tmpPatient.anamnesis = [pat stringForKey:@"Anamnesis"];
     tmpPatient.nickName = [pat stringForKey:@"NickName"];
     
     return tmpPatient;
-    
 }
 
 @end
@@ -696,8 +671,8 @@ NSString * const Repaired = @"已修复";
 }
 
 +(PatientIntroducerMap *)PIFromMIResult:(NSDictionary *)mIRs{
-    PatientIntroducerMap *tempMi = [[PatientIntroducerMap alloc]init];
-    if ([mIRs stringForKey:@"ckeyid"] != nil) {
+    PatientIntroducerMap *tempMi = [[PatientIntroducerMap alloc] init];
+    if (![[mIRs stringForKey:@"ckeyid"] isEmpty]) {
         tempMi.ckeyid = [mIRs stringForKey:@"ckeyid"];
     }
     tempMi.intr_id = [mIRs stringForKey:@"intr_id"];
@@ -793,11 +768,11 @@ NSString * const Repaired = @"已修复";
     tempPc.ckeyid = [pat stringForKey:@"ckeyid"];
     tempPc.patient_id = [pat stringForKey:@"patient_id"];
     tempPc.doctor_id = [pat stringForKey:@"doctor_id"];
-    tempPc.doctor_name = [pat stringForKey:@"doctor_name"];
-    tempPc.amr_file = [pat stringForKey:@"amr_file"];
-    tempPc.amr_time = [pat stringForKey:@"amr_time"];
-    tempPc.cons_type = [pat stringForKey:@"cons_type"];
-    tempPc.cons_content = [pat stringForKey:@"cons_content"];
+    tempPc.doctor_name = [[pat stringForKey:@"doctor_name"] convertIfNill];
+    tempPc.amr_file = [[pat stringForKey:@"amr_file"] convertIfNill];
+    tempPc.amr_time = [[pat stringForKey:@"amr_time"] convertIfNill];
+    tempPc.cons_type = [[pat stringForKey:@"cons_type"] convertIfNill];
+    tempPc.cons_content = [[pat stringForKey:@"cons_content"] convertIfNill];
     tempPc.data_flag = [[pat stringForKey:@"data_flag"] integerValue];
     tempPc.sync_time = [pat stringForKey:@"sync_time"];
     tempPc.creation_date = [pat stringForKey:@"creation_time"];

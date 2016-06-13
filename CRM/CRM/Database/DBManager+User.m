@@ -234,20 +234,13 @@
     return user;
 }
 
-- (BOOL)upDateUserHeaderImageUrlWithUserId:(NSString *)userId{
-    
-    NSString *headerImage = [AccountManager shareInstance].currentUser.img;
-    NSString *currentImage = nil;
+- (BOOL)upDateUserHeaderImageUrlWithUserId:(NSString *)userId imageUrl:(NSString *)imageUrl{
     __block BOOL ret = NO;
-    if ([headerImage isContainsString:@"default"]) {
-        currentImage = [headerImage stringByReplacingOccurrencesOfString:@"default" withString:userId];
-        
-        [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
-            // 3. 写入数据库
-            NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set img = '%@' where user_id = %@", UserTableName, currentImage,userId];
-            ret = [db executeUpdate:sqlQuery];
-        }];
-    }
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        // 3. 写入数据库
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set img = '%@' where user_id = %@", UserTableName, imageUrl,userId];
+        ret = [db executeUpdate:sqlQuery];
+    }];
     return ret;
 }
 

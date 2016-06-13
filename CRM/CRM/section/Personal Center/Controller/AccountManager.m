@@ -206,6 +206,7 @@ Realize_ShareInstance(AccountManager);
     self.currentUser.userid = nil;
     self.currentUser.accesstoken = nil;
     [CRMUserDefalut setLatestUserId:nil];
+    [CRMUserDefalut setLatestUserPassword:nil];
     NSString *signKey = kUserIsSignKey([self currentUser].userid);
     [CRMUserDefalut setObject:nil forKey:signKey];
     

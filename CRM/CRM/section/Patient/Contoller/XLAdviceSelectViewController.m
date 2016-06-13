@@ -247,7 +247,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     XLAdviceDetailCell *cell = [XLAdviceDetailCell cellWithTableView:tableView];
-    
     cell.delegate = self;
     cell.model = self.dataList[indexPath.row];
     

@@ -35,6 +35,10 @@
 #import "UINavigationItem+Margin.h"
 #import "XLBrowserViewController.h"
 #import "XLImageBrowserView.h"
+#import "DBManager+LocalNotification.h"
+#import "JSONKit.h"
+#import "MJExtension.h"
+#import "DBManager+AutoSync.h"
 
 #define Margin 10
 #define ImageWidth 60
@@ -177,6 +181,9 @@
             //预约保存成功
             notification.clinic_reserve_id = respondModel.result;
             [[LocalNotificationCenter shareInstance] addLocalNotification:notification];
+            
+            InfoAutoSync *info = [[InfoAutoSync alloc] initWithDataType:AutoSync_ReserveRecord postType:Insert dataEntity:[notification.keyValues JSONString] syncStatus:@"0"];
+            [[DBManager shareInstance] insertInfoWithInfoAutoSync:info];
             //上传图片
             [weakSelf uploadAllImagesWithReserveId:notification.clinic_reserve_id];
             
@@ -223,7 +230,7 @@
 #pragma mark 获取发送给患者的消息内容
 - (void)getPatientBindState{
     //获取患者的微信绑定状态
-    [SVProgressHUD showWithStatus:@"图片上传成功，正在获取患者提醒消息" maskType:SVProgressHUDMaskTypeClear];
+    [SVProgressHUD showWithStatus:@"正在获取患者提醒消息" maskType:SVProgressHUDMaskTypeClear];
     [MyPatientTool getWeixinStatusWithPatientId:self.currentNoti.patient_id success:^(CRMHttpRespondModel *respondModel) {
         if ([respondModel.result isEqualToString:@"1"]) {
             //绑定
@@ -252,6 +259,7 @@
         [SysMessageTool sendMessageWithDoctorId:[AccountManager currentUserid] patientId:weakSelf.currentNoti.patient_id isWeixin:wenxinSend isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
             if ([respond.code integerValue] == 200) {
                 [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                
                 //将消息保存在消息记录里
                 [weakSelf savaMessageToChatRecordWithPatient:patientTmp message:content];
             }else{

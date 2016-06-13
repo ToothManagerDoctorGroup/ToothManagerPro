@@ -26,6 +26,8 @@
 #import "XLChatRecordQueryModel.h"
 #import "XLChatModel.h"
 #import "AccountManager.h"
+#import "XLAutoSyncTool.h"
+#import "CRMUserDefalut.h"
 
 #define userIdParam @"userid"
 #define requestActionParam @"action"
@@ -118,7 +120,7 @@
 }
 
 
-+ (void)composeTeacherHeadImg:(UIImage *)image userId:(NSString *)userId success:(void (^)())success failure:(void (^)(NSError *))failure{
++ (void)composeTeacherHeadImg:(UIImage *)image userId:(NSString *)userId success:(void (^)(CRMHttpRespondModel *respond))success failure:(void (^)(NSError *))failure{
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/DoctorInfoHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
     
@@ -134,9 +136,10 @@
     params[@"Action"] = [@"avatar" TripleDESIsEncrypt:YES];
     params[@"KeyId"] = [userId TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] Upload:urlStr parameters:params uploadParam:uploadParam success:^{
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params uploadParam:uploadParam success:^(id responseObject) {
+        CRMHttpRespondModel *res = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
-            success();
+            success(res);
         }
     } failure:^(NSError *error) {
         if (failure) {
@@ -156,7 +159,7 @@
     dataEntity[@"intr_id"] = introId;
     params[@"DataEntity"] = [[dataEntity JSONString] TripleDESIsEncrypt:YES];
     
-    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:[[XLAutoSyncTool shareInstance] addCommenParams:params] success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -272,7 +275,7 @@
     
     [params setObject:[[dataEntity JSONString] TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
     
-    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:[[XLAutoSyncTool shareInstance] addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(model);
@@ -745,6 +748,36 @@
             if (success) {
                 success(@[]);
             }
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  获取患者或者医生的二维码
+ *
+ *  @param patientKeyId 患者的keyId
+ *  @param isDoctor     是否是医生
+ *  @param success      成功回调
+ *  @param failure      失败回调
+ */
++ (void)getQrCodeWithPatientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor success:(void(^)(NSDictionary *result))success failure:(void(^)(NSError *error))failure{
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionary];
+    [paramDic setObject:[[AccountManager currentUserid] TripleDESIsEncrypt:YES] forKey:@"userId"];
+    [paramDic setObject:[[AccountManager shareInstance].currentUser.accesstoken TripleDESIsEncrypt:YES] forKey:@"AccessToken"];
+    if (!isDoctor) {
+        [paramDic setObject:[patientKeyId TripleDESIsEncrypt:YES] forKey:@"pkeyId"];
+    }
+    NSString *urlStr = [EncryptionOpen isEqualToString:Auto_Action_Open] ? Qrcode_URL_Encrypt : Qrcode_URL;
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:urlStr params:paramDic];
+    
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
+        if (success) {
+            success(responseObject);
         }
     } failure:^(NSError *error) {
         if (failure) {

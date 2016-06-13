@@ -12,6 +12,8 @@
 #import "NSString+TTMAddtion.h"
 #import "JSONKit.h"
 #import "AccountManager.h"
+#import "CRMHttpTool.h"
+#import "CRMUserDefalut.h"
 
 @implementation CRMHttpRequest (Doctor)
 
@@ -85,6 +87,11 @@
     NSString *jsonString = [NSJSONSerialization jsonStringWithObject:dataEntity];
     [paramDic setObject:[@"transfer" TripleDESIsEncrypt:YES] forKey:@"action"];
     [paramDic setObject:[jsonString TripleDESIsEncrypt:YES] forKey:@"DataEntity"];
+    paramDic[@"devicetoken"] = [[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES];
+    
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:Transfer_URL params:paramDic];
+    
     TimRequestParam *param = [TimRequestParam paramWithURLSting:Transfer_URL andParams:paramDic withPrefix:Doctor_Prefix];
     [self requestWithParams:param];
     

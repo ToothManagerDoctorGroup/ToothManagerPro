@@ -22,8 +22,7 @@
 #import "MJRefresh.h"
 #import "CRMUserDefalut.h"
 #import "UINavigationItem+Margin.h"
-
-#define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
+#import "SettingMacro.h"
 
 @interface XLPersonInfoViewController ()<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,XLDataSelectViewControllerDelegate,XLCommonEditViewControllerDelegate,XLContentWriteViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;//头像
@@ -263,22 +262,28 @@
     //上传服务器
     __weak typeof(self) weakSelf = self;
     [SVProgressHUD showWithStatus:@"上传中..."];
-    [DoctorTool composeTeacherHeadImg:tempImage userId:[[AccountManager shareInstance] currentUser].userid success:^{
-        //清空缓存中的用户头像
-        [[SDImageCache sharedImageCache] removeImageForKey:[AccountManager shareInstance].currentUser.img];
-        //清空二维码缓存
-        NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
-        if (qrcodeUrl) {
-            [[SDImageCache sharedImageCache] removeImageForKey:qrcodeUrl];
+    [DoctorTool composeTeacherHeadImg:tempImage userId:[AccountManager currentUserid] success:^(CRMHttpRespondModel *respond) {
+        if ([respond.code integerValue] == 200) {
+            //清空原来图片的缓存
+            [[SDImageCache sharedImageCache] removeImageForKey:[AccountManager shareInstance].currentUser.img];
+            //清空二维码缓存
+            NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
+            if (qrcodeUrl) {
+                [[SDImageCache sharedImageCache] removeImageForKey:qrcodeUrl];
+                [CRMUserDefalut setObject:nil forKey:QRCODE_URL_KEY];
+            }
+            weakSelf.iconImageView.image = tempImage;
+            [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
+            //更新数据库中的imgUrl
+            [[DBManager shareInstance] upDateUserHeaderImageUrlWithUserId:[AccountManager currentUserid] imageUrl:respond.result];
+            //更新缓存中的imgUrl
+            [AccountManager shareInstance].currentUser.img = respond.result;
+            
+        }else{
+            [SVProgressHUD showImage:nil status:@"图片上传失败"];
         }
-        
-        weakSelf.iconImageView.image = tempImage;
-        [SVProgressHUD showSuccessWithStatus:@"图片上传成功"];
-        [[DBManager shareInstance] upDateUserHeaderImageUrlWithUserId:[AccountManager currentUserid]];
-        
     } failure:^(NSError *error) {
-        NSLog(@"error:%@",error);
-        [SVProgressHUD showErrorWithStatus:@"图片上传失败"];
+        [SVProgressHUD showImage:nil status:@"图片上传失败"];
     }];
 }
 #pragma mark - XLDataSelectViewControllerDelegate
@@ -391,6 +396,7 @@
     [userobj setDoctor_gender:self.currentDoctor.doctor_gender];
     [userobj setDoctor_skill:self.currentDoctor.doctor_skill];
     [[DBManager shareInstance] updateUserWithUserObject:userobj];
+    
 }
 
 

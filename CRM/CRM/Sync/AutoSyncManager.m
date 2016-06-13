@@ -27,6 +27,7 @@
 #import "DBManager+LocalNotification.h"
 #import "LocalNotificationCenter.h"
 #import "DoctorTool.h"
+#import "XLBehaviourModel.h"
 
 @implementation AutoSyncManager
 Realize_ShareInstance(AutoSyncManager);
@@ -41,7 +42,7 @@ Realize_ShareInstance(AutoSyncManager);
     //查询数据库中是否有超过上传次数的数据
     [self postErrorData];
     
-    NSArray *array = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"4"];
+    NSArray *array = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"0"];
     if (array.count > 0) {
         return YES;
     }else{
@@ -441,9 +442,7 @@ Realize_ShareInstance(AutoSyncManager);
                 PatientConsultation *patientConsulation = [PatientConsultation objectWithKeyValues:[self dicFromJsonStr:info.dataEntity]];
                 [[XLAutoSyncTool shareInstance] deleteAllNeedSyncPatient_consultation:patientConsulation success:^(CRMHttpRespondModel *respond) {
                     //上传成功
-                    if([self updateSuccessWithRespondModel:respond infoModel:info]){
-                        [[DBManager shareInstance] deletePatientConsultationWithPatientId_sync:patientConsulation.patient_id];
-                    }
+                    [self updateSuccessWithRespondModel:respond infoModel:info];
                 } failure:^(NSError *error) {
                     //上传失败
                     [self updateFailWithError:error infoModel:info];
@@ -475,9 +474,9 @@ Realize_ShareInstance(AutoSyncManager);
     }else{
         NSLog(@"上传失败");
         //上传失败
-        if([[DBManager shareInstance] updateInfoWithSyncStatus:@"2" byInfoId:info.info_id]){
-            [[DBManager shareInstance] deleteInfoWithInfoAutoSync:info];
-        }
+        info.syncCount = info.syncCount + 1;
+        [[DBManager shareInstance] updateInfoWithSyncStatus:@"3" byInfo:info];
+        
         return NO;
     }
 }

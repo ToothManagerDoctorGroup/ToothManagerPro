@@ -43,7 +43,7 @@
  *  @param success 成功回调
  *  @param failure 失败回调
  */
-+ (void)composeTeacherHeadImg:(UIImage *)image userId:(NSString *)userId success:(void(^)())success failure:(void(^)(NSError *error))failure;
++ (void)composeTeacherHeadImg:(UIImage *)image userId:(NSString *)userId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 
 
 /**
@@ -150,18 +150,6 @@
  *  @param failure 失败回调
  */
 + (void)getAllUsingHelpSuccess:(void(^)(NSArray *array))success failure:(void(^)(NSError *error))failure;
-/**
- *  获取医生或者患者二维码
- *
- *  @param user_id      用户id
- *  @param AccessToken  AccessToken
- *  @param patientKeyId 患者的keyid（从服务器获取）
- *  @param isDoctor     是否是医生（YES/NO）
- *  @param success      成功回调
- *  @param failure      失败回调
- */
-+ (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
-
 
 #pragma mark - *************************医嘱相关********************
 /**
@@ -254,5 +242,16 @@
  *  @param failure    失败回调
  */
 + (void)searchDoctorWithDoctorName:(NSString *)doctorName success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+
+#pragma mark - ************************二维码相关***********************
+/**
+ *  获取患者或者医生的二维码
+ *
+ *  @param patientKeyId 患者的keyId
+ *  @param isDoctor     是否是医生
+ *  @param success      成功回调
+ *  @param failure      失败回调
+ */
++ (void)getQrCodeWithPatientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor success:(void(^)(NSDictionary *result))success failure:(void(^)(NSError *error))failure;
 
 @end

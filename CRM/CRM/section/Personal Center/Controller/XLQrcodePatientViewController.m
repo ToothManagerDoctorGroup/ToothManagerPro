@@ -19,9 +19,10 @@
 #import "CRMUserDefalut.h"
 #import "XLContactsViewController.h"
 #import "XLCreatePatientViewController.h"
+#import "SettingMacro.h"
+#import "DoctorTool.h"
+#import "CRMHttpRespondModel.h"
 
-
-#define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
 @interface XLQrcodePatientViewController ()<UIActionSheetDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *qrcodeImageView;
 
@@ -48,25 +49,18 @@
 - (void)setUpData{
     //判断本地是否存在二维码的url
     NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
-    if (qrcodeUrl == nil) {
-        [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:@"" isDoctor:YES successBlock:^{
-        } failedBlock:^(NSError *error) {
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-        }];
-    }else{
-        //下载图片，不带缓存
-        [self.qrcodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
-    }
-}
-
-- (void)qrCodeImageSuccessWithResult:(NSDictionary *)result{
-    NSString *imageUrl = [result objectForKey:@"Message"];
-    [CRMUserDefalut setObject:imageUrl forKey:QRCODE_URL_KEY];
     
-    [self.qrcodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
-}
-- (void)qrCodeImageFailedWithError:(NSError *)error{
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
+    [DoctorTool getQrCodeWithPatientKeyId:@"" isDoctor:YES success:^(NSDictionary *result) {
+        NSString *imageUrl = [result objectForKey:@"Message"];
+        [CRMUserDefalut setObject:imageUrl forKey:QRCODE_URL_KEY];
+        
+        [self.qrcodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"]];
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+    }];
+    if (qrcodeUrl) {
+        [self.qrcodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"]];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

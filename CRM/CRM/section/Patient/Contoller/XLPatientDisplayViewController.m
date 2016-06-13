@@ -111,6 +111,7 @@
 #pragma mark 添加通知
 - (void)addNotification{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:PatientCreatedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:PatientDeleteNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:PatientEditedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:MedicalCaseCreatedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(firstRequestLocalData) name:MedicalCaseEditedNotification object:nil];
@@ -158,13 +159,11 @@
 #pragma mark  加载本地数据
 - (void)requestLocalDataWithPage:(int)pageNum isHeader:(BOOL)isHeader isFooter:(BOOL)isFooter status:(PatientStatus)status startTime:(NSString *)startTime endTime:(NSString *)endTime doctors:(NSArray *)doctors{
     WS(weakSelf);
-     dispatch_queue_t patient_queue = dispatch_queue_create("patient_queue", NULL);
+    NSLog(@"requestLocalDataWithPage--->我被调用了");
+    self.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:status startTime:startTime endTime:endTime cureDoctors:doctors page:pageNum];
+    NSMutableArray *dataSourceArray = [NSMutableArray array];
+    dispatch_queue_t patient_queue = dispatch_queue_create("patient_queue", NULL);
     dispatch_async(patient_queue, ^{
-        weakSelf.patientInfoArray = [[DBManager shareInstance] getPatientsWithStatus:status startTime:startTime endTime:endTime cureDoctors:doctors page:pageNum];
-        if (isHeader) {
-            weakSelf.allCount = [[DBManager shareInstance] getAllPatientCount];
-            [weakSelf.patientCellModeArray removeAllObjects];
-        }
         for (NSInteger i = 0; i < weakSelf.patientInfoArray.count; i++) {
             Patient *patientTmp = [weakSelf.patientInfoArray objectAtIndex:i];
             PatientsCellMode *cellMode = [[PatientsCellMode alloc]init];
@@ -182,11 +181,15 @@
             }else{
                 cellMode.isTransfer = NO;
             }
-            [self.patientCellModeArray addObject:cellMode];
+            [dataSourceArray addObject:cellMode];
         }
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD  dismiss];
+            if (isHeader) {
+                weakSelf.allCount = [[DBManager shareInstance] getAllPatientCount];
+                [weakSelf.patientCellModeArray removeAllObjects];
+                [weakSelf.patientCellModeArray addObjectsFromArray:[dataSourceArray copy]];
+            }
             //刷新表示图
             [weakSelf.tableView reloadData];
             if (isHeader) {
@@ -296,7 +299,6 @@
                 }
                 //删除本地的患者介绍人关系表的数据
                 [[DBManager shareInstance] deletePatientIntroducerMap:cellMode.patientId];
-                
                 //删除成功后发送通知
                 [[NSNotificationCenter defaultCenter] postNotificationName:PatientDeleteNotification object:nil];
             }

@@ -22,9 +22,9 @@
 #import <MessageUI/MessageUI.h>
 #import "DBManager+Patients.h"
 #import "DBTableMode.h"
-
-
-#define QRCODE_URL_KEY [NSString stringWithFormat:@"%@_doctor_qrcode_url",[AccountManager currentUserid]]
+#import "SettingMacro.h"
+#import "DoctorTool.h"
+#import "CRMHttpRespondModel.h"
 
 @interface QrCodeViewController ()<WXApiDelegate,XLGuideViewDelegate,UIActionSheetDelegate,MFMessageComposeViewControllerDelegate>{
     NSString *weiXinPageUrl;
@@ -51,35 +51,39 @@
     self.title = @"我的二维码";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     
+    //判断本地是否存在二维码的url
+    NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
+    
     if (self.isDoctor) {
         [self setRightBarButtonWithTitle:@"分享"];
         self.sendMessageView.hidden = YES;
-        //判断本地是否存在二维码的url
-        NSString *qrcodeUrl = [CRMUserDefalut objectForKey:QRCODE_URL_KEY];
-        if (qrcodeUrl == nil) {
-            [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:@"" isDoctor:self.isDoctor successBlock:^{
-            } failedBlock:^(NSError *error) {
-                [SVProgressHUD showImage:nil status:error.localizedDescription];
-            }];
-        }else{
-            [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
+        
+        [DoctorTool getQrCodeWithPatientKeyId:@"" isDoctor:self.isDoctor success:^(NSDictionary *result) {
+            NSString *imageUrl = [result objectForKey:@"Message"];
+            [CRMUserDefalut setObject:imageUrl forKey:QRCODE_URL_KEY];
+            [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"]];
+            weiXinPageUrl = imageUrl;
+        } failure:^(NSError *error) {
+            [SVProgressHUD showImage:nil status:error.localizedDescription];
+        }];
+        
+        if (qrcodeUrl) {
+            [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:qrcodeUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"]];
         }
     }else{
         self.sendMessageView.hidden = NO;
         [MyPatientTool getPateintKeyIdWithPatientCKeyId:self.patientId success:^(CRMHttpRespondModel *respondModel) {
             if ([respondModel.code integerValue] == 200) {
-                [[AccountManager shareInstance] getQrCode:[AccountManager currentUserid] withAccessToken:[AccountManager shareInstance].currentUser.accesstoken patientKeyId:respondModel.result isDoctor:self.isDoctor successBlock:^{
-                    
-                } failedBlock:^(NSError *error) {
+                [DoctorTool getQrCodeWithPatientKeyId:respondModel.result isDoctor:self.isDoctor success:^(NSDictionary *result) {
+                    NSString *imageUrl = [result objectForKey:@"Message"];
+                    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"]];
+                    weiXinPageUrl = imageUrl;
+                } failure:^(NSError *error) {
                     [SVProgressHUD showImage:nil status:error.localizedDescription];
                 }];
             }
-            
         } failure:^(NSError *error) {
             [SVProgressHUD showImage:nil status:error.localizedDescription];
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
         }];
     }
 }
@@ -110,14 +114,6 @@
     }
 }
 
-- (void)qrCodeImageSuccessWithResult:(NSDictionary *)result{
-    NSString *imageUrl = [result objectForKey:@"Message"];
-    if (self.isDoctor) {
-        [CRMUserDefalut setObject:imageUrl forKey:QRCODE_URL_KEY];
-    }
-    [self.QrCodeImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"qrcode_jiazai"] options:SDWebImageRefreshCached | SDWebImageRetryFailed];
-    weiXinPageUrl = imageUrl;
-}
 - (IBAction)sendMessageAction:(id)sender {
     Patient *patient = [[DBManager shareInstance] getPatientCkeyid:self.patientId];
     if (patient == nil) return;
@@ -159,15 +155,6 @@
         default:
             break;
     }
-}
-
-
-- (void)qrCodeImageFailedWithError:(NSError *)error{
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
