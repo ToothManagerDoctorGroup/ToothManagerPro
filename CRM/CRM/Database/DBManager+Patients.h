@@ -11,6 +11,7 @@
 @class XLPatientTotalInfoModel;
 @interface DBManager (Patients)
 
+#pragma mark - Patient
 /*
  *@brief 插入一条患者数据 到患者表中
  *@param patient 数据
@@ -154,6 +155,8 @@
  */
 - (Patient *)getPatientCkeyid:(NSString *)ckeyid;
 
+
+#pragma mark - PatientIntroducerMap
 /*
  *@brief 通过患者表的introducer_id 获取介绍人表的信息
  *@return NSArray 返回患者数组，没有则为nil
@@ -195,7 +198,7 @@
 - (BOOL)updatePatientIntroducerMap_Sync:(PatientIntroducerMap *)PatIntro;
 
 /**
- *  插入一条atient Introducer Map
+ *  插入一条patient Introducer Map
  *
  *  @param medicalCase 病例信息
  *
@@ -221,6 +224,17 @@
 - (BOOL)deletePatientIntroducerMapWithMap:(PatientIntroducerMap *)patIntrMap;
 
 /**
+ *  获取患者的转诊记录
+ *
+ *  @param patientId 患者id
+ *
+ *  @return 转诊记录数组
+ */
+- (NSArray *)getPatientTransferRecordWithPatientId:(NSString *)patientId;
+
+
+#pragma mark - MedicalCase
+/**
  *  更新病例
  *
  *  @param medicalCase 病例
@@ -245,6 +259,8 @@
 //删除本地数据库中的病历数据（包括CT，耗材信息，病情描述信息）
 - (BOOL)deleteMedicalCaseWithCase_AutoSync:(MedicalCase *)mCase;
 
+
+#pragma mark - MedicalReserve
 /**
  *  插入一条MedicalReserve
  */
@@ -273,6 +289,7 @@
 - (BOOL)deleteMedicalReserveWithCaseId:(NSString *)caseid;
 
 
+#pragma mark - PatientConsultation
 /**
  *  插入一条会诊信息
  *
@@ -319,6 +336,8 @@
  */
 - (BOOL)deletePatientConsultationWithCkeyId_sync:(NSString *)ckeyId;
 
+
+#pragma mark - MedicalRecord
 /**
  *  插入一条病例记录
  *
@@ -365,6 +384,8 @@
 
 - (MedicalRecord *)getMedicalRecordWithCkeyId:(NSString *)ckeyId;
 
+
+#pragma mark - CTLib
 /**
  *  插入一条CT记录
  *

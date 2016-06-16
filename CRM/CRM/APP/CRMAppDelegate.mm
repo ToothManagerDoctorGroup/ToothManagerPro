@@ -41,13 +41,10 @@
     
     //配置第三方SDK
     [self configThirdPartWithApplication:application option:launchOptions];
-    
     //开启设备网络状态监控
     [self addNetWorkNotification];
-    
     //通用的界面的设置
     [CRMViewAppearance setCRMAppearance];
-    
     //准备数据库
     [[DBManager shareInstance] createdbFile];
     [[DBManager shareInstance] createTables];
@@ -57,12 +54,12 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
-    
     //页面跳转
     [self turnToMainVcWithOptions:launchOptions];
-    
-    //设置3dtouch按钮
-    [self add3DViewWithApplication:application];
+    //设置3dtouch按钮,iOS9.0之后可用
+    if (IOS_9_OR_LATER) {
+        [self add3DViewWithApplication:application];
+    }
 
     return YES;
 }
@@ -83,7 +80,7 @@
     
     //百度地图
     _mapManager = [[BMKMapManager alloc]init];
-    // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
+    // 如果要关注网络及授权验证事件，请设定generalDelegate参数
     [_mapManager start:@"Yu0DYus5oGSY08r5FLwh3Dbd" generalDelegate:nil];
     //注册微信
 //    [WXApi registerApp:@"wx43875d1f976c1ded"];
@@ -125,6 +122,7 @@
                 [CRMUserDefalut setLatestUserId:nil];
                 //取消所有的下载操作
                 [[CRMHttpRequest shareInstance] cancelAllOperations];
+                
                 [self makeLogin];
             }
         }else{
@@ -187,7 +185,6 @@
     }
 }
 
-
 #pragma mark - Another Method
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -197,9 +194,10 @@
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
     NSLog(@"收到本地通知:%@",notification);
     if ([[notification.userInfo allKeys] containsObject:@"aps"]) {
-        [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:notification.userInfo];
+        if (![[notification.userInfo allKeys] containsObject:@"m"]) {
+            [[RemoteNotificationCenter shareInstance] didReceiveRemoteNotification:notification.userInfo];
+        }
     }
-
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -227,11 +225,6 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    
-//    [JPUSHService handleRemoteNotification:userInfo];
-    //关闭友盟对话框
-//    [UMessage setAutoAlert:NO];
-//    [UMessage didReceiveRemoteNotification:userInfo];
     //定制自定义的弹出框
     if([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
     {
@@ -255,7 +248,7 @@
             }
         }
     
-    //这里设置app的图片的角标为0，红色但角标就会消失
+    //这里设置app的图片的角标为0，红色角标就会消失
     [UIApplication sharedApplication].applicationIconBadgeNumber  =  0;
     completionHandler(UIBackgroundFetchResultNewData);
 }
@@ -273,7 +266,7 @@
 handleActionWithIdentifier:(NSString *)identifier
 forRemoteNotification:(NSDictionary *)userInfo
   completionHandler:(void (^)())completionHandler {
-    
+
 }
 #endif
 
@@ -296,7 +289,6 @@ forRemoteNotification:(NSDictionary *)userInfo
 {
     [[EaseMob sharedInstance] applicationWillTerminate:application];
 }
-
 
 - (void)dealloc{
     [self removeNetWorkNotification];

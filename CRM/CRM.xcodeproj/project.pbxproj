@@ -761,9 +761,6 @@
 		3D1DAC571C7DAB2900E6A817 /* introducer_phone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1DAC4B1C7DAB2900E6A817 /* introducer_phone@2x.png */; };
 		3D1DAC581C7DAB2900E6A817 /* introducer_phone@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1DAC4C1C7DAB2900E6A817 /* introducer_phone@3x.png */; };
 		3D1DAC621C7DC00600E6A817 /* XLGuideImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1DAC611C7DC00600E6A817 /* XLGuideImageView.m */; };
-		3D1DAC661C7DCB1700E6A817 /* schedule_alert.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1DAC631C7DCB1700E6A817 /* schedule_alert.png */; };
-		3D1DAC671C7DCB1700E6A817 /* schedule_alert@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1DAC641C7DCB1700E6A817 /* schedule_alert@2x.png */; };
-		3D1DAC681C7DCB1700E6A817 /* schedule_alert@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1DAC651C7DCB1700E6A817 /* schedule_alert@3x.png */; };
 		3D1E32E61CD2F45D00E78B17 /* XLWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1E32E51CD2F45D00E78B17 /* XLWebViewController.m */; };
 		3D1EB5441C7E9C9F006B9F7E /* patient_line_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1EB5411C7E9C9F006B9F7E /* patient_line_blue.png */; };
 		3D1EB5451C7E9C9F006B9F7E /* patient_line_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1EB5421C7E9C9F006B9F7E /* patient_line_blue@2x.png */; };
@@ -981,6 +978,19 @@
 		3D3971131CCF621F0020DD55 /* XLAdviceSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3971121CCF621F0020DD55 /* XLAdviceSelectViewController.m */; };
 		3D3971191CCF6C7C0020DD55 /* XLAdviceDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3971181CCF6C7C0020DD55 /* XLAdviceDetailCell.m */; };
 		3D39DB1F1C2A87F900AA2EE9 /* XLReserveTypesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D39DB1E1C2A87F900AA2EE9 /* XLReserveTypesViewController.m */; };
+		3D3BC1271D0FAE2B00E06F46 /* XLTransferRecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3BC1261D0FAE2B00E06F46 /* XLTransferRecordViewController.m */; };
+		3D3BC12A1D0FB25100E06F46 /* XLTransferRecordCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3BC1291D0FB25100E06F46 /* XLTransferRecordCell.m */; };
+		3D3BC12D1D0FB39100E06F46 /* XLTransferRecordContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3BC12C1D0FB39100E06F46 /* XLTransferRecordContentView.m */; };
+		3D3BC1341D0FB45900E06F46 /* transfer_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC12E1D0FB45900E06F46 /* transfer_bg.png */; };
+		3D3BC1351D0FB45900E06F46 /* transfer_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC12F1D0FB45900E06F46 /* transfer_bg@2x.png */; };
+		3D3BC1361D0FB45900E06F46 /* transfer_bg@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC1301D0FB45900E06F46 /* transfer_bg@3x.png */; };
+		3D3BC1371D0FB45900E06F46 /* transfer_circle.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC1311D0FB45900E06F46 /* transfer_circle.png */; };
+		3D3BC1381D0FB45900E06F46 /* transfer_circle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC1321D0FB45900E06F46 /* transfer_circle@2x.png */; };
+		3D3BC1391D0FB45900E06F46 /* transfer_circle@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC1331D0FB45900E06F46 /* transfer_circle@3x.png */; };
+		3D3BC13C1D0FF1AE00E06F46 /* XLTransferRecordModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3BC13B1D0FF1AE00E06F46 /* XLTransferRecordModel.m */; };
+		3D3BC1401D101A0100E06F46 /* account_bill.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC13D1D101A0100E06F46 /* account_bill.png */; };
+		3D3BC1411D101A0100E06F46 /* account_bill@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC13E1D101A0100E06F46 /* account_bill@2x.png */; };
+		3D3BC1421D101A0100E06F46 /* account_bill@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BC13F1D101A0100E06F46 /* account_bill@3x.png */; };
 		3D3C04251C7C7EEF006A5410 /* icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04221C7C7EEF006A5410 /* icon_120.png */; };
 		3D3C04261C7C7EEF006A5410 /* icon76.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04231C7C7EEF006A5410 /* icon76.png */; };
 		3D3C04271C7C7EEF006A5410 /* icon152.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D3C04241C7C7EEF006A5410 /* icon152.png */; };
@@ -1084,6 +1094,12 @@
 		3D987F501C96E6B20044183D /* login_camera@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D987F4D1C96E6B20044183D /* login_camera@3x.png */; };
 		3D987F551C96EBE50044183D /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D987F541C96EBE50044183D /* CustomIOS7AlertView.m */; };
 		3D987F581C96EC100044183D /* XLCustomAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D987F571C96EC100044183D /* XLCustomAlertView.m */; };
+		3D9BEDAB1D1289D300168486 /* schedule_alertView.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9BEDA51D1289D300168486 /* schedule_alertView.png */; };
+		3D9BEDAC1D1289D300168486 /* schedule_alertView@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9BEDA61D1289D300168486 /* schedule_alertView@2x.png */; };
+		3D9BEDAD1D1289D300168486 /* schedule_alertView@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9BEDA71D1289D300168486 /* schedule_alertView@3x.png */; };
+		3D9BEDAE1D1289D300168486 /* schedule_patient_alertView.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9BEDA81D1289D300168486 /* schedule_patient_alertView.png */; };
+		3D9BEDAF1D1289D300168486 /* schedule_patient_alertView@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9BEDA91D1289D300168486 /* schedule_patient_alertView@2x.png */; };
+		3D9BEDB01D1289D300168486 /* schedule_patient_alertView@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D9BEDAA1D1289D300168486 /* schedule_patient_alertView@3x.png */; };
 		3D9C84771C0D7126007B2CD2 /* UIImageView+DownLoadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */; };
 		3D9D1C381C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D9D1C371C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.m */; };
 		3DAA10E61BF5774400FD8149 /* ClinicDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DAA10E51BF5774400FD8149 /* ClinicDetailModel.m */; };
@@ -2978,9 +2994,6 @@
 		3D1DAC4C1C7DAB2900E6A817 /* introducer_phone@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "introducer_phone@3x.png"; sourceTree = "<group>"; };
 		3D1DAC601C7DC00600E6A817 /* XLGuideImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLGuideImageView.h; sourceTree = "<group>"; };
 		3D1DAC611C7DC00600E6A817 /* XLGuideImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLGuideImageView.m; sourceTree = "<group>"; };
-		3D1DAC631C7DCB1700E6A817 /* schedule_alert.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = schedule_alert.png; sourceTree = "<group>"; };
-		3D1DAC641C7DCB1700E6A817 /* schedule_alert@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "schedule_alert@2x.png"; sourceTree = "<group>"; };
-		3D1DAC651C7DCB1700E6A817 /* schedule_alert@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "schedule_alert@3x.png"; sourceTree = "<group>"; };
 		3D1E32E41CD2F45D00E78B17 /* XLWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLWebViewController.h; sourceTree = "<group>"; };
 		3D1E32E51CD2F45D00E78B17 /* XLWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLWebViewController.m; sourceTree = "<group>"; };
 		3D1EB5411C7E9C9F006B9F7E /* patient_line_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = patient_line_blue.png; sourceTree = "<group>"; };
@@ -3322,6 +3335,23 @@
 		3D3971181CCF6C7C0020DD55 /* XLAdviceDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLAdviceDetailCell.m; sourceTree = "<group>"; };
 		3D39DB1D1C2A87F900AA2EE9 /* XLReserveTypesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLReserveTypesViewController.h; sourceTree = "<group>"; };
 		3D39DB1E1C2A87F900AA2EE9 /* XLReserveTypesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLReserveTypesViewController.m; sourceTree = "<group>"; };
+		3D3BC1251D0FAE2B00E06F46 /* XLTransferRecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTransferRecordViewController.h; sourceTree = "<group>"; };
+		3D3BC1261D0FAE2B00E06F46 /* XLTransferRecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTransferRecordViewController.m; sourceTree = "<group>"; };
+		3D3BC1281D0FB25100E06F46 /* XLTransferRecordCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTransferRecordCell.h; sourceTree = "<group>"; };
+		3D3BC1291D0FB25100E06F46 /* XLTransferRecordCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTransferRecordCell.m; sourceTree = "<group>"; };
+		3D3BC12B1D0FB39100E06F46 /* XLTransferRecordContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTransferRecordContentView.h; sourceTree = "<group>"; };
+		3D3BC12C1D0FB39100E06F46 /* XLTransferRecordContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTransferRecordContentView.m; sourceTree = "<group>"; };
+		3D3BC12E1D0FB45900E06F46 /* transfer_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transfer_bg.png; sourceTree = "<group>"; };
+		3D3BC12F1D0FB45900E06F46 /* transfer_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "transfer_bg@2x.png"; sourceTree = "<group>"; };
+		3D3BC1301D0FB45900E06F46 /* transfer_bg@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "transfer_bg@3x.png"; sourceTree = "<group>"; };
+		3D3BC1311D0FB45900E06F46 /* transfer_circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transfer_circle.png; sourceTree = "<group>"; };
+		3D3BC1321D0FB45900E06F46 /* transfer_circle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "transfer_circle@2x.png"; sourceTree = "<group>"; };
+		3D3BC1331D0FB45900E06F46 /* transfer_circle@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "transfer_circle@3x.png"; sourceTree = "<group>"; };
+		3D3BC13A1D0FF1AE00E06F46 /* XLTransferRecordModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLTransferRecordModel.h; sourceTree = "<group>"; };
+		3D3BC13B1D0FF1AE00E06F46 /* XLTransferRecordModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLTransferRecordModel.m; sourceTree = "<group>"; };
+		3D3BC13D1D101A0100E06F46 /* account_bill.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = account_bill.png; sourceTree = "<group>"; };
+		3D3BC13E1D101A0100E06F46 /* account_bill@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "account_bill@2x.png"; sourceTree = "<group>"; };
+		3D3BC13F1D101A0100E06F46 /* account_bill@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "account_bill@3x.png"; sourceTree = "<group>"; };
 		3D3C04221C7C7EEF006A5410 /* icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_120.png; sourceTree = "<group>"; };
 		3D3C04231C7C7EEF006A5410 /* icon76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon76.png; sourceTree = "<group>"; };
 		3D3C04241C7C7EEF006A5410 /* icon152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon152.png; sourceTree = "<group>"; };
@@ -3450,6 +3480,12 @@
 		3D987F541C96EBE50044183D /* CustomIOS7AlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomIOS7AlertView.m; sourceTree = "<group>"; };
 		3D987F561C96EC100044183D /* XLCustomAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLCustomAlertView.h; sourceTree = "<group>"; };
 		3D987F571C96EC100044183D /* XLCustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLCustomAlertView.m; sourceTree = "<group>"; };
+		3D9BEDA51D1289D300168486 /* schedule_alertView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = schedule_alertView.png; sourceTree = "<group>"; };
+		3D9BEDA61D1289D300168486 /* schedule_alertView@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "schedule_alertView@2x.png"; sourceTree = "<group>"; };
+		3D9BEDA71D1289D300168486 /* schedule_alertView@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "schedule_alertView@3x.png"; sourceTree = "<group>"; };
+		3D9BEDA81D1289D300168486 /* schedule_patient_alertView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = schedule_patient_alertView.png; sourceTree = "<group>"; };
+		3D9BEDA91D1289D300168486 /* schedule_patient_alertView@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "schedule_patient_alertView@2x.png"; sourceTree = "<group>"; };
+		3D9BEDAA1D1289D300168486 /* schedule_patient_alertView@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "schedule_patient_alertView@3x.png"; sourceTree = "<group>"; };
 		3D9C84751C0D7126007B2CD2 /* UIImageView+DownLoadImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+DownLoadImage.h"; sourceTree = "<group>"; };
 		3D9C84761C0D7126007B2CD2 /* UIImageView+DownLoadImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+DownLoadImage.m"; sourceTree = "<group>"; };
 		3D9D1C361C19854500EC7BC6 /* AFHTTPRequestOperationManager+Synchronous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPRequestOperationManager+Synchronous.h"; sourceTree = "<group>"; };
@@ -5214,6 +5250,8 @@
 				3D309A9C1C3A7B27006FAFDB /* XLAppointDetailViewController.m */,
 				3D15EC541CA4FB4400465B8D /* XLEditGroupViewController.h */,
 				3D15EC551CA4FB4400465B8D /* XLEditGroupViewController.m */,
+				3D3BC1251D0FAE2B00E06F46 /* XLTransferRecordViewController.h */,
+				3D3BC1261D0FAE2B00E06F46 /* XLTransferRecordViewController.m */,
 			);
 			name = "PatientDetail（患者详情）";
 			path = PatientDetail;
@@ -5228,6 +5266,8 @@
 				3DECB6591BFF0FB6006B5C09 /* CommentModelFrame.m */,
 				3D309AA11C3A85F6006FAFDB /* XLAppointDetailModel.h */,
 				3D309AA21C3A85F6006FAFDB /* XLAppointDetailModel.m */,
+				3D3BC13A1D0FF1AE00E06F46 /* XLTransferRecordModel.h */,
+				3D3BC13B1D0FF1AE00E06F46 /* XLTransferRecordModel.m */,
 			);
 			path = PatientDetail;
 			sourceTree = "<group>";
@@ -5246,6 +5286,8 @@
 				3D1B26091BFEED5400997FDE /* MedicalDetailView.m */,
 				3DECB65B1BFF1A90006B5C09 /* CommentTextField.h */,
 				3DECB65C1BFF1A90006B5C09 /* CommentTextField.m */,
+				3D3BC12B1D0FB39100E06F46 /* XLTransferRecordContentView.h */,
+				3D3BC12C1D0FB39100E06F46 /* XLTransferRecordContentView.m */,
 			);
 			path = PatientDetail;
 			sourceTree = "<group>";
@@ -5261,6 +5303,8 @@
 				3D309A9F1C3A7D25006FAFDB /* XLAppointDetailCell.m */,
 				3D15EC571CA507B800465B8D /* XLEditGroupCell.h */,
 				3D15EC581CA507B800465B8D /* XLEditGroupCell.m */,
+				3D3BC1281D0FB25100E06F46 /* XLTransferRecordCell.h */,
+				3D3BC1291D0FB25100E06F46 /* XLTransferRecordCell.m */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -6634,9 +6678,12 @@
 		3D1DAC591C7DBEF800E6A817 /* Alert */ = {
 			isa = PBXGroup;
 			children = (
-				3D1DAC631C7DCB1700E6A817 /* schedule_alert.png */,
-				3D1DAC641C7DCB1700E6A817 /* schedule_alert@2x.png */,
-				3D1DAC651C7DCB1700E6A817 /* schedule_alert@3x.png */,
+				3D9BEDA51D1289D300168486 /* schedule_alertView.png */,
+				3D9BEDA61D1289D300168486 /* schedule_alertView@2x.png */,
+				3D9BEDA71D1289D300168486 /* schedule_alertView@3x.png */,
+				3D9BEDA81D1289D300168486 /* schedule_patient_alertView.png */,
+				3D9BEDA91D1289D300168486 /* schedule_patient_alertView@2x.png */,
+				3D9BEDAA1D1289D300168486 /* schedule_patient_alertView@3x.png */,
 			);
 			name = Alert;
 			sourceTree = "<group>";
@@ -9482,6 +9529,9 @@
 		6436DCCB19B8C48000DC667E /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				3D3BC13D1D101A0100E06F46 /* account_bill.png */,
+				3D3BC13E1D101A0100E06F46 /* account_bill@2x.png */,
+				3D3BC13F1D101A0100E06F46 /* account_bill@3x.png */,
 				3D987F3F1C96E5270044183D /* btn_add_doctor.png */,
 				3D987F401C96E5270044183D /* btn_add_doctor@2x.png */,
 				3D987F411C96E5270044183D /* btn_add_doctor@3x.png */,
@@ -10365,6 +10415,12 @@
 		64E7C87D1A6416FE00099063 /* Patients */ = {
 			isa = PBXGroup;
 			children = (
+				3D3BC12E1D0FB45900E06F46 /* transfer_bg.png */,
+				3D3BC12F1D0FB45900E06F46 /* transfer_bg@2x.png */,
+				3D3BC1301D0FB45900E06F46 /* transfer_bg@3x.png */,
+				3D3BC1311D0FB45900E06F46 /* transfer_circle.png */,
+				3D3BC1321D0FB45900E06F46 /* transfer_circle@2x.png */,
+				3D3BC1331D0FB45900E06F46 /* transfer_circle@3x.png */,
 				3D3971061CCEFF870020DD55 /* qrcode_load_dynamic.gif */,
 				3D3971071CCEFF870020DD55 /* qrcode_load_dynamic@2x.gif */,
 				3D3971081CCEFF870020DD55 /* qrcode_load_dynamic@3x.gif */,
@@ -10650,6 +10706,7 @@
 				3DDDB85F1BFDEFA4004AD4AC /* medical_edit@2x.png in Resources */,
 				3D1B60741C18082B0032D949 /* VoiceSearchFeedback005@2x.png in Resources */,
 				3D1D4A771C8706C600F1D5EA /* team_del_head@3x.png in Resources */,
+				3D3BC1421D101A0100E06F46 /* account_bill@3x.png in Resources */,
 				3D309A8A1C3A6787006FAFDB /* patient_address_blue@2x.png in Resources */,
 				2DC829071BA3F83A001CA6A4 /* ic_tabbar_me@2x.png in Resources */,
 				3DDDB87E1BFDEFA4004AD4AC /* medical_info_blue@3x.png in Resources */,
@@ -10672,6 +10729,7 @@
 				3D1B5FFE1C18082B0032D949 /* MWPhotoBrowser.bundle in Resources */,
 				3DAA11781BF5C0E500FD8149 /* dfk_yjt@3x.png in Resources */,
 				3DD2C7231C59FA63008F2C99 /* assistence_01.png in Resources */,
+				3D9BEDAF1D1289D300168486 /* schedule_patient_alertView@2x.png in Resources */,
 				3D1B37131C85AA98008CB6E0 /* team_team.png in Resources */,
 				3D1B60971C18082B0032D949 /* call_silence.png in Resources */,
 				3DFD664A1CF4786900AEBA0A /* nav3@2x.png in Resources */,
@@ -10783,6 +10841,7 @@
 				3DF6718D1BF730A900527B49 /* zzs_bjb.png in Resources */,
 				3D18A5181C4E1C180016CABE /* guide_kuang1@3x.png in Resources */,
 				3DF6718C1BF730A900527B49 /* zzs_bj.png in Resources */,
+				3D9BEDAE1D1289D300168486 /* schedule_patient_alertView.png in Resources */,
 				6436DE8119B8C48100DC667E /* login_liense_bg@2x.png in Resources */,
 				6436DEBE19B8C48100DC667E /* pic_search@2x.png in Resources */,
 				3D1C54871C75C29000C2A4A0 /* menuButton@3x.png in Resources */,
@@ -10801,7 +10860,6 @@
 				3D18A5171C4E1C180016CABE /* guide_kuang1@2x.png in Resources */,
 				3D1B60E41C18082B0032D949 /* chat_receiver_audio_playing_full@2x.png in Resources */,
 				3D1C54851C75C29000C2A4A0 /* menuButton.png in Resources */,
-				3D1DAC681C7DCB1700E6A817 /* schedule_alert@3x.png in Resources */,
 				2D5167C21BD8E00A00C0C3C6 /* yawei_yq_normal@2x.png in Resources */,
 				3D1B37111C85AA98008CB6E0 /* team_right@2x.png in Resources */,
 				3D1D4A781C8706C600F1D5EA /* team_team_white.png in Resources */,
@@ -10831,6 +10889,7 @@
 				3DEAF57B1C02F15800445C20 /* weixin_green.png in Resources */,
 				3D3C04261C7C7EEF006A5410 /* icon76.png in Resources */,
 				3D703C9B1CCE37E200F30E78 /* communicate_huanjiao@3x.png in Resources */,
+				3D3BC1381D0FB45900E06F46 /* transfer_circle@2x.png in Resources */,
 				3D1B371C1C85AAE8008CB6E0 /* team_add-blue.png in Resources */,
 				2D4085AA1B429683003DDE29 /* phone@2x.png in Resources */,
 				642D7AB11A807E18007F8D58 /* CaseMaterialsTableViewCell.xib in Resources */,
@@ -10908,6 +10967,7 @@
 				3DF671861BF730A900527B49 /* zzs_jh@2x.png in Resources */,
 				3D1B60711C18082B0032D949 /* VoiceSearchFeedback004.png in Resources */,
 				3D1B60A61C18082B0032D949 /* chatBar_textBg@2x.png in Resources */,
+				3D9BEDAC1D1289D300168486 /* schedule_alertView@2x.png in Resources */,
 				3D1D4A7C1C8706C600F1D5EA /* team_yuandian@2x.png in Resources */,
 				3D703C951CCE37E200F30E78 /* communicate_camera@3x.png in Resources */,
 				3D1B60D01C18082B0032D949 /* chatBar_colorMore_videoCall@2x.png in Resources */,
@@ -10977,6 +11037,7 @@
 				3DDDB8761BFDEFA4004AD4AC /* 微信－绿.png in Resources */,
 				3D1B61021C18082B0032D949 /* tabbar_chats.png in Resources */,
 				3DF6718E1BF730A900527B49 /* zzs_jh.png in Resources */,
+				3D3BC1401D101A0100E06F46 /* account_bill.png in Resources */,
 				3D1B60E01C18082B0032D949 /* chat_receiver_audio_playing000@2x.png in Resources */,
 				6436DEA219B8C48100DC667E /* header@2x.png in Resources */,
 				3DDE32411CCA243F0081E57E /* searchBar_alert@2x.png in Resources */,
@@ -11030,6 +11091,7 @@
 				3D1661E21C2932210062009D /* material_X@3x.png in Resources */,
 				3D1BAB281C7AE7EE00DA5E8A /* icon-Small-50.png in Resources */,
 				3D2A39D11CEAD9F4005A92F0 /* clinic_map@3x.png in Resources */,
+				3D9BEDB01D1289D300168486 /* schedule_patient_alertView@3x.png in Resources */,
 				3DDE322B1CCA243F0081E57E /* message_alert.png in Resources */,
 				3D1B60E31C18082B0032D949 /* chat_receiver_audio_playing003@2x.png in Resources */,
 				64CFD90919F7F6A6001EB0DA /* DoctorTableViewCell.xib in Resources */,
@@ -11092,6 +11154,7 @@
 				3D1B60931C18082B0032D949 /* call_out.png in Resources */,
 				6436DE9019B8C48100DC667E /* btn_new_big_@2x.png in Resources */,
 				3D1DAC3E1C7DA6CA00E6A817 /* star_normal.png in Resources */,
+				3D3BC1351D0FB45900E06F46 /* transfer_bg@2x.png in Resources */,
 				3D1AB07A1C00453600547809 /* Menu_PopOver_BG.png in Resources */,
 				3D1B60461C18082B0032D949 /* faceDelete@2x.png in Resources */,
 				3DDDB82E1BFD632E004AD4AC /* sq_bj.png in Resources */,
@@ -11193,9 +11256,11 @@
 				3D1661D91C2932210062009D /* material_add@3x.png in Resources */,
 				6436DE8B19B8C48100DC667E /* btn_introducer@2x.png in Resources */,
 				3D1B60AE1C18082B0032D949 /* chat_location_preview@2x.png in Resources */,
+				3D3BC1371D0FB45900E06F46 /* transfer_circle.png in Resources */,
 				3D37D0291C28175C00C595F4 /* login_background2.png in Resources */,
 				3D279BAE1CB4CDC700F144EE /* filter_btn_bg_blue@2x.png in Resources */,
 				3DDE7FDB1C1EBB22006053DA /* patient_message_blue@3x.png in Resources */,
+				3D3BC1341D0FB45900E06F46 /* transfer_bg.png in Resources */,
 				3DE6798A1C9A67DA005FFFEE /* message_send_kuang_grey@2x.png in Resources */,
 				3D1D4A6B1C8706C600F1D5EA /* team_add_head@3x.png in Resources */,
 				3D703C9C1CCE37E200F30E78 /* communicate_huifang.png in Resources */,
@@ -11260,6 +11325,7 @@
 				3DE02D281CFBEF8B00D7F651 /* 3dtouch_add_yuyue.png in Resources */,
 				3D1B603A1C18082B0032D949 /* chatBar_colorMore_videoCallSelected@2x.png in Resources */,
 				2D5167C61BD8ED2900C0C3C6 /* yawei_yq_selected@2x.png in Resources */,
+				3D9BEDAB1D1289D300168486 /* schedule_alertView.png in Resources */,
 				3D703C7B1CCE2D6E00F30E78 /* noMedicalcase_alert@2x.png in Resources */,
 				3DDDB8781BFDEFA4004AD4AC /* 微信－绿@3x.png in Resources */,
 				3D1D4A6D1C8706C600F1D5EA /* team_bianji_white@2x.png in Resources */,
@@ -11312,6 +11378,7 @@
 				6436DEC419B8C48100DC667E /* search-bg@2x.png in Resources */,
 				6436DE9219B8C48100DC667E /* btn_pack up@2x.png in Resources */,
 				3D1DAC501C7DAB2900E6A817 /* introducer_head.png in Resources */,
+				3D3BC1361D0FB45900E06F46 /* transfer_bg@3x.png in Resources */,
 				3D703CA51CCE37E200F30E78 /* communicate_yizhu.png in Resources */,
 				3DE02D2B1CFBEF8B00D7F651 /* 3dtouch_search_huanzhe.png in Resources */,
 				3DAA11051BF5946300FD8149 /* MJPhotoBrowser.bundle in Resources */,
@@ -11325,7 +11392,6 @@
 				3D15214C1C4386F800650969 /* no-choose@3x.png in Resources */,
 				3DDE31DC1CC9FFAE0081E57E /* filter_desc@2x.png in Resources */,
 				3D1B60821C18082B0032D949 /* VoiceSearchFeedback012@2x.png in Resources */,
-				3D1DAC671C7DCB1700E6A817 /* schedule_alert@2x.png in Resources */,
 				3D1B61091C18082B0032D949 /* tabbar_contactsHL@2x.png in Resources */,
 				3D1B60CA1C18082B0032D949 /* chatBar_colorMore_cameraSelected@2x.png in Resources */,
 				3D1661DA1C2932210062009D /* material_del.png in Resources */,
@@ -11347,6 +11413,7 @@
 				64CFD95419F8A0FB001EB0DA /* PatientStoryboard.storyboard in Resources */,
 				3DAA11BF1BF5F82A00FD8149 /* zs_fdj@2x.png in Resources */,
 				3D1B602A1C18082B0032D949 /* arrow@2x.png in Resources */,
+				3D9BEDAD1D1289D300168486 /* schedule_alertView@3x.png in Resources */,
 				2DC8290A1BA3F83A001CA6A4 /* ic_tabbar_qi_active@2x.png in Resources */,
 				3D1B60551C18082B0032D949 /* VoiceSearchFeedback009@2x.png in Resources */,
 				3D18A51D1C4E1C180016CABE /* guide_kuang3@2x.png in Resources */,
@@ -11498,7 +11565,6 @@
 				3DDE33EA1C2A414E00458FC8 /* Info.plist in Resources */,
 				3D279BB11CB4CDC700F144EE /* filter_btn_bg_grey@2x.png in Resources */,
 				3DDF0E0E1C313CD200358EDD /* patient_address.png in Resources */,
-				3D1DAC661C7DCB1700E6A817 /* schedule_alert.png in Resources */,
 				6436DEB919B8C48100DC667E /* newVersion@2x.png in Resources */,
 				3DE02D2A1CFBEF8B00D7F651 /* 3dtouch_add_yuyue@3x.png in Resources */,
 				3D1B60CE1C18082B0032D949 /* chatBar_colorMore_photoSelected@2x.png in Resources */,
@@ -11615,6 +11681,7 @@
 				6436DE9119B8C48100DC667E /* btn_new_orange@2x.png in Resources */,
 				3DDDB83A1BFD6384004AD4AC /* kj_zs@3x.png in Resources */,
 				3DDE32281CCA243F0081E57E /* materialList_alert.png in Resources */,
+				3D3BC1391D0FB45900E06F46 /* transfer_circle@3x.png in Resources */,
 				3D1C54861C75C29000C2A4A0 /* menuButton@2x.png in Resources */,
 				2D2ED85F1C009679003B7047 /* menuXian@2x.png in Resources */,
 				3D5B4F981C2D7BEB00E37140 /* group_gray@3x.png in Resources */,
@@ -11662,6 +11729,7 @@
 				3DAA11741BF5C0E500FD8149 /* dfk_qfk@2x.png in Resources */,
 				3D1B60E51C18082B0032D949 /* chat_receiver_bg.png in Resources */,
 				3D37D0541C28188100C595F4 /* login_secret@2x.png in Resources */,
+				3D3BC1411D101A0100E06F46 /* account_bill@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11951,6 +12019,7 @@
 				6436DF3419B8C48100DC667E /* UIColor+Extension.m in Sources */,
 				3DD8F48B1CF4685B0060AAA0 /* XLClinicImagesCell.m in Sources */,
 				3D28AEAB1CB69B2C00687006 /* XLMenuButtonView.m in Sources */,
+				3D3BC12A1D0FB25100E06F46 /* XLTransferRecordCell.m in Sources */,
 				3DE3DB6E1C21640500424A67 /* SysMessageModel.m in Sources */,
 				3D1B61731C183AA40032D949 /* GroupPatientModel.m in Sources */,
 				3D28AE9E1CB65A5200687006 /* XLFilterDismissButton.m in Sources */,
@@ -12076,6 +12145,7 @@
 				3D24117C1C56160000153620 /* XLLoginTool.m in Sources */,
 				6436DF3E19B8C48100DC667E /* TimNavigationViewController.m in Sources */,
 				3D1B60171C18082B0032D949 /* EaseBaseMessageCell.m in Sources */,
+				3D3BC1271D0FAE2B00E06F46 /* XLTransferRecordViewController.m in Sources */,
 				A62C8FDE1A0921410013146D /* CRM.xcdatamodeld in Sources */,
 				64BD7C8C19BC28910015D47F /* SAMTextView.m in Sources */,
 				3DFBCA221C9D2E6700B27177 /* XLBackUpViewController.m in Sources */,
@@ -12135,6 +12205,7 @@
 				3DE5A3611CEDC89800C353F4 /* XLPayManager.m in Sources */,
 				3DD2C71B1C59F09B008F2C99 /* XLLongImageScrollView.m in Sources */,
 				3DE2DD621C06C980005F7832 /* MyYuyueTitleView.m in Sources */,
+				3D3BC13C1D0FF1AE00E06F46 /* XLTransferRecordModel.m in Sources */,
 				3D1B26071BFEE23C00997FDE /* MedicalButtonScrollView.m in Sources */,
 				3D188E371CEC4CFD00AA05D5 /* XLOperationStatusModel.m in Sources */,
 				3D1B600E1C18082B0032D949 /* EaseEmotionEscape.m in Sources */,
@@ -12244,6 +12315,7 @@
 				64CFD90D19F7F6A6001EB0DA /* IntroPeopleDetailViewController.m in Sources */,
 				3D1B5FA51C18082B0032D949 /* SRRefreshView.m in Sources */,
 				3D1B5FF51C18082B0032D949 /* PSTCollectionViewData.m in Sources */,
+				3D3BC12D1D0FB39100E06F46 /* XLTransferRecordContentView.m in Sources */,
 				3D84F5541CF7127F00A47517 /* XLAlipayOrder.m in Sources */,
 				3D79618F1C16E9B200453EB4 /* CustomAlertView.m in Sources */,
 				3D1B5FAF1C18082B0032D949 /* NSDate+Category.m in Sources */,

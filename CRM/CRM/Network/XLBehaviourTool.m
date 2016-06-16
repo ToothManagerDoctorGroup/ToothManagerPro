@@ -59,7 +59,7 @@
     params[@"action"] = [@"listbyuseridanddate" TripleDESIsEncrypt:YES];
     params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
     params[@"sync_time"] = [syncTime TripleDESIsEncrypt:YES];
-    params[@"device_token"] = [[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES];
+//    params[@"device_token"] = [[CRMUserDefalut objectForKey:DeviceToken] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];

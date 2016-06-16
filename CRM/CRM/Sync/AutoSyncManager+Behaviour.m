@@ -336,7 +336,7 @@
             map.patient_id = patientId;
             map.doctor_id = dic[@"doctor_id"];
             map.intr_time = dic[@"intr_time"];
-            if([[DBManager shareInstance] insertPatientIntroducerMap:map]){
+            if([[DBManager shareInstance] insertPatientIntroducerMap_Sync:map]){
                 //保存成功，更新患者列表
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[NSNotificationCenter defaultCenter] postNotificationName:PatientCreatedNotification object:nil];

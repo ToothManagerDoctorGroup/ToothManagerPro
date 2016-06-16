@@ -11,7 +11,6 @@
 
 @interface AboutProductViewController : TimViewController
 {
-
 }
 
 @end

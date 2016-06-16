@@ -63,7 +63,7 @@
     self.avatarView.sd_layout
     .widthIs(40)
     .heightIs(40)
-    .centerYEqualToView(self.contentView)
+    .topSpaceToView(self.contentView,Margin)
     .leftSpaceToView(self.contentView,Margin);
     
     self.nameLabel.sd_layout
@@ -94,7 +94,7 @@
         self.nameLabel.text = model.sender_name;
     }else{
         self.avatarView.image = [UIImage imageNamed:@"patient_head"];
-        self.nameLabel.text = model.receiver_name;
+        self.nameLabel.text = model.sender_name;
     }
     self.timeLabel.text = [MyDateTool stringWithDateNoSec:[MyDateTool dateWithStringWithSec:model.send_time]];
     self.contentLabel.text = model.content;

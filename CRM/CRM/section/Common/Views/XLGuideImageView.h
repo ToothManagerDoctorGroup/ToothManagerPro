@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^DismissBlock)();
+
 @interface XLGuideImageView : UIImageView
 
-- (void)showInView:(UIView *)view;
+- (void)showInView:(UIView *)view dismissBlock:(DismissBlock)dismissBlock;
 
 - (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss;
+
 
 @end

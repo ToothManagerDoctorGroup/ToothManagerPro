@@ -95,8 +95,10 @@
         self.titleLabel.text = @"添加预约";
     }else if ([model.message_type isEqualToString:CancelReserveRecord]){
         self.titleLabel.text = @"取消预约";
-    }else{
+    }else if ([model.message_type isEqualToString:UpdateReserveRecord]){
         self.titleLabel.text = @"修改预约";
+    }else{
+        self.titleLabel.text = @"诊所预约";
     }
     
     self.timeLabel.text = self.model.create_time;

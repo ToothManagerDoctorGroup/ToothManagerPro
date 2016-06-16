@@ -220,7 +220,7 @@ NSString *const XLMessageCellIdentifierSendImage = @"XLMessageCellSendImage";
     
     _timeLabel.text = [MyDateTool stringWithDateNoSec:[MyDateTool dateWithStringWithSec:model.contentModel.send_time]];
     if (model.chatType == XLChatTypeSendToMe) {
-        _nameLabel.text = model.contentModel.receiver_name;
+        _nameLabel.text = model.contentModel.sender_name;
         _avatarImageView.image = [UIImage imageNamed:@"patient_head"];
         _bubbleView.backgroundImageView.image = self.recvBackgroundImage;
     }else{

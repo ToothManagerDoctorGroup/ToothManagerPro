@@ -727,7 +727,7 @@
                                                         <constraint firstAttribute="width" constant="13" id="lie-HD-BmW"/>
                                                     </constraints>
                                                 </imageView>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="kj_zd.png" translatesAutoresizingMaskIntoConstraints="NO" id="EYt-Tu-F0G">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="account_bill.png" translatesAutoresizingMaskIntoConstraints="NO" id="EYt-Tu-F0G">
                                                     <rect key="frame" x="15" y="12" width="20" height="20"/>
                                                     <animations/>
                                                     <constraints>
@@ -5407,6 +5407,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="account_bill.png" width="20" height="20"/>
         <image name="arrow_crm.png" width="13" height="18"/>
         <image name="backup_yun.png" width="234" height="224"/>
         <image name="ic_backup.png" width="20" height="20"/>
@@ -5415,7 +5416,6 @@
         <image name="ic_list_shuju.png" width="20" height="20"/>
         <image name="ic_list_zhongzhiti.png" width="20" height="20"/>
         <image name="ic_tixing.png" width="20" height="20"/>
-        <image name="kj_zd.png" width="46" height="46"/>
         <image name="qrcode.png" width="35" height="35"/>
         <image name="qrcode_jiazai.png" width="200" height="200"/>
         <image name="sq_bj.png" width="498" height="81"/>

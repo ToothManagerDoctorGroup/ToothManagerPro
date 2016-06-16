@@ -17,7 +17,7 @@ typedef void(^ButtonClickBlock)();
  *  @param imageName  图片名称
  *  @param showButton 是否显示按钮
  */
-- (UIView *)createNoSearchResultAlertViewWithImageName:(NSString *)imageName showButton:(BOOL)showButton;
+//- (UIView *)createNoSearchResultAlertViewWithImageName:(NSString *)imageName showButton:(BOOL)showButton;
 
 - (void)createNoResultAlertViewWithImageName:(NSString *)imageName showButton:(BOOL)showButton ifNecessaryForRowCount:(NSUInteger)rowCount;
 

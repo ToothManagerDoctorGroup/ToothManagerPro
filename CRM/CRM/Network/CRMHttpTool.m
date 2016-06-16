@@ -54,8 +54,9 @@ Realize_ShareInstance(CRMHttpTool);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
         if (failure) {
-            failure(error);
+            failure(cusError);
         }
     }];
 }
@@ -81,8 +82,9 @@ Realize_ShareInstance(CRMHttpTool);
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
         if (failure) {
-            failure(error);
+            failure(cusError);
         }
     }];
 }
@@ -109,8 +111,9 @@ Realize_ShareInstance(CRMHttpTool);
             }
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
         if (failure) {
-            failure(error);
+            failure(cusError);
         }
     }];
 }
@@ -126,8 +129,9 @@ Realize_ShareInstance(CRMHttpTool);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog ( @"operation: %@", operation.responseString );
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
         if (failure) {
-            failure(error);
+            failure(cusError);
         }
     }];
 }

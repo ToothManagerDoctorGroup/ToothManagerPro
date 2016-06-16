@@ -19,6 +19,7 @@
 #import "SDWebImageManager.h"
 #import "PatientManager.h"
 #import "NSString+TTMAddtion.h"
+#import "XLTransferRecordModel.h"
 
 #define ImageDown [NSString stringWithFormat:@"%@%@/UploadFiles/",DomainName,Method_His_Crm]
 @implementation DBManager (Patients)
@@ -1157,7 +1158,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where doctor_id = \"%@\" and patient_name = '%@' and patient_phone = '%@'",PatientTableName,[AccountManager currentUserid],patient.patient_name,patient.patient_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where doctor_id = \"%@\" and patient_name='%@' and patient_phone = '%@'",PatientTableName,[AccountManager currentUserid],patient.patient_name,patient.patient_phone];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -1198,7 +1199,7 @@
     if ([NSString isEmptyString:ckeyid]) {
         return nil;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' and creation_date > datetime('%@')",PatientTableName,ckeyid, [NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' and creation_date > datetime('%@') and user_id = '%@'",PatientTableName,ckeyid, [NSString defaultDateString],[AccountManager currentUserid]];
     __block Patient *retPatient = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -1215,7 +1216,7 @@
     if ([NSString isEmptyString:ckeyid]) {
         return nil;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' and doctor_id = '%@'",PatientTableName,ckeyid,[AccountManager currentUserid]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' and user_id = '%@'",PatientTableName,ckeyid,[AccountManager currentUserid]];
     __block Patient *retPatient = nil;
     __block FMResultSet *set = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -1769,6 +1770,34 @@
     }];
     return ret;
 }
+
+/**
+ *  获取患者的转诊记录
+ *
+ *  @param patientId 患者id
+ *
+ *  @return 转诊记录数组
+ */
+- (NSArray *)getPatientTransferRecordWithPatientId:(NSString *)patientId{
+    NSString *sqlStr = [NSString stringWithFormat:@"select distinct pm.doctor_id,pm.intr_time,d.doctor_name,d.doctor_image from %@ pm join %@ d on d.ckeyid=pm.doctor_id where pm.patient_id='%@' and pm.intr_source='I' and pm.doctor_id='%@' order by intr_time desc",PatIntrMapTableName,DoctorTableName,patientId,[AccountManager currentUserid]];
+    __block FMResultSet *resultSet;
+    __block NSMutableArray *resultArray = [NSMutableArray array];
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        resultSet = [db executeQuery:sqlStr];
+        int i = 1;
+        while (resultSet.next) {
+            XLTransferRecordModel *model = [XLTransferRecordModel transferRecordModelWithResultSet:resultSet];
+            model.number = i;
+            [resultArray addObject:model];
+            i++;
+        }
+        [resultSet close];
+    }];
+    
+    return resultArray;
+}
+
+
 
 #pragma mark - 判断时间是否是默认时间
 - (NSString *)isDefaultDate:(NSString *)dateStr{

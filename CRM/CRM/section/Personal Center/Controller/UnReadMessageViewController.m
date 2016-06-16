@@ -105,7 +105,7 @@
 
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [tableView createNoResultAlertViewWithImageName:@"message_alert.png" showButton:NO ifNecessaryForRowCount:self.dataList.count];
+    [tableView createNoResultWithImageName:@"message_alert.png" ifNecessaryForRowCount:self.dataList.count];
     return self.dataList.count;
 }
 

@@ -32,7 +32,6 @@
     if (cell == nil) {
         cell = [[self alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
-    
     return cell;
 }
 

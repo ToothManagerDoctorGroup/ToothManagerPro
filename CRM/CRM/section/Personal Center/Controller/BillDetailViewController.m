@@ -89,9 +89,9 @@
     XLPayWayAlertView *payAlertView = [[XLPayWayAlertView alloc] initWithPrice:self.detailModel.total_money certainButtonBlock:^(XLPayWayAlertView *payAlertView, XLPaymentMethod paymentMethod) {
         
         if (paymentMethod == XLPaymentMethodWeixin) {
-            NSString *price = @"1";
+            NSString *price = [NSString stringWithFormat:@"%d",(int)([self.detailModel.total_money floatValue] * 100)];;
             //微信支付
-            XLPayAttachModel *model = [[XLPayAttachModel alloc] initWithBillId:self.billId billPayer:[AccountManager currentUserid] billMoney:self.detailModel.total_money payType:PayAttachTypeClinicReserve clinicId:self.detailModel.clinic_id];
+            XLPayAttachModel *model = [[XLPayAttachModel alloc] initWithBillId:self.billId billPayer:[AccountManager currentUserid] billMoney:price payType:PayAttachTypeClinicReserve clinicId:self.detailModel.clinic_id];
             
             XLOrderParam *order = [[XLOrderParam alloc] initWithBody:title detail:detail attach:[model.keyValues JSONString] totalFee:price goodsTag:@"ZJYY"];
             [SVProgressHUD showWithStatus:@"正在获取交易信息"];
@@ -107,9 +107,9 @@
                 [SVProgressHUD showImage:nil status:error.localizedDescription];
             }];
         }else if (paymentMethod == XLPaymentMethodAlipay){
-            NSString *price = @"0.01";
+            NSString *sourcePrice = [NSString stringWithFormat:@"%.2f",[self.detailModel.total_money floatValue]];
             [SVProgressHUD showWithStatus:@"正在获取交易信息"];
-            [XLPayTool alipayWithSubject:title body:detail totalFee:price billId:self.billId billType:BillPayTypeClinicReserve success:^(CRMHttpRespondModel *result) {
+            [XLPayTool alipayWithSubject:title body:detail totalFee:sourcePrice billId:self.billId billType:BillPayTypeClinicReserve success:^(CRMHttpRespondModel *result) {
                 [SVProgressHUD dismiss];
                 if ([result.code integerValue] == 200) {
                     [[XLPayManager shareInstance] aliPayWithOrderString:result.result payCallback:^(NSDictionary *dic) {

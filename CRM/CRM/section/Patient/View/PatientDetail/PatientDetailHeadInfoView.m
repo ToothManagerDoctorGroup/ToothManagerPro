@@ -25,6 +25,7 @@
 #import "DoctorGroupTool.h"
 #import <MessageUI/MessageUI.h>
 #import "XLAppointmentBaseViewController.h"
+#import "XLTransferRecordViewController.h"
 
 #define Margin 10
 #define CommenTitleFont [UIFont systemFontOfSize:14]
@@ -43,13 +44,13 @@
 
 @property (nonatomic, weak)UIView *nameAndPhoneSuperView;//姓名和电话父视图
 @property (nonatomic, weak)UILabel *patientNameLabel; //患者姓名
-//@property (nonatomic, weak)UILabel *patientPhoneLabel; //联系电话
 @property (nonatomic, weak)UILabel *introducerNameLabel; //介绍人姓名
 @property (nonatomic, weak)UIImageView *introducerImage;//介绍人编辑图片
 
 @property (nonatomic, weak)UILabel *transferToLabel; //转诊到
+@property (nonatomic, weak)UIImageView *transferArrow;//箭头
+
 @property (nonatomic, weak)UIButton *phoneButton; //联系电话按钮
-//@property (nonatomic, weak)UIButton *weixinButton; //微信的按钮
 @property (nonatomic, weak)UIButton *messageButton;//消息
 @property (nonatomic, weak)UIButton *addReserveButton;//添加预约
 @property (nonatomic, weak)UIImageView *allergyView;//是否过敏
@@ -148,11 +149,18 @@
     
     //转诊到内容视图
     UILabel *transferToLabel = [[UILabel alloc] init];
-    transferToLabel.textColor = CommenTextColor;
+    transferToLabel.textColor = [UIColor colorWithHex:0x333333];
     transferToLabel.font = CommenTitleFont;
+    transferToLabel.userInteractionEnabled = YES;
     [self addSubview:transferToLabel];
-    transferToLabel.text = @"转诊到：无";
+    UITapGestureRecognizer *transferTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(transferAction:)];
+    [transferToLabel addGestureRecognizer:transferTap];
+    transferToLabel.text = @"转诊记录";
     self.transferToLabel = transferToLabel;
+    //转诊按钮
+    UIImageView *transferArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
+    self.transferArrow = transferArrow;
+    [transferToLabel addSubview:transferArrow];
     
     //联系电话按钮
     UIButton *phoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -235,6 +243,7 @@
     
     //转诊到
     self.transferToLabel.frame = CGRectMake(self.introducerNameLabel.right + Margin, self.patientNameLabel.bottom, kScreenWidth / 2 - Margin, RowHeight);
+    self.transferArrow.frame = CGRectMake(self.transferToLabel.width - arrowW - Margin, (self.transferToLabel.height - arrowH) / 2, arrowW, arrowH);
     
     //4个按钮
     CGFloat buttonW = 40;
@@ -274,19 +283,6 @@
     }
    
     self.introducerNameLabel.attributedText = [introducer changeStrColorWithIndex:4];
-}
-
-- (void)setTransferStr:(NSString *)transferStr{
-    _transferStr = transferStr;
-    
-    //重新计算frame
-    NSString *transfer;
-    if (self.transferStr) {
-        transfer = [NSString stringWithFormat:@"转诊到：%@",self.transferStr];
-    }else{
-        transfer = @"转诊到：无";
-    }
-    self.transferToLabel.attributedText = [transfer changeStrColorWithIndex:4];
 }
 
 - (void)setIntroduceCanEdit:(BOOL)introduceCanEdit{
@@ -335,15 +331,15 @@
     }
 }
 
+#pragma mark - 转诊按钮点击
+- (void)transferAction:(UITapGestureRecognizer *)tap{
+    XLTransferRecordViewController *transferVc = [[XLTransferRecordViewController alloc] init];
+    transferVc.patientId = self.detailPatient.ckeyid;
+    [self.viewController.navigationController pushViewController:transferVc animated:YES];
+}
 
 #pragma mark - 添加预约
 - (void)addReserveButtonClick{
-    
-//    XLSelectYuyueViewController *selectYuyeVc = [[XLSelectYuyueViewController alloc] init];
-//    selectYuyeVc.hidesBottomBarWhenPushed = YES;
-//    selectYuyeVc.isAddLocationToPatient = YES;
-//    selectYuyeVc.patient = self.detailPatient;
-//    [self.viewController.navigationController pushViewController:selectYuyeVc animated:YES];
     
     XLAppointmentBaseViewController *baseVC = [[XLAppointmentBaseViewController alloc] init];
     baseVC.patient = self.detailPatient;

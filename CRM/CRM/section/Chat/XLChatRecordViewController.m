@@ -351,12 +351,14 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+    
     NSString *ids = [NSString stringWithFormat:@"%@,%@",[AccountManager currentUserid],self.patient.ckeyid];
     XLChatRecordQueryModel *queryModel = [[XLChatRecordQueryModel alloc] initWithSenderId:ids receiverId:ids beginTime:@"" endTime:@"" keyWord:searchBar.text sortField:@"" isAsc:NO];
     WS(weakSelf);
-    [SVProgressHUD showWithStatus:@"正在加载"];
     [DoctorTool getAllChatRecordWithChatQueryModel:queryModel success:^(NSArray *result) {
-        [SVProgressHUD dismiss];
         if (result.count > 0) {
             weakSelf.searchController.hideNoResult = YES;
         }else{

@@ -8,6 +8,12 @@
 
 #import "XLGuideImageView.h"
 
+@interface XLGuideImageView ()
+
+@property (nonatomic, copy)DismissBlock dismissBlock;
+
+@end
+
 @implementation XLGuideImageView
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -36,17 +42,20 @@
         self.alpha = 0;
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
+        if (self.dismissBlock) {
+            self.dismissBlock();
+        }
     }];
 }
 
-- (void)showInView:(UIView *)view{
+- (void)showInView:(UIView *)view dismissBlock:(DismissBlock)dismissBlock{
     [view addSubview:self];
     [view bringSubviewToFront:self];
     self.frame = view.bounds;
+    self.dismissBlock = dismissBlock;
     [UIView animateWithDuration:.35 animations:^{
         self.alpha = 1;
     } completion:^(BOOL finished) {
-        
     }];
 }
 
@@ -58,7 +67,7 @@
     [UIView animateWithDuration:.35 animations:^{
         self.alpha = 1;
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:.35 delay:1.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:.35 delay:2.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.alpha = 0;
         } completion:^(BOOL finished) {
             [self removeFromSuperview];

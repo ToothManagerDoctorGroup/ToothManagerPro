@@ -16,7 +16,7 @@
 
 - (UIView *)createNoSearchResultAlertViewWithImageName:(NSString *)imageName showButton:(BOOL)showButton{
     
-    UIImage *image = [UIImage imageWithFileName:imageName];
+    UIImage *image = [UIImage imageNamed:imageName];
     UIImageView *noResultView = [[UIImageView alloc] initWithImage:image];
     [self addSubview:noResultView];
     
@@ -113,7 +113,7 @@
             UIView *bgView = [[UIView alloc] init];
             bgView.frame = CGRectMake(0, 0, self.width, self.height);
             
-            UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:imageName]];
+            UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imageName]];
             [bgView addSubview:noResultView];
             
             [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -157,7 +157,7 @@
         UIView *bgView = [[UIView alloc] init];
         bgView.frame = CGRectMake(0, 0, self.width, self.height);
         
-        UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:imageName]];
+        UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imageName]];
         [bgView addSubview:noResultView];
         
         [noResultView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -187,7 +187,7 @@
         UIView *bgView = [[UIView alloc] init];
         bgView.frame = CGRectMake(0, 0, self.width, self.height);
         
-        UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageWithFileName:imageName]];
+        UIImageView *noResultView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imageName]];
         noResultView.userInteractionEnabled = YES;
         [bgView addSubview:noResultView];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:target action:action];

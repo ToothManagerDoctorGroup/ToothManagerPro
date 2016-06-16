@@ -129,8 +129,10 @@
     [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *res = [CRMHttpRespondModel objectWithKeyValues:responseObject];
-        if (success) {
-            success([res.result stringValue]);
+        if ([res.code integerValue] == 200) {
+            if (success) {
+                success([res.result stringValue]);
+            }
         }
     } failure:^(NSError *error) {
         if (failure) {

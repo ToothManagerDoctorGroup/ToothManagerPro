@@ -81,7 +81,6 @@
             [CRMUserDefalut setObject:respond.result[@"Password"] forKey:LatestUserPassword];
         }
     } failure:^(NSError *error) {
-    
     }];
     [self popViewControllerAnimated:YES];
 }

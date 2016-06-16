@@ -390,6 +390,7 @@
     [userobj setDegree:self.userDegree.text];
     [userobj setAuthStatus:userobj.authStatus];
     [userobj setAuthText:userobj.authText];
+    [userobj setImg:self.currentDoctor.doctor_image];
     
     [userobj setDoctor_birthday:self.currentDoctor.doctor_birthday];
     [userobj setDoctor_cv:self.currentDoctor.doctor_cv];

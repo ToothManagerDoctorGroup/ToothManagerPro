@@ -19,6 +19,8 @@ NSString *const CancelReserveRecord = @"CancelReserveRecord";
 NSString *const UpdateReserveRecord = @"UpdateReserveRecord";
 //新增预约
 NSString *const InsertReserveRecord = @"InsertReserveRecord";
+//诊所预约
+NSString *const ClinicReserver = @"ClinicReserver";
 
 @implementation SysMessageModel
 

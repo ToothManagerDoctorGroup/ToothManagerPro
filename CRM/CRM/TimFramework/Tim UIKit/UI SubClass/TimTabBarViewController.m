@@ -89,6 +89,18 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [self createAllTimer];
 }
 
+#pragma mark - 关闭所有定时器
+- (void)closeAllTimer{
+    if (self.timer) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    if (self.syncGetTimer) {
+        [self.syncGetTimer invalidate];
+        self.syncGetTimer = nil;
+    }
+}
+
 #pragma mark - 创建定时器，添加网络监听
 - (void)createAllTimer{
     [[CRMAppDelegate appDelegate] addObserver:self forKeyPath:@"connectionStatus" options:NSKeyValueObservingOptionNew context:nil];

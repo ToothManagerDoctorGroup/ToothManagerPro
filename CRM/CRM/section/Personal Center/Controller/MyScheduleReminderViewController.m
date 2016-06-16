@@ -46,10 +46,11 @@
 #import "XLSysMessageViewController.h"
 #import "XLMessageHandleManager.h"
 #import "XLClinicAppointDetailViewController.h"
+#import "CommonMacro.h"
 
 @interface MyScheduleReminderViewController ()<JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
-@property (nonatomic,retain) NSArray *remindArray;
+@property (nonatomic,strong) NSArray *remindArray;
 @property (nonatomic, strong)NSDate *selectDate;
 @property (nonatomic, strong)Patient *selectPatient;//当前选中的患者
 @property (nonatomic, assign)BOOL isHide;
@@ -91,6 +92,16 @@
         [self didClickDateButton];
         self.isHide = YES;
     }
+    //显示引导页
+    [CRMUserDefalut isShowedForKey:Schedule_IsShowedKey showedBlock:^{
+        XLGuideImageView *guideImage1 = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alertView"]];
+        [guideImage1 showInView:[UIApplication sharedApplication].keyWindow dismissBlock:^{
+            XLGuideImageView *guideImage2 = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_patient_alertView"]];
+            [guideImage2 showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES];
+        }];
+    }];
+    
+    
 }
 
 - (void)dealloc {
@@ -364,28 +375,28 @@
     __weak typeof(self) weakSelf = self;
     [self lew_presentPopupView:menuView animation:[LewPopupViewAnimationFade new] dismissed:^{
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        switch (menuView.type) {
-            case SchedulePopMenuType1:
-                //预约详情
-                [weakSelf junpToAppointDetailWithNotification:notifi];
-                break;
-            case SchedulePopMenuType2:
-                //患者详情
-                [weakSelf junpToPatientDetailWithNotification:notifi];
-                break;
-            case SchedulePopMenuType3:
-                //打电话
-                [weakSelf junpToPhoneWithNotification:notifi];
-                break;
-            case SchedulePopMenuType4:
-                //发短信
-                [weakSelf junpToMessageWithNotification:notifi];
-                break;
-            default:
-                break;
+        
+        SEL jumpSelector = NSSelectorFromString([NSString stringWithFormat:@"junpTo%@WithNotification:",[weakSelf getSELNameWithValue:menuView.type]]);
+        if(![weakSelf respondsToSelector:jumpSelector]) {
+            NSLog(@"未实现此方法");
+            return;
         }
+        SuppressPerformSelectorLeakWarning(
+                                           [weakSelf performSelector:jumpSelector withObject:notifi]);
     }];
 }
+#pragma mark - 获取SEL名称
+- (NSString *)getSELNameWithValue:(SchedulePopMenuType)type{
+    static NSDictionary *jumpMapping = nil;
+    if (!jumpMapping) {
+        jumpMapping = @{@(SchedulePopMenuType1) : @"AppointDetail",
+                        @(SchedulePopMenuType2) : @"PatientDetail",
+                        @(SchedulePopMenuType3) : @"Phone",
+                        @(SchedulePopMenuType4) : @"Message"};
+    }
+    return jumpMapping[@(type)];
+}
+
 #pragma mark - 预约详情
 - (void)junpToAppointDetailWithNotification:(LocalNotification *)notifi{
     //判断是否是诊所端预约
@@ -420,8 +431,12 @@
 - (void)junpToPhoneWithNotification:(LocalNotification *)notifi{
     
     if(![NSString isEmptyString:self.selectPatient.patient_phone]){
-        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:[NSString stringWithFormat:@"拨打电话%@",self.selectPatient.patient_phone] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-        alertView.tag = 101;
+        TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:nil message:[NSString stringWithFormat:@"拨打电话%@",self.selectPatient.patient_phone] cancelHandler:^{
+        } comfirmButtonHandlder:^{
+            NSString *number = self.selectPatient.patient_phone;
+            NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+        }];
         [alertView show];
     }else{
         [SVProgressHUD showImage:nil status:@"患者未留电话"];
@@ -436,16 +451,6 @@
     [self pushViewController:chatController animated:YES];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if(alertView.tag == 101){
-        if(buttonIndex == 0){
-        }else{
-            NSString *number = self.selectPatient.patient_phone;
-            NSString *num = [[NSString alloc]initWithFormat:@"tel://%@",number];
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
-        }
-    }
-}
 #pragma mark - ScheduleDateButtonDelegate
 - (void)didClickDateButton{
     

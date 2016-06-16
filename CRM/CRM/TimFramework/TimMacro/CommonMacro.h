@@ -32,9 +32,19 @@ dispatch_once(&onceToken, ^{ \
 return _instance_;\
 }
 
+#pragma mark ------------------ignoreLeakWarning-----------------------------------------------------
+#define SuppressPerformSelectorLeakWarning(Stuff) \
+do { \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"") \
+Stuff; \
+_Pragma("clang diagnostic pop") \
+} while (0)
+
 #pragma mark - -----------------System--------------------------------------------------------
 #define SYSTEMVERSION [[UIDevice currentDevice].systemVersion floatValue]
 
+#define IOS_9_OR_LATER (((SYSTEMVERSION) >= 9.0) ? YES:NO)
 #define IOS_8_OR_LATER (((SYSTEMVERSION) >= 8.0) ? YES:NO)
 #define IOS_7_OR_LATER (((SYSTEMVERSION) >= 7.0) ? YES:NO)
 #define IOS_6_OR_LATER (((SYSTEMVERSION) >= 6.0) ? YES:NO)

@@ -13,6 +13,8 @@
 #import "NSError+Extension.h"
 #import "CRMMacro.h"
 #import "CRMHttpRequest+Doctor.h"
+#import "RemoteNotificationCenter.h"
+#import "TimTabBarViewController.h"
 
 @implementation AccountManager
 
@@ -209,6 +211,9 @@ Realize_ShareInstance(AccountManager);
     [CRMUserDefalut setLatestUserPassword:nil];
     NSString *signKey = kUserIsSignKey([self currentUser].userid);
     [CRMUserDefalut setObject:nil forKey:signKey];
+    //取消定时器
+    TimTabBarViewController *tabVc = (TimTabBarViewController *)[[RemoteNotificationCenter shareInstance] getCurrentVC];
+    [tabVc closeAllTimer];
     
     //取消所有的下载操作
     [[CRMHttpRequest shareInstance] cancelAllOperations];

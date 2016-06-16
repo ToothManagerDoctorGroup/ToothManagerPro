@@ -11,9 +11,9 @@
 #import "TimNavigationViewController.h"
 #import "XLAppointmentBaseViewController.h"
 #import "XLQrcodePatientViewController.h"
+#import "CommonMacro.h"
 
 @implementation CRMAppDelegate (ThreeDTouch)
-
 - (void)add3DViewWithApplication:(UIApplication *)application{
     UIApplicationShortcutIcon *searchIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"3dtouch_search_huanzhe"];
     UIApplicationShortcutItem *searchItem = [[UIApplicationShortcutItem alloc] initWithType:ThreeDTouchSearchPatient localizedTitle:@"查找患者" localizedSubtitle:NULL icon:searchIcon userInfo:NULL];
@@ -28,6 +28,7 @@
     
 }
 
+#ifdef IOS_9_OR_LATER
 - (void)application:(UIApplication *)application performActionForShortcutItem:(nonnull UIApplicationShortcutItem *)shortcutItem completionHandler:(nonnull void (^)(BOOL))completionHandler{
     
     if ([shortcutItem.type isEqualToString:ThreeDTouchSearchPatient])
@@ -39,7 +40,7 @@
         [self pushToAddReminderVc];
     }
 }
-
+#endif
 - (void)pushToSearchpatientVc{
     // 取到tabbarcontroller
     TimTabBarViewController *tabBarController = (TimTabBarViewController *)[[RemoteNotificationCenter shareInstance] getCurrentVC];

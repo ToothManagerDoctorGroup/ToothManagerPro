@@ -76,7 +76,6 @@
 #pragma mark - 查询所有数据
 - (void)requestData{
     [XLTeamTool queryAllCountOfPatientWithDoctorId:[AccountManager currentUserid] theraptDocId:self.doc.ckeyid success:^(XLCureCountModel *model) {
-        
         //加载成功
         self.meTransferToOtherCount.text = [NSString stringWithFormat:@"(%ld)",(unsigned long)model.introByMe.count];
         self.otherTransferToMeCount.text = [NSString stringWithFormat:@"(%ld)",(unsigned long)model.introByHim.count];

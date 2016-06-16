@@ -698,6 +698,8 @@
                 [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userName password:password completion:^(NSDictionary *loginInfo, EMError *error) {
                     if (loginInfo && !error) {
                         [SVProgressHUD showImage:nil status:@"登录成功"];
+                        //设置是否自动登录
+                        [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
                         //发送自动登陆状态通知
                         [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@YES];
                     }else{

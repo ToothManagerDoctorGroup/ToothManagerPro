@@ -267,7 +267,7 @@
         }else{
             //查询本地是否有此医生
             Doctor *tmDoc = [[DBManager shareInstance] getDoctorWithCkeyId:doctor.ckeyid];
-            if (tmDoc == nil) {
+            if (![tmDoc.doctor_image isEqualToString:doctor.doctor_image]) {
                 //将此医生信息保存到本地
                 [[DBManager shareInstance] insertDoctorWithDoctor:doctor];
             }
@@ -379,7 +379,6 @@
 {
     if ([result integerForKey:@"Code"] == 200) {
         NSLog(@"转诊成功");
-        [SVProgressHUD showSuccessWithStatus:@"转诊患者成功"];
         Patient *tmppatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:patientId];
         if (tmppatient != nil) {
             //添加患者自动同步信息
@@ -391,6 +390,7 @@
         }
         
         __weak typeof(self) weakSelf = self;
+         [SVProgressHUD showWithStatus:@"转诊患者成功,正在获取提醒消息"];
         [DoctorTool newYuYueMessagePatient:patientId fromDoctor:[AccountManager currentUserid] therapyDoctorId:self.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *respond) {
             NSLog(@"获取通知");
             if ([respond.code integerValue] == 200) {

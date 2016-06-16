@@ -27,6 +27,9 @@
 #import "XLNewFriendNotiViewController.h"
 #import "DBManager+LocalNotification.h"
 #import "CRMAppDelegate.h"
+#import "WMPageController.h"
+#import "MyBillViewController.h"
+#import "PayedBillViewController.h"
 
 static const NSInteger SysMessageViewControllerPageSize = 30;
 
@@ -119,44 +122,13 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
 
 #pragma mark 已读消息点击事件
 - (void)clickReadedMessageActionWithModel:(SysMessageModel *)model{
-    //判断消息的类型
-    if ([model.message_type isEqualToString:AttainNewPatient]) {
-        Patient *patient = [[DBManager shareInstance] getPatientCkeyid:model.message_id];
-        if (patient == nil) {
-            [SVProgressHUD showErrorWithStatus:@"患者不存在"];
-            return;
-        }
-        //跳转到新的患者详情页面
-        PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
-        cellModel.patientId = model.message_id;
-        PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-        detailVc.patientsCellMode = cellModel;
-        detailVc.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:detailVc animated:YES];
-        
-    }else if([model.message_type isEqualToString:AttainNewFriend]){
-        //新增好友
-        NewFriendsViewController *newFriendVc = [[NewFriendsViewController alloc] initWithStyle:UITableViewStylePlain];
-        [self.navigationController pushViewController:newFriendVc animated:YES];
+    SEL jumpSelector = NSSelectorFromString([NSString stringWithFormat:@"jumpTo%@:",[self getJumpActionSELNameWithMessageModel:model]]);
+    if(![self respondsToSelector:jumpSelector]) {
+        NSLog(@"未实现此方法");
+        return;
     }
-    
-    else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
-        LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
-        if (local == nil) {
-            [SVProgressHUD showImage:nil status:@"该预约已被取消"];
-            return;
-        }
-        //跳转到预约详情页面
-        XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
-        detailVc.localNoti = local;
-        [self.navigationController pushViewController:detailVc animated:YES];
-        
-    }else if ([model.message_type isEqualToString:CancelReserveRecord]){
-        // 2.跳转到患者预约列表
-        XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
-        appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
-        [self.navigationController pushViewController:appointVc animated:YES];
-    }
+    SuppressPerformSelectorLeakWarning(
+                                       [self performSelector:jumpSelector withObject:model]);
 }
 #pragma mark 未读消息点击事件
 - (void)clickUnReadMessageActionWithModel:(SysMessageModel *)msgModel{
@@ -246,6 +218,8 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
         }
         //设置消息已读
         [self setMessageReadWithModel:msgModel noOperate:NO];
+    }else if ([msgModel.message_type isEqualToString:ClinicReserver]){
+        [self setMessageReadWithModel:msgModel noOperate:NO];
     }
 }
 
@@ -260,31 +234,13 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
         //重新请求数据
         if (!noOperate) {
             [SVProgressHUD dismiss];
-            if ([model.message_type isEqualToString:AttainNewPatient]) {
-                //跳转到新的患者详情页面
-                PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
-                cellModel.patientId = model.message_id;
-                PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
-                detailVc.patientsCellMode = cellModel;
-                detailVc.hidesBottomBarWhenPushed = YES;
-                [weakSelf.navigationController pushViewController:detailVc animated:YES];
-            }else if ([model.message_type isEqualToString:CancelReserveRecord]){
-                // 2.跳转到患者预约列表
-                XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
-                appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
-                [weakSelf.navigationController pushViewController:appointVc animated:YES];
-                
-            }else if ([model.message_type isEqualToString:InsertReserveRecord] || [model.message_type isEqualToString:UpdateReserveRecord]){
-                LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
-                //跳转到预约详情页面
-                XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
-                detailVc.localNoti = local;
-                [weakSelf.navigationController pushViewController:detailVc animated:YES];
-            }else{
-                //新增好友
-                XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
-                [weakSelf.navigationController pushViewController:newFriendVc animated:YES];
+            SEL jumpSelector = NSSelectorFromString([NSString stringWithFormat:@"jumpTo%@:",[self getJumpActionSELNameWithMessageModel:model]]);
+            if(![self respondsToSelector:jumpSelector]) {
+                NSLog(@"未实现此方法");
+                return;
             }
+            SuppressPerformSelectorLeakWarning(
+                                               [self performSelector:jumpSelector withObject:model]);
         }
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
@@ -363,6 +319,75 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
     }
 }
 
+#pragma mark 获取跳转方法名称
+- (NSString *)getJumpActionSELNameWithMessageModel:(SysMessageModel *)model{
+    static NSDictionary *mapping = nil;
+    if (!mapping) {
+        mapping = @{
+                    AttainNewFriend : @"AddNewFriend",
+                    CancelReserveRecord : @"AppointDisplay",
+                    UpdateReserveRecord : @"AppointDetail",
+                    InsertReserveRecord : @"AppointDetail",
+                    AttainNewPatient : @"PatientDetail",
+                    ClinicReserver : @"BillDisplay"};
+    }
+    return mapping[model.message_type];
+}
+
+#pragma mark 跳转到患者详情页面
+- (void)jumpToPatientDetail:(SysMessageModel *)model{
+    Patient *patient = [[DBManager shareInstance] getPatientCkeyid:model.message_id];
+    if (patient == nil) {
+        [SVProgressHUD showErrorWithStatus:@"患者不存在"];
+        return;
+    }
+    //跳转到新的患者详情页面
+    PatientsCellMode *cellModel = [[PatientsCellMode alloc] init];
+    cellModel.patientId = model.message_id;
+    PatientDetailViewController *detailVc = [[PatientDetailViewController alloc] init];
+    detailVc.patientsCellMode = cellModel;
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:detailVc animated:YES];
+}
+#pragma mark 跳转到患者的预约列表
+- (void)jumpToAppointDisplay:(SysMessageModel *)model{
+    // 2.跳转到患者预约列表
+    XLPatientAppointViewController *appointVc = [[XLPatientAppointViewController alloc] initWithStyle:UITableViewStylePlain];
+    appointVc.patient_id = [model.message_id componentsSeparatedByString:@","][0];
+    [self.navigationController pushViewController:appointVc animated:YES];
+}
+#pragma mark 跳转到患者的预约详情
+- (void)jumpToAppointDetail:(SysMessageModel *)model{
+    LocalNotification *local = [[DBManager shareInstance] getLocalNotificationWithCkeyId:model.message_id];
+    if (local == nil) {
+        [SVProgressHUD showImage:nil status:@"该预约已被取消"];
+        return;
+    }
+    //跳转到预约详情页面
+    XLAppointDetailViewController *detailVc = [[XLAppointDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    detailVc.localNoti = local;
+    [self.navigationController pushViewController:detailVc animated:YES];
+}
+#pragma mark 跳转到新增好友页面
+- (void)jumpToAddNewFriend:(SysMessageModel *)model{
+    //新增好友
+    XLNewFriendNotiViewController *newFriendVc = [[XLNewFriendNotiViewController alloc] initWithStyle:UITableViewStylePlain];
+    [self.navigationController pushViewController:newFriendVc animated:YES];
+}
+#pragma mark 跳转到我的账单列表
+- (void)jumpToBillDisplay:(SysMessageModel *)model{
+    //跳转到我的账单列表
+    WMPageController *pageController = [self p_defaultController];
+    pageController.title = @"我的账单";
+    pageController.menuViewStyle = WMMenuViewStyleLine;
+    pageController.titleSizeSelected = 15;
+    pageController.titleColorSelected = MyColor(0, 139, 232);
+    pageController.menuHeight = 44;
+    pageController.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:pageController animated:YES];
+}
+
+
 #pragma mark - ******************** Delegate / DataSource *******************
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -428,6 +453,32 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
         _dataList = [NSMutableArray array];
     }
     return _dataList;
+}
+
+#pragma mark 创建我的账单控制器
+//创建控制器
+- (WMPageController *)p_defaultController {
+    NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+    NSMutableArray *titles = [[NSMutableArray alloc] init];
+    Class class;
+    for (int i = 0; i < 2; i++) {
+        NSString *title;
+        if (i == 0) {
+            title = @"待付款";
+            class = [MyBillViewController class];
+        }else{
+            title = @"已付款";
+            class = [PayedBillViewController class];
+        }
+        [viewControllers addObject:class];
+        [titles addObject:title];
+    }
+    WMPageController *pageVC = [[WMPageController alloc] initWithViewControllerClasses:viewControllers andTheirTitles:titles];
+    pageVC.pageAnimatable = YES;
+    pageVC.menuItemWidth = kScreenWidth * 0.5;
+    pageVC.postNotification = YES;
+    pageVC.bounces = YES;
+    return pageVC;
 }
 
 @end

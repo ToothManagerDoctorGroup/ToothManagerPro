@@ -65,15 +65,6 @@ Realize_ShareInstance(RemoteNotificationCenter);
     XLSysMessageViewController *sysMessageVc = [[XLSysMessageViewController alloc] initWithStyle:UITableViewStylePlain];
     sysMessageVc.hidesBottomBarWhenPushed = YES;
     [nav pushViewController:sysMessageVc animated:YES];
-//    WMPageController *pageController = [self p_defaultController];
-//    pageController.title = @"我的消息";
-//    pageController.menuViewStyle = WMMenuViewStyleLine;
-//    pageController.titleSizeSelected = 15;
-//    pageController.titleColorSelected = MyColor(0, 139, 232);
-//    pageController.menuHeight = 44;
-//    pageController.bounces = NO;
-//    pageController.hidesBottomBarWhenPushed = YES;
-//    [nav pushViewController:pageController animated:YES];
 }
 
 //获取当前屏幕显示的viewcontroller
@@ -105,31 +96,4 @@ Realize_ShareInstance(RemoteNotificationCenter);
     
     return result;
 }
-
-#pragma mark - 创建控制器
-- (WMPageController *)p_defaultController {
-    NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
-    NSMutableArray *titles = [[NSMutableArray alloc] init];
-    Class class;
-    for (int i = 0; i < 2; i++) {
-        NSString *title;
-        if (i == 0) {
-            title = @"未读";
-            class = [UnReadMessageViewController class];
-        }else{
-            title = @"已读";
-            class = [ReadMessageViewController class];
-        }
-        [viewControllers addObject:class];
-        [titles addObject:title];
-    }
-    WMPageController *pageVC = [[WMPageController alloc] initWithViewControllerClasses:viewControllers andTheirTitles:titles];
-    pageVC.pageAnimatable = YES;
-    pageVC.menuItemWidth = kScreenWidth * 0.5;
-    pageVC.postNotification = YES;
-    pageVC.bounces = YES;
-    return pageVC;
-}
-
-
 @end

@@ -92,7 +92,8 @@
         [SVProgressHUD dismiss];
         [weakSelf.dataList removeAllObjects];
         [weakSelf.dataList addObjectsFromArray:result];
-        [weakSelf.tableView createNoResultWithImageName:@"groupList_alert.png" ifNecessaryForRowCount:result.count];
+//        [weakSelf.tableView createNoResultWithImageName:@"groupList_alert.png" ifNecessaryForRowCount:result.count];
+        [weakSelf.tableView createNoResultAlertViewWithImageName:@"groupList_alert.png" showButton:NO ifNecessaryForRowCount:result.count];
         
         [weakSelf.tableView reloadData];
         

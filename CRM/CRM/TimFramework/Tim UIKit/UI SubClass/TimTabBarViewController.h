@@ -16,5 +16,7 @@
 - (void)jumpToChatList;
 - (void)didReceiveLocalNotification:(UILocalNotification *)notification;
 
+- (void)closeAllTimer;
+
 @property (nonatomic, assign)BOOL isLoginFromOthers;//是否从其它地方登录
 @end

@@ -14,6 +14,7 @@ extern NSString * const AttainNewFriend;
 extern NSString * const CancelReserveRecord;
 extern NSString * const UpdateReserveRecord;
 extern NSString * const InsertReserveRecord;
+extern NSString * const ClinicReserver;
 
 @interface SysMessageModel : NSObject
 
