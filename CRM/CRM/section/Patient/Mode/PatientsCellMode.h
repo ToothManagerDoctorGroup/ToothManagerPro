@@ -18,6 +18,8 @@
 @property (nonatomic,copy) NSString *introducerName;
 @property (nonatomic,readwrite) NSInteger countMaterial;
 
+@property (nonatomic, assign)BOOL isTransfer;
+
 @property (nonatomic,copy) NSString *phone;
 
 @end

@@ -19,6 +19,7 @@
 #import "TitleMenuViewController.h"
 #import "ClinicMapViewController.h"
 #import "AccountManager.h"
+#import "UISearchBar+XLMoveBgView.h"
 
 
 @interface SearchClinicViewController ()<UISearchBarDelegate,BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate,ClinicCoverDelegate,TitleMenuViewControllerDelegate>{
@@ -92,7 +93,6 @@
     
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithImage:[UIImage imageNamed:@"zzs_zb"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     //创建标题按钮
     ClinicTitleButton *titleButton = [ClinicTitleButton buttonWithType:UIButtonTypeCustom];
@@ -160,6 +160,7 @@
     searchBar.delegate = self;
     self.tableView.tableHeaderView = searchBar;
     _searchBar = searchBar;
+    [_searchBar moveBackgroundView];
 }
 
 #pragma mark -百度地图定位功能实现

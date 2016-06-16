@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="XLImageBrowserView" id="t16-qu-CBx" customClass="XLImageBrowserView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zow-c5-xCi">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <animations/>
+                </scrollView>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ycY-Lv-ul6">
+                    <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="RRy-xD-bUB"/>
+                    </constraints>
+                    <items>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="fXC-zl-X8s"/>
+                        <barButtonItem systemItem="trash" id="QcN-Pj-CBq">
+                            <connections>
+                                <action selector="deleteAction:" destination="t16-qu-CBx" id="IS0-Zv-pDB"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem width="24" style="plain" systemItem="fixedSpace" id="0JH-wd-kDF"/>
+                    </items>
+                </toolbar>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bsx-tU-hLi">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="Byc-y3-TrR"/>
+                    </constraints>
+                    <items>
+                        <barButtonItem systemItem="stop" id="ZpN-qu-F2X">
+                            <connections>
+                                <action selector="dismissAction:" destination="t16-qu-CBx" id="mqi-vs-r0A"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="N3z-yH-i07"/>
+                        <barButtonItem title="CT片" id="VSp-lg-uNf"/>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="VIL-cl-lhw"/>
+                    </items>
+                </toolbar>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WEE-1B-WSi">
+                    <rect key="frame" x="10" y="587" width="355" height="21"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="pxr-1L-2Nb"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="Zow-c5-xCi" secondAttribute="bottom" id="0O7-PT-vRv"/>
+                <constraint firstItem="Zow-c5-xCi" firstAttribute="leading" secondItem="t16-qu-CBx" secondAttribute="leading" id="0cc-yr-o5P"/>
+                <constraint firstItem="ycY-Lv-ul6" firstAttribute="leading" secondItem="t16-qu-CBx" secondAttribute="leading" id="0qF-k4-6J5"/>
+                <constraint firstAttribute="bottom" secondItem="ycY-Lv-ul6" secondAttribute="bottom" id="9ZC-ps-Y9G"/>
+                <constraint firstItem="Bsx-tU-hLi" firstAttribute="top" secondItem="t16-qu-CBx" secondAttribute="top" id="Cvb-b0-gFa"/>
+                <constraint firstAttribute="trailing" secondItem="WEE-1B-WSi" secondAttribute="trailing" constant="10" id="a9c-id-GRK"/>
+                <constraint firstItem="Bsx-tU-hLi" firstAttribute="leading" secondItem="t16-qu-CBx" secondAttribute="leading" id="aop-c7-n8i"/>
+                <constraint firstItem="ycY-Lv-ul6" firstAttribute="top" secondItem="WEE-1B-WSi" secondAttribute="bottom" constant="15" id="gDW-S0-Llj"/>
+                <constraint firstItem="Zow-c5-xCi" firstAttribute="top" secondItem="t16-qu-CBx" secondAttribute="top" id="gZe-cI-L2b"/>
+                <constraint firstAttribute="trailing" secondItem="Bsx-tU-hLi" secondAttribute="trailing" id="hh1-t7-KCV"/>
+                <constraint firstAttribute="trailing" secondItem="ycY-Lv-ul6" secondAttribute="trailing" id="mQi-Dy-bqO"/>
+                <constraint firstAttribute="trailing" secondItem="Zow-c5-xCi" secondAttribute="trailing" id="rZt-zO-3A1"/>
+                <constraint firstItem="WEE-1B-WSi" firstAttribute="leading" secondItem="t16-qu-CBx" secondAttribute="leading" constant="10" id="wqP-ki-5AY"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <connections>
+                <outlet property="bottomBar" destination="ycY-Lv-ul6" id="ZAx-My-VMe"/>
+                <outlet property="deleteButton" destination="QcN-Pj-CBq" id="B8u-a3-qIk"/>
+                <outlet property="indexLabel" destination="WEE-1B-WSi" id="cwM-ok-Z8N"/>
+                <outlet property="scrollView" destination="Zow-c5-xCi" id="Ds8-BX-L0J"/>
+                <outlet property="titleBarItem" destination="VSp-lg-uNf" id="WMH-6h-vlD"/>
+                <outlet property="topBar" destination="Bsx-tU-hLi" id="kOb-4a-Lod"/>
+            </connections>
+            <point key="canvasLocation" x="450" y="122"/>
+        </view>
+    </objects>
+</document>

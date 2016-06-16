@@ -48,6 +48,4 @@
 @property (nonatomic, copy)NSString *clinic_summary;
 @property (nonatomic, copy)NSString *clinic_area;
 
-
-
 @end

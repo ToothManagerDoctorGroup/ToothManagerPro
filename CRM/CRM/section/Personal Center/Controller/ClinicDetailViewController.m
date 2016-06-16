@@ -19,9 +19,10 @@
 #import "UIImageView+WebCache.h"
 #import "MJPhotoBrowser.h"
 #import "MJPhoto.h"
-#import "UnSignClinicModel.h"
+#import "XLClinicModel.h"
 #import "SignDetailViewController.h"
 #import "ClinicTitleButton.h"
+#import "XLClinicAppointmentViewController.h"
 
 @interface ClinicDetailViewController ()<ChairDetailScrollViewDelegate,SignDetailViewControllerDelegate>
 
@@ -73,12 +74,11 @@
     [super initView];
     self.title = @"诊所详情";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     //如果是未签约的诊所信息
     if (self.unsignModel) {
         //设置右侧按钮
         UILabel *right = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 40, 44)];
-        right.text = @"签约";
+        right.text = @"预约";
         right.textColor = [UIColor whiteColor];
         right.font = [UIFont systemFontOfSize:16];
         right.userInteractionEnabled = YES;
@@ -224,16 +224,24 @@
 #pragma mark 找诊所按钮点击事件
 - (void)findClinicAction:(UITapGestureRecognizer *)tap{
     //创建跳转页面
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    SignDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"SignDetailViewController"];
-    detailVc.hidesBottomBarWhenPushed = YES;
-    detailVc.delegate = self;
-    if (self.model) {
-        detailVc.signModel = self.model;
-    }else{
-        detailVc.unSignModel = self.unsignModel;
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+//    SignDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"SignDetailViewController"];
+//    detailVc.hidesBottomBarWhenPushed = YES;
+//    detailVc.delegate = self;
+//    if (self.model) {
+//        detailVc.signModel = self.model;
+//    }else{
+//        detailVc.unSignModel = self.unsignModel;
+//    }
+//    [self.navigationController pushViewController:detailVc animated:YES];
+    //跳转到详情页面
+    XLClinicAppointmentViewController *appointVc = [[XLClinicAppointmentViewController alloc] init];
+    appointVc.clinicModel = self.unsignModel;
+    if (self.patient) {
+        appointVc.patient = self.patient;
     }
-    [self.navigationController pushViewController:detailVc animated:YES];
+    appointVc.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:appointVc animated:YES];
 }
 
 #pragma mark -椅位单击事件

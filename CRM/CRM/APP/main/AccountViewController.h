@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "TimTableViewController.h"
-
+/**
+ *  我的空间
+ */
 @interface AccountViewController : TimTableViewController<UITableViewDelegate,UITableViewDataSource>
-//徐晓龙
 @end

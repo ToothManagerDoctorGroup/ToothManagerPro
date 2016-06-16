@@ -17,6 +17,8 @@
 #import "BillModel.h"
 #import "WMPageConst.h"
 #import "AppointDetailViewController.h"
+#import "UITableView+NoResultAlert.h"
+#import "CRMHttpRespondModel.h"
 
 @interface MyBillViewController ()<MyBillCellDelegate>
 
@@ -39,29 +41,49 @@
     [super viewDidLoad];
     self.tableView.backgroundColor = MyColor(239, 239, 239);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.tableFooterView = [UIView new];
     
+    //添加通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(weixinPayedAction:) name:WeixinPayedNotification object:nil];
     //加载网络数据
     [self requestBillsDataWithType:@"1"];
 }
 
+#pragma mark - weixinPayedAction
+- (void)weixinPayedAction:(NSNotification *)noti{
+    if ([noti.object isEqualToString:@"SUCCESS"]) {
+        //重新加载数据
+        [self requestBillsDataWithType:@"1"];        
+    }
+}
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - 请求网络数据
 - (void)requestBillsDataWithType:(NSString *)type{
     
     [SVProgressHUD showWithStatus:@"正在加载"];
-    self.tableView.hidden = YES;
+    WS(weakSelf);
     UserObject *currentUser = [[AccountManager shareInstance] currentUser];
     [MyBillTool requestBillsWithDoctorId:currentUser.userid type:type success:^(NSArray *bills) {
+        weakSelf.tableView.tableHeaderView = nil;
         [SVProgressHUD dismiss];
-        self.dataList = bills;
+        weakSelf.dataList = bills;
         //刷新表格
-        [self.tableView reloadData];
-        //显示表格
-        self.tableView.hidden = NO;
+        [weakSelf.tableView reloadData];
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        [weakSelf.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:weakSelf.dataList.count target:weakSelf action:@selector(refreshData)];
         if (error) {
             NSLog(@"error:%@",error);
         }
     }];
+}
+
+- (void)refreshData{
+    [self requestBillsDataWithType:@"1"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -111,15 +133,15 @@
 - (void)didClickAppointCancleButtonWithBillModel:(BillModel *)model{
     [SVProgressHUD showWithStatus:@"正在取消"];
     //取消预约
-    [MyBillTool cancleAppointWithAppointId:model.KeyId success:^(NSString *result,NSNumber *code) {
-        if ([code intValue] == 200) {
-            [SVProgressHUD showSuccessWithStatus:result];
+    [MyBillTool cancleAppointWithAppointId:model.KeyId success:^(CRMHttpRespondModel *respond) {
+        if ([respond.code intValue] == 200) {
+            [SVProgressHUD showSuccessWithStatus:respond.result];
             [self requestBillsDataWithType:@"1"];
         }else{
-            [SVProgressHUD showErrorWithStatus:result];
+            [SVProgressHUD showErrorWithStatus:respond.result];
         }
-       
     } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }

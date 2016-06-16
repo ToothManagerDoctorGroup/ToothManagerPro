@@ -8,6 +8,7 @@
 
 #import "DBManager+User.h"
 #import "NSString+Conversion.h"
+#import "NSString+TTMAddtion.h"
 
 @implementation DBManager (User)
 
@@ -61,14 +62,12 @@
         [columeArray addObject:@"auth_text"];
         [columeArray addObject:@"auth_pic"];
         [columeArray addObject:@"creation_date"]; //创建时间
-        
         [columeArray addObject:@"img"];
 #warning 新添加元素
-//        [columeArray addObject:@"doctor_birthday"];
-//        [columeArray addObject:@"doctor_gender"];
-//        [columeArray addObject:@"doctor_cv"];
-//        [columeArray addObject:@"doctor_skill"];
-        
+        [columeArray addObject:@"doctor_birthday"];
+        [columeArray addObject:@"doctor_gender"];
+        [columeArray addObject:@"doctor_cv"];
+        [columeArray addObject:@"doctor_skill"];
         
         [valueArray addObject:userobj.accesstoken];
         [valueArray addObject:userobj.userid];
@@ -85,10 +84,10 @@
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
         [valueArray addObject:userobj.img];
 #warning 新添加元素
-//        [valueArray addObject:userobj.doctor_birthday];
-//        [valueArray addObject:userobj.doctor_gender];
-//        [valueArray addObject:userobj.doctor_cv];
-//        [valueArray addObject:userobj.doctor_skill];
+        [valueArray addObject:userobj.doctor_birthday];
+        [valueArray addObject:userobj.doctor_gender];
+        [valueArray addObject:userobj.doctor_cv];
+        [valueArray addObject:userobj.doctor_skill];
         
         
         [titleArray addObject:@"?"];
@@ -106,6 +105,10 @@
         [titleArray addObject:@"?"];
         [titleArray addObject:@"?"];
 #warning 新添加元素
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
+        [titleArray addObject:@"?"];
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"insert or replace into %@ (%@) values (%@)", UserTableName, [columeArray componentsJoinedByString:@","], [titleArray componentsJoinedByString:@","]];
@@ -138,10 +141,10 @@
         
         NSDate* currentDate = [NSDate date];
         
-        [columeArray addObject:@"accesstoken"];
+//        [columeArray addObject:@"accesstoken"];
         [columeArray addObject:@"name"];
         [columeArray addObject:@"phone"];
-        [columeArray addObject:@"email"];
+//        [columeArray addObject:@"email"];
         [columeArray addObject:@"hospital_name"];
         [columeArray addObject:@"department"];
         [columeArray addObject:@"title"];
@@ -152,15 +155,15 @@
         [columeArray addObject:@"update_date"]; //更新时间
         [columeArray addObject:@"img"];
 #warning 新添加元素
-//        [columeArray addObject:@"doctor_birthday"];
-//        [columeArray addObject:@"doctor_gender"];
-//        [columeArray addObject:@"doctor_cv"];
-//        [columeArray addObject:@"doctor_skill"];
+        [columeArray addObject:@"doctor_birthday"];
+        [columeArray addObject:@"doctor_gender"];
+        [columeArray addObject:@"doctor_cv"];
+        [columeArray addObject:@"doctor_skill"];
         
-        [valueArray addObject:userobj.accesstoken];
+//        [valueArray addObject:userobj.accesstoken];
         [valueArray addObject:userobj.name];
         [valueArray addObject:userobj.phone];
-        [valueArray addObject:userobj.email];
+//        [valueArray addObject:userobj.email];
         [valueArray addObject:userobj.hospitalName];
         [valueArray addObject:userobj.department];
         [valueArray addObject:userobj.title];
@@ -171,10 +174,10 @@
         [valueArray addObject:[NSString stringWithString:[currentDate description]]];
         [valueArray addObject:userobj.img];
 #warning 新添加元素
-//        [valueArray addObject:userobj.doctor_birthday];
-//        [valueArray addObject:userobj.doctor_gender];
-//        [valueArray addObject:userobj.doctor_cv];
-//        [valueArray addObject:userobj.doctor_skill];
+        [valueArray addObject:userobj.doctor_birthday];
+        [valueArray addObject:userobj.doctor_gender];
+        [valueArray addObject:userobj.doctor_cv];
+        [valueArray addObject:userobj.doctor_skill];
         
         // 3. 写入数据库
         NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where user_id = %@", UserTableName, [columeArray componentsJoinedByString:@"=?,"],userobj.userid];
@@ -229,6 +232,16 @@
         [set close];
     }];
     return user;
+}
+
+- (BOOL)upDateUserHeaderImageUrlWithUserId:(NSString *)userId imageUrl:(NSString *)imageUrl{
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        // 3. 写入数据库
+        NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set img = '%@' where user_id = %@", UserTableName, imageUrl,userId];
+        ret = [db executeUpdate:sqlQuery];
+    }];
+    return ret;
 }
 
 /**

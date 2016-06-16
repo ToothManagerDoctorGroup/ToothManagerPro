@@ -10,6 +10,7 @@
 #import "TimPickerView.h"
 #import "TimStarTextField.h"
 
+@class XLStarView;
 @interface CreateIntroducerViewController : TimTableViewController
 {
     
@@ -18,7 +19,7 @@
 @property (nonatomic,readwrite) BOOL edit;
 @property (nonatomic,copy) NSString *introducerId;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *nameTextField;
-@property (weak, nonatomic) IBOutlet TimStarTextField *starTextField;
+@property (weak, nonatomic) IBOutlet XLStarView *starView;
 @property (weak, nonatomic) IBOutlet TimPickerTextField *phoneTextField;
 
 @end

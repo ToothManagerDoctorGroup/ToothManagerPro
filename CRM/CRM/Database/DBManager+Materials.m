@@ -55,14 +55,13 @@
         [columeArray addObject:@"user_id"];
         [columeArray addObject:@"doctor_id"];
         
-
         [valueArray addObject:material.ckeyid];
         [valueArray addObject:material.mat_name];
         [valueArray addObject:[NSNumber numberWithInt:material.mat_type]];
         [valueArray addObject:[NSNumber numberWithFloat:material.mat_price]];
         [valueArray addObject:[NSString defaultDateString]];
         [valueArray addObject:[NSString currentDateString]];
-        if (nil == material.sync_time) {
+        if ([NSString isEmptyString:material.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:material.sync_time];
@@ -116,7 +115,7 @@
         [valueArray addObject:material.mat_name];
         [valueArray addObject:[NSNumber numberWithInt:material.mat_type]];
         [valueArray addObject:[NSNumber numberWithFloat:material.mat_price]];
-        if (nil == material.update_date) {
+        if ([NSString isEmptyString:material.update_date]) {
            [valueArray addObject:[NSString stringWithString:strCurrentDate]];
         } else {
             [valueArray addObject:material.update_date];
@@ -207,8 +206,9 @@
         if (result && result.next) {
             material = [Material materialWithResult:result];
         }
+        [result close];
     }];
-    [result close];
+    
     
     return material;
 }
@@ -220,13 +220,14 @@
         return nil;
     }
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSString * sqlString = [NSString stringWithFormat:@"select * from %@  where ckeyid in(select patient_id from %@ where mat_id='%@') and creation_date > datetime('%@')",PatientTableName,MedicalExpenseTableName,materialId, [NSString defaultDateString]];
+    NSString *sqlString = [NSString stringWithFormat:@"select * from (select a.doctor_id, a.ckeyid,a.[patient_name],a.[patient_phone],a.[patient_status],a.[update_date],a.[nickName],b.intr_name,sum(ifnull(expense_num,0)) as expense_num from (select * from patient_version2 where creation_date > datetime('%@') and ckeyid in (select patient_id from %@ where mat_id='%@')) a left join (select m.*,i.intr_name as intr_name from introducer_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id=\"%@\" union select m.*,i.doctor_name as intr_name from doctor_version2 i,patient_introducer_map_version2 m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id=\"%@\") b on a.ckeyid=b.patient_id left join (select * from %@ ee join %@ m on ee.mat_id=m.ckeyid and m.mat_type=2) e on a.[ckeyid]=e.patient_id group by a.ckeyid,a.patient_name,a.patient_status,b.intr_name order by a.update_date desc)",[NSString defaultDateString],MedicalExpenseTableName,materialId,[AccountManager shareInstance].currentUser.userid,[AccountManager shareInstance].currentUser.userid,MedicalExpenseTableName,MaterialTableName];
+    
     __block Patient *patient = nil;
     __block FMResultSet *result = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         result = [db executeQuery:sqlString];
         while ([result next]) {
-            patient = [Patient patientlWithResult:result];
+            patient = [Patient patientWithMixResult:result];
             [resultArray addObject:patient];
         }
         [result close];
@@ -294,7 +295,7 @@
     if ([NSString isEmptyString:patientId]) {
         return 0;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"select expense_num from %@ where patient_id = \"%@\" and user_id = \"%@\" and creation_date_sync > datetime('%@')",MedicalExpenseTableName,patientId,[AccountManager currentUserid],[NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select expense_num from %@ e join %@ m on m.ckeyid = e.[mat_id] and m.mat_type = 2 and e.patient_id = \"%@\" and e.user_id = \"%@\" and e.creation_date_sync > datetime('%@')",MedicalExpenseTableName,MaterialTableName,patientId,[AccountManager currentUserid],[NSString defaultDateString]];
     __block FMResultSet *result = nil;
     __block NSInteger count = 0;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -382,7 +383,7 @@
         [valueArray addObject:expense.user_id];
         [valueArray addObject:[NSString currentDateString]];
         [valueArray addObject:[NSString defaultDateString]];
-        if (nil == expense.sync_time) {
+        if ([NSString isEmptyString:expense.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:expense.sync_time];
@@ -455,13 +456,13 @@
         [valueArray addObject:[NSNumber numberWithFloat:expense.expense_money]];
         [valueArray addObject:expense.user_id];
         [valueArray addObject:[NSString currentDateString]];
-        if (expense.update_date == nil) {
+        if ([NSString isEmptyString:expense.update_date]) {
             [valueArray addObject:[NSString stringWithString:[currentDate description]]];
         } else {
             [valueArray addObject:[NSString stringWithString:expense.update_date]];
         }
         
-        if (nil == expense.sync_time) {
+        if ([NSString isEmptyString:expense.sync_time]) {
             [valueArray addObject:[NSString defaultDateString]];
         } else {
             [valueArray addObject:expense.sync_time];
@@ -573,6 +574,18 @@
     return ret;
 }
 
+- (BOOL)deleteMedicalExpenseWithPatientId_sync:(NSString *)patientId{
+    if ([NSString isEmptyString:patientId]) {
+        return NO;
+    }
+    NSString *sqlStr = [NSString stringWithFormat:@"delete from %@ where patient_id = \"%@\" and doctor_id = \"%@\"",MedicalExpenseTableName,patientId,[AccountManager currentUserid]];
+    __block BOOL ret = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        ret = [db executeUpdate:sqlStr];
+    }];
+    return ret;
+}
+
 /**
  *  @brief 根据患者id 查询消耗（MedicalExpense）
  *  @param patientId 患者id
@@ -633,5 +646,54 @@
     return resultArray;
 }
 
+
+- (MedicalExpense *)getMedicalExpenseWithCkeyId:(NSString *)ckeyId{
+    if ([NSString isEmptyString:ckeyId]) {
+        return nil;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and creation_date_sync > datetime('%@')",MedicalExpenseTableName,ckeyId,[NSString defaultDateString]];
+    __block MedicalExpense *expense = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        if (result && [result next]) {
+            expense = [MedicalExpense expenseWithResult:result];
+        }
+        [result close];
+    }];
+    return expense;
+}
+
+/**
+ *  判断耗材信息是否存在
+ *
+ *  @param materialName 材料的名称
+ *
+ *  @return 存在（yes） 不存在（no）
+ */
+- (BOOL)materialIsExistWithMaterialName:(NSString *)materialName{
+    if ([NSString isEmptyString:materialName]) {
+        return NO;
+    }
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select count(ckeyid) as 'count' from %@ where mat_name = '%@' and doctor_id = '%@' and creation_date > datetime('%@')",MaterialTableName,materialName,[AccountManager currentUserid],[NSString defaultDateString]];
+    __block FMResultSet *result = nil;
+    __block BOOL exists = NO;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlStr];
+        
+        int count = 0;
+        while ([result next]) {
+           count  = [result intForColumn:@"count"];
+        }
+        if (count > 0) {
+            exists = YES;
+        }
+        
+        [result close];
+    }];
+    return exists;
+}
 
 @end

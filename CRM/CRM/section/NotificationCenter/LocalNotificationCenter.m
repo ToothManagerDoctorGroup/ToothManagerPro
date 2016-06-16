@@ -16,6 +16,11 @@
 #import "NSDictionary+Extension.h"
 #import "DBTableMode.h"
 #import "DBManager+Patients.h"
+#import "MyDateTool.h"
+#import <EventKit/EventKit.h>
+#import "MyDateTool.h"
+#import "XLEventStoreManager.h"
+#import "NSString+TTMAddtion.h"
 
 NSString * const RepeatIntervalDay = @"每天";
 NSString * const RepeatIntervalWeek = @"每周";
@@ -23,6 +28,32 @@ NSString * const RepeatIntervalMonth = @"每月";
 NSString * const RepeatIntervalNone = @"不重复";
 
 @implementation LocalNotification
+
++ (LocalNotification *)notificationWithNoti:(LocalNotification *)localNoti{
+    LocalNotification *notification = [[LocalNotification alloc]init];
+    notification.patient_id = localNoti.patient_id;
+    notification.reserve_content = localNoti.reserve_content;
+    notification.medical_place = localNoti.medical_place;
+    notification.medical_chair = localNoti.medical_chair;
+    notification.reserve_time = localNoti.reserve_time;
+    notification.reserve_type = localNoti.reserve_type;
+    notification.creation_date = localNoti.creation_date;
+    notification.update_date = localNoti.update_date;
+    notification.sync_time = localNoti.sync_time;
+    
+    notification.tooth_position = localNoti.tooth_position;
+    notification.clinic_reserve_id = localNoti.clinic_reserve_id;
+    notification.duration = localNoti.duration;
+    notification.reserve_status = localNoti.reserve_status;
+    
+    notification.therapy_doctor_id = localNoti.therapy_doctor_id;
+    notification.therapy_doctor_name = localNoti.therapy_doctor_name;
+    
+    notification.case_id = localNoti.case_id;
+    
+    return notification;
+
+}
 
 + (LocalNotification *)notificaitonWithResult:(FMResultSet *)result {
     LocalNotification *notification = [[LocalNotification alloc]init];
@@ -38,12 +69,16 @@ NSString * const RepeatIntervalNone = @"不重复";
     notification.user_id = [result stringForColumn:@"user_id"];
     notification.ckeyid = [result stringForColumn:@"ckeyid"];
     notification.doctor_id = [result stringForColumn:@"doctor_id"];
-    
+    notification.reserve_status = [result stringForColumn:@"reserve_status"];
     
     notification.tooth_position = [result stringForColumn:@"tooth_position"];
     notification.clinic_reserve_id = [result stringForColumn:@"clinic_reserve_id"];
     notification.duration = [result stringForColumn:@"duration"];
     
+    notification.therapy_doctor_id = [result stringForColumn:@"therapy_doctor_id"];
+    notification.therapy_doctor_name = [result stringForColumn:@"therapy_doctor_name"];
+    
+    notification.case_id = [result stringForColumn:@"case_id"];
     
     return notification;
 }
@@ -62,11 +97,15 @@ NSString * const RepeatIntervalNone = @"不重复";
     tempLN.update_date = [NSString defaultDateString];
     tempLN.sync_time = [lnRe stringForKey:@"sync_time"];
     tempLN.doctor_id = [lnRe stringForKey:@"doctor_id"];
+    tempLN.reserve_status = [lnRe stringForKey:@"reserve_status"];
     
-    tempLN.tooth_position = [lnRe stringForKey:@"tooth_position"];
+    tempLN.tooth_position = [[lnRe stringForKey:@"tooth_position"] convertIfNill];
     tempLN.clinic_reserve_id = [lnRe stringForKey:@"clinic_reserve_id"];
     tempLN.duration = [lnRe stringForKey:@"duration"];
-
+    
+    tempLN.therapy_doctor_id = [lnRe stringForKey:@"therapy_doctor_id"];
+    tempLN.therapy_doctor_name = [lnRe stringForKey:@"therapy_doctor_name"];
+    tempLN.case_id = [lnRe stringForKey:@"case_id"];
 
     return tempLN;
 }
@@ -81,14 +120,31 @@ NSString * const RepeatIntervalNone = @"不重复";
     return self;
 }
 
+- (NSString *)reserve_time_end{
+    //获取开始时间
+    NSDate *startTime = [MyDateTool dateWithStringNoSec:self.reserve_time];
+    NSDate *endTime = [startTime dateByAddingTimeInterval:(int)60 * 60 * [self.duration floatValue]];
+    
+    return [MyDateTool stringWithDateNoSec:endTime];
+}
+
 @end
 
 @interface LocalNotificationCenter ()
+
+@property (nonatomic, strong)EKEventStore *eventStore;
 
 @end
 
 @implementation LocalNotificationCenter
 Realize_ShareInstance(LocalNotificationCenter);
+
+- (EKEventStore *)eventStore{
+    if (!_eventStore) {
+        _eventStore = [[EKEventStore alloc] init];
+    }
+    return _eventStore;
+}
 
 - (id)init {
     self = [super init];
@@ -102,6 +158,7 @@ Realize_ShareInstance(LocalNotificationCenter);
 //    [self addNotification:notificaiton];
     BOOL ret = [[DBManager shareInstance] insertLocalNotification:notificaiton];
     if (ret) {
+        //添加预约信息到系统日历
         [self scheduleNotification:notificaiton];
         [[NSNotificationCenter defaultCenter] postNotificationName:NotificationCreated object:nil];
     }
@@ -134,6 +191,17 @@ Realize_ShareInstance(LocalNotificationCenter);
     }
     return resultArray;
 }
+
+- (NSArray *)localNotificationListWithString:(NSString *)string array:(NSArray *)array{
+    NSMutableArray *resultArray = [NSMutableArray arrayWithCapacity:0];
+    for (LocalNotification *local in array) {
+        if ([local.reserve_time hasPrefix:string]) {
+            [resultArray addObject:local];
+        }
+    }
+    return resultArray;
+}
+
 - (NSArray *)localNotificationListWithString1:(NSString *)string {
     /*
     NSArray *array = [[DBManager shareInstance] localNotificationListFormDB];
@@ -167,21 +235,12 @@ Realize_ShareInstance(LocalNotificationCenter);
 
 - (void)scheduleNotification:(LocalNotification *)notification {
     
+    /*
     [self cancelNotification:notification];
     
     UILocalNotification *localNoti = [[UILocalNotification alloc]init];
     localNoti.timeZone = [NSTimeZone systemTimeZone];
     localNoti.fireDate = [notification.reserve_time stringToNSDate];
-    /*
-    if ([notification.reserve_type isEqualToString:RepeatIntervalDay]) {
-        localNoti.repeatInterval = NSCalendarUnitDay;
-    } else  if ([notification.reserve_type isEqualToString:RepeatIntervalWeek]) {
-        localNoti.repeatInterval = NSCalendarUnitWeekday;
-    } else  if ([notification.reserve_type isEqualToString:RepeatIntervalMonth]) {
-        localNoti.repeatInterval = NSCalendarUnitMonth;
-    } else   {
-        localNoti.repeatInterval = NSCalendarUnitEra;
-    }*/
     
     Patient *tpatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notification.patient_id];
     localNoti.alertBody = [NSString stringWithFormat:@"患者 %@ %@",tpatient.patient_name,notification.reserve_type];
@@ -190,6 +249,19 @@ Realize_ShareInstance(LocalNotificationCenter);
     localNoti.soundName = UILocalNotificationDefaultSoundName;
     localNoti.userInfo = [NSDictionary dictionaryWithObject:notification.ckeyid forKey:@"ckeyid"];
     [[UIApplication sharedApplication] scheduleLocalNotification:localNoti];
+    */
+    
+    Patient *tpatient = [[DBManager shareInstance] getPatientWithPatientCkeyid:notification.patient_id];
+    //获取系统设置
+    NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
+    if (autoReserve == nil) {
+        autoReserve = Auto_Action_Close;
+        [CRMUserDefalut setObject:autoReserve forKey:AutoReserveRecordKey];
+    }
+    if ([autoReserve isEqualToString:Auto_Action_Open]) {
+        //将提醒事件添加到系统日历中
+        [[XLEventStoreManager shareInstance] addEventToSystemCalendarWithLocalNotification:notification patient:tpatient];
+    }
 }
 
 - (void)cancelNotification:(LocalNotification *)notification {
@@ -198,6 +270,17 @@ Realize_ShareInstance(LocalNotificationCenter);
         NSString *notificationckeyid = [localNotifi.userInfo stringForKey:@"ckeyid"];
         if (![NSString isEmptyString:notificationckeyid] && [notification.ckeyid isEqualToString:notificationckeyid]) {
             [[UIApplication sharedApplication] cancelLocalNotification:localNotifi];
+//            //删除当前日历的同时，删除系统日历事件
+//            NSString *autoReserve = [CRMUserDefalut objectForKey:AutoReserveRecordKey];
+//            if (autoReserve == nil) {
+//                autoReserve = Auto_Action_Close;
+//                [CRMUserDefalut setObject:autoReserve forKey:AutoReserveRecordKey];
+//            }
+//            if ([autoReserve isEqualToString:Auto_Action_Open]) {
+//                //删除日历事件
+//                [[XLEventStoreManager shareInstance] removeEventToSystemCalendarWithLocalNotification:notification];
+//                
+//            }
         }
     }
 }

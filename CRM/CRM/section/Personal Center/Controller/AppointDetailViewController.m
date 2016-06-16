@@ -45,7 +45,6 @@
 - (void)setUpNavBarStyle{
     self.title = @"预约信息";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = MyColor(239, 239, 239);
 }
 #pragma mark -请求网络数据
 - (void)requestAppoinDetailData{
@@ -55,7 +54,12 @@
             //设置控件的数据
             Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.localNoti.patient_id];
             self.timeLabel.text = self.localNoti.reserve_time;
-            self.patientLabel.text = patient.patient_name;
+            if ([patient.nickName isNotEmpty]) {
+                self.patientLabel.text = [NSString stringWithFormat:@"%@(%@)",patient.patient_name,patient.nickName];
+            }else{
+                self.patientLabel.text = patient.patient_name;
+            }
+            
             self.toothLabel.text = self.localNoti.tooth_position;
             self.projectLabel.text = self.localNoti.reserve_type;
             self.appointTimeLabel.text = [NSString stringWithFormat:@"%@小时",self.localNoti.duration];
@@ -104,7 +108,7 @@
         }
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
             NSLog(@"error:%@",error);
         }

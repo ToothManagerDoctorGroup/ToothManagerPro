@@ -12,6 +12,8 @@ typedef void(^ApplicaionVersionHandler)(BOOL newVersion,NSURL *updateURL);
 
 @interface UIApplication (Version)
 
+//系统版本号
++ (NSString *)systemVersion;
 + (NSString *)currentVersion;
 + (void)checkNewVersionWithAppleID:(NSString *)appleid handler:(ApplicaionVersionHandler)handler;
 + (void)updateApplicationWithURL:(NSURL *)url;

@@ -12,27 +12,36 @@
 #import "CRMHttpRequest+Doctor.h"
 #import "SVProgressHUD.h"
 #import "NSDictionary+Extension.h"
-#import "UserInfoViewController.h"
 #import "IntroducerManager.h"
 #import "CRMHttpRequest+Introducer.h"
 #import "DBManager+Doctor.h"
+#import "UISearchBar+XLMoveBgView.h"
+#import "EMSearchBar.h"
+#import "EMSearchDisplayController.h"
 
 @interface DoctorSquareViewController () <CRMHttpRequestDoctorDelegate,UISearchBarDelegate,DoctorTableViewCellDelegate>
-@property (nonatomic,retain) NSArray *scellModeArray;
-@property (nonatomic,retain) NSMutableArray *searchHistoryArray;
+@property (nonatomic, strong) NSArray *scellModeArray;
+@property (nonatomic, strong) NSMutableArray *searchHistoryArray;
+
+@property (nonatomic, strong)EMSearchBar *searchBar;
+@property (nonatomic, strong)EMSearchDisplayController *searchController;
+
 @end
 
 @implementation DoctorSquareViewController 
 
+#pragma mark - Life Method
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    [self.searchBar moveBackgroundView];
+    self.searchBar.placeholder = @"搜索真实姓名";
+    [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
 }
 
 - (void)initView {
     [super initView];
-    self.title = @"医生广场";
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"添加好友";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
 }
 
@@ -40,10 +49,6 @@
     [super initData];
     self.searchHistoryArray = [NSMutableArray arrayWithCapacity:0];
     self.scellModeArray = @[];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -87,22 +92,6 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-//    Doctor *doctor = nil;
-//    if ([self isSearchResultsTableView:tableView]) {
-//        doctor = [self.scellModeArray objectAtIndex:indexPath.row];
-//    } else {
-//        doctor = [self.searchHistoryArray objectAtIndex:indexPath.row];
-//    }
-//    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-//    UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
-//    userInfoVC.doctor = doctor;
-//    [self pushViewController:userInfoVC animated:YES];
-}
-
 #pragma mark - SearchDisplay delegate
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
     self.scellModeArray = @[];
@@ -143,6 +132,11 @@
     } else {
         doctor = [self.searchHistoryArray objectAtIndex:cell.tag-100];
     }
+    if ([doctor.ckeyid isEqualToString:[AccountManager currentUserid]]) {
+        [SVProgressHUD showImage:nil status:@"不能添加自己为好友"];
+        return;
+    }
+    
     [[IntroducerManager shareInstance] applyToBecomeIntroducerWithDoctorId:doctor.ckeyid successBlock:^{
         [SVProgressHUD showImage:nil status:@"请求中..."];
         [cell.addButton setTitle:@"正在验证" forState:UIControlStateNormal];
@@ -162,6 +156,24 @@
 - (void)applyToBecomeIntroducerFailed:(NSError *)error {
     [SVProgressHUD showImage:nil status:error.localizedDescription];
 }
+
+
+#pragma mark - UISearchDisplayDelegate
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(nullable NSString *)searchString{
+    __weak typeof(self) weakSelf = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.001);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        for (UIView *subview in weakSelf.searchDisplayController.searchResultsTableView.subviews) {
+            if ([subview isKindOfClass: [UILabel class]])
+            {
+                subview.hidden = YES;
+            }
+        }
+    });
+    return YES;
+}
+
+
 
 
 @end

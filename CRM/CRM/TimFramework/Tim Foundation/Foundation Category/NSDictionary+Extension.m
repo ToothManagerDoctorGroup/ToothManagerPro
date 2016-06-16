@@ -7,12 +7,14 @@
 //
 
 #import "NSDictionary+Extension.h"
+#import "NSString+TTMAddtion.h"
+
 
 @implementation NSDictionary (Extension)
 
 - (NSString *)stringForKey:(NSString *)aKey {
     if (![self objectForKey:aKey] || !aKey) {
-        return nil;
+        return @"";
     }
     
     NSString *value = [self objectForKey:aKey];
@@ -24,33 +26,48 @@
         return [NSString stringWithFormat:@"%@",value];
     }
     
-    return nil;
+    return @"";
 }
 
 - (NSString *)timeStringForKey:(NSString *)aKey {
     if (![self objectForKey:aKey] || !aKey) {
-        return nil;
+        return @"";
     }
     
     NSString *value = [self objectForKey:aKey];
     if ([value isKindOfClass:[NSString class]]) {
-        if ([value isEqualToString:@"1900/1/1 0:00:00"]) {
-            return @"";
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        //判断是否是系统默认的时间
+        if ([value isContainsString:@"/"]) {
+            if ([value isEqualToString:@"1900/1/1 0:00:00"]) {
+                return @"";
+            }else{
+                formatter.dateFormat = @"yyyy/M/d H:mm:ss";
+                NSDate *curDate = [formatter dateFromString:value];
+                formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+                
+                return [formatter stringFromDate:curDate];
+            }
+        }else if ([value isContainsString:@"-"]){
+            if ([value isEqualToString:@"1900-01-01 00:00:00"]) {
+                return @"";
+            }else{
+                return value;
+            }
         }
-        return value;
     }
     
     if ([value isKindOfClass:[NSNumber class]]) {
         return [NSString stringWithFormat:@"%@",value];
     }
     
-    return nil;
+    return @"";
 }
 
 
 - (NSString *)stringForKey:(NSString *)aKey placeholder:(NSString *)placeholder {
     NSString *ret = [self stringForKey:aKey];
-    if (ret == nil) {
+    if ([ret isEmpty]) {
         return placeholder;
     } else {
         return ret;

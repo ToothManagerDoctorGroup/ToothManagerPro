@@ -281,11 +281,10 @@
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         patLastSyncDate = [dateFormatter stringFromDate:def];
     }
-    
+
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         result = [db executeQuery:[NSString stringWithFormat:@"select * from %@ where creation_date > datetime('%@') and sync_time = datetime('%@') and user_id = '%@'", PatientTableName, patLastSyncDate, [NSString defaultDateString], [AccountManager currentUserid]]];
-        
         while ([result next]) {
             Patient *patient = [Patient patientlWithResult:result];
             [resultArray addObject:patient];

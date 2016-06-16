@@ -25,7 +25,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where doctor_name = \"%@\" and user_id = \"%@\"",DoctorTableName,doctorobj.doctor_name,[AccountManager currentUserid]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = \"%@\" and user_id = \"%@\"",DoctorTableName,doctorobj.ckeyid,[AccountManager currentUserid]];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;
@@ -45,9 +45,6 @@
         NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
         NSMutableArray *titleArray = [NSMutableArray arrayWithCapacity:0];
         
-        /*
-         doctor_id text, doctor_name text, doctor_dept text,doctor_phone text, user_id text, doctor_email text, doctor_hospital text, doctor_position text, doctor_degree text, auth_status integer, auth_text text, auth_pic text,creation_date text,
-         */
         [columeArray addObject:@"ckeyid"];
         [columeArray addObject:@"doctor_name"];
         [columeArray addObject:@"doctor_dept"];
@@ -70,8 +67,6 @@
         [columeArray addObject:@"doctor_cv"];
         [columeArray addObject:@"doctor_skill"];
 
-        
-        
         
         [valueArray addObject:doctorobj.ckeyid];
         [valueArray addObject:doctorobj.doctor_name];
@@ -180,7 +175,7 @@
         [valueArray addObject:[NSNumber numberWithInteger:doctorobj.auth_status]];
         [valueArray addObject:doctorobj.auth_text];
         [valueArray addObject:doctorobj.auth_pic];
-        if (nil == doctorobj.update_date) {
+        if ([NSString isEmptyString:doctorobj.update_date]) {
           [valueArray addObject:[NSString stringWithString:strCurrentDate]];
         } else {
           [valueArray addObject:doctorobj.update_date];
@@ -200,6 +195,70 @@
             
         }
     }];
+    return ret;
+}
+/**
+ *  更新一条医生信息
+ *
+ *  @param doctorobj 医生对象
+ *  @param db        db
+ *
+ *  @return 是否成功
+ */
+- (BOOL)updateDoctorUseTransactionWithDoctor:(Doctor *)doctorobj andDB:(FMDatabase *)db{
+    
+    NSMutableArray *columeArray = [NSMutableArray arrayWithCapacity:0];
+    NSMutableArray *valueArray = [NSMutableArray arrayWithCapacity:0];
+    
+    NSDate* currentDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString* strCurrentDate = [dateFormatter stringFromDate:currentDate];
+    
+    [columeArray addObject:@"doctor_name"];
+    [columeArray addObject:@"doctor_dept"];
+    [columeArray addObject:@"doctor_phone"];
+    [columeArray addObject:@"doctor_email"];
+    [columeArray addObject:@"doctor_hospital"];
+    [columeArray addObject:@"doctor_position"];
+    [columeArray addObject:@"doctor_degree"];
+    [columeArray addObject:@"doctor_image"];
+    [columeArray addObject:@"auth_status"];
+    [columeArray addObject:@"auth_text"];
+    [columeArray addObject:@"auth_pic"];
+    [columeArray addObject:@"update_date"]; //更新时间
+    [columeArray addObject:@"doctor_id"];
+    [columeArray addObject:@"doctor_birthday"];
+    [columeArray addObject:@"doctor_gender"];
+    [columeArray addObject:@"doctor_cv"];
+    [columeArray addObject:@"doctor_skill"];
+    
+    [valueArray addObject:doctorobj.doctor_name];
+    [valueArray addObject:doctorobj.doctor_dept];
+    [valueArray addObject:doctorobj.doctor_phone];
+    [valueArray addObject:doctorobj.doctor_email];
+    [valueArray addObject:doctorobj.doctor_hospital];
+    [valueArray addObject:doctorobj.doctor_position];
+    [valueArray addObject:doctorobj.doctor_degree];
+    [valueArray addObject:doctorobj.doctor_image];
+    [valueArray addObject:[NSNumber numberWithInteger:doctorobj.auth_status]];
+    [valueArray addObject:doctorobj.auth_text];
+    [valueArray addObject:doctorobj.auth_pic];
+    if ([NSString isEmptyString:doctorobj.update_date]) {
+        [valueArray addObject:[NSString stringWithString:strCurrentDate]];
+    } else {
+        [valueArray addObject:doctorobj.update_date];
+    }
+    [valueArray addObject:doctorobj.doctor_id];
+    [valueArray addObject:doctorobj.doctor_birthday];
+    [valueArray addObject:doctorobj.doctor_gender];
+    [valueArray addObject:doctorobj.doctor_cv];
+    [valueArray addObject:doctorobj.doctor_skill];
+    
+    // 3. 写入数据库
+    NSString *sqlQuery = [NSString stringWithFormat:@"update %@ set %@=? where ckeyid = \"%@\" and user_id = \"%@\"", DoctorTableName, [columeArray componentsJoinedByString:@"=?,"],doctorobj.ckeyid,[AccountManager currentUserid]];
+    NSLog(@"insertPatientString:%@",sqlQuery);
+    BOOL ret = [db executeUpdate:sqlQuery withArgumentsInArray:valueArray];
     return ret;
 }
 
@@ -293,11 +352,12 @@
 
 
 
--(Doctor *)getDoctorNameByPatientIntroducerMapWithPatientId:(NSString *)patientId withIntrId:(NSString *)intrId{
+- (Doctor *)getDoctorNameByPatientIntroducerMapWithPatientId:(NSString *)patientId withIntrId:(NSString *)intrId{
     if ([patientId isEmpty]) {
         return nil;
     }
-    NSString *sqlStr = [NSString stringWithFormat:@"select d.doctor_name from %@ m,%@ d where m.doctor_id=d.doctor_id and m.patient_id=\"%@\" and m.intr_id=\"%@\" and d.user_id =\"%@\"",PatIntrMapTableName,DoctorTableName,patientId,intrId,intrId];
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ m,%@ d where m.doctor_id=d.doctor_id and m.patient_id=\"%@\" and m.intr_id=\"%@\" and d.user_id =\"%@\"",PatIntrMapTableName,DoctorTableName,patientId,intrId,intrId];
     __block Doctor *doctor = nil;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         FMResultSet *set = nil;

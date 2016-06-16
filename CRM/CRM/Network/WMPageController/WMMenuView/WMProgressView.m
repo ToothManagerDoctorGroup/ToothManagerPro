@@ -11,7 +11,7 @@
     int     sign;
     CGFloat gap;
     CGFloat step;
-    __weak CADisplayLink *_link;
+    __weak  CADisplayLink *_link;
 }
 
 - (void)setProgressWithOutAnimate:(CGFloat)progress {
@@ -39,10 +39,10 @@
 }
 
 - (void)progressChanged {
-    if (gap >= 0.0) {
+    if (gap > 0.000001) {
         gap -= step;
         if (gap < 0.0) {
-            self.progress = (int)(self.progress + 0.5);
+            self.progress = (int)(self.progress + sign * step + 0.5);
             return;
         }
         self.progress += sign * step;
@@ -58,6 +58,7 @@
     [super drawRect:rect];
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     int index = (int)self.progress;
+    index = (index <= self.itemFrames.count - 1) ? index : (int)self.itemFrames.count - 1;
     CGFloat rate = self.progress - index;
     CGRect currentFrame = [self.itemFrames[index] CGRectValue];
     CGFloat currentWidth = currentFrame.size.width;
@@ -77,6 +78,3 @@
 }
 
 @end
-// 版权属于原作者
-// http://code4app.com (cn) http://code4app.net (en)
-// 发布代码于最专业的源码分享网站: Code4App.com

@@ -47,6 +47,13 @@
 - (UserObject *)getUserObjectWithUserId:(NSString *)userid;
 
 /**
+ *  更新用户头像
+ *
+ *  @param userId 用户id
+ */
+- (BOOL)upDateUserHeaderImageUrlWithUserId:(NSString *)userId imageUrl:(NSString *)imageUrl;
+
+/**
  *  就诊人数
  *
  *  @return 就诊人数

@@ -138,7 +138,7 @@ Declare_ShareInstance(AccountManager);
  *  @param user_id 医生id
  *  @param AccessToken  医生AccessToken
  */
-- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
+- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock;
 
 /**
  *  忘记密码页面

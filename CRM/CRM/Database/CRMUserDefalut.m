@@ -36,6 +36,18 @@
     [userdefaults synchronize];
 }
 
+
+/**
+ *  设置最后使用者的密码（环信用到）
+ *
+ *  @param password 用户密码
+ */
++ (void)setLatestUserPassword:(NSString *)password{
+    NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
+    [userdefaults setObject:password forKey:LatestUserPassword];
+    [userdefaults synchronize];
+}
+
 + (void)setObject:(id)object forKey:(NSString *)akey {
      NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
     [userdefaults setObject:object forKey:akey];
@@ -46,5 +58,36 @@
      NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
     return [userdefaults objectForKey:akey];
 }
+
++ (NSString *)getAppVersion{
+     NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
+     return [userdefaults objectForKey:KVersion];
+}
+
++ (void)obtainAppVersion{
+    NSUserDefaults *userdefaults = [NSUserDefaults standardUserDefaults];
+    [userdefaults setObject:[NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"] forKey:KVersion];
+    [userdefaults synchronize];
+}
+
+
++ (void)isShowedForKey:(NSString *)key showedBlock:(void (^)())showedBlock{
+    //获取配置项
+    NSString *isShowed = [CRMUserDefalut objectForKey:key];
+    if (isShowed == nil) {
+        isShowed = Auto_Action_Open;
+        [CRMUserDefalut setObject:isShowed forKey:key];
+    }
+    if ([isShowed isEqualToString:Auto_Action_Open]) {
+        [CRMUserDefalut setObject:Auto_Action_Close forKey:key];
+        if (showedBlock) {
+            showedBlock();
+        }
+    }else{
+        return;
+    }
+}
+
+
 
 @end

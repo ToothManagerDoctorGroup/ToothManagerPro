@@ -13,6 +13,8 @@
 #import "AccountManager.h"
 #import "DBManager+Doctor.h"
 #import "UIImageView+WebCache.h"
+#import "DoctorInfoModel.h"
+#import "XLAvatarBrowser.h"
 
 @implementation DoctorTableViewCell
 @synthesize professionalLable,doctorNameLable,departmentLable;
@@ -39,10 +41,21 @@
     self.approveButton.hidden = YES;
     self.refuseButton.hidden = YES;
     
+    self.iconImageView.layer.cornerRadius = 25;
+    self.iconImageView.layer.masksToBounds = YES;
+    self.iconImageView.layer.borderWidth = 1;
+    self.iconImageView.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
+    self.iconImageView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [self.iconImageView addGestureRecognizer:tap];
+    
 //    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] init];
 //    gesture.numberOfTapsRequired = 1;
 //    [gesture addTarget:self action:@selector(avatarButtonAction:)];
 //    [self.avatarButton addGestureRecognizer:gesture];
+}
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [XLAvatarBrowser showImage:self.iconImageView];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -77,46 +90,57 @@
 
 
 -(void)setCellWithSquareMode:(Doctor *)doctor{
+    self.addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
+    self.addButton.layer.cornerRadius = 5.0f;
+    [self.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+
+    
     self.doctorNameLable.text = doctor.doctor_name;
     //self.professionalLable.text = doctor.doctor_position;
     //self.departmentLable.text = doctor.doctor_hospital;
     self.addButton.enabled = doctor.isopen;
     
-    NSArray *array = [[DBManager shareInstance] getAllDoctor];
-    for(Doctor *doc in array){
-        if([doc.doctor_name isEqualToString:doctor.doctor_name]){
-            [self.addButton setBackgroundColor:[UIColor lightGrayColor]];
-            [self.addButton setTitle:@"已是好友" forState:UIControlStateNormal];
-            self.addButton.enabled = NO;
-        }
+//    NSArray *array = [[DBManager shareInstance] getAllDoctor];
+//    for(Doctor *doc in array){
+//        if([doc.doctor_name isEqualToString:doctor.doctor_name]){
+//            [self.addButton setBackgroundColor:[UIColor lightGrayColor]];
+//            [self.addButton setTitle:@"已是好友" forState:UIControlStateNormal];
+//            self.addButton.enabled = NO;
+//        }
+//    }
+    
+    if (doctor.isExist) {
+        [self.addButton setBackgroundColor:[UIColor lightGrayColor]];
+        [self.addButton setTitle:@"已是好友" forState:UIControlStateNormal];
+        self.addButton.enabled = NO;
     }
     
     
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
 }
 
 - (void)setCellWithMode:(Doctor *)doctor {
     self.doctorNameLable.text = doctor.doctor_name;
-   //self.professionalLable.text = doctor.doctor_position;
-   //self.departmentLable.text = doctor.doctor_hospital;
     self.addButton.enabled = doctor.isopen;
     self.professionalLable.text = doctor.doctor_degree;
     self.departmentLable.text = [NSString stringWithFormat:@"%@ %@",doctor.doctor_hospital,doctor.doctor_position];
 
-    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://122.114.62.57/his.crm/avatar/%@.jpg",doctor.ckeyid]]];
-    
-    
+    [self.iconImageView sd_setImageWithURL:[NSURL URLWithString:doctor.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
 }
 
 - (void)setCellWithFrienNotifi:(FriendNotificationItem *)notifiItem {
-    if (![notifiItem.doctor_id isEqualToString:[AccountManager currentUserid]]) {
+    
+    if ([notifiItem.receiver_id isEqualToString:[AccountManager currentUserid]]) {
         self.doctorNameLable.text = notifiItem.doctor_name;
-        self.departmentLable.text = [NSString stringWithFormat:@"%@申请成为你的好友",notifiItem.doctor_name];
+        self.departmentLable.text = [NSString stringWithFormat:@"申请成为你的好友"];
         self.addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
         [self.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        
+        [self.iconImageView sd_setImageLoadingWithURL:[NSURL URLWithString:notifiItem.doctor_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
         self.addButton.enabled = YES;
-        if (notifiItem.notification_type.integerValue == 1) {
+//        if (notifiItem.notification_type.integerValue == 1) {
             if (notifiItem.notification_status.integerValue == 0) {
                 [self.addButton setTitle:@"接受" forState:UIControlStateNormal];
             } else if (notifiItem.notification_status.integerValue == 1) {
@@ -130,14 +154,16 @@
                 [self.addButton setTitleColor:[UIColor colorWithHex:0xc80202] forState:UIControlStateNormal];
                 self.addButton.enabled = NO;
             }
-        }
+//        }
     } else {
-        self.doctorNameLable.text = notifiItem.doctor_name;
+        self.doctorNameLable.text = notifiItem.receiver_name;
         self.departmentLable.text = [NSString stringWithFormat:@"你向%@发出的好友申请",notifiItem.receiver_name];
         self.addButton.backgroundColor = [UIColor colorWithHex:0x01ac36];
         [self.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         self.addButton.enabled = YES;
-        if (notifiItem.notification_type.integerValue == 1) {
+
+        [self.iconImageView sd_setImageLoadingWithURL:[NSURL URLWithString:notifiItem.receiver_image] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+//        if (notifiItem.notification_type.integerValue == 1) {
             if (notifiItem.notification_status.integerValue == 0) {
                 [self.addButton setTitle:@"正在验证" forState:UIControlStateNormal];
                 self.addButton.backgroundColor = [UIColor clearColor];
@@ -154,7 +180,7 @@
                 [self.addButton setTitleColor:[UIColor colorWithHex:0xc80202] forState:UIControlStateNormal];
                 self.addButton.enabled = NO;
             }
-        }
+//        }
     }
 }
 

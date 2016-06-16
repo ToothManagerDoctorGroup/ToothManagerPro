@@ -32,9 +32,19 @@ dispatch_once(&onceToken, ^{ \
 return _instance_;\
 }
 
+#pragma mark ------------------ignoreLeakWarning-----------------------------------------------------
+#define SuppressPerformSelectorLeakWarning(Stuff) \
+do { \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"") \
+Stuff; \
+_Pragma("clang diagnostic pop") \
+} while (0)
+
 #pragma mark - -----------------System--------------------------------------------------------
 #define SYSTEMVERSION [[UIDevice currentDevice].systemVersion floatValue]
 
+#define IOS_9_OR_LATER (((SYSTEMVERSION) >= 9.0) ? YES:NO)
 #define IOS_8_OR_LATER (((SYSTEMVERSION) >= 8.0) ? YES:NO)
 #define IOS_7_OR_LATER (((SYSTEMVERSION) >= 7.0) ? YES:NO)
 #define IOS_6_OR_LATER (((SYSTEMVERSION) >= 6.0) ? YES:NO)
@@ -57,11 +67,11 @@ static NSString * const name = @""#string;
 
 #pragma mark -------------------- Color -------------------------------------------------------
 
-#define VIEWCONTROLLER_BACKGROUNDCOLOR (0x00a0ea)
+#define VIEWCONTROLLER_BACKGROUNDCOLOR (0xF8F8F8)
 
 #pragma mark ---------------------- frame ,bounds ---------------------------------------------
 #define SELF_VIEW_BOUNDS_WIDTH   self.view.bounds.size.width
-#define SELF__VIEW_BOUNDS_HEIGHT self.view.bounds.size.height
+#define SELF_VIEW_BOUNDS_HEIGHT self.view.bounds.size.height
 
 #pragma mark -----------------------  EXTERN --------------------------------------------------
 #ifdef __cplusplus

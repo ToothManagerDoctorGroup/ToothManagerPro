@@ -10,6 +10,7 @@
 #import "CommentModelFrame.h"
 #import "CommentModel.h"
 #import "UIImageView+WebCache.h"
+#import "UIColor+Extension.h"
 
 #define CommenTitleColor MyColor(69, 69, 70)
 #define DoctorNameFont [UIFont systemFontOfSize:14]
@@ -51,6 +52,8 @@
     UIImageView *headImageView = [[UIImageView alloc] init];
     headImageView.layer.cornerRadius = 25;
     headImageView.layer.masksToBounds = YES;
+    headImageView.layer.borderWidth = 1;
+    headImageView.layer.borderColor = [UIColor colorWithHex:0xdddddd].CGColor;
     self.headImageView = headImageView;
     [self.contentView addSubview:headImageView];
     
@@ -63,7 +66,7 @@
     
     //发送时间
     UILabel *sendTimeLabel = [[UILabel alloc] init];
-    sendTimeLabel.textColor = CommenTitleColor;
+    sendTimeLabel.textColor = [UIColor colorWithHex:0x888888];
     sendTimeLabel.font = SendTimeFont;
     self.sendTimeLabel = sendTimeLabel;
     [self.contentView addSubview:sendTimeLabel];

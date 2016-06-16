@@ -8,6 +8,7 @@
 
 #import "DBManager+Introducer.h"
 #import "NSString+Conversion.h"
+#import "AccountManager.h"
 
 @implementation DBManager (Introducer)
 #pragma mark - IntroducerTableName
@@ -117,20 +118,18 @@
     if (phone == nil) {
         return YES;
     }
-    __block BOOL ret = NO;
-
-    
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where intr_phone = '%@' and user_id = '%@' and creation_date > datetime('%@')",IntroducerTableName,phone,[AccountManager currentUserid], [NSString defaultDateString]];
+    __block int count = 0;
+    NSString *sqlStr = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where intr_phone = '%@' and user_id = '%@' and creation_date > datetime('%@')",IntroducerTableName,phone,[AccountManager currentUserid], [NSString defaultDateString]];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
         
         FMResultSet *set = nil;
         set = [db executeQuery:sqlStr];
         if (set && [set next]) {
-            ret = YES;
+            count = [set intForColumn:@"count"];
         }
         [set close];
     }];
-    return ret;
+    return count == 0 ? NO : YES;
 }
 
 - (BOOL)insertIntroducersWithArray:(NSArray *)array {
@@ -154,7 +153,7 @@
     }
     
     __block BOOL ret = NO;
-    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where ckeyid = '%@' or intr_phone = '%@'",IntroducerTableName,introducer.ckeyid,introducer.intr_phone];
+    NSString *sqlStr = [NSString stringWithFormat:@"select * from %@ where (ckeyid = '%@' or intr_phone = '%@') and doctor_id = \"%@\"",IntroducerTableName,introducer.ckeyid,introducer.intr_phone,[AccountManager currentUserid]];
     
     FMResultSet *set = nil;
     set = [db executeQuery:sqlStr];
@@ -199,8 +198,6 @@
     }
     [valueArray addObject:introducer.doctor_id];
     [valueArray addObject:introducer.intr_id];
-    
-    
     
     
     [titleArray addObject:@"?"];
@@ -337,15 +334,15 @@
  *@brief 获取介绍人表中全部介绍人
  *@return NSArray 返回介绍人数组，没有则为nil
  */
-- (NSArray *)getAllIntroducer
+- (NSArray *)getAllIntroducerWithPage:(int)page
 {
     __block FMResultSet* result = nil;
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
     
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
      {
-         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') order by creation_date desc",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString]]];
-         //NSLog(@"sqlString:%@",[NSString stringWithFormat:@"select * from %@",IntroducerTableName]);
+         NSString *sqlStr = [NSString stringWithFormat:@"select *,(select count(patient_id) from %@ pat where pat.[intr_id]=i.[ckeyid] and pat.intr_source like '%%B%%') as patientCount from %@ i where user_id = '%@' and creation_date > datetime('%@') order by patientCount desc limit %i,%i",PatIntrMapTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],page * CommonPageSize,CommonPageSize];
+         result = [db executeQuery:sqlStr];
          while ([result next])
          {
              Introducer * introducer = [Introducer introducerlWithResult:result];
@@ -354,6 +351,57 @@
          [result close];
      }];
     return resultArray;
+}
+
+- (NSArray *)getLocalIntroducerWithPage:(int)page{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') and intr_id = '%@' order by creation_date desc limit %i,%i",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],@"0",page * CommonPageSize,CommonPageSize]];
+         while ([result next])
+         {
+             Introducer * introducer = [Introducer introducerlWithResult:result];
+             [resultArray addObject:introducer];
+         }
+         [result close];
+     }];
+    return resultArray;
+}
+
+- (NSArray *)getIntroducerByName:(NSString *)name{
+    __block FMResultSet* result = nil;
+    NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
+    
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         result = [db executeQuery:[NSString stringWithFormat:@"select *,(select count(ckeyid) from %@ where %@.[ckeyid]=%@.[introducer_id]) as patientCount from %@ where user_id = '%@' and creation_date > datetime('%@') and intr_name like '%%%@%%' order by creation_date desc",PatientTableName,IntroducerTableName,PatientTableName,IntroducerTableName,[AccountManager currentUserid], [NSString defaultDateString],name]];
+         while ([result next])
+         {
+             Introducer * introducer = [Introducer introducerlWithResult:result];
+             [resultArray addObject:introducer];
+         }
+         [result close];
+     }];
+    return resultArray;
+}
+
+- (NSInteger)getIntroducerAllCount{
+    __block FMResultSet* result = nil;
+    __block NSInteger count = 0;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db)
+     {
+         NSString *sqlString = [NSString stringWithFormat:@"select count(*) as 'count' from %@ where user_id = '%@' and creation_date > datetime('%@')",IntroducerTableName,[AccountManager currentUserid],[NSString defaultDateString]];
+         
+         result = [db executeQuery:sqlString];
+         while (result.next) {
+             count = [result intForColumn:@"count"];
+         }
+         [result close];
+     }];
+    
+    return count;
 }
 
 /**
@@ -369,7 +417,7 @@
         return 0;
     }
     
-    NSString *sqlStr = [NSString stringWithFormat:@"select count(ckeyid) from %@ where introducer_id = '%@' and creation_date > datetime('%@')",PatientTableName,introducerId,[NSString defaultDateString]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select count(patient_id) from %@ pat where pat.intr_id = '%@' and pat.intr_source like '%%B%%' and creation_date > datetime('%@')",PatIntrMapTableName,introducerId,[NSString defaultDateString]];
     __block FMResultSet *result = nil;
     __block NSInteger count = 0;
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
@@ -395,7 +443,7 @@
     }
     
     NSMutableArray* resultArray = [NSMutableArray arrayWithCapacity:0];
-    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where introducer_id = '%@' and creation_date > datetime('%@')",PatientTableName,introducerId, [NSString defaultDateString]];
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ p where p.ckeyid in (select patient_id from %@ pat where pat.intr_id = '%@' and pat.intr_source like '%%B%%' and pat.creation_date > datetime('%@'))",PatientTableName,PatIntrMapTableName,introducerId,[NSString defaultDateString]];
     
     __block Patient *patient = nil;
     __block FMResultSet *result = nil;
@@ -453,6 +501,21 @@
     }];
     return map;
 }
+- (PatientIntroducerMap *)getPatientIntroducerMapByPatientId:(NSString *)patientId doctorId:(NSString *)doctorId intrId:(NSString *)intrId{
+    NSString * sqlString = [NSString stringWithFormat:@"select * from %@ where patient_id = \"%@\" and doctor_id = \"%@\" and intr_id = \"%@\"",PatIntrMapTableName,patientId,doctorId,intrId];
+    
+    __block PatientIntroducerMap *map = nil;
+    __block FMResultSet *result = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlString];
+        if (result && result.next) {
+            map = [PatientIntroducerMap patientIntroducerWithResult:result];
+        }
+        [result close];
+    }];
+    return map;
+}
+
 
 - (Introducer *)getIntroducerByCkeyId:(NSString *)ckeyId
 {
@@ -488,6 +551,21 @@
         [result close];
     }];
     return introducer;
+}
+
+- (NSString *)getPatientIntrNameWithPatientId:(NSString *)patientId{
+    
+    NSString * sqlString = [NSString stringWithFormat:@"select m.*,i.intr_name as intr_name from %@ i,%@ m where m.[intr_id]=i.[ckeyid] and m.intr_source like '%%B' and m.doctor_id='%@' and m.patient_id='%@' union select m.*,i.doctor_name as intr_name from %@ i,%@ m where m.[intr_id]=i.[doctor_id] and m.intr_source like '%%I' and m.doctor_id='%@' and m.patient_id='%@'",IntroducerTableName,PatIntrMapTableName,[AccountManager currentUserid],patientId,DoctorTableName,PatIntrMapTableName,[AccountManager currentUserid],patientId];
+    __block FMResultSet *result = nil;
+    __block NSString *intrName = nil;
+    [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
+        result = [db executeQuery:sqlString];
+        if (result && result.next) {
+            intrName = [result stringForColumn:@"intr_name"];
+        }
+        [result close];
+    }];
+    return intrName;
 }
 
 @end

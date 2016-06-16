@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class ClinicDetailModel;
+@class ClinicDetailModel,XLOperationStatusModel,XLClinicQueryModel,CRMHttpRespondModel;
 @interface MyClinicTool : NSObject
 /*
     请求签约诊所的具体信息
@@ -60,5 +60,27 @@
  *  @param failure  失败回调
  */
 + (void)getMaterialListWithClinicId:(NSString *)clinicId matType:(NSString *)type success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
+
+/**
+ *  根据诊所id查找指定时间内的营业状态
+ *
+ *  @param clinicId   诊所id
+ *  @param curDateStr 当前时间
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getOperatingStatusWithClinicId:(NSString *)clinicId curDateStr:(NSString *)curDateStr success:(void (^)(XLOperationStatusModel *statusModel))success failure:(void (^)(NSError *error))failure;
+
+/**
+ *  www.ibeituan.com/clinicServer/ashx/ClinicHandler.ashx?action=getListByParams&QueryModel={"KeyWord":null,"IsAsc":true,"SortField":null,"PageIndex":2,"PageSize":5,"DoctorId":1865,"ClinicId":null,"ClinicName":null,"ClinicArea":"武汉市","BusinessHours":null,"BusinessWeek":null}
+ */
+/**
+ *  模糊搜索诊所列表
+ *
+ *  @param queryModel 查询的model
+ *  @param success    成功回调
+ *  @param failure    失败回调
+ */
++ (void)getClinicListWithQueryModel:(XLClinicQueryModel *)queryModel success:(void (^)(NSArray *result))success failure:(void (^)(NSError *error))failure;
 
 @end

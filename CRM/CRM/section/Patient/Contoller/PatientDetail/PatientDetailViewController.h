@@ -7,11 +7,13 @@
 //
 
 #import "TimViewController.h"
-@class PatientsCellMode;
+
 @interface PatientDetailViewController : TimViewController
 
-
 @property (nonatomic,retain) PatientsCellMode *patientsCellMode;
+
+@property (nonatomic, assign)BOOL isNewPatient;//从新增患者跳转
+
 
 @end
 

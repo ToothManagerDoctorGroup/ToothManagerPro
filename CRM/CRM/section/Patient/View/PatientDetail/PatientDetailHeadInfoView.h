@@ -11,14 +11,22 @@
 /**
  *  患者详情页头视图上的详情数据
  */
+@protocol  PatientDetailHeadInfoViewDelegate <NSObject>
+
+@optional
+- (void)didSelectIntroducer;
+
+@end
+
 @interface PatientDetailHeadInfoView : UIView
 
+@property (nonatomic, strong)NSArray *currentGroups;//当前所在分组
 
 @property (nonatomic,retain)Patient *detailPatient;
 @property (nonatomic, copy)NSString *introducerName;
-@property (nonatomic, copy)NSString *transferStr;
+@property (nonatomic, assign)BOOL introduceCanEdit;//判断介绍人是否可以进行修改
 
-@property (nonatomic, assign)BOOL isWeixin;
+@property (nonatomic, weak)id<PatientDetailHeadInfoViewDelegate> delegate;
 
 - (CGFloat)getTotalHeight;
 

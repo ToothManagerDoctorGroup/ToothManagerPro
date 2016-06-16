@@ -11,7 +11,7 @@
 @interface DBManager (Doctor)
 
 /**
- *  插入一条医生信息
+ *  插入一条医生信息1
  *
  *  @param userobj 医生信息
  *
@@ -27,6 +27,15 @@
  *  @return 是否成功
  */
 - (BOOL)updateDoctorWithDoctor:(Doctor *)doctorobj;
+/**
+ *  更新一条医生信息
+ *
+ *  @param doctorobj 医生对象
+ *  @param db        db
+ *
+ *  @return 是否成功
+ */
+- (BOOL)updateDoctorUseTransactionWithDoctor:(Doctor *)doctorobj andDB:(FMDatabase *)db;
 
 /**
  *  删除一条医生信息

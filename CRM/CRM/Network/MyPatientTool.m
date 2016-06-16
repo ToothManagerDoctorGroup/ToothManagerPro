@@ -10,24 +10,70 @@
 #import "CRMHttpTool.h"
 #import "CRMHttpRespondModel.h"
 #import "JSONKit.h"
+#import "XLPatientTotalInfoModel.h"
+#import "NSString+TTMAddtion.h"
+#import "CRMUnEncryptedHttpTool.h"
+#import "XLAppointImageUploadParam.h"
 
 #define ActionParam @"action"
 #define Patient_NameParam @"patient_name"
 #define Patient_PhoneParam @"patient_phone"
+#define Doctor_IdParam @"doctor_id"
+#define Patient_IdParam @"ckeyId"
 
 @implementation MyPatientTool
 
-+ (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
-    
-    
-    NSString *urlStr = @"http://122.114.62.57/Weixin/ashx/PatientInfoHandler.ashx";
++ (void)getPateintKeyIdWithPatientCKeyId:(NSString *)ckeyid success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientInfoHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[ActionParam] = @"weixinBind";
-//    NSString *encodingPatientName = [patientName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    params[Patient_NameParam] = patientName;
-    params[Patient_PhoneParam] = patientPhone;
+    params[ActionParam] = [@"getPatientKeyIdByCkeyId" TripleDESIsEncrypt:YES];
+    params[@"ckeyid"] = [ckeyid TripleDESIsEncrypt:YES];
     
-    [CRMHttpTool GET:urlStr parameters:params success:^(id responseObject) {
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+}
+
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = [@"newgetpatientallinfo" TripleDESIsEncrypt:YES];
+    params[@"patient_id"] = [patientId TripleDESIsEncrypt:YES];
+    params[@"doctor_id"] = [doctorId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
+        
+        CRMHttpRespondModel *respondT = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        
+        if (success) {
+            success(respondT);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+    
+}
+
++ (void)getWeixinStatusWithPatientId:(NSString *)patientId success:(void (^)(CRMHttpRespondModel *))success failure:(void (^)(NSError *))failure{
+    
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/PatientInfoHandler.ashx",DomainName,Method_Weixin,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = [@"weixinBind" TripleDESIsEncrypt:YES];
+    params[Patient_IdParam] = [patientId TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
             success(respond);
@@ -68,9 +114,12 @@
     
     
     NSString *jsonString = [dataEntity JSONString];
-    [paramDic setObject:jsonString forKey:@"DataEntity"];
+    paramDic[@"action"] = @"appoint";
+    paramDic[@"DataEntity"] = jsonString;
     
-    [CRMHttpTool POST:@"http://122.114.62.57/his.crm/ashx/ClinicMessage.ashx?action=appoint" parameters:paramDic success:^(id responseObject) {
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
+    
+    [[CRMUnEncryptedHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {
@@ -81,6 +130,83 @@
             failure(error);
         }
     }];
+}
+
+
+/**
+ *  上传预约所需图片
+ *
+ *  @param param   参数模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)uploadAppointmentImageWithParam:(XLAppointImageUploadParam *)param imageData:(NSData *)imageData success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ReserverFilesHandler.ashx",DomainName,Method_ClinicServer,@"ashx"];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = @"add";
+    params[@"DataEntity"] = [param.keyValues JSONString];
+    
+    MyUploadParam *upLoadParam = [[MyUploadParam alloc] init];
+    upLoadParam.data = imageData;
+    upLoadParam.name = @"uploadfile";
+    upLoadParam.fileName = param.file_name;
+    upLoadParam.mimeType = @"image/png,image/jpeg,image/pjpeg";
+    
+    [[CRMUnEncryptedHttpTool shareInstance] POST:urlStr parameters:params uploadParam:upLoadParam success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        if (success) {
+            success(respond);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+/**
+ *  获取患者CT的状态
+ *
+ *  @param ckeyIds CTLib的id，中间用“，”隔开
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getPatientCTStatusCTCkeyIds:(NSString *)ckeyIds success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure{
+    NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/CtLibHandler.ashx",DomainName,Method_His_Crm,Method_Ashx];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[ActionParam] = [@"getctstatus" TripleDESIsEncrypt:YES];
+    params[@"ct_ckeyids"] = [ckeyIds TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:urlStr params:params];
+    [[CRMHttpTool shareInstance] POST:urlStr parameters:params success:^(id responseObject) {
+        CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
+        NSMutableArray *mArray = [NSMutableArray array];
+        if ([respond.code integerValue] == 200) {
+            for (NSDictionary *dic in respond.result) {
+                XLPatientCTStatusModel *model = [XLPatientCTStatusModel objectWithKeyValues:dic];
+                [mArray addObject:model];
+            }
+        }
+        if (success) {
+            success(mArray);
+        }
+        
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+        
+    }];
+}
+
+@end
+
+
+@implementation XLPatientCTStatusModel
+
++ (NSDictionary *)replacedKeyFromPropertyName{
+    return @{@"ckeyid" : @"Ckeyid",
+             @"fileStatus" : @"FileStatus"};
 }
 
 @end

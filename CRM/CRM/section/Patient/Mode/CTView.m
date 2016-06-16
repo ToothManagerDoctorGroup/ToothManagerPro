@@ -81,7 +81,7 @@
     //路径
     filePath = [CaseFunction getCasePath:medicalcase.ckeyid patientId:medicalcase.patient_id];
     //路径里存在的照片
-    NSArray *tmpLibArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:medicalcase.ckeyid];
+    NSArray *tmpLibArray = [[DBManager shareInstance] getCTLibArrayWithCaseId:medicalcase.ckeyid isAsc:NO];
     [ctlibArray addObjectsFromArray:tmpLibArray]; //这个病例对应的所有CTLib信息
 }
 
@@ -191,7 +191,7 @@
 }
 
 #pragma mark UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
         // 拍照
         if ([self isCameraAvailable] && [self doesCameraSupportTakingPhotos]) {
@@ -243,7 +243,7 @@
         CTLib *newCTLib = [[CTLib alloc]init];
         newCTLib.case_id = medicalcase.ckeyid;
         newCTLib.patient_id = medicalcase.patient_id;
-        newCTLib.creationdate = medicalcase.creation_date;
+        newCTLib.creation_date = medicalcase.creation_date;
         newCTLib.ct_desc = @"暂无描述";
         [ctlibArray addObject:newCTLib];
         

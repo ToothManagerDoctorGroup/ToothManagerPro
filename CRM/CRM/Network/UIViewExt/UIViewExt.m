@@ -91,6 +91,7 @@ CGRect CGRectMoveToCenter(CGRect rect, CGPoint center)
 - (CGFloat) width
 {
 	return self.frame.size.width;
+
 }
 
 - (void) setWidth: (CGFloat) newwidth

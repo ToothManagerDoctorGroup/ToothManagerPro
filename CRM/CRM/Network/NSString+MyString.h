@@ -16,4 +16,6 @@
 
 - (NSString *)timeToNow;
 
+- (NSMutableAttributedString *)changeStrColorWithIndex:(NSInteger)index;
+
 @end

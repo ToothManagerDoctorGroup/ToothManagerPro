@@ -164,7 +164,6 @@
         
         [columeArray addObject:@"creation_date"];
     
-        
         [valueArray addObject:[NSString defaultDateString]];
         
         // 3. 写入数据库

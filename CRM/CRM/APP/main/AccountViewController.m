@@ -8,17 +8,10 @@
 
 #import "AccountViewController.h"
 #import "SettingViewController.h"
-#import "IntroducerViewController.h"
-#import "DoctorLibraryViewController.h"
-#import "RepairDoctorViewController.h"
-#import "MaterialsViewController.h"
 #import "DBTableMode.h"
 #import "AccountManager.h"
 #import "DBManager+User.h"
-#import "QrCodeViewController.h"
 #import "DBManager+Doctor.h"
-#import "UserInfoViewController.h"
-#import "ShuJuFenXiViewController.h"
 #import "CommonMacro.h"
 #import "UIImageView+WebCache.h"
 
@@ -36,57 +29,66 @@
 #import "WXApiObject.h"
 #import "Share.h"
 
+#import "XLAvatarBrowser.h"
+#import "XLMaterialsViewController.h"
+#import "XLDoctorLibraryViewController.h"
+#import "UserProfileManager.h"
+#import "XLDataAnalyseViewController.h"
+#import "XLMessageTemplateTool.h"
+#import "XLMessageTemplateViewController.h"
+#import "XLPersonInfoViewController.h"
+#import "AddressBoolTool.h"
+#import "XLBaseSettingViewController.h"
+#import "XLPersonalStepOneViewController.h"
 
-@interface AccountViewController ()<UIAlertViewDelegate>{
+#import "XLJoinTeamSegumentController.h"
+#import "PatientManager.h"
+#import "XLContactsViewController.h"
+#import "XLBackUpViewController.h"
+#import "DBManager+AutoSync.h"
+#import "NSString+TTMAddtion.h"
+
+/*******测试******/
+#import "XLMenuGridViewController.h"
+
+@interface AccountViewController ()<UIAlertViewDelegate,UIActionSheetDelegate>{
     
     __weak IBOutlet UITableView *_tableView;
     IBOutlet UITableViewCell *_zhangHuCell;
     __weak IBOutlet UILabel *_nameLabel;
     __weak IBOutlet UILabel *_detailLabel;
     
-    
     IBOutlet UITableViewCell *_doctorCell;
-    IBOutlet UITableViewCell *_repairDoctorCell;
     IBOutlet UITableViewCell *_zhongZhiTiCell;
     IBOutlet UITableViewCell *_tiXingMuBanCell;
     IBOutlet UITableViewCell *_shuJuFenXiCell;
     IBOutlet UITableViewCell *_sheZhiCell;
-    IBOutlet UITableViewCell *_myClinicCell;
-    
     IBOutlet UITableViewCell *_shareCell;
-    
     IBOutlet UITableViewCell *_myBillCell;
+    
     __weak IBOutlet UIImageView *iconImageView;
-    
-    
+    __weak IBOutlet UITableViewCell *_copyCell;
 }
 
-@property (nonatomic, assign)BOOL isSign; //是否签约
-
-/**
- *  线程队列,创建子线程
- */
-@property (nonatomic, strong)NSOperationQueue *opQueue;
+@property (weak, nonatomic) IBOutlet UIView *targetView;
 
 @end
 
 @implementation AccountViewController
 
-- (NSOperationQueue *)opQueue{
-    if (!_opQueue) {
-        _opQueue = [[NSOperationQueue alloc] init];
-    }
-    return _opQueue;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    self.title = @"我的空间";
+    
+    //如果是测试环境
+    if ([DomainName isEqualToString:@"http://118.244.234.207/"]) {
+        [self setRightBarButtonWithTitle:@"测试"];
+    }
+    
+    self.title = @"我";
     
     _tableView.delegate=self;
     _tableView.dataSource=self;
-    _tableView.backgroundColor=[UIColor clearColor];
+    _tableView.backgroundColor = MyColor(248, 248, 248);
     
     
     UIImage *image1 = [[UIImage imageNamed:@"ic_tabbar_me"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -99,203 +101,119 @@
                                              [UIColor lightGrayColor], NSForegroundColorAttributeName,
                                              nil] forState:UIControlStateNormal];
  
+    iconImageView.layer.cornerRadius = 25;
+    iconImageView.layer.masksToBounds = YES;
+    iconImageView.userInteractionEnabled = YES;
     //设置头像的默认图片
-    [iconImageView setImage:[UIImage imageNamed:@"user_icon"]];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
+    [iconImageView addGestureRecognizer:tap];
+    
+    //设置标记图片样式
+    self.targetView.layer.cornerRadius = 5;
+    self.targetView.layer.masksToBounds = YES;
 }
 
-//获取用户的医生列表
-- (void)getDoctorListSuccessWithResult:(NSDictionary *)result {
-    [SVProgressHUD dismiss];
-    NSArray *dicArray = [result objectForKey:@"Result"];
-    if (dicArray && dicArray.count > 0) {
-        for (NSDictionary *dic in dicArray) {
-            UserObject *obj = [UserObject userobjectFromDic:dic];
-            [[DBManager shareInstance] updateUserWithUserObject:obj];
-            [[AccountManager shareInstance] refreshCurrentUserInfo];
-            _detailLabel.text = [NSString stringWithFormat:@"%@-%@%@",obj.hospitalName,obj.department,obj.title];
-            _nameLabel.text = obj.name;
-            
-            if (obj.img.length > 0) {
-                //下载图片
-                [self downloadImageWithImageUrl:obj.img];
-            }
-            
-            self.isSign = [dic[@"is_sign"] intValue] == 1 ? YES : NO;
-            //更新用户偏好中的数据
-            NSString *key = [NSString stringWithFormat:@"%@isSign",obj.userid];
-            [CRMUserDefalut setObject:[NSString stringWithFormat:@"%d",[dic[@"is_sign"] intValue]] forKey:key];
-            
-            [self refreshView];
-            return;
-        }
-    }
+- (void)onRightButtonAction:(id)sender{
 }
-- (void)getDoctorListFailedWithError:(NSError *)error {
-    [SVProgressHUD showImage:nil status:error.localizedDescription];
+
+- (void)tapAction:(UITapGestureRecognizer *)tap{
+    [XLAvatarBrowser showImage:iconImageView];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [SVProgressHUD dismiss];
 }
 
 - (void)refreshView{
     [super refreshView];
-    
     [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    UserObject *userobj = [[AccountManager shareInstance] currentUser];
-    [[DoctorManager shareInstance] getDoctorListWithUserId:userobj.userid successBlock:^{
-        
-    } failedBlock:^(NSError *error) {
-        [SVProgressHUD showImage:nil status:error.localizedDescription];
-    }];
+    
+    UserObject *user = [AccountManager shareInstance].currentUser;
+    _detailLabel.text = user.hospitalName;
+    _nameLabel.text = [NSString stringWithFormat:@"%@   %@",user.name,user.title];
+    [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
+    
+    //查询数据库，是否有未同步的数据
+    NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"0"];
+    if (array.count > 0) {
+        self.targetView.hidden = NO;
+    }else{
+        self.targetView.hidden = YES;
+    }
 }
 
-
+#pragma mark - UITableViewDataSource/Delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    if (self.isSign == YES) {
-        return 5;
-    }else{
-        return 4;
-    }
-    
+    return 6;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (self.isSign == YES) {
-        if(section==0){
-            return 1;
-        }else if (section==1){
-            return 3;
-        }else if (section==2){
-            return 2;
-        }else if (section==3){
-            return 2;
-        }else{
-            return 1;
-        }
+    if(section==0){
+        return 1;
+    }else if (section==1){
+        return 1;
+    }else if (section==2){
+        return 2;
+    }else if (section==3){
+        return 1;
+    }else if(section == 4){
+        return 2;
     }else{
-        if(section==0){
-            return 1;
-        }else if (section==1){
-            return 3;
-        }else if (section==2){
-            return 2;
-        }else{
-            return 1;
-        }
+        return 2;
     }
-    
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     if(section == 0){
-        return 0;
+        return 20;
     }
-    return 20;
+    return 10;
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    if (self.isSign == YES) {
-        if(section == 4){
-            return 30;
-        }
-    }else{
-        if(section == 3){
-            return 30;
-        }
-    }
-    return 1;
-}
-- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 20)];
-    view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    return view;
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 10;
 }
 
-
-- (UIView *) tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    if (self.isSign == YES) {
-        if(section == 4){
-            UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
-            // [view setBackgroundColor:[UIColor lightGrayColor]];
-            
-            view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-            
-            return view;
-        }
-    }else{
-        if(section == 3){
-            UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
-            // [view setBackgroundColor:[UIColor lightGrayColor]];
-            
-            view.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-            
-            return view;
-        }
-    }
-    
-    
-    
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
-    [view setBackgroundColor:[UIColor whiteColor]];
-    return view;
-}
- 
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    if (self.isSign == YES) {
-        if(indexPath.section == 0){
-            return _zhangHuCell;
-        }else if (indexPath.section == 1){
-            if (indexPath.row == 0){
-                return _doctorCell;
-            }else if (indexPath.row == 1){
-                return _repairDoctorCell;
-            }else if (indexPath.row == 2){
-                return _zhongZhiTiCell;
-            }
-        }else if (indexPath.section == 2){
-            
-            if(indexPath.row == 0){
-                return _myBillCell;
-            }else if (indexPath.row == 1){
-                return _myClinicCell;
-            }
-        }else if (indexPath.section == 3){
-            if (indexPath.row == 0) {
-                return _shuJuFenXiCell;
-            }else if(indexPath.row == 1){
-                return _shareCell;
-            }
-            
-        }else if (indexPath.section == 4){
+    if(indexPath.section == 0){
+        return _zhangHuCell;
+    }else if (indexPath.section == 1){
+        if (indexPath.row == 0){
+            return _doctorCell;
+        }
+    }else if (indexPath.section == 2){
+        if (indexPath.row == 0) {
+            return _zhongZhiTiCell;
+        }else{
+            return _tiXingMuBanCell;
+        }
+    }else if (indexPath.section == 3){
+        return _myBillCell;
+    }else if (indexPath.section == 4){
+        if (indexPath.row == 0) {
+            return _shuJuFenXiCell;
+        }else if(indexPath.row == 1){
+            return _shareCell;
+        }
+        
+    }else if (indexPath.section == 5){
+        if (indexPath.row == 0) {
+            return _copyCell;
+        }else{
             return _sheZhiCell;
         }
-    }else{
-        if(indexPath.section == 0){
-            return _zhangHuCell;
-        }else if (indexPath.section == 1){
-            if (indexPath.row == 0){
-                return _doctorCell;
-            }else if (indexPath.row == 1){
-                return _repairDoctorCell;
-            }else if (indexPath.row == 2){
-                return _zhongZhiTiCell;
-            }
-        }else if (indexPath.section == 2){
-            if (indexPath.row == 0) {
-                return _shuJuFenXiCell;
-            }else if(indexPath.row == 1){
-                return _shareCell;
-            }
-        }else if (indexPath.section == 3){
-            return _sheZhiCell;
-        }
+        
     }
-    
-        return nil;
+    return nil;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if(indexPath.section==0){
@@ -311,116 +229,86 @@
     if(indexPath.section == 0){
         if(indexPath.row == 0){
             UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            UserInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"UserInfoViewController"];
+            XLPersonInfoViewController *userInfoVC = [storyBoard instantiateViewControllerWithIdentifier:@"XLPersonInfoViewController"];
             userInfoVC.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:userInfoVC animated:YES];
         }
-    }
-    if(indexPath.section == 1){
+    }else if(indexPath.section == 1){
         if(indexPath.row == 0){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"DoctorStoryboard" bundle:nil];
-            DoctorLibraryViewController *doctorVC = [storyboard instantiateViewControllerWithIdentifier:@"DoctorLibraryViewController"];
-            doctorVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:doctorVC animated:YES];
-        }else if (indexPath.row == 1){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            RepairDoctorViewController *repairDoctorVC = [storyboard instantiateViewControllerWithIdentifier:@"RepairDoctorViewController"];
-            repairDoctorVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:repairDoctorVC animated:YES];
-        }else if (indexPath.row == 2){
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-            MaterialsViewController *materialsVC = [storyboard instantiateViewControllerWithIdentifier:@"MaterialsViewController"];
-            materialsVC.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:materialsVC animated:YES];
-        }
-    }
-    if (self.isSign == YES) {
-        if (indexPath.section == 2) {
-            if (indexPath.row == 0) {
-                
-                WMPageController *pageController = [self p_defaultController];
-                pageController.title = @"我的账单";
-                pageController.menuViewStyle = WMMenuViewStyleLine;
-                pageController.titleSizeSelected = 15;
-                pageController.titleColorSelected = MyColor(0, 139, 232);
-                pageController.menuHeight = 44;
-                pageController.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:pageController animated:YES];
-                
-                
-            }else if(indexPath.row == 1){
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-                MyClinicViewController *clinicVc = [storyboard instantiateViewControllerWithIdentifier:@"MyClinicViewController"];
-                clinicVc.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:clinicVc animated:YES];
-            }
-        }
-        
-        if(indexPath.section == 3){
-            if(indexPath.row == 0){
-                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
-                shuju.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:shuju animated:YES];
-            }else{
-                [self showShareActionChoose];
-            }
-        }
-        if(indexPath.section == 4){
-            if(indexPath.row == 0){
-                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
-                set.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:set animated:YES];
-                
-            }
+            XLDoctorLibraryViewController *doctorLibrary = [[XLDoctorLibraryViewController alloc] init];
+            doctorLibrary.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:doctorLibrary animated:YES];
             
         }
-    }else{
-        if(indexPath.section == 2){
-            if(indexPath.row == 0){
-                ShuJuFenXiViewController *shuju = [[ShuJuFenXiViewController alloc]initWithNibName:@"ShuJuFenXiViewController" bundle:nil];
-                shuju.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:shuju animated:YES];
-            }else{
-                [self showShareActionChoose];
-            }
+    }else if (indexPath.section == 2) {
+        if (indexPath.row == 0) {
+            XLMaterialsViewController *materialsVC = [[XLMaterialsViewController alloc] init];
+            materialsVC.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:materialsVC animated:YES];
+        }else if (indexPath.row == 1){
+            XLMessageTemplateViewController *templateVc = [[XLMessageTemplateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            templateVc.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:templateVc animated:YES];
         }
-        if(indexPath.section == 3){
-            if(indexPath.row == 0){
-                SettingViewController *set = [[SettingViewController alloc]initWithNibName:@"SettingViewController" bundle:nil];
-                set.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:set animated:YES];
-            }
+    }else if (indexPath.section == 3) {
+        WMPageController *pageController = [self p_defaultController];
+        pageController.title = @"我的账单";
+        pageController.menuViewStyle = WMMenuViewStyleLine;
+        pageController.titleSizeSelected = 15;
+        pageController.titleColorSelected = MyColor(0, 139, 232);
+        pageController.menuHeight = 44;
+        pageController.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:pageController animated:YES];
+    }else if(indexPath.section == 4){
+        if(indexPath.row == 0){
+            XLDataAnalyseViewController *analyse = [[XLDataAnalyseViewController alloc] initWithStyle:UITableViewStylePlain];
+            analyse.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:analyse animated:YES];
+        }else{
+            [self showShareActionChoose];
         }
+    }else if(indexPath.section == 5){
+        if (indexPath.row == 0) {
+            UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+            XLBackUpViewController *backUpVc = [storyBoard instantiateViewControllerWithIdentifier:@"XLBackUpViewController"];
+            backUpVc.hidesBottomBarWhenPushed = YES;
+            [self pushViewController:backUpVc animated:YES];
+        }else if(indexPath.row == 1){
+            XLBaseSettingViewController *baseSetting = [[XLBaseSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            baseSetting.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:baseSetting animated:YES];
+            
+        }
+        
     }
-    
-    
 }
 //分享选择
 - (void)showShareActionChoose{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"分享" message:@"确认打开微信进行分享吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-    [alertView show];
-}
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 1) {
-        [self shareAction];
-    }
+    UIActionSheet *sheetView = [[UIActionSheet alloc] initWithTitle:@"分享" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"微信" otherButtonTitles:@"朋友圈", nil];
+    [sheetView showInView:self.view];
 }
 
-//分享
-- (void)shareAction{
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if(![WXApi isWXAppInstalled]){
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"提示" message:@"请先安装微信客户端" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];
     }else{
         UserObject *userobj = [[AccountManager shareInstance] currentUser];
-        ShareMode *mode = [[ShareMode alloc]init];
-        mode.title = @"邀请好友";
-        mode.message = [NSString stringWithFormat:@"亲，用我的邀请码注册种牙管家，可以快速通过审核呦！快戳我!下载app注册吧！"];
-        mode.url = [NSString stringWithFormat:@"http://122.114.62.57/Weixin/view/InviteFriends.aspx?doctorId=%@",userobj.userid];
+        ShareMode *mode = [[ShareMode alloc] init];
+        mode.title = @"牙医新生活倡导者：年种植上千颗不是梦";
+        mode.message = [NSString stringWithFormat:@"他，3张牙椅上千颗植体；他，拥有上万名高端用户；种牙管家，开启牙医新生活！"];
+        mode.url = [NSString stringWithFormat:@"%@%@/view/InviteFriends.aspx?doctorId=%@",DomainRealName,Method_Weixin,userobj.userid];
         mode.image = [UIImage imageNamed:@"crm_logo"];
-        [Share shareToPlatform:weixin WithMode:mode];
+        
+        
+        if (buttonIndex == 0) {
+            //微信
+            [Share shareToPlatform:weixinFriend WithMode:mode];
+        }else if(buttonIndex ==1){
+            //朋友圈
+            [Share shareToPlatform:weixin WithMode:mode];
+        }
     }
-
 }
 
 //创建控制器
@@ -446,26 +334,6 @@
     pageVC.postNotification = YES;
     pageVC.bounces = YES;
     return pageVC;
-}
-
-- (void)downloadImageWithImageUrl:(NSString *)imageStr{
-    
-    // 1.创建多线程
-    NSBlockOperation *downOp = [NSBlockOperation blockOperationWithBlock:^{
-        [NSThread sleepForTimeInterval:0.5];
-        //执行下载操作
-        NSURL *url = [NSURL URLWithString:imageStr];
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        UIImage *image = [UIImage imageWithData:data];
-        
-        //回到主线程更新ui
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            iconImageView.image = image;
-        }];
-    }];
-    // 2.必须将任务添加到队列中才能执行
-    [self.opQueue addOperation:downOp];
-    
 }
 
 - (void)didReceiveMemoryWarning {

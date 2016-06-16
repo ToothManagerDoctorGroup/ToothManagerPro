@@ -46,7 +46,7 @@
     self.content = content;
     [self addSubview:content];
     
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_crm"]];
     self.imageView = imageView;
     [self addSubview:imageView];
 }

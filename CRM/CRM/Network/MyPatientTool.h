@@ -8,8 +8,29 @@
 
 #import <Foundation/Foundation.h>
 
-@class CRMHttpRespondModel;
+@class CRMHttpRespondModel,XLPatientTotalInfoModel,XLAppointImageUploadParam;
 @interface MyPatientTool : NSObject
+
+/**
+ *  获取患者的keyid(用于二维码页面)
+ *
+ *  @param ckeyid  患者的ckeyid
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ *
+ */
++ (void)getPateintKeyIdWithPatientCKeyId:(NSString *)ckeyid success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
+
+/**
+ *  获取患者下所有的信息包括ct片，会诊信息等数据
+ *
+ *  @param patientId 患者id
+ *  @param doctorId  医生id
+ *  @param success   成功回调
+ *  @param failure   失败回调
+ */
++ (void)getPatientAllInfosWithPatientId:(NSString *)patientId doctorID:(NSString *)doctorId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
+
 /**
  *  获取患者是否绑定微信
  *
@@ -18,7 +39,7 @@
  *  @param success      成功回调
  *  @param failure      失败回调
  */
-+ (void)getWeixinStatusWithPatientName:(NSString *)patientName patientPhone:(NSString *)patientPhone success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
++ (void)getWeixinStatusWithPatientId:(NSString *)patientId success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
 /**
  *  发送预约信息到服务器
@@ -41,5 +62,32 @@
  */
 + (void)postAppointInfoTuiSongClinic:(NSString *)patientId withClinicName:(NSString*)clinic_name withCliniId:(NSString*)clinic_id withDoctorId:(NSString*)doctor_id withAppointTime:(NSString *)appoint_time withDuration:(float)duration withSeatPrice:(float)seat_price withAppointMoney:(float)appoint_money withAppointType:(NSString *)appoint_type withSeatId:(NSString *)seat_id withToothPosition:(NSString *)tooth_position withAssist:(NSArray *)assist withMaterial:(NSArray *)material success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
 
+/**
+ *  上传预约所需图片
+ *
+ *  @param param   参数模型
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)uploadAppointmentImageWithParam:(XLAppointImageUploadParam *)param imageData:(NSData *)imageData success:(void(^)(CRMHttpRespondModel *respondModel))success failure:(void(^)(NSError *error))failure;
+
+/**
+ *  获取患者CT的状态
+ *
+ *  @param ckeyIds CTLib的id，中间用“，”隔开
+ *  @param success 成功回调
+ *  @param failure 失败回调
+ */
++ (void)getPatientCTStatusCTCkeyIds:(NSString *)ckeyIds success:(void(^)(NSArray *result))success failure:(void(^)(NSError *error))failure;
+
+@end
+
+@interface XLPatientCTStatusModel : NSObject
+
+@property (nonatomic, copy)NSString *ckeyid;
+/**
+ *  文件状态 -1=异常，0=正常，1=数据库无记录，2=有记录没文件
+ */
+@property (nonatomic, assign)NSInteger fileStatus;
 
 @end

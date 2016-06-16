@@ -84,6 +84,8 @@
     
     // We need to calculate the proper transformation to make the image upright.
     // We do it in 2 steps: Rotate if Left/Right/Down, and then flip if Mirrored.
+    
+    NSLog(@"图片被旋转了");
     CGAffineTransform transform = CGAffineTransformIdentity;
     
     switch (self.imageOrientation) {

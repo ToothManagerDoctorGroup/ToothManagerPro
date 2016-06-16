@@ -12,8 +12,6 @@
 
 /**
  @brief 种牙管家 公共数据和预编译文件区.
- 
- @discussion <#some notes or alert with this class#>
  */
 
 #import "MBProgressHUD.h"

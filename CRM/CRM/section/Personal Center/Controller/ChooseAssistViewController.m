@@ -44,12 +44,6 @@
 - (NSMutableArray *)selectAssists{
     if (!_selectAssists) {
         _selectAssists = [NSMutableArray array];
-        
-        for (AssistCountModel *model in self.dataList) {
-            if (model.num > 0) {
-                [_selectAssists addObject:model];
-            }
-        }
     }
     return _selectAssists;
 }
@@ -74,18 +68,23 @@
     self.title = @"选择助手";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
     [self setRightBarButtonWithTitle:@"完成"];
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 #pragma mark -右侧按钮点击
 - (void)onRightButtonAction:(id)sender{
+    for (AssistCountModel *model in self.dataList) {
+        if (model.num > 0) {
+            [self.selectAssists addObject:model];
+        }
+    }
+    
+    //调用代理方法
+    if ([self.delegate respondsToSelector:@selector(chooseAssistViewController:didSelectAssists:)]) {
+        [self.delegate chooseAssistViewController:self didSelectAssists:self.selectAssists];
+    }
+    
     //关闭当前视图
     [self popViewControllerAnimated:YES];
-    
-        //调用代理方法
-        if ([self.delegate respondsToSelector:@selector(chooseAssistViewController:didSelectAssists:)]) {
-            [self.delegate chooseAssistViewController:self didSelectAssists:self.selectAssists];
-        }
     
 }
 

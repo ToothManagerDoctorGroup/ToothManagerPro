@@ -58,6 +58,4 @@ static NSString *const WMControllerDidFullyDisplayedNotification = @"WMControlle
 //  有什么能改进的都可以PR哦~ github有你更美好!~
 //  好用的话还希望能够小小star一下~ :)
 //  Github: https://github.com/wangmchn
-//  Email:  mailto:wangmchn@163.com// 版权属于原作者
-// http://code4app.com (cn) http://code4app.net (en)
-// 发布代码于最专业的源码分享网站: Code4App.com
+//  Email:  mailto:wangmchn@163.com

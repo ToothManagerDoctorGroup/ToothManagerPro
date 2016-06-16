@@ -42,4 +42,6 @@
 @property (nonatomic, copy)NSString *actual_start_time;
 @property (nonatomic, copy)NSString *actual_end_time;
 @property (nonatomic, copy)NSString *used_time;
+
+
 @end

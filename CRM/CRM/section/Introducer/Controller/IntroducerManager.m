@@ -61,7 +61,7 @@ Realize_ShareInstance(IntroducerManager);
     if(ckeyid == nil){
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请先选择患者" errorCode:400]);
     }
-    [[CRMHttpRequest shareInstance]patientToIntroducer:userId withCkeyId:ckeyid withName:name withPhone:phone];
+    [[CRMHttpRequest shareInstance] patientToIntroducer:userId withCkeyId:ckeyid withName:name withPhone:phone];
     successBlock();
 }
 @end

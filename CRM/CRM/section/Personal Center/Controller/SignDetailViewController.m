@@ -11,7 +11,7 @@
 #import "DBTableMode.h"
 #import "AccountManager.h"
 #import "ClinicModel.h"
-#import "UnSignClinicModel.h"
+#import "XLClinicModel.h"
 
 @interface SignDetailViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *partyALabel;
@@ -37,7 +37,6 @@
 - (void)setUpNavBarStyle{
     self.title = @"申请签约";
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 #pragma mark -设置控件的值

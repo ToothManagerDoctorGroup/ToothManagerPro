@@ -55,12 +55,14 @@
     FriendNotificationItem *fnotificationItem = [[FriendNotificationItem alloc] init];
     fnotificationItem.creation_time = [dic stringForKey:@"creation_time"];
     fnotificationItem.doctor_id = [dic stringForKey:@"doctor_id"];
+    fnotificationItem.doctor_image = [dic stringForKey:@"doctor_image"];
     fnotificationItem.doctor_name = [dic stringForKey:@"doctor_name"];
     fnotificationItem.notification_content = [dic stringForKey:@"notification_content"];
     fnotificationItem.notification_status =[NSNumber numberWithInteger: [dic integerForKey:@"notification_status"]];
     fnotificationItem.notification_type = [NSNumber numberWithInteger:[dic integerForKey:@"notification_type"]];
     fnotificationItem.receiver_id = [dic stringForKey:@"receiver_id"];
     fnotificationItem.receiver_name = [dic stringForKey:@"receiver_name"];
+    fnotificationItem.receiver_image = [dic stringForKey:@"receiver_image"];
     return fnotificationItem;
 }
 
@@ -78,6 +80,7 @@
         self.notification_type = [aDecoder decodeObjectForKey:@"notification_type"];
         self.receiver_id = [aDecoder decodeObjectForKey:@"receiver_id"];
         self.receiver_name = [aDecoder decodeObjectForKey:@"patientreceiver_names"];
+
     }
     return self;
 }
@@ -108,6 +111,7 @@
     _notification_type = [self.notification_type copy];
     _receiver_id = [self.receiver_id copy];
     _receiver_name = [self.receiver_name copy];
+    
     return copy;
 }
 

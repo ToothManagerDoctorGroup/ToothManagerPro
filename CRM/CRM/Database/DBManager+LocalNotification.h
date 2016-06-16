@@ -13,6 +13,8 @@
 
 - (NSArray *)localNotificationListFormDB;
 
+- (NSArray *)localNotificationListByPatientId:(NSString *)patientId;
+
 - (BOOL)insertLocalNotification:(LocalNotification *)notification;
 
 - (BOOL)updateLocalNotificaiton:(LocalNotification *)notification;
@@ -20,5 +22,11 @@
 - (BOOL)deleteLocalNotification:(LocalNotification *)notification;
 
 - (BOOL)deleteLocalNotification_Sync:(LocalNotification *)notification;
+
+- (BOOL)deleteLocalNotificationWithPatientId_sync:(NSString *)patientId;
+
+- (LocalNotification *)getLocalNotificationWithCkeyId:(NSString *)ckeyId;
+
+- (NSArray *)localNotificationListWithStartDate:(NSString *)startDate endDate:(NSString *)endDate;
 
 @end

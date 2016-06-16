@@ -22,7 +22,7 @@
 /*
     取消预约
  */
-+ (void)cancleAppointWithAppointId:(NSString *)appointId success:(void(^)(NSString *result,NSNumber *code))success failure:(void(^)(NSError *error))failure;
++ (void)cancleAppointWithAppointId:(NSString *)appointId success:(void(^)(CRMHttpRespondModel *respond))success failure:(void(^)(NSError *error))failure;
 
 /*
     前往支付

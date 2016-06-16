@@ -8,7 +8,7 @@
 
 #import "TimViewController.h"
 
-@class ClinicModel,UnSignClinicModel,SignDetailViewController;
+@class ClinicModel,XLClinicModel,SignDetailViewController;
 @protocol SignDetailViewControllerDelegate <NSObject>
 
 @optional
@@ -19,7 +19,7 @@
 
 @property (nonatomic, strong)ClinicModel *signModel;
 
-@property (nonatomic, strong)UnSignClinicModel *unSignModel;
+@property (nonatomic, strong)XLClinicModel *unSignModel;
 
 @property (nonatomic, weak)id<SignDetailViewControllerDelegate> delegate;
 

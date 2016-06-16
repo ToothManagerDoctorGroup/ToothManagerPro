@@ -94,6 +94,8 @@
 
 - (BOOL)deleteMedicalExpenseWithPatientId:(NSString *)patientId;
 
+- (BOOL)deleteMedicalExpenseWithPatientId_sync:(NSString *)patientId;
+
 - (BOOL)deleteMedicalExpenseWithId_sync:(NSString *)expenseId;
 
 /**
@@ -109,5 +111,22 @@
  *  @return 消耗数组(MedicalExpense组成的数组)
  */
 - (NSArray *)getMedicalExpenseArrayWithMedicalCaseId:(NSString *)caseId;
+
+/**
+ *  获取耗材信息
+ *
+ *  @param ckeyId 主键
+ *
+ *  @return 耗材信息
+ */
+- (MedicalExpense *)getMedicalExpenseWithCkeyId:(NSString *)ckeyId;
+/**
+ *  判断耗材信息是否存在
+ *
+ *  @param materialName 材料的名称
+ *
+ *  @return 存在（yes） 不存在（no）
+ */
+- (BOOL)materialIsExistWithMaterialName:(NSString *)materialName;
 
 @end

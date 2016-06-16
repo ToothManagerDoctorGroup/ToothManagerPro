@@ -101,7 +101,7 @@
     NSNumber *counter = [userDefalut objectForKey:@"counter"];
     NSInteger counterInteger = 0;
     if (counter == nil) {
-        counter = [NSNumber numberWithInteger:1];
+        counter = @(1);
     } else {
         counterInteger = [counter integerValue];
     }

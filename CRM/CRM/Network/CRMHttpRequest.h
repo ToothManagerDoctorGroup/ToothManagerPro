@@ -9,6 +9,7 @@
 #import "TimRequestHeader.h"
 #import "CommonMacro.h"
 
+@class AFHTTPRequestOperation;
 @interface CRMHttpRequest : TimRequestBase
 {
     
@@ -22,6 +23,12 @@ Declare_ShareInstance(CRMHttpRequest);
  *@param params 请求参数
  */
 - (void)requestWithParams:(TimRequestParam *)params;
+
+/*
+ *@brief 发起一个网络请求 默认POST方式
+ *@param params 请求参数
+ */
+- (AFHTTPRequestOperation *)requestResultWithParams:(TimRequestParam *)params;
 
 /*
  *@brief 发起一个网络请求
@@ -38,5 +45,14 @@ Declare_ShareInstance(CRMHttpRequest);
  *  @param object2  参数
  */
 - (void)responderPerformSelector:(SEL)selector withObject:(id)object1 withObject:(id)object2;
+
+/**
+ *  取消所有网络请求
+ */
+- (void)cancelAllOperations;
+
+
+
+@property (nonatomic, assign)BOOL isAutoSync;//是否是自动同步
 
 @end

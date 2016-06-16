@@ -51,11 +51,11 @@
 -(void)yuyueClick{
     NSLog(@"添加预约");
     [self.delegate yuyueButtonDidSelected];
-    [self removeFromSuperview];
+//    [self removeFromSuperview];
 }
 -(void)huanzheClick{
     NSLog(@"添加患者");
     [self.delegate huanzheButtonDidSeleted];
-    [self removeFromSuperview];
+//    [self removeFromSuperview];
 }
 @end

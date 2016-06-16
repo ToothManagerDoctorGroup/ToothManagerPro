@@ -25,4 +25,6 @@
 @property (nonatomic, retain) NSMutableArray * infoArray;
 @property (nonatomic, retain) Introducer * introducer;
 
+@property (nonatomic, assign)BOOL isEdit;//是否是编辑状态
+
 @end

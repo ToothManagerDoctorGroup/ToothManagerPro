@@ -14,25 +14,25 @@
 #import "ClinicCell.h"
 #import "SearchClinicViewController.h"
 #import "ClinicDetailViewController.h"
+#import "UISearchBar+XLMoveBgView.h"
+#import "EMSearchBar.h"
+#import "EMSearchDisplayController.h"
 
-@interface MyClinicViewController ()<UISearchBarDelegate>
+
+static const CGFloat MyClinicViewControllerCellHeight = 70;
+
+@interface MyClinicViewController ()<UISearchBarDelegate,UISearchDisplayDelegate>
 
 //存放诊所对象：ClinicModel
 @property (nonatomic, strong)NSArray *dataList;
 
+@property (nonatomic, strong)EMSearchBar *searchBar;//搜索框
+@property (nonatomic, strong)EMSearchDisplayController *searchController;//搜索视图
 
 @end
 
 @implementation MyClinicViewController
-
-#pragma -懒加载数据
-- (NSArray *)dataList{
-    if (!_dataList) {
-        _dataList = [NSArray array];
-    }
-    return _dataList;
-}
-
+#pragma mark - ********************* Life Method ***********************
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -45,35 +45,27 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
-    //设置导航栏样式
-    [self setUpNavBar];
-    
+    //设置子视图
+    [self setUpSubViews];
     //请求签约诊所的信息
     [self requestClinicInfo];
-}
-
-#pragma mark - 设置导航栏样式
-- (void)setUpNavBar{
-    [super initView];
-    self.title = @"我的诊所";
-    [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
-    [self setRightBarButtonWithImage:[UIImage imageNamed:@"pic_search"]];
-    self.view.backgroundColor = [UIColor whiteColor];
     
-    //设置右侧按钮
-    UILabel *right = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 44)];
-    right.text = @"找诊所";
-    right.textColor = [UIColor whiteColor];
-    right.font = [UIFont systemFontOfSize:16];
-    right.userInteractionEnabled = YES;
-    //添加单击事件
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(findClinicAction:)];
-    [right addGestureRecognizer:tap];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:right];
 }
 
-#pragma mark -找诊所按钮点击事件
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
+#pragma mark - ********************* Private Method ***********************
+#pragma mark 设置子视图
+- (void)setUpSubViews{
+    self.title = @"我的诊所";
+    self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
+    [self.view addSubview:self.searchBar];
+    [self searchController];
+}
+
+#pragma mark 找诊所按钮点击事件
 - (void)findClinicAction:(UITapGestureRecognizer *)tap{
     
     SearchClinicViewController *clinicVc = [[SearchClinicViewController alloc] initWithStyle:UITableViewStylePlain];
@@ -82,16 +74,29 @@
     
 }
 
-#pragma -请求签约诊所的信息
+#pragma 请求签约诊所的信息
 - (void)requestClinicInfo{
     [SVProgressHUD showWithStatus:@"正在加载"];
-    UserObject *currentUser = [[AccountManager shareInstance] currentUser];
-    [MyClinicTool requestClinicInfoWithDoctorId:currentUser.userid success:^(NSArray *clinics) {
+    WS(weakSelf);
+//    [MyClinicTool requestClinicInfoWithAreacode:@"北京" clinicName:@"" success:^(NSArray *result) {
+//        [SVProgressHUD dismiss];
+//        //请求到数据,将数据赋值给当前数组
+//        _dataList = result;
+//        //刷新表格
+//        [weakSelf.tableView reloadData];
+//    } failure:^(NSError *error) {
+//        [SVProgressHUD dismiss];
+//        if (error) {
+//            NSLog(@"error:%@",error);
+//        }
+//    }];
+    
+    [MyClinicTool requestClinicInfoWithDoctorId:[AccountManager currentUserid] success:^(NSArray *clinics) {
         [SVProgressHUD dismiss];
         //请求到数据,将数据赋值给当前数组
         _dataList = clinics;
         //刷新表格
-        [self.tableView reloadData];
+        [weakSelf.tableView reloadData];
     
     } failure:^(NSError *error) {
         [SVProgressHUD dismiss];
@@ -101,12 +106,20 @@
     }];
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+#pragma mark 设置单元格点击事件
+- (void)setCellSelectWithIndexPath:(NSIndexPath *)indexPath source:(NSArray *)source{
+    //获取当前的数据模型
+    ClinicModel *model = source[indexPath.row];
+    //跳转到详情页面
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    ClinicDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"ClinicDetailViewController"];
+    detailVc.model = model;
+    detailVc.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:detailVc animated:YES];
 }
 
-#pragma mark - Table view data source
+#pragma mark - ********************* Delegate / DataSource *******************
+#pragma mark Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return  self.dataList.count;
 }
@@ -126,56 +139,143 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 70;
+    return MyClinicViewControllerCellHeight;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    //获取当前的数据模型
-    ClinicModel *model = self.dataList[indexPath.row];
-    //跳转到详情页面
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    ClinicDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"ClinicDetailViewController"];
-    detailVc.model = model;
-    detailVc.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:detailVc animated:YES];
+    [self setCellSelectWithIndexPath:indexPath source:self.dataList];
     
 }
 
 
-#pragma -UIScrollViewDelegate
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    //开始拖动的时候，隐藏键盘
-    [self.view endEditing:YES];
+#pragma mark UISearchBarDelegate
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    [searchBar setShowsCancelButton:YES animated:YES];
+    return YES;
 }
 
-#pragma mark -UISearchBarDelegate
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
-    //隐藏键盘
-    [self.view endEditing:YES];
-    //点击搜索按钮
-    [self searchClinicWithClinicName:searchBar.text];
+- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
+{
+    return YES;
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
-    //点击搜索按钮
-    [self searchClinicWithClinicName:searchText];
-}
-
-- (void)searchClinicWithClinicName:(NSString *)clinicName{
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
     UserObject *currentUser = [[AccountManager shareInstance] currentUser];
-    [MyClinicTool searchClinicInfoWithDoctorId:currentUser.userid clinicName:clinicName success:^(NSArray *clinics) {
-        
-        _dataList = clinics;
+    WS(weakSelf);
+    [SVProgressHUD showWithStatus:@"正在搜索"];
+    [MyClinicTool searchClinicInfoWithDoctorId:currentUser.userid clinicName:searchBar.text success:^(NSArray *clinics) {
+        [SVProgressHUD dismiss];
         //刷新单元格
-        [self.tableView reloadData];
+        [weakSelf.searchController.resultsSource removeAllObjects];
+        [weakSelf.searchController.resultsSource addObjectsFromArray:clinics];
+        [weakSelf.searchController.searchResultsTableView reloadData];
         
     } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
         if (error) {
             NSLog(@"搜索失败，请检查网络连接");
         }
     }];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    searchBar.text = @"";
+    [searchBar resignFirstResponder];
+    [searchBar setShowsCancelButton:NO animated:YES];
+}
+
+#pragma mark - UISearchDisplayDelegate
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(nullable NSString *)searchString{
+    __weak typeof(self) weakSelf = self;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.001);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        for (UIView *subview in weakSelf.searchDisplayController.searchResultsTableView.subviews) {
+            if ([subview isKindOfClass: [UILabel class]])
+            {
+                subview.hidden = YES;
+            }
+        }
+    });
+    return YES;
+}
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller didHideSearchResultsTableView:(UITableView *)tableView {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
+}
+- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)keyboardWillHide {
+    UITableView *tableView = self.searchController.searchResultsTableView;
+    [tableView setContentInset:UIEdgeInsetsZero];
+    [tableView setScrollIndicatorInsets:UIEdgeInsetsZero];
+    
+}
+
+#pragma mark - ********************* Lazy Method ***********************
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, kScreenWidth, 44)];
+        _searchBar.delegate = self;
+        _searchBar.placeholder = @"诊所名称，地址";
+        [_searchBar moveBackgroundView];
+    }
+    
+    return _searchBar;
+}
+
+- (EMSearchDisplayController *)searchController
+{
+    if (_searchController == nil) {
+        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
+        _searchController.delegate = self;
+        __weak MyClinicViewController *weakSelf = self;
+        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
+            
+            // 1.获取当前的模型数据
+            ClinicModel *model = weakSelf.searchController.resultsSource[indexPath.row];
+            
+            // 2.创建cell
+            ClinicCell *cell = [ClinicCell cellWithTableView:tableView];
+            
+            // 3.设置模型数据
+            cell.model = model;
+
+            
+            return cell;
+        }];
+        
+        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+            return MyClinicViewControllerCellHeight;
+        }];
+        
+        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [weakSelf.searchController.searchBar endEditing:YES];
+            
+            [weakSelf setCellSelectWithIndexPath:indexPath source:weakSelf.searchController.resultsSource];
+        }];
+    }
+    
+    return _searchController;
+}
+- (NSArray *)dataList{
+    if (!_dataList) {
+        _dataList = [NSArray array];
+    }
+    return _dataList;
 }
 
 

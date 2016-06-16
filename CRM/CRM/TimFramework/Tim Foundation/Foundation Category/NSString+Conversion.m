@@ -56,6 +56,20 @@
     
     return  string1;
 }
+
+//format YYYY:MM:DD HH:MM:SS
++ (NSString *)currentDateFiveMinuteString{
+    NSDate* curDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    NSDate* date1 = [[NSDate alloc] init];
+    date1 = [curDate dateByAddingTimeInterval:-300];
+    NSString *string1 =  [dateFormatter stringFromDate:date1];
+    
+    return  string1;
+}
+
 - (NSString*)MD5
 {
 	// Create pointer to the string as UTF8
@@ -184,6 +198,75 @@
         return ValidationResultValid;
     }
     return ValidationResultInValid;
+}
+
+
+- (int)charaterCount{
+    int strlength = 0;
+    char* p = (char*)[self cStringUsingEncoding:NSUnicodeStringEncoding];
+    for (int i=0 ; i<[self lengthOfBytesUsingEncoding:NSUnicodeStringEncoding] ;i++) {
+        if (*p) {
+            p++;
+            strlength++;
+        }
+        else {
+            p++;
+        }
+        
+    }
+    return strlength;
+
+}
+
++ (BOOL)checkTelNumber:(NSString *) telNumber
+{
+    
+    
+//    NSString *pattern = @"^((13[0-9])|(147)|(15[^4,\\D])|(17[0-9])|(18[0,5-9]))\\d{8}$";
+    NSString *pattern = @"^[1][34578]\\d{9}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+    BOOL isMatch = [pred evaluateWithObject:telNumber];
+    return isMatch;
+}
+
++ (BOOL)checkAllPhoneNumber:(NSString *)phoneNumber{
+//    NSString *pattern = @"^(0[0-9]{2,3}/-)?([2-9][0-9]{6,7})+(/-[0-9]{1,4})?$";
+    NSString *pattern = @"^([1][34578]\\d{9})$|^((\\d{7,8})|(\\d{4}|\\d{3})-(\\d{7,8})|(\\d{4}|\\d{3})-(\\d{7,8})-(\\d{4}|\\d{3}|\\d{2}|\\d{1})|(\\d{7,8})-(\\d{4}|\\d{3}|\\d{2}|\\d{1}))$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+    BOOL isMatch = [pred evaluateWithObject:phoneNumber];
+    
+    if (isMatch) {
+        return YES;
+    }
+    
+    return NO;
+}
+
++ (ValidationResult)checkIDCard:(NSString *)idCard{
+    return [self isValidString:idCard withFormat:@"^(\\d{15}$|^\\d{18}$|^\\d{17}(\\d|X|x))$"];
+}
+/**
+ *  验证字符串是否符合长度
+ *
+ *  @param string 原始字符串
+ *  @param length 固定长度
+ *
+ *  @return 验证结果
+ */
+- (ValidationResult)isValidLength:(int)length{
+    return [NSString isValidLength:self length:length];
+}
++ (ValidationResult)isValidLength:(NSString *)string length:(int)length{
+    if ([string isEmpty]) {
+        return ValidationResultValidateStringIsEmpty;
+    }
+    //获取字符串的长度
+    int len = [string charaterCount];
+    if (len > length) {
+        return ValidationResultInValid;
+    }
+    
+    return ValidationResultValid;
 }
 
 @end

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="XLJoinTreateCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="59.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="截止日期：2014-09-09" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bJP-7U-Kvb">
+                        <rect key="frame" x="15" y="10" width="162" height="15"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="15" id="Pt3-cR-4i8"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.53333333333333333" green="0.53333333333333333" blue="0.53333333333333333" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_crm.png" translatesAutoresizingMaskIntoConstraints="NO" id="GqI-Ti-1Ix">
+                        <rect key="frame" x="292" y="21" width="13" height="18"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="13" id="BGx-AH-8vK"/>
+                            <constraint firstAttribute="height" constant="18" id="KQa-9i-cOL"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="李荣浩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C2n-Wl-Xre">
+                        <rect key="frame" x="232" y="19" width="60" height="21"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="CDS-SQ-dei"/>
+                            <constraint firstAttribute="width" constant="60" id="WfW-MI-plR"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="患者:王晓霞" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CwQ-aL-dxg">
+                        <rect key="frame" x="15" y="33.5" width="162" height="21"/>
+                        <animations/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="qri-nh-QGJ"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JqT-rV-eCx" customClass="XLAvatarView">
+                        <rect key="frame" x="187" y="10" width="40" height="40"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="40" id="BrY-ZB-11P"/>
+                            <constraint firstAttribute="width" constant="40" id="fJF-BK-u2z"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <animations/>
+                <constraints>
+                    <constraint firstItem="JqT-rV-eCx" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="1Su-Pn-wdz"/>
+                    <constraint firstItem="C2n-Wl-Xre" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="5II-Fc-nMo"/>
+                    <constraint firstItem="bJP-7U-Kvb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="LBt-Yb-ffJ"/>
+                    <constraint firstItem="GqI-Ti-1Ix" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="NIV-5T-5R9"/>
+                    <constraint firstAttribute="bottom" secondItem="CwQ-aL-dxg" secondAttribute="bottom" constant="5" id="Qfa-P0-Iee"/>
+                    <constraint firstItem="bJP-7U-Kvb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="XRq-eD-Axd"/>
+                    <constraint firstAttribute="trailing" secondItem="GqI-Ti-1Ix" secondAttribute="trailing" constant="15" id="bWY-br-OM9"/>
+                    <constraint firstItem="C2n-Wl-Xre" firstAttribute="leading" secondItem="JqT-rV-eCx" secondAttribute="trailing" constant="5" id="bWw-A5-S4p"/>
+                    <constraint firstItem="JqT-rV-eCx" firstAttribute="leading" secondItem="bJP-7U-Kvb" secondAttribute="trailing" constant="10" id="h82-Tt-ZVC"/>
+                    <constraint firstItem="JqT-rV-eCx" firstAttribute="leading" secondItem="CwQ-aL-dxg" secondAttribute="trailing" constant="10" id="lLL-L1-d3S"/>
+                    <constraint firstItem="CwQ-aL-dxg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="qlm-bQ-2Dj"/>
+                    <constraint firstItem="GqI-Ti-1Ix" firstAttribute="leading" secondItem="C2n-Wl-Xre" secondAttribute="trailing" id="sMf-0e-ykF"/>
+                </constraints>
+            </tableViewCellContentView>
+            <animations/>
+            <connections>
+                <outlet property="avatarView" destination="JqT-rV-eCx" id="kmu-7Z-7Sf"/>
+                <outlet property="doctorNameLabel" destination="C2n-Wl-Xre" id="VR8-0K-iqn"/>
+                <outlet property="endDateLabel" destination="bJP-7U-Kvb" id="uJ2-ye-8Ef"/>
+                <outlet property="patientLabel" destination="CwQ-aL-dxg" id="0oA-dm-3w2"/>
+            </connections>
+            <point key="canvasLocation" x="268" y="226"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="arrow_crm.png" width="13" height="18"/>
+    </resources>
+</document>

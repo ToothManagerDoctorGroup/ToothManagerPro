@@ -7,6 +7,8 @@
 //
 
 #import "PicBrowserView.h"
+#import "PicImageView.h"
+#import "DBTableMode.h"
 #import "UIImageView+WebCache.h"
 
 #define LeftTag   (100)
@@ -37,9 +39,7 @@
     leftScrollView.bouncesZoom      = NO;
     leftScrollView.maximumZoomScale = 3.0f;
     leftScrollView.minimumZoomScale = 1.0f;
-    UIImageView *imageViewLeft = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
-    imageViewLeft.contentMode = UIViewContentModeScaleAspectFit;
-    imageViewLeft.backgroundColor     = [UIColor blackColor];
+    PicImageView *imageViewLeft = [[PicImageView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
     imageViewLeft.tag                 = ImageViewTag;
     [leftScrollView addSubview:imageViewLeft];
     [self.scrollView addSubview:leftScrollView];
@@ -50,9 +50,7 @@
     centerScrollView.bouncesZoom      = NO;
     centerScrollView.maximumZoomScale = 3.0f;
     centerScrollView.minimumZoomScale = 1.0f;
-    UIImageView *imageViewCenter = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, _scrollView.bounds.size.height)];
-    imageViewCenter.contentMode = UIViewContentModeScaleAspectFit;
-    imageViewCenter.backgroundColor = [UIColor blackColor];
+    PicImageView *imageViewCenter = [[PicImageView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, _scrollView.bounds.size.height)];
     imageViewCenter.tag = ImageViewTag;
     [centerScrollView addSubview:imageViewCenter];
     [self.scrollView addSubview:centerScrollView];
@@ -63,9 +61,7 @@
     rightScrollView.bouncesZoom = NO;
     rightScrollView.maximumZoomScale = 3.0f;
     rightScrollView.minimumZoomScale = 1.0f;
-    UIImageView *imageViewRight = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, _scrollView.bounds.size.height)];
-    imageViewRight.contentMode     = UIViewContentModeScaleAspectFit;
-    imageViewRight.backgroundColor = [UIColor blackColor];
+    PicImageView *imageViewRight = [[PicImageView alloc]initWithFrame:CGRectMake(0, 0, self.bounds.size.width, _scrollView.bounds.size.height)];
     imageViewRight.tag             = ImageViewTag;
     [rightScrollView addSubview:imageViewRight];
     [self.scrollView addSubview:rightScrollView];
@@ -79,20 +75,39 @@
 
 - (void)setLeftImage:(BrowserPicture *)pic {
     UIScrollView *leftView = (UIScrollView *)[self.scrollView viewWithTag:LeftTag];
-    UIImageView *leftImageView = (UIImageView *)[leftView viewWithTag:ImageViewTag];
-    [leftImageView sd_setImageLoadingWithURL:[NSURL URLWithString:pic.url] placeholderImage:[UIImage imageNamed:pic.url]];
+    PicImageView *leftImageView = (PicImageView *)[leftView viewWithTag:ImageViewTag];
+    leftImageView.urlStr = pic.url;
+    if (pic.ctLib && [pic.ctLib.is_main isEqualToString:@"0"]) {
+        leftImageView.targetImageHidden = YES;
+    }else{
+        leftImageView.targetImageHidden = NO;
+        leftImageView.targetImage = [UIImage imageNamed:@"main_phone_img"];
+    }
 }
 
 - (void)setCenterImage:(BrowserPicture *)pic {
     UIScrollView *centerView = (UIScrollView *)[self.scrollView viewWithTag:CenterTag];
-    UIImageView *centerImageView = (UIImageView *)[centerView viewWithTag:ImageViewTag];
-    [centerImageView sd_setImageLoadingWithURL:[NSURL URLWithString:pic.url] placeholderImage:[UIImage imageNamed:pic.url]];
+    PicImageView *centerImageView = (PicImageView *)[centerView viewWithTag:ImageViewTag];
+    if (pic.ctLib && [pic.ctLib.is_main isEqualToString:@"0"]) {
+        centerImageView.targetImageHidden = YES;
+    }else{
+        centerImageView.targetImageHidden = NO;
+        centerImageView.targetImage = [UIImage imageNamed:@"main_phone_img"];
+    }
+    centerImageView.urlStr = pic.url;
 }
 
 - (void)setRightImage:(BrowserPicture *)pic {
     UIScrollView *rightView = (UIScrollView *)[self.scrollView viewWithTag:RightTag];
-    UIImageView *rightImageView  = (UIImageView *)[rightView viewWithTag:ImageViewTag];
-    [rightImageView sd_setImageLoadingWithURL:[NSURL URLWithString:pic.url] placeholderImage:[UIImage imageNamed:pic.url]];
+    PicImageView *rightImageView  = (PicImageView *)[rightView viewWithTag:ImageViewTag];
+    
+    rightImageView.urlStr = pic.url;
+    if (pic.ctLib && [pic.ctLib.is_main isEqualToString:@"0"]) {
+        rightImageView.targetImageHidden = YES;
+    }else{
+        rightImageView.targetImageHidden = NO;
+        rightImageView.targetImage = [UIImage imageNamed:@"main_phone_img"];
+    }
 
 }
 
@@ -121,6 +136,20 @@
 - (IBAction)deleteAction:(id)sender {
     if (self.delegate && [self.delegate respondsToSelector:@selector(deleteAction:)]) {
         [self.delegate deleteAction:sender];
+    }
+}
+
+- (IBAction)saveImageAction:(id)sender {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(saveImageAction:)]) {
+        [self.delegate saveImageAction:sender];
+    }
+}
+
+
+- (IBAction)mainPicAction:(id)sender {
+    //设置主要照片
+    if (self.delegate && [self.delegate respondsToSelector:@selector(mainImgAction:)]) {
+        [self.delegate mainImgAction:sender];
     }
 }
 

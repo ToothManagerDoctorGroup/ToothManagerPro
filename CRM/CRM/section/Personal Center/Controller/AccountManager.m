@@ -13,6 +13,8 @@
 #import "NSError+Extension.h"
 #import "CRMMacro.h"
 #import "CRMHttpRequest+Doctor.h"
+#import "RemoteNotificationCenter.h"
+#import "TimTabBarViewController.h"
 
 @implementation AccountManager
 
@@ -75,32 +77,8 @@ Realize_ShareInstance(AccountManager);
  */
 - (void)registerWithNickName:(NSString *)nickname passwd:(NSString *)pwd phone:(NSString *)phone recommender:(NSString *)recommender validate:(NSString *)validate successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock {
     ValidationResult ret = ValidationResultValid;//[nickname isValidWithFormat:@"^[a-zA-Z0-9]{3,15}$"];
-    if (ret == ValidationResultInValid)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"昵称格式错误" errorCode:400]);
-        return;
-    }
     
-    if (ret == ValidationResultValidateStringIsEmpty)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"昵称不能为空" errorCode:400]);
-        return;
-    }
-    
-    ret = [pwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
-    if (ret == ValidationResultInValid)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
-        return;
-    }
-    
-    if (ret == ValidationResultValidateStringIsEmpty)
-    {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码不能为空" errorCode:400]);
-        return;
-    }
-    
-    ret = [phone isValidWithFormat:@"^[0-9]{6,14}$"];
+    ret = [phone isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"手机号格式错误" errorCode:400]);
@@ -118,6 +96,19 @@ Realize_ShareInstance(AccountManager);
         return;
     }
     
+    ret = [pwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
+    if (ret == ValidationResultInValid)
+    {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
+        return;
+    }
+    
+    if (ret == ValidationResultValidateStringIsEmpty)
+    {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码不能为空" errorCode:400]);
+        return;
+    }
+    
     [[CRMHttpRequest shareInstance] registerWithNickname:nickname phone:phone passwd:pwd recommender:recommender validate:validate];
     successBlock();
 }
@@ -132,7 +123,7 @@ Realize_ShareInstance(AccountManager);
 - (void)forgetPasswordWithPhone:(NSString *)phone passwd:(NSString *)newpwd  validate:(NSString *)validate successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     ValidationResult ret = ValidationResultValid;//[nickname isValidWithFormat:@"^[a-zA-Z0-9]{3,15}$"];
     
-    ret = [newpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [newpwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
@@ -197,7 +188,7 @@ Realize_ShareInstance(AccountManager);
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"昵称不能为空" errorCode:400]);
         return;
     }
-    ret = [pwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [pwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"密码格式错误" errorCode:400]);
@@ -217,9 +208,16 @@ Realize_ShareInstance(AccountManager);
     self.currentUser.userid = nil;
     self.currentUser.accesstoken = nil;
     [CRMUserDefalut setLatestUserId:nil];
-    NSString *signKey = [NSString stringWithFormat:@"%@isSign",[self currentUser].userid];
+    [CRMUserDefalut setLatestUserPassword:nil];
+    NSString *signKey = kUserIsSignKey([self currentUser].userid);
     [CRMUserDefalut setObject:nil forKey:signKey];
-
+    //取消定时器
+    TimTabBarViewController *tabVc = (TimTabBarViewController *)[[RemoteNotificationCenter shareInstance] getCurrentVC];
+    [tabVc closeAllTimer];
+    
+    //取消所有的下载操作
+    [[CRMHttpRequest shareInstance] cancelAllOperations];
+    //发送退出通知
     [[NSNotificationCenter defaultCenter] postNotificationName:SignOutSuccessNotification object:nil];
 }
 
@@ -233,22 +231,22 @@ Realize_ShareInstance(AccountManager);
  */
 - (void)updatePasswdWithOldpwd:(NSString *)oldpwd newpwd:(NSString *)newpwd comfirmPwd:(NSString *)confirmpwd userId:(NSString *)userId successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     ValidationResult ret = ValidationResultValid;
-    ret = [oldpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [oldpwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"旧密码格式错误" errorCode:400]);
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"当前密码格式错误" errorCode:400]);
         return;
     }
     if (ret == ValidationResultValidateStringIsEmpty)
     {
-        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"旧密码不能为空" errorCode:400]);
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"当前密码不能为空" errorCode:400]);
         return;
     }
     if (![newpwd isEqualToString:confirmpwd]) {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"两次输入的密码不一致" errorCode:400]);
         return;
     }
-    ret = [newpwd isValidWithFormat:@"^[a-zA-Z0-9]{6,16}$"];
+    ret = [newpwd isValidWithFormat:@"^[0-9|A-Z|a-z]{6,16}$"];
     if (ret == ValidationResultInValid)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"新密码格式错误" errorCode:400]);
@@ -257,6 +255,10 @@ Realize_ShareInstance(AccountManager);
     if (ret == ValidationResultValidateStringIsEmpty)
     {
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"新密码不能为空" errorCode:400]);
+        return;
+    }
+    if ([oldpwd isEqualToString:newpwd]) {
+        failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"新密码不能与原密码相同" errorCode:400]);
         return;
     }
     [[CRMHttpRequest shareInstance] updatePasswdWithOldpwd:oldpwd newpwd:newpwd userId:userId];
@@ -368,11 +370,11 @@ Realize_ShareInstance(AccountManager);
  *  @param user_id 医生id
  *  @param AccessToken  医生AccessToken
  */
-- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
+- (void)getQrCode:(NSString *)user_id withAccessToken:(NSString *)AccessToken patientKeyId:(NSString *)patientKeyId isDoctor:(BOOL)isDoctor successBlock:(RequestSuccessBlock)successBlock failedBlock:(RequestFailedBlock)failedBlock{
     if(user_id == nil){
         failedBlock([NSError errorWithDomain:@"提示" localizedDescription:@"请登录" errorCode:400]);
     }
-    [[CRMHttpRequest shareInstance] getQrCode:user_id withAccessToken:AccessToken];
+    [[CRMHttpRequest shareInstance] getQrCode:user_id withAccessToken:AccessToken patientKeyId:patientKeyId isDoctor:isDoctor];
     
     successBlock();
 }

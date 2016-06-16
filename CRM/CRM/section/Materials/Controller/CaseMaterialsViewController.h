@@ -8,6 +8,7 @@
 
 #import "TimTableViewController.h"
 
+
 @protocol CaseMaterialsViewControllerDelegate;
 @interface CaseMaterialsViewController : TimTableViewController
 
@@ -18,6 +19,6 @@
 
 @protocol CaseMaterialsViewControllerDelegate <NSObject>
 
-- (void)didSelectedMaterialsArray:(NSArray *)array;
+- (void)didSelectedMaterialsArray:(NSArray *)sourceArray;
 
 @end

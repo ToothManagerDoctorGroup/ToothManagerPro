@@ -6,9 +6,7 @@
 //  Copyright © 2015年 TimTiger. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import "TimDisplayViewController.h"
 
-@interface MyClinicViewController : TimDisplayViewController
+@interface MyClinicViewController : EaseConversationListViewController
 
 @end

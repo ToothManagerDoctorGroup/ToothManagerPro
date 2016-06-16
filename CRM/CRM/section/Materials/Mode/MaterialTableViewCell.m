@@ -9,7 +9,7 @@
 #import "MaterialTableViewCell.h"
 
 @implementation MaterialTableViewCell
-@synthesize imageView,info_lable,price_label,type_label;
+@synthesize info_lable,price_label,type_label;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -21,40 +21,42 @@
 }
 
 - (void)loadCellView{
-    float width = 120.0f;
-    float height = 30.0f;
+    
+    CGFloat commonW = kScreenWidth / 3;
+    
+    float height = 40.0f;
     float mag_x = 10.0f;
-    float mag_y = 7.0f;
     UIColor * color = [UIColor blackColor];
     
-    imageView = [[UIImageView alloc]init];
-    [imageView setFrame:CGRectMake(mag_x, mag_y, height, height)];
-    [self addSubview:imageView];
-    
     info_lable = [[UILabel alloc]init];
-    [info_lable setFrame:CGRectMake(imageView.frame.origin.x + imageView.frame.size.width + 5,
-                                    imageView.frame.origin.y,
-                                    100,
+    [info_lable setFrame:CGRectMake(0,
+                                    0,
+                                    commonW,
                                     height)];
     [info_lable setBackgroundColor:[UIColor clearColor]];
     [info_lable setTextColor:color];
+    info_lable.textAlignment = NSTextAlignmentCenter;
     [self addSubview:info_lable];
     
     price_label = [[UILabel alloc]init];
-    [price_label setFrame:CGRectMake(info_lable.frame.origin.x + info_lable.frame.size.width + 30,
-                                    imageView.frame.origin.y,
-                                    80,
+    [price_label setFrame:CGRectMake(info_lable.right,
+                                    0,
+                                    commonW,
                                     height)];
     [price_label setBackgroundColor:[UIColor clearColor]];
     [price_label setTextColor:color];
+    price_label.textAlignment = NSTextAlignmentCenter;
+    price_label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:price_label];
     
     type_label = [[UILabel alloc]init];
-    [type_label setFrame:CGRectMake(price_label.frame.origin.x + price_label.frame.size.width + 5,
-                                     imageView.frame.origin.y,
-                                     70,
+    [type_label setFrame:CGRectMake(price_label.right,
+                                     0,
+                                     commonW,
                                      height)];
+    type_label.textAlignment = NSTextAlignmentCenter;
     [type_label setBackgroundColor:[UIColor clearColor]];
+    type_label.textAlignment = NSTextAlignmentCenter;
     [type_label setTextColor:color];
     [self addSubview:type_label];
     

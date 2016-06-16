@@ -9,12 +9,14 @@
 #import "CRMHttpRequest.h"
 
 DEF_STATIC_CONST_STRING(Introducer_Prefix,Introducer);
-DEF_URL ApplyToBecomeIntroducer_URL = @"http://122.114.62.57/his.crm/ashx/NotificationFriendHandler.ashx?action=add";
-DEF_URL LongUrlToShortUrlSinaApi = @"https://api.weibo.com/2/short_url/shorten.json";
-DEF_URL PatientToIntroducer_URL = @"http://122.114.62.57/his.crm/ashx/TransformPatient.ashx";
-DEF_URL PatientIntroducerMap_URL = @"http://122.114.62.57/his.crm/ashx/PatientIntroducerMapHandler.ashx?action=getdoctor";
-DEF_URL PatientIntroducerMap_ADD_URL = @"http://122.114.62.57/his.crm/ashx/PatientIntroducerMapHandler.ashx?action=add";
 
+#define ApplyToBecomeIntroducer_URL [NSString stringWithFormat:@"%@%@/%@/NotificationFriendHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+DEF_URL LongUrlToShortUrlSinaApi = @"https://api.weibo.com/2/short_url/shorten.json";
+
+#define PatientToIntroducer_URL [NSString stringWithFormat:@"%@%@/%@/TransformPatient.ashx",DomainName,Method_His_Crm,Method_Ashx]
+
+#define PatientIntroducerMap_Common_URL [NSString stringWithFormat:@"%@%@/%@/PatientIntroducerMapHandler.ashx",DomainName,Method_His_Crm,Method_Ashx]
 
 @interface CRMHttpRequest (Introducer)
 

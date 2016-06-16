@@ -68,16 +68,16 @@
 
 - (void)initStarView {
     if (self.starView == nil) {
-        self.starView = [[TimStarView alloc]initWithFrame:CGRectMake(5,7.5, 75, 15)];
+        self.starView = [[TimStarView alloc]initWithFrame:CGRectMake(self.bounds.size.width - 75,7.5, 75, 15)];
         self.starView.userInteractionEnabled = NO;
         [self addSubview:self.starView];
     }
-    self.starView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+//    self.starView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
 }
 
 - (void)initToolBar {
     if (toolBar == nil) {
-        toolBar = [[TimToolBar alloc]initWithFrame:CGRectMake(0, 0, 320, 44)];
+        toolBar = [[TimToolBar alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, 44)];
         UIControl *lineControl = [[UIControl alloc]initWithFrame:CGRectMake(0, 0, toolBar.bounds.size.width, 0.5)];
         lineControl.backgroundColor = [UIColor grayColor];
         [toolBar addSubview:lineControl];
@@ -100,11 +100,11 @@
 - (void)initPicker {
     if (_inputPickerView == nil) {
         _inputPickerView = [[UIPickerView alloc]init];
-        _inputPickerView.frame = CGRectMake(0,44, 320, 216);
+        _inputPickerView.frame = CGRectMake(0,44, kScreenWidth, 216);
         _inputPickerView.delegate = self;
         _inputPickerView.dataSource = self;
     }
-    _inputPickerView.frame = CGRectMake(0,44, 320, 216);
+    _inputPickerView.frame = CGRectMake(0,44, kScreenWidth, 216);
 }
 
 - (void)dealloc {

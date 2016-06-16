@@ -34,4 +34,13 @@
 }
 
 
+- (NSMutableAttributedString *)changeStrColorWithIndex:(NSInteger)index{
+    
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc]initWithString:self];
+    //设置：在0-3个单位长度内的内容显示成红色
+    [str addAttribute:NSForegroundColorAttributeName value:MyColor(136, 136, 136) range:NSMakeRange(0, index)];
+    
+    return str;
+}
+
 @end
