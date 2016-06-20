@@ -42,12 +42,7 @@ Realize_ShareInstance(AutoSyncManager);
     //查询数据库中是否有超过上传次数的数据
     [self postErrorData];
     
-    NSArray *array = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"0"];
-    if (array.count > 0) {
-        return YES;
-    }else{
-        return NO;
-    }
+    return YES;
 }
 #pragma mark - 将json字符串转换为字典
 - (NSDictionary *)dicFromJsonStr:(NSString *)jsonStr{
@@ -60,7 +55,7 @@ Realize_ShareInstance(AutoSyncManager);
 
 #pragma mark - 开始update类型的数据上传
 - (void)autoSyncUpdate{
-    //上传状态（0：未上传 1：上传中 2：上传成功 3：上传失败）
+    //上传状态（0：未上传 1：上传中 2：上传成功 3：上传失败 4:异常数据）
     //查询所有update类型和同步状态为0和3并且上传次数小于50次的数据
     NSArray *syncArray = [[DBManager shareInstance] getInfoListWithPostType:Update syncStatus:@"0,3"];
     if (syncArray.count > 0) {

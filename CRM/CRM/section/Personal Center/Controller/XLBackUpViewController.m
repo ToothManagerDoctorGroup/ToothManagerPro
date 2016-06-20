@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *backUpButton;
 
 @property (nonatomic, strong)NSArray *dataList;//未上传的数据
+@property (nonatomic, strong)NSArray *errorDataList;//上传失败的数据
 
 @end
 
@@ -39,12 +40,13 @@
 - (void)setUpData{
     //获取数据
     self.dataList = [[DBManager shareInstance] getInfoListWithSyncStatus:@"0"];
-    if (self.dataList.count == 0) {
+    self.errorDataList = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"4"];
+    if (self.dataList.count == 0 && self.errorDataList.count == 0) {
         self.titleLabel.text = @"您的数据已全部在云端服务器备份，暂时没有需要同步的数据！";
         self.backUpButton.backgroundColor = [UIColor colorWithHex:0xbbbbbb];
         self.backUpButton.enabled = NO;
     }else{
-        self.titleLabel.text = [NSString stringWithFormat:@"您有%lu条数据需要同步到云端服务器",(unsigned long)self.dataList.count];
+        self.titleLabel.text = [NSString stringWithFormat:@"您有%lu条数据需要同步到云端服务器",(unsigned long)(self.dataList.count + self.errorDataList.count)];
     }
 }
 
@@ -64,12 +66,11 @@
         return;
     }
     
-    if (self.dataList.count == 0) {
+    if (self.dataList.count == 0 && self.errorDataList.count == 0) {
         [SVProgressHUD showImage:nil status:@"您的数据已全部在云端服务器备份，暂时没有需要同步的数据！"];
     }else{
         
-        NSArray *postFailData = [[DBManager shareInstance] getInfoListWithSyncStatus:@"4"];
-        for (InfoAutoSync *info in postFailData) {
+        for (InfoAutoSync *info in self.errorDataList) {
             //重置所有消息的同步次数和上传状态
             info.syncCount = 0;
             [[DBManager shareInstance] updateInfoWithSyncStatus:@"0" byInfo:info];

@@ -85,6 +85,7 @@
  *  @return 返回参数
  */
 - (NSArray *)getInfoListBySyncCountWithStatus:(NSString *)status;
+
 /**
  *  获取所有数据
  *

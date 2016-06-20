@@ -35,6 +35,7 @@
 #import "XLLoginTool.h"
 #import "UIApplication+Version.h"
 #import "SysMessageTool.h"
+#import "DBManager+AutoSync.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -54,7 +55,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 
 @property (nonatomic, strong)NSTimer *timer;//用于自动上传的定时器
 @property (nonatomic, strong)NSTimer *syncGetTimer;//用于自动下载的定时器
-//@property (nonatomic, strong)NSTimer *messageTimer;//消息处理的定时器
+@property (nonatomic, strong)NSTimer *localDataTimer;//本地数据处理的定时器
 
 
 @end
@@ -99,6 +100,11 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [self.syncGetTimer invalidate];
         self.syncGetTimer = nil;
     }
+    
+    if (self.localDataTimer) {
+        [self.localDataTimer invalidate];
+        self.localDataTimer = nil;
+    }
 }
 
 #pragma mark - 创建定时器，添加网络监听
@@ -110,6 +116,8 @@ static NSString *kConversationChatter = @"ConversationChatter";
         [self createSyncPostTimer];
         [self createSyncGetTimer];
     }
+    
+    [self createLocalDataTimer];
 }
 
 #pragma mark - 监听网络状态
@@ -148,13 +156,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 #pragma mark - 定时器,自动上传
 - (void)autoSyncAction:(NSTimer *)timer{
     //开始同步
-    BOOL ret = [[AutoSyncManager shareInstance] startAutoSync];
-    
-    if (ret) {
-        [self.tabBar showBadgeOnItemIndex:4];
-    }else{
-        [self.tabBar hideBadgeOnItemIndex:4];
-    }
+    [[AutoSyncManager shareInstance] startAutoSync];
     //设置未读消息
     [self requestUnreadMessageCount];
 }
@@ -178,11 +180,27 @@ static NSString *kConversationChatter = @"ConversationChatter";
 }
 
 #pragma mark 消息定时器处理
-- (void)createMessageTimer{
-//    if (!_messageTimer) {
-//        _messageTimer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
-//        [[NSRunLoop currentRunLoop] addTimer:_messageTimer forMode:NSRunLoopCommonModes];
-//    }
+- (void)createLocalDataTimer{
+    if (!_localDataTimer) {
+        _localDataTimer = [NSTimer timerWithTimeInterval:kDefaultSyncGetTimeInterval target:self selector:@selector(messageAutoHandle:) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:_localDataTimer forMode:NSRunLoopCommonModes];
+    }
+}
+
+#pragma mark 处理本地消息
+- (void)messageAutoHandle:(NSTimer *)timer{
+    //查询数据库，是否有未上传的数据
+    NSArray *postErrors = [[DBManager shareInstance] getInfoListBySyncCountWithStatus:@"4"];
+    NSArray *notPosts = [[DBManager shareInstance] getInfoListWithSyncStatus:@"0"];
+    if (postErrors.count > 0 || notPosts.count > 0) {
+        [self.tabBar showBadgeOnItemIndex:4];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:IsHaveLocalDataNotPostNotification object:@(YES)];
+    }else{
+        [self.tabBar hideBadgeOnItemIndex:4];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:IsHaveLocalDataNotPostNotification object:@(NO)];
+    }
 }
 
 #pragma mark - 请求未读的消息数量
@@ -283,11 +301,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
     int newV = [newStrM intValue];
     
     return oldV <= newV;
-}
-
-#pragma mark 处理未读消息
-- (void)messageAutoHandle:(NSTimer *)timer{
-    [XLMessageHandleManager beginHandle];
 }
 
 #pragma mark - 设置几个主视图

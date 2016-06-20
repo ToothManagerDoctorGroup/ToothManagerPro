@@ -13,6 +13,7 @@
 
 
 #define ConnectionStatusChangedNotification (@"ConnectionStatusChangedNotification") //网络状态发生变化
+#define IsHaveLocalDataNotPostNotification (@"IsHaveLocalDataNotPostNotification") //有未上传的本地数据通知
 
 #define SignInSuccessNotification (@"SignInSuccessNotification")  //登陆成功
 #define SignUpSuccessNotification (@"SignUpSuccessNotification")  //注册成功

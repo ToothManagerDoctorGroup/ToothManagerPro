@@ -10,6 +10,9 @@
 #import "MyUploadParam.h"
 #import "CommonMacro.h"
 
+extern NSString *const CRMHttpToolWlanError;
+extern NSString *const CRMHttpToolServerError;
+
 /**
  *  带加密的网络接口
  */

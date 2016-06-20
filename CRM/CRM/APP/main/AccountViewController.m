@@ -111,6 +111,17 @@
     //设置标记图片样式
     self.targetView.layer.cornerRadius = 5;
     self.targetView.layer.masksToBounds = YES;
+    
+    //添加通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(haveLocalDataAction:) name:IsHaveLocalDataNotPostNotification object:nil];
+}
+#pragma mark - 判断是否显示红点
+- (void)haveLocalDataAction:(NSNotification *)noti{
+    self.targetView.hidden = ![noti.object boolValue];
+}
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)onRightButtonAction:(id)sender{
@@ -141,13 +152,6 @@
     _nameLabel.text = [NSString stringWithFormat:@"%@   %@",user.name,user.title];
     [iconImageView sd_setImageWithURL:[NSURL URLWithString:user.img] placeholderImage:[UIImage imageNamed:@"user_icon"]];
     
-    //查询数据库，是否有未同步的数据
-    NSArray *array = [[DBManager shareInstance] getInfoListWithSyncStatus:@"0"];
-    if (array.count > 0) {
-        self.targetView.hidden = NO;
-    }else{
-        self.targetView.hidden = YES;
-    }
 }
 
 #pragma mark - UITableViewDataSource/Delegate

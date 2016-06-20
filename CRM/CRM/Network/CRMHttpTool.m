@@ -12,6 +12,9 @@
 #import "NSString+TTMAddtion.h"
 #import "JSONKit.h"
 
+NSString *const CRMHttpToolWlanError = @"网络异常";
+NSString *const CRMHttpToolServerError = @"服务器正在维护，请稍后再试";
+
 @interface CRMHttpTool ()
 
 @property (nonatomic, strong)AFHTTPRequestOperationManager *manager;
@@ -54,7 +57,8 @@ Realize_ShareInstance(CRMHttpTool);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
-        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
+        NSString *errorStr = error.code == 500 ? CRMHttpToolServerError : CRMHttpToolWlanError;
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : errorStr}];
         if (failure) {
             failure(cusError);
         }
@@ -82,7 +86,8 @@ Realize_ShareInstance(CRMHttpTool);
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"初始化数据:%@---%@",operation.responseString,operation.request.URL);
-        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
+        NSString *errorStr = error.code == 500 ? CRMHttpToolServerError : CRMHttpToolWlanError;
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : errorStr}];
         if (failure) {
             failure(cusError);
         }
@@ -111,7 +116,8 @@ Realize_ShareInstance(CRMHttpTool);
             }
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
+        NSString *errorStr = error.code == 500 ? CRMHttpToolServerError : CRMHttpToolWlanError;
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : errorStr}];
         if (failure) {
             failure(cusError);
         }
@@ -129,7 +135,8 @@ Realize_ShareInstance(CRMHttpTool);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog ( @"operation: %@", operation.responseString );
-        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : @"网络异常"}];
+        NSString *errorStr = error.code == 500 ? CRMHttpToolServerError : CRMHttpToolWlanError;
+        NSError *cusError = [NSError errorWithDomain:@"网络异常" code:error.code userInfo:@{@"NSLocalizedDescription" : errorStr}];
         if (failure) {
             failure(cusError);
         }

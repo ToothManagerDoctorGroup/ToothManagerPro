@@ -10,7 +10,7 @@
 #define NetworkConfigMacro_h
 
 // 域名
-#define DomainName @"http://122.114.62.57/"  //正式环境
+#define DomainName @"http://www.zhongyaguanjia.com/"  //正式环境
 //#define DomainName @"http://118.244.234.207/"  //内测环境
 //#define DomainName @"http://211.149.247.149/"//公测环境
 
