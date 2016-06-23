@@ -111,6 +111,7 @@
     //设置标记图片样式
     self.targetView.layer.cornerRadius = 5;
     self.targetView.layer.masksToBounds = YES;
+    self.targetView.hidden = YES;
     
     //添加通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(haveLocalDataAction:) name:IsHaveLocalDataNotPostNotification object:nil];

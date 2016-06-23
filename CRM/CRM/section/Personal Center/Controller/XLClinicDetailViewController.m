@@ -84,7 +84,6 @@
 - (void)setUpHeaderData{
     self.headerView.businessTime.text = self.curDetailModel.business_hours;
     self.headerView.clinicPhone.text = self.curDetailModel.clinic_phone;
-    self.headerView.clinicScale.text = [NSString stringWithFormat:@"专家:%@名，预约量：%@单",self.curDetailModel.ClinicSummary[@"doctor_count"],self.curDetailModel.ClinicSummary[@"appoint_count"]];
     self.headerView.clinicAddress.text = self.curDetailModel.clinic_location;
 }
 

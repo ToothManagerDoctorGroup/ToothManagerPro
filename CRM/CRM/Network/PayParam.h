@@ -11,13 +11,6 @@
 
 @interface PayParam : NSObject<MJKeyValue>
 
-/*{"bill_id":"201510181443",
-    "bill_type":"预约",
-    "bill_payer":"295",
-    "bill_money":1715,
-    "bill_time":"2015-10-19 15:24:00",
-    "bill_status":1}*/
-
 @property (nonatomic, copy)NSString *bill_id;
 @property (nonatomic, copy)NSString *bill_type;
 @property (nonatomic, copy)NSString *bill_payer;

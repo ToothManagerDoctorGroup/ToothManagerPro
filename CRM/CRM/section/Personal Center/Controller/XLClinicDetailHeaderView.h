@@ -14,7 +14,6 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *businessTime;//营业时间
 @property (weak, nonatomic) IBOutlet UILabel *clinicPhone;//诊所电话
-@property (weak, nonatomic) IBOutlet UILabel *clinicScale;//诊所规模
 @property (weak, nonatomic) IBOutlet UILabel *clinicAddress;//诊所地址
 
 

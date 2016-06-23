@@ -308,6 +308,7 @@ static NSString *kConversationChatter = @"ConversationChatter";
 {
     //日程提醒
     _scheduleReminderVC = [[MyScheduleReminderViewController alloc] init];
+    _scheduleReminderVC.executeSyncAction = self.executeSyncAction;
     [self setTabbarItemState:_scheduleReminderVC withTitle:@"日程表" withImage1:@"ic_tabbar_qi" withImage2:@"ic_tabbar_qi_active"];
     TimNavigationViewController *viewController1=[[TimNavigationViewController alloc]initWithRootViewController:_scheduleReminderVC];
     
@@ -345,6 +346,13 @@ static NSString *kConversationChatter = @"ConversationChatter";
     [menuButton setCenter:CGPointMake(SCREEN_WIDTH/2,(self.tabBar.frame.size.height)/2)];
     [self.tabBar addSubview:menuButton];
     
+}
+
+
+- (void)setExecuteSyncAction:(BOOL)executeSyncAction{
+    _executeSyncAction = executeSyncAction;
+    
+    _scheduleReminderVC.executeSyncAction = executeSyncAction;
 }
 
 -(void)click:(id)sender{

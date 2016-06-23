@@ -14,4 +14,6 @@
     NSDateFormatter *dateFormatter;
 }
 @property (nonatomic, strong)UILabel *messageCountLabel;//消息提示框
+
+@property (nonatomic, assign)BOOL executeSyncAction;//是否执行同步操作
 @end

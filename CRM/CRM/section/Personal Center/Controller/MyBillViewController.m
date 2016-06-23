@@ -19,6 +19,8 @@
 #import "AppointDetailViewController.h"
 #import "UITableView+NoResultAlert.h"
 #import "CRMHttpRespondModel.h"
+#import "XLClinicAppointDetailViewController.h"
+#import "LocalNotificationCenter.h"
 
 @interface MyBillViewController ()<MyBillCellDelegate>
 
@@ -44,14 +46,15 @@
     self.tableView.tableFooterView = [UIView new];
     
     //添加通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(weixinPayedAction:) name:WeixinPayedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(payedAction:) name:WeixinPayedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(payedAction:) name:AlipayPayedNotification object:nil];
     //加载网络数据
     [self requestBillsDataWithType:@"1"];
 }
 
 #pragma mark - weixinPayedAction
-- (void)weixinPayedAction:(NSNotification *)noti{
-    if ([noti.object isEqualToString:@"SUCCESS"]) {
+- (void)payedAction:(NSNotification *)noti{
+    if ([noti.object isEqualToString:PayedResultSuccess]) {
         //重新加载数据
         [self requestBillsDataWithType:@"1"];        
     }
@@ -121,11 +124,12 @@
     //获取数据模型
     BillModel *model = self.dataList[indexPath.row];
     
-    //跳转到详情页面
+    LocalNotification *localNoti = [[LocalNotification alloc] init];
+    localNoti.clinic_reserve_id = model.KeyId;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    AppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"AppointDetailViewController"];
+    XLClinicAppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLClinicAppointDetailViewController"];
     detailVc.hidesBottomBarWhenPushed = YES;
-    detailVc.model = model;
+    detailVc.localNoti = localNoti;
     [self.navigationController pushViewController:detailVc animated:YES];
 }
 

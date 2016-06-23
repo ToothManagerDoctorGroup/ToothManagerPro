@@ -8,6 +8,7 @@
 
 #import "XLPayWayAlertView.h"
 #import "UIColor+Extension.h"
+#import "XLPayWayAlertCell.h"
 #import <Masonry.h>
 
 @interface XLPayWayAlertView ()<UITableViewDataSource,UITableViewDelegate>
@@ -161,12 +162,8 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    static NSString *ID = @"pay_cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }
+    XLPayWayAlertCell *cell = [XLPayWayAlertCell cellWithTableView:tableView];
+    
     XLPayWayAlertViewModel *model = self.dataList[indexPath.row];
     if (model.isSelect) {
         self.selectModel = model;
@@ -174,7 +171,12 @@
     }else{
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
-    cell.textLabel.text = model.payMethodTitle;
+    if (model.paymentMethod == XLPaymentMethodWeixin) {
+        cell.logoImageView.image = [UIImage imageNamed:@"pay_weixin_logo"];
+    }else{
+        cell.logoImageView.image = [UIImage imageNamed:@"pay_zhifubao_logo"];
+    }
+    cell.contentLabel.text = model.payMethodTitle;
     
     return cell;
     

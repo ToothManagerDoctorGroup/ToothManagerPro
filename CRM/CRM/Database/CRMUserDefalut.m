@@ -71,7 +71,7 @@
 }
 
 
-+ (void)isShowedForKey:(NSString *)key showedBlock:(void (^)())showedBlock{
++ (void)isShowedForKey:(NSString *)key showedBlock:(void (^)())showedBlock noShowBlock:(void (^)())noShowBlock{
     //获取配置项
     NSString *isShowed = [CRMUserDefalut objectForKey:key];
     if (isShowed == nil) {
@@ -84,7 +84,9 @@
             showedBlock();
         }
     }else{
-        return;
+        if (noShowBlock) {
+            noShowBlock();
+        }
     }
 }
 

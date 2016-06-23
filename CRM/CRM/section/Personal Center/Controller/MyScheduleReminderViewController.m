@@ -47,6 +47,7 @@
 #import "XLMessageHandleManager.h"
 #import "XLClinicAppointDetailViewController.h"
 #import "CommonMacro.h"
+#import "MBProgressHUD+XLHUD.h"
 
 @interface MyScheduleReminderViewController ()<JTCalendarDataSource,JTCalendarDelegate,ScheduleDateButtonDelegate>
 
@@ -60,6 +61,9 @@
 @property (nonatomic, strong)NSMutableArray *currentMonthArray;//当前月的数据
 @property (nonatomic, strong)UILabel *noWlanTintView;//无网提示
 @property (nonatomic, weak)UIView *dateSuperView;
+
+
+@property (nonatomic, weak)MBProgressHUD *hud;
 @end
 
 @implementation MyScheduleReminderViewController
@@ -80,11 +84,6 @@
     [self updateUserRegisterId];
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
-    [super viewWillDisappear:animated];
-    [SVProgressHUD dismiss];
-}
-
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
@@ -93,15 +92,32 @@
         self.isHide = YES;
     }
     //显示引导页
+    WS(weakSelf);
     [CRMUserDefalut isShowedForKey:Schedule_IsShowedKey showedBlock:^{
         XLGuideImageView *guideImage1 = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_alertView"]];
         [guideImage1 showInView:[UIApplication sharedApplication].keyWindow dismissBlock:^{
             XLGuideImageView *guideImage2 = [[XLGuideImageView alloc] initWithImage:[UIImage imageNamed:@"schedule_patient_alertView"]];
-            [guideImage2 showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES];
+            [guideImage2 showInView:[UIApplication sharedApplication].keyWindow autoDismiss:YES dismissBlock:^{
+                //是否自动同步
+                if (weakSelf.executeSyncAction) {
+                    //进行自动同步
+                    weakSelf.hud = [MBProgressHUD showMessag:@"正在获取最新数据" toView:[UIApplication sharedApplication].keyWindow];
+                    [[AutoSyncGetManager shareInstance] startSyncGetShowSuccess:NO];
+                    //进行同步操作
+                    weakSelf.executeSyncAction = NO;
+                }
+            }];
         }];
+    } noShowBlock:^{
+        //是否自动同步
+        if (self.executeSyncAction) {
+            //进行自动同步
+            self.hud = [MBProgressHUD showMessag:@"正在获取最新数据" toView:[UIApplication sharedApplication].keyWindow];
+            [[AutoSyncGetManager shareInstance] startSyncGetShowSuccess:NO];
+            //进行同步操作
+            self.executeSyncAction = NO;
+        }
     }];
-    
-    
 }
 
 - (void)dealloc {
@@ -294,6 +310,9 @@
         
         //在主线程中刷新视图
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.hud) {
+                [self.hud hideAnimated:YES];
+            }
             if ([m_tableView.header isRefreshing]) {
                 [m_tableView.header endRefreshing];
             }

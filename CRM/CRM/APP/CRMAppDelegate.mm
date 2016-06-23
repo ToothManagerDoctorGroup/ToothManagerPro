@@ -173,12 +173,11 @@
 }
 #pragma mark - 接收到通知处理
 - (void)handNotification:(NSNotification *)notification {
-    if ([notification.name isEqualToString:SignInSuccessNotification]
-        || [notification.name isEqualToString:SignUpSuccessNotification]) {
+    if ([notification.name isEqualToString:SignInSuccessNotification]) {
         if (self.tabBarController == nil) {
-            NSLog(@"重新创建主视图");
             self.tabBarController = [[TimTabBarViewController alloc] init];
         }
+        self.tabBarController.executeSyncAction = YES;
         self.window.rootViewController = self.tabBarController;
     } else if ([notification.name isEqualToString:SignOutSuccessNotification]) {
         [self makeLogin];

@@ -82,9 +82,30 @@
 
 #pragma mark -付款按钮点击事件
 - (void)payAction{
+    
+    //判断当前费用是否为0
+    if ([self.detailModel.total_money floatValue] == 0) {
+        //直接付款成功
+        [SVProgressHUD showWithStatus:@"正在支付"];
+        PayParam *payParam = [PayParam payParamWithBillId:self.billId billType:self.detailModel.reserve_type billPayer:self.detailModel.doctor_name billMoney:self.detailModel.total_money billTime:self.detailModel.reserve_time billStatus:self.detailModel.reserve_status];
+        [MyBillTool payWithPayParam:payParam success:^(CRMHttpRespondModel *respondModel) {
+            if ([respondModel.code intValue] == 200) {
+                //发送支付成功后的通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:WeixinPayedNotification object:PayedResultSuccess];
+            }else{
+                [SVProgressHUD showErrorWithStatus:respondModel.result];
+            }
+        } failure:^(NSError *error) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }
+        }];
+        
+        return;
+    }
+    
     NSString *title = [NSString stringWithFormat:@"%@预约费用",self.detailModel.clinic_name];
     NSString *detail = @"预约诊所费用，包括椅位助手";
-//    NSString *price = [NSString stringWithFormat:@"%d",(int)[self.detailModel.total_money floatValue] * 100];
     
     XLPayWayAlertView *payAlertView = [[XLPayWayAlertView alloc] initWithPrice:self.detailModel.total_money certainButtonBlock:^(XLPayWayAlertView *payAlertView, XLPaymentMethod paymentMethod) {
         

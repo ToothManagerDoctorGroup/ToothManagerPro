@@ -72,9 +72,6 @@
 + (void)getOperatingStatusWithClinicId:(NSString *)clinicId curDateStr:(NSString *)curDateStr success:(void (^)(XLOperationStatusModel *statusModel))success failure:(void (^)(NSError *error))failure;
 
 /**
- *  www.ibeituan.com/clinicServer/ashx/ClinicHandler.ashx?action=getListByParams&QueryModel={"KeyWord":null,"IsAsc":true,"SortField":null,"PageIndex":2,"PageSize":5,"DoctorId":1865,"ClinicId":null,"ClinicName":null,"ClinicArea":"武汉市","BusinessHours":null,"BusinessWeek":null}
- */
-/**
  *  模糊搜索诊所列表
  *
  *  @param queryModel 查询的model

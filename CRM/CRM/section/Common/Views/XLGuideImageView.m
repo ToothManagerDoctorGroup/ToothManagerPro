@@ -59,7 +59,7 @@
     }];
 }
 
-- (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss{
+- (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss dismissBlock:(DismissBlock)dismissBlock{
     self.userInteractionEnabled = NO;
     [view addSubview:self];
     [view bringSubviewToFront:self];
@@ -71,6 +71,9 @@
             self.alpha = 0;
         } completion:^(BOOL finished) {
             [self removeFromSuperview];
+            if (dismissBlock) {
+                dismissBlock();
+            }
         }];
     }];
 }

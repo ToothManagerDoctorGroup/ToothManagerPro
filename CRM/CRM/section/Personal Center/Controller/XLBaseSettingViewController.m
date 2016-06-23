@@ -125,6 +125,7 @@
             [SVProgressHUD showWithStatus:@"正在退出"];
             [XLLoginTool updateUserRegisterId:@"" success:^(CRMHttpRespondModel *respond) {
                 if ([respond.code integerValue] == 200) {
+                    [SVProgressHUD dismiss];
                     [[AccountManager shareInstance] logout];
                     [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES];
                 }else{

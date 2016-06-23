@@ -695,6 +695,13 @@
 		3D1BAB2B1C7AE7EE00DA5E8A /* icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1BAB221C7AE7EE00DA5E8A /* icon-Small@2x.png */; };
 		3D1BAB2C1C7AE7EE00DA5E8A /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1BAB231C7AE7EE00DA5E8A /* icon.png */; };
 		3D1BAB2D1C7AE7EE00DA5E8A /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1BAB241C7AE7EE00DA5E8A /* icon@2x.png */; };
+		3D1C040D1D1B81DF0002B8D7 /* XLPayWayAlertCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C040C1D1B81DF0002B8D7 /* XLPayWayAlertCell.m */; };
+		3D1C04141D1B86B20002B8D7 /* pay_weixin_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C040E1D1B86B20002B8D7 /* pay_weixin_logo.png */; };
+		3D1C04151D1B86B20002B8D7 /* pay_weixin_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C040F1D1B86B20002B8D7 /* pay_weixin_logo@2x.png */; };
+		3D1C04161D1B86B20002B8D7 /* pay_weixin_logo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C04101D1B86B20002B8D7 /* pay_weixin_logo@3x.png */; };
+		3D1C04171D1B86B20002B8D7 /* pay_zhifubao_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C04111D1B86B20002B8D7 /* pay_zhifubao_logo.png */; };
+		3D1C04181D1B86B20002B8D7 /* pay_zhifubao_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C04121D1B86B20002B8D7 /* pay_zhifubao_logo@2x.png */; };
+		3D1C04191D1B86B20002B8D7 /* pay_zhifubao_logo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C04131D1B86B20002B8D7 /* pay_zhifubao_logo@3x.png */; };
 		3D1C47091CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C47081CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m */; };
 		3D1C54781C759B1100C2A4A0 /* XLHengYaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C54771C759B1100C2A4A0 /* XLHengYaViewController.m */; };
 		3D1C547B1C759B1C00C2A4A0 /* XLRuYaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C547A1C759B1C00C2A4A0 /* XLRuYaViewController.m */; };
@@ -2912,6 +2919,14 @@
 		3D1BAB221C7AE7EE00DA5E8A /* icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-Small@2x.png"; sourceTree = "<group>"; };
 		3D1BAB231C7AE7EE00DA5E8A /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		3D1BAB241C7AE7EE00DA5E8A /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
+		3D1C040B1D1B81DF0002B8D7 /* XLPayWayAlertCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLPayWayAlertCell.h; sourceTree = "<group>"; };
+		3D1C040C1D1B81DF0002B8D7 /* XLPayWayAlertCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLPayWayAlertCell.m; sourceTree = "<group>"; };
+		3D1C040E1D1B86B20002B8D7 /* pay_weixin_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pay_weixin_logo.png; sourceTree = "<group>"; };
+		3D1C040F1D1B86B20002B8D7 /* pay_weixin_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pay_weixin_logo@2x.png"; sourceTree = "<group>"; };
+		3D1C04101D1B86B20002B8D7 /* pay_weixin_logo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pay_weixin_logo@3x.png"; sourceTree = "<group>"; };
+		3D1C04111D1B86B20002B8D7 /* pay_zhifubao_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pay_zhifubao_logo.png; sourceTree = "<group>"; };
+		3D1C04121D1B86B20002B8D7 /* pay_zhifubao_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pay_zhifubao_logo@2x.png"; sourceTree = "<group>"; };
+		3D1C04131D1B86B20002B8D7 /* pay_zhifubao_logo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pay_zhifubao_logo@3x.png"; sourceTree = "<group>"; };
 		3D1C47071CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+EmptyDataSet.h"; sourceTree = "<group>"; };
 		3D1C47081CE4199C00BEFB63 /* UIScrollView+EmptyDataSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+EmptyDataSet.m"; sourceTree = "<group>"; };
 		3D1C54761C759B1100C2A4A0 /* XLHengYaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLHengYaViewController.h; sourceTree = "<group>"; };
@@ -7579,6 +7594,8 @@
 			children = (
 				3D4F57E21CEEE7E4008D2C82 /* XLPayWayAlertView.h */,
 				3D4F57E31CEEE7E4008D2C82 /* XLPayWayAlertView.m */,
+				3D1C040B1D1B81DF0002B8D7 /* XLPayWayAlertCell.h */,
+				3D1C040C1D1B81DF0002B8D7 /* XLPayWayAlertCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -9559,6 +9576,12 @@
 			isa = PBXGroup;
 			children = (
 				3D1BAB1B1C7AE7DF00DA5E8A /* icon */,
+				3D1C040E1D1B86B20002B8D7 /* pay_weixin_logo.png */,
+				3D1C040F1D1B86B20002B8D7 /* pay_weixin_logo@2x.png */,
+				3D1C04101D1B86B20002B8D7 /* pay_weixin_logo@3x.png */,
+				3D1C04111D1B86B20002B8D7 /* pay_zhifubao_logo.png */,
+				3D1C04121D1B86B20002B8D7 /* pay_zhifubao_logo@2x.png */,
+				3D1C04131D1B86B20002B8D7 /* pay_zhifubao_logo@3x.png */,
 				3DE02D1C1CFBEF8B00D7F651 /* 3dtouch_add_huanzhe.png */,
 				3DE02D1D1CFBEF8B00D7F651 /* 3dtouch_add_huanzhe@2x.png */,
 				3DE02D1E1CFBEF8B00D7F651 /* 3dtouch_add_huanzhe@3x.png */,
@@ -10830,6 +10853,7 @@
 				3D4F57E91CEF0EB5008D2C82 /* pay_close@2x.png in Resources */,
 				3DFBCA3C1C9DA12200B27177 /* menubtn_bg_top@2x.png in Resources */,
 				3DAA11C31BF5F82A00FD8149 /* zs_fdj@3x.png in Resources */,
+				3D1C04141D1B86B20002B8D7 /* pay_weixin_logo.png in Resources */,
 				3DFD66491CF4786900AEBA0A /* nav3.png in Resources */,
 				3D1B370F1C85AA98008CB6E0 /* team_left@3x.png in Resources */,
 				6436DE7F19B8C48100DC667E /* login_button@2x.png in Resources */,
@@ -10878,6 +10902,7 @@
 				3DFBCA431C9DA9C600B27177 /* ic_backup@3x.png in Resources */,
 				3D1B60631C18082B0032D949 /* 114.png in Resources */,
 				3D1B602E1C18082B0032D949 /* chat_receiver_bg@2x.png in Resources */,
+				3D1C04171D1B86B20002B8D7 /* pay_zhifubao_logo.png in Resources */,
 				2DFE7EDF1B4A71980088B119 /* LICENSE.txt in Resources */,
 				3D1B605A1C18082B0032D949 /* VoiceSearchFeedback014@2x.png in Resources */,
 				3D1B60A51C18082B0032D949 /* chatBar_textBg.png in Resources */,
@@ -10913,6 +10938,7 @@
 				3D1B370B1C85AA98008CB6E0 /* team_haocai@2x.png in Resources */,
 				3D1DAC531C7DAB2900E6A817 /* introducer_massage.png in Resources */,
 				3D18A5231C4E1C180016CABE /* guide_text2@2x.png in Resources */,
+				3D1C04191D1B86B20002B8D7 /* pay_zhifubao_logo@3x.png in Resources */,
 				3D26103C1CAAA56400D8A33D /* qrcode_jiazai.png in Resources */,
 				3D1B37181C85AA98008CB6E0 /* team_yuyue@3x.png in Resources */,
 				A62C8FDD1A0921410013146D /* CRM-Info.plist in Resources */,
@@ -10937,6 +10963,7 @@
 				3D1B60681C18082B0032D949 /* 80.png in Resources */,
 				3DAA11A81BF5F0D500FD8149 /* yfk@2x.png in Resources */,
 				2DD07F431B4D04E00076128D /* addManBtn@2x.png in Resources */,
+				3D1C04181D1B86B20002B8D7 /* pay_zhifubao_logo@2x.png in Resources */,
 				3D7C9B691CF7EEA4003016F9 /* schedule_map_blue@2x.png in Resources */,
 				3D18A5321C4E29AB0016CABE /* guide_arrow4@2x.png in Resources */,
 				3DEAF57A1C02F15800445C20 /* weixin_gray@3x.png in Resources */,
@@ -11042,6 +11069,7 @@
 				6436DEA219B8C48100DC667E /* header@2x.png in Resources */,
 				3DDE32411CCA243F0081E57E /* searchBar_alert@2x.png in Resources */,
 				3D1CF6391C9BC3DC0084AB5C /* zhongzhiti_icon@3x.png in Resources */,
+				3D1C04161D1B86B20002B8D7 /* pay_weixin_logo@3x.png in Resources */,
 				6436DE8919B8C48100DC667E /* btn_complet@2x.png in Resources */,
 				3D703C971CCE37E200F30E78 /* communicate_del@2x.png in Resources */,
 				3D1B60901C18082B0032D949 /* VoiceSearchFeedback019@2x.png in Resources */,
@@ -11089,6 +11117,7 @@
 				3D703C7A1CCE2D6E00F30E78 /* noMedicalcase_alert.png in Resources */,
 				3DFDD4DA1C522D4700A950A8 /* statistics_background@3x.png in Resources */,
 				3D1661E21C2932210062009D /* material_X@3x.png in Resources */,
+				3D1C04151D1B86B20002B8D7 /* pay_weixin_logo@2x.png in Resources */,
 				3D1BAB281C7AE7EE00DA5E8A /* icon-Small-50.png in Resources */,
 				3D2A39D11CEAD9F4005A92F0 /* clinic_map@3x.png in Resources */,
 				3D9BEDB01D1289D300168486 /* schedule_patient_alertView@3x.png in Resources */,
@@ -12443,6 +12472,7 @@
 				3DDF0DF81C30D84600358EDD /* XLAutoSyncTool.m in Sources */,
 				3DAA10F31BF5830B00FD8149 /* SeatImgInfosModel.m in Sources */,
 				3D2906361C8EB7100090AC6C /* XLWaitPayViewController.m in Sources */,
+				3D1C040D1D1B81DF0002B8D7 /* XLPayWayAlertCell.m in Sources */,
 				3DE02D1B1CFBE7DE00D7F651 /* CRMAppDelegate+ThreeDTouch.m in Sources */,
 				3D1B61501C18098A0032D949 /* UIImage+GIF.m in Sources */,
 				3D2D96B61CAE10840090E8F6 /* XLFilterPatientStateView.m in Sources */,

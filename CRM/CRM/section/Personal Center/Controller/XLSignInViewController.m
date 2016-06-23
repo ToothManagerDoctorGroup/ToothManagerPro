@@ -151,7 +151,6 @@
 
     [DoctorTool getDoctorListWithUserid:userId success:^(CRMHttpRespondModel *respond) {
         if ([respond.code integerValue] == 200) {
-            [SVProgressHUD dismiss];
             //登录成功
             DoctorInfoModel *doctorInfo = [DoctorInfoModel objectWithKeyValues:respond.result[0]];
             //设置当前的签约状态
@@ -326,7 +325,6 @@
 }
 
 - (void)loginFailedWithError:(NSError *)error {
-    //    [SVProgressHUD dismiss];
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 

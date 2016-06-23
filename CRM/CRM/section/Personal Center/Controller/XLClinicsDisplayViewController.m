@@ -29,6 +29,8 @@
 
 @property (nonatomic, strong)EMSearchBar *searchBar;//搜索框
 @property (nonatomic, strong)EMSearchDisplayController *searchController;//搜索视图
+
+@property (nonatomic, strong)XLClinicQueryModel *queryModel;
 @end
 
 @implementation XLClinicsDisplayViewController
@@ -49,6 +51,8 @@
     //设置子视图
     [self setUpSubViews];
     
+    //请求签约诊所的信息
+    [self requestClinicInfo];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -68,32 +72,42 @@
 - (void)setUpSubViews{
     
     //获取当前用户的签约状态
-    NSString *isSign = [CRMUserDefalut objectForKey:kUserIsSignKey([AccountManager currentUserid])];
-    if ([isSign isEqualToString:@"1"]) {
-        self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
-        [self.view addSubview:self.searchBar];
-        [self searchController];
-        //请求签约诊所的信息
-        [self requestClinicInfo];
-    }else{
-        self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
-        //未签约
-        [self.tableView createNoResultWithButtonWithImageName:@"clinic_alert_shenqingrenzheng" ifNecessaryForRowCount:0 buttonTitle:@"申请成为认证医生" target:self action:@selector(authodAction) forControlEvents:UIControlEventTouchUpInside];
-    }
+//    NSString *isSign = [CRMUserDefalut objectForKey:kUserIsSignKey([AccountManager currentUserid])];
+//    if ([isSign isEqualToString:@"1"]) {
+//        self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
+//        [self.view addSubview:self.searchBar];
+//        [self searchController];
+//        //请求签约诊所的信息
+//        [self requestClinicInfo];
+//    }else{
+//        self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+//        //未签约
+//        [self.tableView createNoResultWithButtonWithImageName:@"clinic_alert_shenqingrenzheng" ifNecessaryForRowCount:0 buttonTitle:@"申请成为认证医生" target:self action:@selector(authodAction) forControlEvents:UIControlEventTouchUpInside];
+//    }
 }
 
 #pragma 请求签约诊所的信息
 - (void)requestClinicInfo{
     [SVProgressHUD showWithStatus:@"正在加载"];
     WS(weakSelf);
-    XLClinicQueryModel *queryModel = [[XLClinicQueryModel alloc] initWithKeyWord:@"" isAsc:NO doctorId:[AccountManager currentUserid]];
-    [MyClinicTool getClinicListWithQueryModel:queryModel success:^(NSArray *result) {
-        self.tableView.tableHeaderView = nil;
+    [MyClinicTool getClinicListWithQueryModel:self.queryModel success:^(NSArray *result) {
         [SVProgressHUD dismiss];
-        //请求到数据,将数据赋值给当前数组
-        _dataList = result;
-        //刷新表格
-        [weakSelf.tableView reloadData];
+        self.tableView.tableHeaderView = nil;
+        if (result) {
+            self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
+            [self.view addSubview:self.searchBar];
+            [self searchController];
+            //请求到数据,将数据赋值给当前数组
+            _dataList = result;
+            //刷新表格
+            [weakSelf.tableView reloadData];
+        }else{
+            //未签约
+            self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
+            //未签约
+            [self.tableView createNoResultWithButtonWithImageName:@"clinic_alert_shenqingrenzheng" ifNecessaryForRowCount:0 buttonTitle:@"申请成为认证医生" target:self action:@selector(authodAction) forControlEvents:UIControlEventTouchUpInside];
+        }
+        
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
         [self.tableView createNoResultWithImageName:@"no_net_alert" ifNecessaryForRowCount:0 target:weakSelf action:@selector(requestClinicInfo)];
@@ -160,20 +174,21 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
-    UserObject *currentUser = [[AccountManager shareInstance] currentUser];
     WS(weakSelf);
     [SVProgressHUD showWithStatus:@"正在搜索"];
-    [MyClinicTool searchClinicInfoWithDoctorId:currentUser.userid clinicName:searchBar.text success:^(NSArray *clinics) {
+    self.queryModel.KeyWord = searchBar.text;
+    [MyClinicTool getClinicListWithQueryModel:self.queryModel success:^(NSArray *result) {
         [SVProgressHUD dismiss];
-        //刷新单元格
-        [weakSelf.searchController.resultsSource removeAllObjects];
-        [weakSelf.searchController.resultsSource addObjectsFromArray:clinics];
-        [weakSelf.searchController.searchResultsTableView reloadData];
+        if (result) {
+            [weakSelf.searchController.resultsSource removeAllObjects];
+            [weakSelf.searchController.resultsSource addObjectsFromArray:result];
+            [weakSelf.searchController.searchResultsTableView reloadData];
+        }
         
     } failure:^(NSError *error) {
-        [SVProgressHUD dismiss];
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
-            NSLog(@"搜索失败，请检查网络连接");
+            NSLog(@"error:%@",error);
         }
     }];
 }
@@ -267,5 +282,11 @@
     return _searchController;
 }
 
+- (XLClinicQueryModel *)queryModel{
+    if (!_queryModel) {
+         _queryModel = [[XLClinicQueryModel alloc] initWithKeyWord:@"" isAsc:NO doctorId:[AccountManager currentUserid]];
+    }
+    return _queryModel;
+}
 
 @end

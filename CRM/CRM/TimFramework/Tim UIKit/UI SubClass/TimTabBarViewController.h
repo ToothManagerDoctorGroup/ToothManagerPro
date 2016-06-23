@@ -18,5 +18,6 @@
 
 - (void)closeAllTimer;
 
+@property (nonatomic, assign)BOOL executeSyncAction;//是否自动执行同步操作
 @property (nonatomic, assign)BOOL isLoginFromOthers;//是否从其它地方登录
 @end

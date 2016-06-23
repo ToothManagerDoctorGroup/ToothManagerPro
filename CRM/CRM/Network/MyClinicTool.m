@@ -290,14 +290,21 @@
     [[CRMUnEncryptedHttpTool shareInstance] GET:urlStr parameters:params success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];
-        NSMutableArray *mArray = [NSMutableArray array];
-        for (NSDictionary *dic in respond.result) {
-            XLClinicModel *model = [XLClinicModel objectWithKeyValues:dic];
-            [mArray addObject:model];
+        if ([respond.code integerValue] == 200) {
+            NSMutableArray *mArray = [NSMutableArray array];
+            for (NSDictionary *dic in respond.result) {
+                XLClinicModel *model = [XLClinicModel objectWithKeyValues:dic];
+                [mArray addObject:model];
+            }
+            if (success) {
+                success(mArray);
+            }
+        }else{
+            if (success) {
+                success(nil);
+            }
         }
-        if (success) {
-            success(mArray);
-        }
+        
         
     } failure:^(NSError *error) {
         if (failure) {

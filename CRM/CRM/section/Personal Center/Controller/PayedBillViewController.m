@@ -49,7 +49,7 @@
     
     //添加通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paySuccessAction:) name:WeixinPayedNotification object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paySuccessAction:) name:AlipayPayedNotification object:nil];
     //请求网络数据
     [self requestBillsDataWithType:@"2"];
     
@@ -57,7 +57,7 @@
 
 #pragma mark -支付成功后
 - (void)paySuccessAction:(NSNotification *)note{
-    if ([note.object isEqualToString:WeixinPayedNotification]) {
+    if ([note.object isEqualToString:PayedResultSuccess]) {
         //请求网络数据
         [self requestBillsDataWithType:@"2"];
     }

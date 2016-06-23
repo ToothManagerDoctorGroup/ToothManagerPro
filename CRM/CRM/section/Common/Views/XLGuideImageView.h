@@ -14,7 +14,7 @@ typedef void(^DismissBlock)();
 
 - (void)showInView:(UIView *)view dismissBlock:(DismissBlock)dismissBlock;
 
-- (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss;
+- (void)showInView:(UIView *)view autoDismiss:(BOOL)autoDismiss dismissBlock:(DismissBlock)dismissBlock;
 
 
 @end

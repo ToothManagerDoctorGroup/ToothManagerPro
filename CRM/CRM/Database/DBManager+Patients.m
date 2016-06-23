@@ -1779,7 +1779,7 @@
  *  @return 转诊记录数组
  */
 - (NSArray *)getPatientTransferRecordWithPatientId:(NSString *)patientId{
-    NSString *sqlStr = [NSString stringWithFormat:@"select distinct pm.doctor_id,pm.intr_time,d.doctor_name,d.doctor_image from %@ pm join %@ d on d.ckeyid=pm.doctor_id where pm.patient_id='%@' and pm.intr_source='I' and pm.doctor_id='%@' order by intr_time desc",PatIntrMapTableName,DoctorTableName,patientId,[AccountManager currentUserid]];
+    NSString *sqlStr = [NSString stringWithFormat:@"select distinct pm.doctor_id,pm.intr_time,d.doctor_name,d.doctor_image from %@ pm join %@ d on d.ckeyid=pm.doctor_id where pm.patient_id='%@' and pm.intr_source='I' and pm.user_id='%@' order by intr_time desc",PatIntrMapTableName,DoctorTableName,patientId,[AccountManager currentUserid]];
     __block FMResultSet *resultSet;
     __block NSMutableArray *resultArray = [NSMutableArray array];
     [self.fmDatabaseQueue inDatabase:^(FMDatabase *db) {
