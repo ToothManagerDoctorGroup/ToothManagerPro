@@ -256,7 +256,7 @@
 - (void)buttonAction{
     if ([self.model.reserve_status isEqualToString:@"0"]) {
         
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"删除订单" message:@"确定删除订单？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"取消订单" message:@"确定取消预约订单？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
         [alertView show];
         
     }else{

@@ -695,6 +695,7 @@
                 [[AccountManager shareInstance] logout];
             }else{
                 //重新登录环信
+                [SVProgressHUD showWithStatus:@"正在登录环信"];
                 [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:userName password:password completion:^(NSDictionary *loginInfo, EMError *error) {
                     if (loginInfo && !error) {
                         [SVProgressHUD showImage:nil status:@"登录成功"];

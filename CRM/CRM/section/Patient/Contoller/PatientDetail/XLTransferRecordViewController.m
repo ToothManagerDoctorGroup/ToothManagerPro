@@ -10,6 +10,7 @@
 #import "UIColor+Extension.h"
 #import "XLTransferRecordCell.h"
 #import "DBManager+Patients.h"
+#import "XLDoctorLibraryViewController.h"
 #import <Masonry.h>
 
 #define kTransferRecordViewControllerTimeLineColor [UIColor colorWithHex:0x5ec1f0]
@@ -36,10 +37,18 @@
     
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    self.dataList = [[DBManager shareInstance] getPatientTransferRecordWithPatientId:self.patientId];
+    [self.tableView reloadData];
+}
+
 #pragma mark - ********************* Private Method ***********************
 #pragma mark 初始化
 - (void)setUpSubViews{
     [self setBackBarButtonWithImage:[UIImage imageNamed:@"btn_back"]];
+    [self setRightBarButtonWithTitle:@"转诊"];
     self.title = @"转诊记录";
     
     [self.view addSubview:self.timeLineView];
@@ -62,6 +71,15 @@
     }];
 }
 
+#pragma mark 转诊
+- (void)onRightButtonAction:(id)sender{
+    Patient *patient = [[DBManager shareInstance] getPatientWithPatientCkeyid:self.patientId];
+    XLDoctorLibraryViewController *doctorVC = [[XLDoctorLibraryViewController alloc] init];
+    doctorVC.isTransfer = YES;
+    doctorVC.userId = patient.doctor_id;
+    doctorVC.patientId = patient.ckeyid;
+    [self pushViewController:doctorVC animated:YES];
+}
 
 #pragma mark - ********************* Delegate / DataSource *******************
 #pragma mark UITableViewDelegate/DataSource
@@ -72,7 +90,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     XLTransferRecordCell *cell = [XLTransferRecordCell cellWithTableView:tableView];
-    
     XLTransferRecordModel *model = self.dataList[indexPath.row];
     
     cell.model = model;
@@ -100,13 +117,6 @@
         _timeLineView.backgroundColor = kTransferRecordViewControllerTimeLineColor;
     }
     return _timeLineView;
-}
-
-- (NSArray *)dataList{
-    if (!_dataList) {
-        _dataList = [[DBManager shareInstance] getPatientTransferRecordWithPatientId:self.patientId];
-    }
-    return _dataList;
 }
 
 @end

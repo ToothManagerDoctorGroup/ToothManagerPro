@@ -56,6 +56,7 @@
 #import "XLCustomAlertView.h"
 #import "SysMessageTool.h"
 #import "XLChatModel.h"
+#import "IntroPeopleDetailViewController.h"
 
 #define CommenBgColor MyColor(245, 246, 247)
 #define Margin 5
@@ -584,7 +585,6 @@
     XLDoctorLibraryViewController *doctorVC = [[XLDoctorLibraryViewController alloc] init];
     if (self.detailPatient != nil) {
         doctorVC.isTransfer = YES;
-        doctorVC.isBind = self.isBind;
         doctorVC.userId = self.detailPatient.doctor_id;
         doctorVC.patientId = self.detailPatient.ckeyid;
         [self pushViewController:doctorVC animated:YES];
@@ -648,9 +648,10 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationName:IntroducerCreatedNotification object:nil];
     
-    XLIntroducerViewController *introducerVC = [[XLIntroducerViewController alloc] init];
-    introducerVC.hidesBottomBarWhenPushed = YES;
-    [self pushViewController:introducerVC animated:YES];
+    IntroPeopleDetailViewController * detailCtl = [[IntroPeopleDetailViewController alloc] init];
+    [detailCtl setIntroducer:introducer];
+    detailCtl.hidesBottomBarWhenPushed = YES;
+    [self pushViewController:detailCtl animated:YES];
 }
 
 - (void)patientToIntroducerFailed:(NSError *)error{

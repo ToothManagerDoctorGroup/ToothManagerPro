@@ -107,7 +107,7 @@
     if (section == 0) {
         return @"诊所实景图";
     }
-    return @"椅位配置";
+    return @"牙椅配置";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -124,7 +124,7 @@
     headerLabel.textColor = [UIColor blackColor];
     headerLabel.font = [UIFont systemFontOfSize:16];
     if (section == 0) {
-        headerLabel.text = @"诊所配置";
+        headerLabel.text = @"牙椅配置";
     }else{
         headerLabel.text = @"诊所实景图";
     }

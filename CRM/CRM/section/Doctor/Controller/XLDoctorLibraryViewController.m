@@ -41,6 +41,7 @@
 #import "XLDoctorSqureViewController.h"
 #import "XLChatModel.h"
 #import "UIColor+Extension.h"
+#import "MyPatientTool.h"
 
 @interface XLDoctorLibraryViewController ()<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource,DoctorTableViewCellDelegate,UIAlertViewDelegate,XLCommonDoctorCellDelegte>{
     UITableView *_tableView;
@@ -60,6 +61,8 @@
 @property (nonatomic, strong)XLQueryModel *queryModel;//分页所需的模型
 
 @property (nonatomic, assign)int pageIndex;
+
+@property (nonatomic, assign)BOOL isBind;//是否绑定微信
 
 @end
 
@@ -390,52 +393,70 @@
         }
         
         __weak typeof(self) weakSelf = self;
-         [SVProgressHUD showWithStatus:@"转诊患者成功,正在获取提醒消息"];
-        [DoctorTool newYuYueMessagePatient:patientId fromDoctor:[AccountManager currentUserid] therapyDoctorId:self.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *respond) {
-            NSLog(@"获取通知");
-            if ([respond.code integerValue] == 200) {
-                XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:respond.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:weakSelf.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
-                    [weakSelf transferBackAction];
-                } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
-                    [SVProgressHUD showWithStatus:@"正在发送"];
-                    [SysMessageTool sendMessageWithDoctorId:weakSelf.selectDoctor.doctor_id patientId:patientId isWeixin:weakSelf.isBind isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
-                        if ([respond.code integerValue] == 200) {
-                            [SVProgressHUD showImage:nil status:@"消息发送成功"];
-                            //将消息保存在消息记录里
-                            [weakSelf savaMessageToChatRecordWithPatient:tmppatient message:content];
-                        }else{
-                            [SVProgressHUD showImage:nil status:@"消息发送失败"];
-                        }
-                        
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            [weakSelf transferBackAction];
-                        });
-                        
-                    } failure:^(NSError *error) {
-                        [SVProgressHUD showImage:nil status:error.localizedDescription];
-                        [weakSelf transferBackAction];
-                        if (error) {
-                            NSLog(@"error:%@",error);
-                        }
-                    }];
-                }];
-                [alertView show];
+        [SVProgressHUD showWithStatus:@"转诊患者成功,正在获取提醒消息"];
+        //获取患者绑定微信的状态
+        [MyPatientTool getWeixinStatusWithPatientId:self.patientId success:^(CRMHttpRespondModel *respondModel) {
+            if ([respondModel.result isEqualToString:@"1"]) {
+                //绑定
+                weakSelf.isBind = YES;
             }else{
-                [SVProgressHUD showImage:nil status:respond.result];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [weakSelf transferBackAction];
-                });
+                weakSelf.isBind = NO;
             }
+            [weakSelf getPatientSendMessageWithPatient:tmppatient];
         } failure:^(NSError *error) {
-            [SVProgressHUD showImage:nil status:error.localizedDescription];
-            [weakSelf transferBackAction];
-            if (error) {
-                NSLog(@"error:%@",error);
-            }
+            weakSelf.isBind = NO;
+            [weakSelf getPatientSendMessageWithPatient:tmppatient];
         }];
+        
     } else {
         [SVProgressHUD showErrorWithStatus:@"转诊患者失败"];
     }
+}
+#pragma mark - 获取患者推送信息
+- (void)getPatientSendMessageWithPatient:(Patient *)patient{
+    WS(weakSelf);
+    [DoctorTool newYuYueMessagePatient:patientId fromDoctor:[AccountManager currentUserid] therapyDoctorId:self.selectDoctor.doctor_id withMessageType:@"转诊" withSendType:@"1" withSendTime:[MyDateTool stringWithDateWithSec:[NSDate date]] success:^(CRMHttpRespondModel *respond) {
+        NSLog(@"获取通知");
+        if ([respond.code integerValue] == 200) {
+            XLCustomAlertView *alertView = [[XLCustomAlertView alloc] initWithTitle:@"提醒患者" message:respond.result Cancel:@"不发送" certain:@"发送" weixinEnalbe:weakSelf.isBind type:CustonAlertViewTypeCheck cancelHandler:^{
+                [weakSelf transferBackAction];
+            } certainHandler:^(NSString *content, BOOL wenxinSend, BOOL messageSend) {
+                [SVProgressHUD showWithStatus:@"正在发送"];
+                [SysMessageTool sendMessageWithDoctorId:weakSelf.selectDoctor.doctor_id patientId:patientId isWeixin:weakSelf.isBind isSms:messageSend txtContent:content success:^(CRMHttpRespondModel *respond) {
+                    if ([respond.code integerValue] == 200) {
+                        [SVProgressHUD showImage:nil status:@"消息发送成功"];
+                        //将消息保存在消息记录里
+                        [weakSelf savaMessageToChatRecordWithPatient:patient message:content];
+                    }else{
+                        [SVProgressHUD showImage:nil status:@"消息发送失败"];
+                    }
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [weakSelf transferBackAction];
+                    });
+                    
+                } failure:^(NSError *error) {
+                    [SVProgressHUD showImage:nil status:error.localizedDescription];
+                    [weakSelf transferBackAction];
+                    if (error) {
+                        NSLog(@"error:%@",error);
+                    }
+                }];
+            }];
+            [alertView show];
+        }else{
+            [SVProgressHUD showImage:nil status:respond.result];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [weakSelf transferBackAction];
+            });
+        }
+    } failure:^(NSError *error) {
+        [SVProgressHUD showImage:nil status:error.localizedDescription];
+        [weakSelf transferBackAction];
+        if (error) {
+            NSLog(@"error:%@",error);
+        }
+    }];
 }
 
 - (void)transferPatientFailedWithError:(NSError *)error

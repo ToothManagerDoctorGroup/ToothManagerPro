@@ -48,9 +48,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //设置子视图
-    [self setUpSubViews];
-    
     //请求签约诊所的信息
     [self requestClinicInfo];
 }
@@ -63,27 +60,10 @@
 #pragma mark 认证按钮点击
 - (void)authodAction{
     XLWebViewController *webVc = [[XLWebViewController alloc] init];
-    webVc.urlStr = @"http://www.ibeituan.com/his.crm/html/doctor_auth_guide.html";
+    webVc.urlStr = [NSString stringWithFormat:@"%@his.crm/html/doctor_auth_guide.html?doctor_id=%@",DomainName,[AccountManager currentUserid]];
     webVc.title = @"认证";
     webVc.hideRightButton = YES;
     [self.navigationController pushViewController:webVc animated:YES];
-}
-#pragma mark 设置子视图
-- (void)setUpSubViews{
-    
-    //获取当前用户的签约状态
-//    NSString *isSign = [CRMUserDefalut objectForKey:kUserIsSignKey([AccountManager currentUserid])];
-//    if ([isSign isEqualToString:@"1"]) {
-//        self.tableView.frame = CGRectMake(0, 44, kScreenWidth, kScreenHeight - 64 - 44);
-//        [self.view addSubview:self.searchBar];
-//        [self searchController];
-//        //请求签约诊所的信息
-//        [self requestClinicInfo];
-//    }else{
-//        self.tableView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - 64);
-//        //未签约
-//        [self.tableView createNoResultWithButtonWithImageName:@"clinic_alert_shenqingrenzheng" ifNecessaryForRowCount:0 buttonTitle:@"申请成为认证医生" target:self action:@selector(authodAction) forControlEvents:UIControlEventTouchUpInside];
-//    }
 }
 
 #pragma 请求签约诊所的信息

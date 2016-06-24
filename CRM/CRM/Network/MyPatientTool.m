@@ -119,6 +119,8 @@
     
     NSString *urlStr = [NSString stringWithFormat:@"%@%@/%@/ClinicMessage.ashx",DomainName,Method_His_Crm,@"ashx"];
     
+    [[CRMHttpTool shareInstance] logWithUrlStr:urlStr params:paramDic];
+    
     [[CRMUnEncryptedHttpTool shareInstance] POST:urlStr parameters:paramDic success:^(id responseObject) {
         
         CRMHttpRespondModel *respond = [CRMHttpRespondModel objectWithKeyValues:responseObject];

@@ -172,6 +172,7 @@ NSString *const UIKeyboardHideNotification = @"UIKeyboardHideNotification";
 //输入源键盘的处理
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
     if (self.mode == TextFieldInputModeCustomPicker) {
         self.inputView = [self getCustomPicker];
     } else if(self.mode == TextFieldInputModePicker){

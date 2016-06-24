@@ -13,5 +13,6 @@
 @interface XLTransferRecordViewController : TimViewController
 
 @property (nonatomic, copy)NSString *patientId;
+@property (nonatomic, assign)BOOL isBind;
 
 @end
