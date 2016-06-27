@@ -50,6 +50,8 @@
 @property (nonatomic, strong)BillDetailModel *currentModel;
 
 
+@property (nonatomic, strong)UIButton *deleteButton;
+
 @property (nonatomic, assign)BOOL isBind;
 
 @end
@@ -87,6 +89,7 @@
     [deleteBtn addTarget:self action:@selector(deleteBtnAction) forControlEvents:UIControlEventTouchUpInside];
     deleteBtn.layer.cornerRadius = 5;
     deleteBtn.layer.masksToBounds = YES;
+    self.deleteButton = deleteBtn;
     [footerView addSubview:deleteBtn];
     
     self.tableView.tableFooterView = footerView;
@@ -236,6 +239,13 @@
             self.assistLabel.text = assistStr;
         }
         
+        //判断预约状态
+        if ([billDetail.reserve_status integerValue] > 0) {
+            [self.deleteButton setTitle:@"预约已开始" forState:UIControlStateNormal];
+            self.deleteButton.backgroundColor = [UIColor grayColor];
+            self.deleteButton.userInteractionEnabled = NO;
+        }
+        
     } failure:^(NSError *error) {
         [SVProgressHUD showImage:nil status:error.localizedDescription];
         if (error) {
@@ -268,4 +278,12 @@
     }
 }
 
+
+- (void)setHideCancelButton:(BOOL)hideCancelButton{
+    _hideCancelButton = hideCancelButton;
+    if(hideCancelButton){
+        self.tableView.tableFooterView = nil;
+    }
+
+}
 @end

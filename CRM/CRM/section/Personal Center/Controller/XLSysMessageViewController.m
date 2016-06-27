@@ -378,7 +378,7 @@ static const NSInteger SysMessageViewControllerPageSize = 30;
 - (void)jumpToBillDisplay:(SysMessageModel *)model{
     //跳转到我的账单列表
     WMPageController *pageController = [self p_defaultController];
-    pageController.title = @"我的账单";
+    pageController.title = @"我的订单";
     pageController.menuViewStyle = WMMenuViewStyleLine;
     pageController.titleSizeSelected = 15;
     pageController.titleColorSelected = MyColor(0, 139, 232);

@@ -16,4 +16,6 @@
 
 @property (nonatomic, strong)LocalNotification *localNoti;
 
+@property (nonatomic, assign)BOOL hideCancelButton;//是否隐藏取消预约按钮
+
 @end

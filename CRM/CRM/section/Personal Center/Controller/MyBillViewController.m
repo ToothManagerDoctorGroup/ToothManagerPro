@@ -130,6 +130,7 @@
     XLClinicAppointDetailViewController *detailVc = [storyboard instantiateViewControllerWithIdentifier:@"XLClinicAppointDetailViewController"];
     detailVc.hidesBottomBarWhenPushed = YES;
     detailVc.localNoti = localNoti;
+    detailVc.hideCancelButton = YES;
     [self.navigationController pushViewController:detailVc animated:YES];
 }
 
