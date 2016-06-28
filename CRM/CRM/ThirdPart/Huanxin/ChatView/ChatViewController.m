@@ -667,6 +667,7 @@
     NSLog(@"患教");
     
     XLPatientEducationViewController *eduVc = [[XLPatientEducationViewController alloc] initWithStyle:UITableViewStylePlain];
+    eduVc.title = @"患教";
     [self.navigationController pushViewController:eduVc animated:YES];
 }
 

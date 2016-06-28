@@ -273,6 +273,7 @@
     params[@"action"] = [@"delete" TripleDESIsEncrypt:YES];
     params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
     
+    
     [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
         if (success) {

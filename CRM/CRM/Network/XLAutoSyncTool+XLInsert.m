@@ -47,11 +47,13 @@
     [subParamDic setObject:patient.nickName forKey:@"NickName"];
     
     
-    NSString *jsonString = [NSJSONSerialization jsonStringWithObject:subParamDic];
+    NSString *jsonString = [subParamDic JSONString];
     
     params[@"table"] = [@"patient" TripleDESIsEncrypt:YES];
     params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
     params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
+    
+    [[CRMHttpTool shareInstance] logWithUrlStr:POST_COMMONURL params:params];
     
     [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];

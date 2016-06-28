@@ -350,11 +350,6 @@
     
 }
 - (void)accessFailed {
-//    TimAlertView *alertView = [[TimAlertView alloc] initWithTitle:@"温馨提示" message:@"种牙管家没有访问手机通讯录的权限，请到系统设置->隐私->通讯录中开启" cancel:@"取消" certain:@"前往设置" cancelHandler:^{
-//    } comfirmButtonHandlder:^{
-//        
-//    }];
-//    [alertView show];
     XLAddressBookFailView *failView = [[XLAddressBookFailView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:failView];
 }
@@ -423,7 +418,7 @@
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
+        _searchController.delegate = self;
         __weak XLContactsViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             
