@@ -423,7 +423,7 @@
         _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
+        _searchController.delegate = self;
         __weak XLContactsViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             
