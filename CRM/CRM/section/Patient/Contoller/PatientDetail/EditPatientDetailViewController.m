@@ -272,7 +272,7 @@
         }
         self.patientNameField.text = content;
     }else if ([title isEqualToString:@"电话"]){
-        if (![NSString checkAllPhoneNumber:content]) {
+        if (content.length == 0) {
             [SVProgressHUD showImage:nil status:@"电话号码无效，请重新输入"];
             return;
         }

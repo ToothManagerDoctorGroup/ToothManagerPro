@@ -324,8 +324,7 @@
         self.currentDoctor.doctor_birthday = [NSString stringWithFormat:@"%ld-01-01",(long)yearCount];
     }else if ([title isEqualToString:@"电话"]){
         //验证电话是否合法
-        BOOL ret = [NSString checkTelNumber:content];
-        if (!ret) {
+        if (content.length == 0) {
             [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
             return;
         }

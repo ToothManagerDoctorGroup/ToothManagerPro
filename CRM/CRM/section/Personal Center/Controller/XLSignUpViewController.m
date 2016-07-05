@@ -105,7 +105,7 @@
     
     if (self.phoneTextField.text.length <= 0) {
         [SVProgressHUD showErrorWithStatus:@"您未填写手机号码"];
-    }else if (self.phoneTextField.text.length > 0 && self.phoneTextField.text.length != 11) {
+    }else if (![NSString checkTelNumber:self.phoneTextField.text]) {
         [SVProgressHUD showErrorWithStatus:@"请输入正确的手机号码"];
     }else {
         if (![self isAllNum:self.phoneTextField.text]) {

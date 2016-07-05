@@ -110,21 +110,9 @@
     [subParamDic setObject:introducer.doctor_id forKey:@"doctor_id"];
     [subParamDic setObject:introducer.intr_id forKey:@"intr_id"];
     
-    NSError *error;
-    NSString *jsonString;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:subParamDic
-                                                       options: 0
-                                                         error:&error];
-    if (! jsonData) {
-        NSLog(@"Got an error: %@", error);
-    }
-    else {
-        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@", jsonString);
-    }
     params[@"table"] = [@"introducer" TripleDESIsEncrypt:YES];
     params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
-    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[subParamDic JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];
@@ -205,21 +193,9 @@
     [subParamDic setObject:medical_case.repair_doctor_name forKey:@"repair_doctor_name"];
     [subParamDic setObject:medical_case.tooth_position forKey:@"tooth_position"];
     
-    NSError *error;
-    NSString *jsonString;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:subParamDic
-                                                       options: 0
-                                                         error:&error];
-    if (! jsonData) {
-        NSLog(@"Got an error: %@", error);
-    }
-    else {
-        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@", jsonString);
-    }
     params[@"table"] = [@"medicalcase" TripleDESIsEncrypt:YES];
     params[@"action"] = [@"add" TripleDESIsEncrypt:YES];
-    params[@"DataEntity"] = [jsonString TripleDESIsEncrypt:YES];
+    params[@"DataEntity"] = [[subParamDic JSONString] TripleDESIsEncrypt:YES];
     
     [[CRMHttpTool shareInstance] POST:POST_COMMONURL parameters:[self addCommenParams:params] success:^(id responseObject) {
         CRMHttpRespondModel *model = [CRMHttpRespondModel objectWithKeyValues:responseObject];

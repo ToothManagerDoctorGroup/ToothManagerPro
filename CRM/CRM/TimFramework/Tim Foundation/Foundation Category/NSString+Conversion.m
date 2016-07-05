@@ -226,20 +226,17 @@
     NSString *pattern = @"^[1][34578]\\d{9}$";
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
     BOOL isMatch = [pred evaluateWithObject:telNumber];
+    
     return isMatch;
 }
 
 + (BOOL)checkAllPhoneNumber:(NSString *)phoneNumber{
-//    NSString *pattern = @"^(0[0-9]{2,3}/-)?([2-9][0-9]{6,7})+(/-[0-9]{1,4})?$";
+    
     NSString *pattern = @"^([1][34578]\\d{9})$|^((\\d{7,8})|(\\d{4}|\\d{3})-(\\d{7,8})|(\\d{4}|\\d{3})-(\\d{7,8})-(\\d{4}|\\d{3}|\\d{2}|\\d{1})|(\\d{7,8})-(\\d{4}|\\d{3}|\\d{2}|\\d{1}))$";
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
     BOOL isMatch = [pred evaluateWithObject:phoneNumber];
     
-    if (isMatch) {
-        return YES;
-    }
-    
-    return NO;
+    return isMatch;
 }
 
 + (ValidationResult)checkIDCard:(NSString *)idCard{

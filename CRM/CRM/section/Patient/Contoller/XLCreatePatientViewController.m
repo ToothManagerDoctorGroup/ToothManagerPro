@@ -118,7 +118,7 @@
         return;
     }
     
-    if(self.phoneField.text.length == 0 || ![NSString checkAllPhoneNumber:self.phoneField.text]){
+    if(self.phoneField.text.length == 0){
         [SVProgressHUD showImage:nil status:@"手机号无效，请重新输入"];
         return;
     }
